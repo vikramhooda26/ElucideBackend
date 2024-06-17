@@ -7,17 +7,17 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const authorizedHosts = process.env.AUTHORIZED_HOSTS
-    ? process.env.AUTHORIZED_HOSTS.split(",")
-    : [];
+  ? process.env.AUTHORIZED_HOSTS.split(",")
+  : [];
 
 app.use(
-    cors({
-        origin: authorizedHosts,
-    })
+  cors({
+    origin: authorizedHosts,
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, () =>
-    console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`)
+  console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
 );
