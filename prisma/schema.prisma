@@ -40,59 +40,61 @@ model auth_permission {
 }
 
 model auth_user {
-    id                         BigInt                       @id @default(autoincrement())
-    password                   String                       @db.VarChar(128)
-    last_login                 DateTime?                    @db.Timestamp(6)
-    is_superuser               Boolean
-    username                   String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
-    last_name                  String                       @db.VarChar(150)
-    email                      String                       @db.VarChar(254)
-    is_staff                   Boolean
-    is_active                  Boolean
-    date_joined                DateTime                     @db.Timestamp(6)
-    first_name                 String                       @db.VarChar(150)
-    auth_user_groups           auth_user_groups[]
-    auth_user_user_permissions auth_user_user_permissions[]
-    dashapp_activation         dashapp_activation[]
-    dashapp_activecampaigns    dashapp_activecampaigns[]
-    dashapp_age                dashapp_age[]
-    dashapp_agency             dashapp_agency[]
-    dashapp_assets             dashapp_assets[]
-    dashapp_athlete            dashapp_athlete[]
-    dashapp_athletecontact     dashapp_athletecontact[]
-    dashapp_brandcontact       dashapp_brandcontact[]
-    dashapp_brandendorsements  dashapp_brandendorsements[]
-    dashapp_broadcastpartner   dashapp_broadcastpartner[]
-    dashapp_category           dashapp_category[]
-    dashapp_companydata        dashapp_companydata[]
-    dashapp_gender             dashapp_gender[]
-    dashapp_hqcity             dashapp_hqcity[]
-    dashapp_income             dashapp_income[]
-    dashapp_keymarket          dashapp_keymarket[]
-    dashapp_league             dashapp_league[]
-    dashapp_leaguecontact      dashapp_leaguecontact[]
-    dashapp_leagueendorsements dashapp_leagueendorsements[]
-    dashapp_leagueinfo         dashapp_leagueinfo[]
-    dashapp_leagueowner        dashapp_leagueowner[]
-    dashapp_level              dashapp_level[]
-    dashapp_mainpersonality    dashapp_mainpersonality[]
-    dashapp_marketingplatform  dashapp_marketingplatform[]
-    dashapp_ottpartner         dashapp_ottpartner[]
-    dashapp_parentorg          dashapp_parentorg[]
-    dashapp_partner            dashapp_partner[]
-    dashapp_property           dashapp_property[]
-    dashapp_sport              dashapp_sport[]
-    dashapp_sportsdealsummary  dashapp_sportsdealsummary[]
-    dashapp_states             dashapp_states[]
-    dashapp_subpersonality     dashapp_subpersonality[]
-    dashapp_taglines           dashapp_taglines[]
-    dashapp_team               dashapp_team[]
-    dashapp_teamcontact        dashapp_teamcontact[]
-    dashapp_teamendorsements   dashapp_teamendorsements[]
-    dashapp_teamowner          dashapp_teamowner[]
-    dashapp_territory          dashapp_territory[]
-    dashapp_tier               dashapp_tier[]
-    django_admin_log           django_admin_log[]
+    id                            BigInt                          @id @default(autoincrement())
+    password                      String                          @db.VarChar(128)
+    last_login                    DateTime?                       @db.Timestamp(6)
+    is_superuser                  Boolean
+    username                      String                          @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    last_name                     String                          @db.VarChar(150)
+    email                         String                          @db.VarChar(254)
+    is_staff                      Boolean
+    is_active                     Boolean
+    date_joined                   DateTime                        @db.Timestamp(6)
+    first_name                    String                          @db.VarChar(150)
+    auth_user_groups              auth_user_groups[]
+    auth_user_user_permissions    auth_user_user_permissions[]
+    dashapp_activation            dashapp_activation[]
+    dashapp_activecampaigns       dashapp_activecampaigns[]
+    dashapp_age                   dashapp_age[]
+    dashapp_agency                dashapp_agency[]
+    dashapp_assets                dashapp_assets[]
+    dashapp_athlete               dashapp_athlete[]
+    dashapp_athletecontact        dashapp_athletecontact[]
+    dashapp_brandcontact          dashapp_brandcontact[]
+    dashapp_brandendorsements     dashapp_brandendorsements[]
+    dashapp_broadcastpartner      dashapp_broadcastpartner[]
+    dashapp_category              dashapp_category[]
+    dashapp_companydata           dashapp_companydata[]
+    dashapp_gender                dashapp_gender[]
+    dashapp_hqcity                dashapp_hqcity[]
+    dashapp_income                dashapp_income[]
+    dashapp_keymarket             dashapp_keymarket[]
+    dashapp_league                dashapp_league[]
+    dashapp_leaguecontact         dashapp_leaguecontact[]
+    dashapp_leagueendorsements    dashapp_leagueendorsements[]
+    dashapp_leagueinfo            dashapp_leagueinfo[]
+    dashapp_leagueowner           dashapp_leagueowner[]
+    dashapp_level                 dashapp_level[]
+    dashapp_mainpersonality       dashapp_mainpersonality[]
+    dashapp_marketingplatform     dashapp_marketingplatform[]
+    dashapp_ottpartner            dashapp_ottpartner[]
+    dashapp_parentorg             dashapp_parentorg[]
+    dashapp_partner               dashapp_partner[]
+    dashapp_property              dashapp_property[]
+    dashapp_sport                 dashapp_sport[]
+    dashapp_sportsdealsummary     dashapp_sportsdealsummary[]
+    dashapp_states                dashapp_states[]
+    dashapp_subpersonality        dashapp_subpersonality[]
+    dashapp_taglines              dashapp_taglines[]
+    dashapp_team                  dashapp_team[]
+    dashapp_teamcontact           dashapp_teamcontact[]
+    dashapp_teamendorsements      dashapp_teamendorsements[]
+    dashapp_teamowner             dashapp_teamowner[]
+    dashapp_territory             dashapp_territory[]
+    dashapp_tier                  dashapp_tier[]
+    django_admin_log              django_admin_log[]
+    dashapp_leagueinfo_viewership dashapp_leagueinfo_viewership[]
+    dashapp_team_viewership       dashapp_team_viewership[]
 }
 
 model auth_user_groups {
@@ -771,6 +773,24 @@ model dashapp_leagueendorsements {
     @@index([modified_by_id], map: "dashapp_leagueendorsements_modified_by_id_0364d90e")
 }
 
+model dashapp_leagueinfo_viewership {
+    id                   BigInt              @id @default(autoincrement())
+    created_date         DateTime?           @default(now()) @db.Timestamp(6)
+    created_by           String?             @db.VarChar(60)
+    modified_date        DateTime            @updatedAt @db.Timestamp(6)
+    modified_by_id       BigInt?
+    viewers_in_lakhs     Float
+    auth_user            auth_user?          @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo   dashapp_leagueinfo? @relation(fields: [dashapp_leagueinfoId], references: [id])
+    ott_partner_id       BigInt
+    dashapp_ottpartner   dashapp_ottpartner  @relation(fields: [ott_partner_id], references: [id])
+    dashapp_leagueinfoId BigInt?
+    year                 Int
+    reach_in_lakhs       Float
+
+    @@index([viewers_in_lakhs, reach_in_lakhs])
+}
+
 model dashapp_leagueinfo {
     id                                               BigInt                                             @id @default(autoincrement())
     created_date                                     DateTime?                                          @default(now()) @db.Timestamp(6)
@@ -792,6 +812,7 @@ model dashapp_leagueinfo {
     budget_range_from                                Float?
     budget_range_to                                  Float?
     youtube                                          String?                                            @db.VarChar(512)
+    dashapp_leagueinfo_viewership                    dashapp_leagueinfo_viewership[]
     dashapp_activation                               dashapp_activation[]
     dashapp_leaguecontact                            dashapp_leaguecontact[]
     dashapp_leagueendorsements                       dashapp_leagueendorsements[]
@@ -1035,14 +1056,15 @@ model dashapp_marketingplatform {
 }
 
 model dashapp_ottpartner {
-    id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @default(now()) @db.Timestamp(6)
-    created_by         String?              @db.VarChar(60)
-    modified_date      DateTime             @updatedAt @db.Timestamp(6)
-    modified_by_id     BigInt?
-    name               String               @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
-    dashapp_leagueinfo dashapp_leagueinfo[]
-    auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id                            BigInt                          @id @default(autoincrement())
+    created_date                  DateTime?                       @default(now()) @db.Timestamp(6)
+    created_by                    String?                         @db.VarChar(60)
+    modified_date                 DateTime                        @updatedAt @db.Timestamp(6)
+    modified_by_id                BigInt?
+    name                          String                          @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
+    dashapp_leagueinfo            dashapp_leagueinfo[]
+    auth_user                     auth_user?                      @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo_viewership dashapp_leagueinfo_viewership[]
 
     @@index([modified_by_id], map: "dashapp_ottpartner_modified_by_id_8e9a4877")
 }
@@ -1202,6 +1224,8 @@ model dashapp_team {
     website                                    String?                                      @db.VarChar(512)
     strategy_overview                          String?
     hq_city_id                                 BigInt?
+    ott_viewership_id                          BigInt?
+    tv_viewership_id                           BigInt?
     league_id                                  BigInt?
     modified_by_id                             BigInt?
     sport_id                                   BigInt?
@@ -1210,6 +1234,8 @@ model dashapp_team {
     youtube                                    String?                                      @db.VarChar(512)
     dashapp_activation                         dashapp_activation[]
     dashapp_sportsdealsummary                  dashapp_sportsdealsummary[]
+    dashapp_team_ott_viewership                dashapp_team_viewership?                     @relation(name: "ott_viewership", fields: [ott_viewership_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_tv_viewership                 dashapp_team_viewership?                     @relation(name: "tv_viewership", fields: [tv_viewership_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_hqcity                             dashapp_hqcity?                              @relation(fields: [hq_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_leagueinfo                         dashapp_leagueinfo?                          @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     auth_user                                  auth_user?                                   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1234,6 +1260,21 @@ model dashapp_team {
     @@index([league_id], map: "dashapp_team_league_id_30ad02cd")
     @@index([modified_by_id], map: "dashapp_team_modified_by_id_a08635ef")
     @@index([sport_id], map: "dashapp_team_sport_id_a02a07a2")
+}
+
+model dashapp_team_viewership {
+    id               BigInt         @id @default(autoincrement())
+    created_date     DateTime?      @default(now()) @db.Timestamp(6)
+    created_by       String?        @db.VarChar(60)
+    modified_date    DateTime       @updatedAt @db.Timestamp(6)
+    modified_by_id   BigInt?
+    viewers_in_lakhs Float
+    auth_user        auth_user?     @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_ott dashapp_team[] @relation(name: "ott_viewership")
+    dashapp_team_tv  dashapp_team[] @relation(name: "tv_viewership")
+    reach            Int
+
+    @@index([viewers_in_lakhs])
 }
 
 model dashapp_team_active_campaigns {
