@@ -1,0 +1,1511 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model auth_group {
+    id                     BigInt                   @id @default(autoincrement())
+    name                   String                   @unique(map: "sqlite_autoindex_auth_group_1") @db.VarChar(150)
+    auth_group_permissions auth_group_permissions[]
+    auth_user_groups       auth_user_groups[]
+}
+
+model auth_group_permissions {
+    id              BigInt          @id @default(autoincrement())
+    group_id        BigInt
+    permission_id   BigInt
+    auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+    @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+    @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+}
+
+model auth_permission {
+    id                         BigInt                       @id @default(autoincrement())
+    content_type_id            BigInt
+    codename                   String                       @db.VarChar(100)
+    name                       String                       @db.VarChar(255)
+    auth_group_permissions     auth_group_permissions[]
+    django_content_type        django_content_type          @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user_user_permissions auth_user_user_permissions[]
+
+    @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+    @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+}
+
+model auth_user {
+    id                         BigInt                       @id @default(autoincrement())
+    password                   String                       @db.VarChar(128)
+    last_login                 DateTime?                    @db.Timestamp(6)
+    is_superuser               Boolean
+    username                   String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    last_name                  String                       @db.VarChar(150)
+    email                      String                       @db.VarChar(254)
+    is_staff                   Boolean
+    is_active                  Boolean
+    date_joined                DateTime                     @db.Timestamp(6)
+    first_name                 String                       @db.VarChar(150)
+    auth_user_groups           auth_user_groups[]
+    auth_user_user_permissions auth_user_user_permissions[]
+    dashapp_activation         dashapp_activation[]
+    dashapp_activecampaigns    dashapp_activecampaigns[]
+    dashapp_age                dashapp_age[]
+    dashapp_agency             dashapp_agency[]
+    dashapp_assets             dashapp_assets[]
+    dashapp_athlete            dashapp_athlete[]
+    dashapp_athletecontact     dashapp_athletecontact[]
+    dashapp_brandcontact       dashapp_brandcontact[]
+    dashapp_brandendorsements  dashapp_brandendorsements[]
+    dashapp_broadcastpartner   dashapp_broadcastpartner[]
+    dashapp_category           dashapp_category[]
+    dashapp_companydata        dashapp_companydata[]
+    dashapp_gender             dashapp_gender[]
+    dashapp_hqcity             dashapp_hqcity[]
+    dashapp_income             dashapp_income[]
+    dashapp_keymarket          dashapp_keymarket[]
+    dashapp_league             dashapp_league[]
+    dashapp_leaguecontact      dashapp_leaguecontact[]
+    dashapp_leagueendorsements dashapp_leagueendorsements[]
+    dashapp_leagueinfo         dashapp_leagueinfo[]
+    dashapp_leagueowner        dashapp_leagueowner[]
+    dashapp_level              dashapp_level[]
+    dashapp_mainpersonality    dashapp_mainpersonality[]
+    dashapp_marketingplatform  dashapp_marketingplatform[]
+    dashapp_ottpartner         dashapp_ottpartner[]
+    dashapp_parentorg          dashapp_parentorg[]
+    dashapp_partner            dashapp_partner[]
+    dashapp_property           dashapp_property[]
+    dashapp_sport              dashapp_sport[]
+    dashapp_sportsdealsummary  dashapp_sportsdealsummary[]
+    dashapp_states             dashapp_states[]
+    dashapp_subpersonality     dashapp_subpersonality[]
+    dashapp_taglines           dashapp_taglines[]
+    dashapp_team               dashapp_team[]
+    dashapp_teamcontact        dashapp_teamcontact[]
+    dashapp_teamendorsements   dashapp_teamendorsements[]
+    dashapp_teamowner          dashapp_teamowner[]
+    dashapp_territory          dashapp_territory[]
+    dashapp_tier               dashapp_tier[]
+    django_admin_log           django_admin_log[]
+}
+
+model auth_user_groups {
+    id         BigInt     @id @default(autoincrement())
+    user_id    BigInt
+    group_id   BigInt
+    auth_group auth_group @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user  auth_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
+    @@index([group_id], map: "auth_user_groups_group_id_97559544")
+    @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+}
+
+model auth_user_user_permissions {
+    id              BigInt          @id @default(autoincrement())
+    user_id         BigInt
+    permission_id   BigInt
+    auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user       auth_user       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
+    @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
+    @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+}
+
+model dashapp_activation {
+    id                          BigInt                        @id @default(autoincrement())
+    created_date                DateTime?                     @default(now()) @db.Timestamp(6)
+    created_by                  String?                       @db.VarChar(60)
+    modified_date               DateTime                      @updatedAt @db.Timestamp(6)
+    year                        String?                       @db.VarChar(32)
+    brand_id                    BigInt?
+    league_id                   BigInt?
+    modified_by_id              BigInt?
+    team_id                     BigInt?
+    athlete_id                  BigInt?
+    name                        String?                       @db.VarChar(512)
+    dashapp_athlete             dashapp_athlete?              @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata         dashapp_companydata?          @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo          dashapp_leagueinfo?           @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                   auth_user?                    @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team                dashapp_team?                 @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_activation_assets   dashapp_activation_assets[]
+    dashapp_activation_market   dashapp_activation_market[]
+    dashapp_activation_property dashapp_activation_property[]
+    dashapp_activation_type     dashapp_activation_type[]
+
+    @@index([athlete_id], map: "dashapp_activation_athlete_id_5a5f74c2")
+    @@index([brand_id], map: "dashapp_activation_brand_id_26863c7c")
+    @@index([league_id], map: "dashapp_activation_league_id_6b397a79")
+    @@index([modified_by_id], map: "dashapp_activation_modified_by_id_52c3a3ed")
+    @@index([team_id], map: "dashapp_activation_team_id_f8d6b1c1")
+}
+
+model dashapp_activation_assets {
+    id                 BigInt             @id @default(autoincrement())
+    activation_id      BigInt
+    assets_id          BigInt
+    dashapp_activation dashapp_activation @relation(fields: [activation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_assets     dashapp_assets     @relation(fields: [assets_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([activation_id, assets_id], map: "dashapp_activation_assets_activation_id_assets_id_ff1b90e4_uniq")
+    @@index([activation_id], map: "dashapp_activation_assets_activation_id_5f5822b4")
+    @@index([assets_id], map: "dashapp_activation_assets_assets_id_89474167")
+}
+
+model dashapp_activation_market {
+    id                 BigInt             @id @default(autoincrement())
+    activation_id      BigInt
+    states_id          BigInt
+    dashapp_activation dashapp_activation @relation(fields: [activation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_states     dashapp_states     @relation(fields: [states_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([activation_id, states_id], map: "dashapp_activation_market_activation_id_states_id_183f6a91_uniq")
+    @@index([activation_id], map: "dashapp_activation_market_activation_id_96b431ca")
+    @@index([states_id], map: "dashapp_activation_market_states_id_c9a25e38")
+}
+
+model dashapp_activation_property {
+    id                 BigInt             @id @default(autoincrement())
+    activation_id      BigInt
+    property_id        BigInt
+    dashapp_activation dashapp_activation @relation(fields: [activation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_property   dashapp_property   @relation(fields: [property_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([activation_id, property_id], map: "dashapp_activation_property_activation_id_property_id_6abe3c06_")
+    @@index([activation_id], map: "dashapp_activation_property_activation_id_450c90ea")
+    @@index([property_id], map: "dashapp_activation_property_property_id_4ed0ce2c")
+}
+
+model dashapp_activation_type {
+    id                        BigInt                    @id @default(autoincrement())
+    activation_id             BigInt
+    marketingplatform_id      BigInt
+    dashapp_activation        dashapp_activation        @relation(fields: [activation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([activation_id, marketingplatform_id], map: "dashapp_activation_type_activation_id_marketingplatform_id_7158")
+    @@index([activation_id], map: "dashapp_activation_type_activation_id_d2793893")
+    @@index([marketingplatform_id], map: "dashapp_activation_type_marketingplatform_id_3e643438")
+}
+
+model dashapp_activecampaigns {
+    id                                   BigInt                                 @id @default(autoincrement())
+    created_date                         DateTime?                              @default(now()) @db.Timestamp(6)
+    created_by                           String?                                @db.VarChar(60)
+    modified_date                        DateTime                               @updatedAt @db.Timestamp(6)
+    modified_by_id                       BigInt?
+    name                                 String                                 @unique(map: "sqlite_autoindex_dashapp_activecampaigns_1") @db.VarChar(512)
+    auth_user                            auth_user?                             @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata_active_campaigns dashapp_companydata_active_campaigns[]
+    dashapp_leagueinfo_active_campaigns  dashapp_leagueinfo_active_campaigns[]
+    dashapp_team_active_campaigns        dashapp_team_active_campaigns[]
+
+    @@index([modified_by_id], map: "dashapp_activecampaigns_modified_by_id_930ea06a")
+}
+
+model dashapp_age {
+    id                         BigInt                       @id @default(autoincrement())
+    created_date               DateTime?                    @default(now()) @db.Timestamp(6)
+    modified_by_id             BigInt?
+    modified_date              DateTime                     @updatedAt @db.Timestamp(6)
+    created_by                 String?                      @db.VarChar(60)
+    age_range                  String                       @unique(map: "sqlite_autoindex_dashapp_age_1") @db.VarChar(20)
+    auth_user                  auth_user?                   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_athlete_target_age dashapp_athlete_target_age[]
+    dashapp_companydata_age    dashapp_companydata_age[]
+    dashapp_leagueinfo_age     dashapp_leagueinfo_age[]
+    dashapp_team_age           dashapp_team_age[]
+
+    @@index([modified_by_id], map: "dashapp_age_modified_by_id_67fff9b6")
+}
+
+model dashapp_agency {
+    id                  BigInt                @id @default(autoincrement())
+    created_date        DateTime?             @default(now()) @db.Timestamp(6)
+    created_by          String?               @db.VarChar(60)
+    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_by_id      BigInt?
+    name                String                @unique(map: "sqlite_autoindex_dashapp_agency_1") @db.VarChar(512)
+    auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_athlete     dashapp_athlete[]
+    dashapp_companydata dashapp_companydata[]
+
+    @@index([modified_by_id], map: "dashapp_agency_modified_by_id_c3305979")
+}
+
+model dashapp_assets {
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime?                   @default(now()) @db.Timestamp(6)
+    created_by                String?                     @db.VarChar(60)
+    modified_date             DateTime                    @updatedAt @db.Timestamp(6)
+    modified_by_id            BigInt?
+    name                      String                      @unique(map: "sqlite_autoindex_dashapp_assets_1") @db.VarChar(512)
+    dashapp_activation_assets dashapp_activation_assets[]
+    auth_user                 auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_assets_modified_by_id_3abba2bb")
+}
+
+model dashapp_athlete {
+    id                                    BigInt                                  @id @default(autoincrement())
+    created_date                          DateTime?                               @default(now()) @db.Timestamp(6)
+    created_by                            String?                                 @db.VarChar(60)
+    modified_date                         DateTime                                @updatedAt @db.Timestamp(6)
+    athlete_name                          String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
+    nationality                           String?                                 @db.VarChar(512)
+    instagram                             String?                                 @db.VarChar(512)
+    facebook                              String?                                 @db.VarChar(512)
+    twitter                               String?                                 @db.VarChar(512)
+    linkedin                              String?                                 @db.VarChar(512)
+    website                               String?                                 @db.VarChar(512)
+    agency_id                             BigInt?
+    modified_by_id                        BigInt?
+    sport_id                              BigInt?
+    budget_range_from                     Float?
+    budget_range_to                       Float?
+    youtube                               String?                                 @db.VarChar(512)
+    dashapp_activation                    dashapp_activation[]
+    dashapp_agency                        dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                             auth_user?                              @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sport                         dashapp_sport?                          @relation(fields: [sport_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_athlete_key_markets_primary   dashapp_athlete_key_markets_primary[]
+    dashapp_athlete_key_markets_secondary dashapp_athlete_key_markets_secondary[]
+    dashapp_athlete_key_markets_tertiary  dashapp_athlete_key_markets_tertiary[]
+    dashapp_athlete_personality_traits    dashapp_athlete_personality_traits[]
+    dashapp_athlete_target_age            dashapp_athlete_target_age[]
+    dashapp_athlete_target_gender         dashapp_athlete_target_gender[]
+    dashapp_athlete_target_income         dashapp_athlete_target_income[]
+    dashapp_athlete_tier                  dashapp_athlete_tier[]
+    dashapp_athletecontact                dashapp_athletecontact[]
+    dashapp_sportsdealsummary             dashapp_sportsdealsummary[]
+
+    @@index([agency_id], map: "dashapp_athlete_agency_id_50deebaa")
+    @@index([modified_by_id], map: "dashapp_athlete_modified_by_id_b04f0216")
+    @@index([sport_id], map: "dashapp_athlete_sport_id_13503f1a")
+}
+
+model dashapp_athlete_key_markets_primary {
+    id                BigInt            @id @default(autoincrement())
+    athlete_id        BigInt
+    keymarket_id      BigInt
+    dashapp_athlete   dashapp_athlete   @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_keymarket dashapp_keymarket @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, keymarket_id], map: "dashapp_athlete_key_markets_primary_athlete_id_keymarket_id_ebe")
+    @@index([athlete_id], map: "dashapp_athlete_key_markets_primary_athlete_id_39a1bc17")
+    @@index([keymarket_id], map: "dashapp_athlete_key_markets_primary_keymarket_id_77070ac9")
+}
+
+model dashapp_athlete_key_markets_secondary {
+    id                BigInt            @id @default(autoincrement())
+    athlete_id        BigInt
+    keymarket_id      BigInt
+    dashapp_athlete   dashapp_athlete   @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_keymarket dashapp_keymarket @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, keymarket_id], map: "dashapp_athlete_key_markets_secondary_athlete_id_keymarket_id_3")
+    @@index([athlete_id], map: "dashapp_athlete_key_markets_secondary_athlete_id_bb75669e")
+    @@index([keymarket_id], map: "dashapp_athlete_key_markets_secondary_keymarket_id_f7b8a65a")
+}
+
+model dashapp_athlete_key_markets_tertiary {
+    id              BigInt          @id @default(autoincrement())
+    athlete_id      BigInt
+    states_id       BigInt
+    dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_states  dashapp_states  @relation(fields: [states_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, states_id], map: "dashapp_athlete_key_markets_tertiary_athlete_id_states_id_5897b")
+    @@index([athlete_id], map: "dashapp_athlete_key_markets_tertiary_athlete_id_e8f9eed5")
+    @@index([states_id], map: "dashapp_athlete_key_markets_tertiary_states_id_c21ea1df")
+}
+
+model dashapp_athlete_personality_traits {
+    id                     BigInt                 @id @default(autoincrement())
+    athlete_id             BigInt
+    subpersonality_id      BigInt
+    dashapp_athlete        dashapp_athlete        @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, subpersonality_id], map: "dashapp_athlete_personality_traits_athlete_id_subpersonality_id")
+    @@index([athlete_id], map: "dashapp_athlete_personality_traits_athlete_id_d34493e8")
+    @@index([subpersonality_id], map: "dashapp_athlete_personality_traits_subpersonality_id_c37bb5f7")
+}
+
+model dashapp_athlete_target_age {
+    id              BigInt          @id @default(autoincrement())
+    athlete_id      BigInt
+    age_id          BigInt
+    dashapp_age     dashapp_age     @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, age_id], map: "dashapp_athlete_target_age_athlete_id_age_id_6741741d_uniq")
+    @@index([age_id], map: "dashapp_athlete_target_age_age_id_4d0557f9")
+    @@index([athlete_id], map: "dashapp_athlete_target_age_athlete_id_497ae0ee")
+}
+
+model dashapp_athlete_target_gender {
+    id              BigInt          @id @default(autoincrement())
+    athlete_id      BigInt
+    gender_id       BigInt
+    dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_gender  dashapp_gender  @relation(fields: [gender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, gender_id], map: "dashapp_athlete_target_gender_athlete_id_gender_id_0ac4a7ed_uni")
+    @@index([athlete_id], map: "dashapp_athlete_target_gender_athlete_id_60bdaf8a")
+    @@index([gender_id], map: "dashapp_athlete_target_gender_gender_id_59eda92c")
+}
+
+model dashapp_athlete_target_income {
+    id              BigInt          @id @default(autoincrement())
+    athlete_id      BigInt
+    income_id       BigInt
+    dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_income  dashapp_income  @relation(fields: [income_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, income_id], map: "dashapp_athlete_target_income_athlete_id_income_id_2bdbc731_uni")
+    @@index([athlete_id], map: "dashapp_athlete_target_income_athlete_id_45c8a20b")
+    @@index([income_id], map: "dashapp_athlete_target_income_income_id_ba5891e2")
+}
+
+model dashapp_athlete_tier {
+    id              BigInt          @id @default(autoincrement())
+    athlete_id      BigInt
+    tier_id         BigInt
+    dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier    dashapp_tier    @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([athlete_id, tier_id], map: "dashapp_athlete_tier_athlete_id_tier_id_d69bb0ef_uniq")
+    @@index([athlete_id], map: "dashapp_athlete_tier_athlete_id_b973a60b")
+    @@index([tier_id], map: "dashapp_athlete_tier_tier_id_9c930277")
+}
+
+model dashapp_athletecontact {
+    id                  BigInt          @id @default(autoincrement())
+    created_date        DateTime?       @default(now()) @db.Timestamp(6)
+    created_by          String?         @db.VarChar(60)
+    modified_date       DateTime        @updatedAt @db.Timestamp(6)
+    contact_name        String          @db.VarChar(512)
+    contact_designation String?         @db.VarChar(512)
+    contact_email       String?         @db.VarChar(512)
+    contact_linkedin    String?         @db.VarChar(512)
+    athlete_id          BigInt
+    modified_by_id      BigInt?
+    contact_no          String?         @db.VarChar(512)
+    dashapp_athlete     dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?      @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([athlete_id], map: "dashapp_athletecontact_athlete_id_c485301c")
+    @@index([modified_by_id], map: "dashapp_athletecontact_modified_by_id_afaebd01")
+}
+
+model dashapp_brandcontact {
+    id                  BigInt              @id @default(autoincrement())
+    created_date        DateTime?           @default(now()) @db.Timestamp(6)
+    created_by          String?             @db.VarChar(60)
+    modified_date       DateTime            @updatedAt @db.Timestamp(6)
+    contact_name        String              @db.VarChar(512)
+    contact_designation String?             @db.VarChar(512)
+    contact_email       String?             @db.VarChar(512)
+    contact_linkedin    String?             @db.VarChar(512)
+    brand_id            BigInt
+    modified_by_id      BigInt?
+    contact_no          String?             @db.VarChar(512)
+    dashapp_companydata dashapp_companydata @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?          @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([brand_id], map: "dashapp_brandcontact_brand_id_d4afec00")
+    @@index([modified_by_id], map: "dashapp_brandcontact_modified_by_id_dc0cf81f")
+}
+
+model dashapp_brandendorsements {
+    id                  BigInt              @id @default(autoincrement())
+    created_date        DateTime?           @default(now()) @db.Timestamp(6)
+    created_by          String?             @db.VarChar(60)
+    modified_date       DateTime            @updatedAt @db.Timestamp(6)
+    active              Boolean
+    brand_id            BigInt
+    modified_by_id      BigInt?
+    name                String              @unique(map: "sqlite_autoindex_dashapp_brandendorsements_1") @db.VarChar(512)
+    dashapp_companydata dashapp_companydata @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?          @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([brand_id], map: "dashapp_brandendorsements_brand_id_f296ce5e")
+    @@index([modified_by_id], map: "dashapp_brandendorsements_modified_by_id_6736e850")
+}
+
+model dashapp_broadcastpartner {
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime?            @default(now()) @db.Timestamp(6)
+    created_by         String?              @db.VarChar(60)
+    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_by_id     BigInt?
+    name               String               @unique(map: "sqlite_autoindex_dashapp_broadcastpartner_1") @db.VarChar(512)
+    auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo[]
+
+    @@index([modified_by_id], map: "dashapp_broadcastpartner_modified_by_id_55432538")
+}
+
+model dashapp_category {
+    id                  BigInt                @id @default(autoincrement())
+    created_date        DateTime?             @default(now()) @db.Timestamp(6)
+    created_by          String?               @db.VarChar(60)
+    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_by_id      BigInt?
+    name                String                @unique(map: "sqlite_autoindex_dashapp_category_1") @db.VarChar(512)
+    auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata dashapp_companydata[]
+
+    @@index([modified_by_id], map: "dashapp_category_modified_by_id_b813aa82")
+}
+
+model dashapp_companydata {
+    id                                                BigInt                                              @id @default(autoincrement())
+    created_date                                      DateTime?                                           @default(now()) @db.Timestamp(6)
+    created_by                                        String?                                             @db.VarChar(60)
+    modified_date                                     DateTime                                            @updatedAt @db.Timestamp(6)
+    company_name                                      String                                              @unique(map: "sqlite_autoindex_dashapp_companydata_1") @db.VarChar(512)
+    hq_state                                          String?                                             @db.VarChar(50)
+    instagram                                         String?                                             @db.VarChar(512)
+    facebook                                          String?                                             @db.VarChar(512)
+    twitter                                           String?                                             @db.VarChar(512)
+    linkedin                                          String?                                             @db.VarChar(512)
+    website                                           String?                                             @db.VarChar(512)
+    strategy_overview                                 String?
+    agency_id                                         BigInt?
+    category_id                                       BigInt?
+    hq_city_id                                        BigInt?
+    modified_by_id                                    BigInt?
+    parent_organization_id                            BigInt?
+    youtube                                           String?                                             @db.VarChar(512)
+    dashapp_activation                                dashapp_activation[]
+    dashapp_brandcontact                              dashapp_brandcontact[]
+    dashapp_brandendorsements                         dashapp_brandendorsements[]
+    dashapp_agency                                    dashapp_agency?                                     @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_category                                  dashapp_category?                                   @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_hqcity                                    dashapp_hqcity?                                     @relation(fields: [hq_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                                         auth_user?                                          @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_parentorg                                 dashapp_parentorg?                                  @relation(fields: [parent_organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata_active_campaigns              dashapp_companydata_active_campaigns[]
+    dashapp_companydata_age                           dashapp_companydata_age[]
+    dashapp_companydata_gender                        dashapp_companydata_gender[]
+    dashapp_companydata_income                        dashapp_companydata_income[]
+    dashapp_companydata_key_markets_primary           dashapp_companydata_key_markets_primary[]
+    dashapp_companydata_key_markets_secondary         dashapp_companydata_key_markets_secondary[]
+    dashapp_companydata_key_markets_tertiary          dashapp_companydata_key_markets_tertiary[]
+    dashapp_companydata_marketing_platforms_primary   dashapp_companydata_marketing_platforms_primary[]
+    dashapp_companydata_marketing_platforms_secondary dashapp_companydata_marketing_platforms_secondary[]
+    dashapp_companydata_personality_traits            dashapp_companydata_personality_traits[]
+    dashapp_companydata_taglines                      dashapp_companydata_taglines[]
+    dashapp_companydata_tier                          dashapp_companydata_tier[]
+    dashapp_sportsdealsummary                         dashapp_sportsdealsummary[]
+
+    @@index([agency_id], map: "dashapp_companydata_agency_id_095c43b0")
+    @@index([category_id], map: "dashapp_companydata_category_id_84d9e9fb")
+    @@index([hq_city_id], map: "dashapp_companydata_hq_city_id_f599445d")
+    @@index([modified_by_id], map: "dashapp_companydata_modified_by_id_91329cae")
+    @@index([parent_organization_id], map: "dashapp_companydata_parent_organization_id_c6c032d1")
+}
+
+model dashapp_companydata_active_campaigns {
+    id                      BigInt                  @id @default(autoincrement())
+    companydata_id          BigInt
+    activecampaigns_id      BigInt
+    dashapp_activecampaigns dashapp_activecampaigns @relation(fields: [activecampaigns_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata     dashapp_companydata     @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, activecampaigns_id], map: "dashapp_companydata_active_campaigns_companydata_id_activecampa")
+    @@index([activecampaigns_id], map: "dashapp_companydata_active_campaigns_activecampaigns_id_a64ecbc")
+    @@index([companydata_id], map: "dashapp_companydata_active_campaigns_companydata_id_ae7b779c")
+}
+
+model dashapp_companydata_age {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    age_id              BigInt
+    dashapp_age         dashapp_age         @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, age_id], map: "dashapp_companydata_age_companydata_id_age_id_bc1a8f03_uniq")
+    @@index([age_id], map: "dashapp_companydata_age_age_id_41fb647f")
+    @@index([companydata_id], map: "dashapp_companydata_age_companydata_id_64cad252")
+}
+
+model dashapp_companydata_gender {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    gender_id           BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_gender      dashapp_gender      @relation(fields: [gender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, gender_id], map: "dashapp_companydata_gender_companydata_id_gender_id_715dcfe1_un")
+    @@index([companydata_id], map: "dashapp_companydata_gender_companydata_id_6ebe168f")
+    @@index([gender_id], map: "dashapp_companydata_gender_gender_id_f5eed386")
+}
+
+model dashapp_companydata_income {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    income_id           BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_income      dashapp_income      @relation(fields: [income_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, income_id], map: "dashapp_companydata_income_companydata_id_income_id_7777bde5_un")
+    @@index([companydata_id], map: "dashapp_companydata_income_companydata_id_87e1704b")
+    @@index([income_id], map: "dashapp_companydata_income_income_id_d24f4e03")
+}
+
+model dashapp_companydata_key_markets_primary {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    keymarket_id        BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_keymarket   dashapp_keymarket   @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, keymarket_id], map: "dashapp_companydata_key_markets_primary_companydata_id_keymarke")
+    @@index([companydata_id], map: "dashapp_companydata_key_markets_primary_companydata_id_5fd95e99")
+    @@index([keymarket_id], map: "dashapp_companydata_key_markets_primary_keymarket_id_7756c025")
+}
+
+model dashapp_companydata_key_markets_secondary {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    keymarket_id        BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_keymarket   dashapp_keymarket   @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, keymarket_id], map: "dashapp_companydata_key_markets_secondary_companydata_id_keymar")
+    @@index([companydata_id], map: "dashapp_companydata_key_markets_secondary_companydata_id_736cfc")
+    @@index([keymarket_id], map: "dashapp_companydata_key_markets_secondary_keymarket_id_d2d6e9b5")
+}
+
+model dashapp_companydata_key_markets_tertiary {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    states_id           BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_states      dashapp_states      @relation(fields: [states_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, states_id], map: "dashapp_companydata_key_markets_tertiary_companydata_id_states_")
+    @@index([companydata_id], map: "dashapp_companydata_key_markets_tertiary_companydata_id_484aaa6")
+    @@index([states_id], map: "dashapp_companydata_key_markets_tertiary_states_id_dcb29fc6")
+}
+
+model dashapp_companydata_marketing_platforms_primary {
+    id                        BigInt                    @id @default(autoincrement())
+    companydata_id            BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_companydata_marketing_platfor_marketingplatform_id_fkey")
+    dashapp_companydata       dashapp_companydata       @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_companydata_marketing_platforms_pri_companydata_id_fkey")
+
+    @@index([companydata_id], map: "dashapp_companydata_marketing_platforms_primary_companydata_id_")
+    @@index([marketingplatform_id], map: "dashapp_companydata_marketing_platforms_primary_marketingplatfo")
+}
+
+model dashapp_companydata_marketing_platforms_secondary {
+    id                        BigInt                    @id @default(autoincrement())
+    companydata_id            BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_companydata_marketing_platfo_marketingplatform_id_fkey1")
+    dashapp_companydata       dashapp_companydata       @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_companydata_marketing_platforms_sec_companydata_id_fkey")
+
+    @@index([companydata_id], map: "dashapp_companydata_marketing_platforms_secondary_companydata_i")
+    @@index([marketingplatform_id], map: "dashapp_companydata_marketing_platforms_secondary_marketingplat")
+}
+
+model dashapp_companydata_personality_traits {
+    id                     BigInt                 @id @default(autoincrement())
+    companydata_id         BigInt
+    subpersonality_id      BigInt
+    dashapp_companydata    dashapp_companydata    @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, subpersonality_id], map: "dashapp_companydata_personality_traits_companydata_id_subperson")
+    @@index([companydata_id], map: "dashapp_companydata_personality_traits_companydata_id_7c3c6376")
+    @@index([subpersonality_id], map: "dashapp_companydata_personality_traits_subpersonality_id_38b67e")
+}
+
+model dashapp_companydata_taglines {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    taglines_id         BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_taglines    dashapp_taglines    @relation(fields: [taglines_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, taglines_id], map: "dashapp_companydata_taglines_companydata_id_taglines_id_5fce5fc")
+    @@index([companydata_id], map: "dashapp_companydata_taglines_companydata_id_b85e58cf")
+    @@index([taglines_id], map: "dashapp_companydata_taglines_taglines_id_ceab6876")
+}
+
+model dashapp_companydata_tier {
+    id                  BigInt              @id @default(autoincrement())
+    companydata_id      BigInt
+    tier_id             BigInt
+    dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier        dashapp_tier        @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([companydata_id, tier_id], map: "dashapp_companydata_tier_companydata_id_tier_id_bb150350_uniq")
+    @@index([companydata_id], map: "dashapp_companydata_tier_companydata_id_fb5ce29c")
+    @@index([tier_id], map: "dashapp_companydata_tier_tier_id_d1edd952")
+}
+
+model dashapp_gender {
+    id                            BigInt                          @id @default(autoincrement())
+    created_date                  DateTime?                       @default(now()) @db.Timestamp(6)
+    modified_by_id                BigInt?
+    modified_date                 DateTime                        @updatedAt @db.Timestamp(6)
+    created_by                    String?                         @db.VarChar(60)
+    gender_is                     String                          @unique(map: "sqlite_autoindex_dashapp_gender_1") @db.VarChar(20)
+    dashapp_athlete_target_gender dashapp_athlete_target_gender[]
+    dashapp_companydata_gender    dashapp_companydata_gender[]
+    auth_user                     auth_user?                      @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo_gender     dashapp_leagueinfo_gender[]
+    dashapp_team_gender           dashapp_team_gender[]
+
+    @@index([modified_by_id], map: "dashapp_gender_modified_by_id_c30eb1f4")
+}
+
+model dashapp_hqcity {
+    id                  BigInt                @id @default(autoincrement())
+    created_date        DateTime?             @default(now()) @db.Timestamp(6)
+    created_by          String?               @db.VarChar(60)
+    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_by_id      BigInt?
+    name                String                @unique(map: "sqlite_autoindex_dashapp_hqcity_1") @db.VarChar(512)
+    dashapp_companydata dashapp_companydata[]
+    auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team        dashapp_team[]
+
+    @@index([modified_by_id], map: "dashapp_hqcity_modified_by_id_ba6f7792")
+}
+
+model dashapp_income {
+    id                            BigInt                          @id @default(autoincrement())
+    created_date                  DateTime?                       @default(now()) @db.Timestamp(6)
+    modified_by_id                BigInt?
+    modified_date                 DateTime                        @updatedAt @db.Timestamp(6)
+    created_by                    String?                         @db.VarChar(60)
+    income_class                  String                          @unique(map: "sqlite_autoindex_dashapp_income_1") @db.VarChar(20)
+    dashapp_athlete_target_income dashapp_athlete_target_income[]
+    dashapp_companydata_income    dashapp_companydata_income[]
+    auth_user                     auth_user?                      @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo_income     dashapp_leagueinfo_income[]
+    dashapp_team_income           dashapp_team_income[]
+
+    @@index([modified_by_id], map: "dashapp_income_modified_by_id_a4631d6c")
+}
+
+model dashapp_keymarket {
+    id                                        BigInt                                      @id @default(autoincrement())
+    created_date                              DateTime?                                   @default(now()) @db.Timestamp(6)
+    modified_by_id                            BigInt?
+    modified_date                             DateTime                                    @updatedAt @db.Timestamp(6)
+    created_by                                String?                                     @db.VarChar(60)
+    zone                                      String                                      @unique(map: "sqlite_autoindex_dashapp_keymarket_1") @db.VarChar(20)
+    dashapp_athlete_key_markets_primary       dashapp_athlete_key_markets_primary[]
+    dashapp_athlete_key_markets_secondary     dashapp_athlete_key_markets_secondary[]
+    dashapp_companydata_key_markets_primary   dashapp_companydata_key_markets_primary[]
+    dashapp_companydata_key_markets_secondary dashapp_companydata_key_markets_secondary[]
+    auth_user                                 auth_user?                                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo_key_markets_primary    dashapp_leagueinfo_key_markets_primary[]
+    dashapp_leagueinfo_key_markets_secondary  dashapp_leagueinfo_key_markets_secondary[]
+    dashapp_team_key_markets_primary          dashapp_team_key_markets_primary[]
+    dashapp_team_key_markets_secondary        dashapp_team_key_markets_secondary[]
+
+    @@index([modified_by_id], map: "dashapp_keymarket_modified_by_id_3fd84f5b")
+}
+
+model dashapp_league {
+    id             BigInt     @id @default(autoincrement())
+    created_date   DateTime?  @default(now()) @db.Timestamp(6)
+    created_by     String?    @db.VarChar(60)
+    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_by_id BigInt?
+    name           String     @unique(map: "sqlite_autoindex_dashapp_league_1") @db.VarChar(512)
+    auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_league_modified_by_id_e0e124d6")
+}
+
+model dashapp_leaguecontact {
+    id                  BigInt             @id @default(autoincrement())
+    created_date        DateTime?          @default(now()) @db.Timestamp(6)
+    created_by          String?            @db.VarChar(60)
+    modified_date       DateTime           @updatedAt @db.Timestamp(6)
+    contact_name        String             @db.VarChar(512)
+    contact_designation String?            @db.VarChar(512)
+    contact_email       String?            @db.VarChar(512)
+    contact_linkedin    String?            @db.VarChar(512)
+    league_id           BigInt
+    modified_by_id      BigInt?
+    contact_no          String?            @db.VarChar(512)
+    dashapp_leagueinfo  dashapp_leagueinfo @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?         @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([league_id], map: "dashapp_leaguecontact_league_id_ee666bcd")
+    @@index([modified_by_id], map: "dashapp_leaguecontact_modified_by_id_d0d16056")
+}
+
+model dashapp_leagueendorsements {
+    id                 BigInt             @id @default(autoincrement())
+    created_date       DateTime?          @default(now()) @db.Timestamp(6)
+    created_by         String?            @db.VarChar(60)
+    modified_date      DateTime           @updatedAt @db.Timestamp(6)
+    active             Boolean
+    league_id          BigInt
+    modified_by_id     BigInt?
+    name               String             @unique(map: "sqlite_autoindex_dashapp_leagueendorsements_1") @db.VarChar(512)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user          auth_user?         @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([league_id], map: "dashapp_leagueendorsements_league_id_246ed7cc")
+    @@index([modified_by_id], map: "dashapp_leagueendorsements_modified_by_id_0364d90e")
+}
+
+model dashapp_leagueinfo {
+    id                                               BigInt                                             @id @default(autoincrement())
+    created_date                                     DateTime?                                          @default(now()) @db.Timestamp(6)
+    created_by                                       String?                                            @db.VarChar(60)
+    modified_date                                    DateTime                                           @updatedAt @db.Timestamp(6)
+    year_of_inception                                String?                                            @db.VarChar(512)
+    format                                           String?                                            @db.VarChar(32)
+    instagram                                        String?                                            @db.VarChar(512)
+    facebook                                         String?                                            @db.VarChar(512)
+    twitter                                          String?                                            @db.VarChar(512)
+    linkedin                                         String?                                            @db.VarChar(512)
+    website                                          String?                                            @db.VarChar(512)
+    strategy_overview                                String?
+    brodcast_partner_id                              BigInt?
+    modified_by_id                                   BigInt?
+    ott_partner_id                                   BigInt?
+    sport_id                                         BigInt?
+    property_name                                    String                                             @unique(map: "sqlite_autoindex_dashapp_leagueinfo_1") @db.VarChar(512)
+    budget_range_from                                Float?
+    budget_range_to                                  Float?
+    youtube                                          String?                                            @db.VarChar(512)
+    dashapp_activation                               dashapp_activation[]
+    dashapp_leaguecontact                            dashapp_leaguecontact[]
+    dashapp_leagueendorsements                       dashapp_leagueendorsements[]
+    dashapp_broadcastpartner                         dashapp_broadcastpartner?                          @relation(fields: [brodcast_partner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                                        auth_user?                                         @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_ottpartner                               dashapp_ottpartner?                                @relation(fields: [ott_partner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sport                                    dashapp_sport?                                     @relation(fields: [sport_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo_active_campaigns              dashapp_leagueinfo_active_campaigns[]
+    dashapp_leagueinfo_age                           dashapp_leagueinfo_age[]
+    dashapp_leagueinfo_gender                        dashapp_leagueinfo_gender[]
+    dashapp_leagueinfo_income                        dashapp_leagueinfo_income[]
+    dashapp_leagueinfo_key_markets_primary           dashapp_leagueinfo_key_markets_primary[]
+    dashapp_leagueinfo_key_markets_secondary         dashapp_leagueinfo_key_markets_secondary[]
+    dashapp_leagueinfo_key_markets_tertiary          dashapp_leagueinfo_key_markets_tertiary[]
+    dashapp_leagueinfo_marketing_platforms_primary   dashapp_leagueinfo_marketing_platforms_primary[]
+    dashapp_leagueinfo_marketing_platforms_secondary dashapp_leagueinfo_marketing_platforms_secondary[]
+    dashapp_leagueinfo_owner                         dashapp_leagueinfo_owner[]
+    dashapp_leagueinfo_personality_traits            dashapp_leagueinfo_personality_traits[]
+    dashapp_leagueinfo_taglines                      dashapp_leagueinfo_taglines[]
+    dashapp_leagueinfo_tier                          dashapp_leagueinfo_tier[]
+    dashapp_sportsdealsummary                        dashapp_sportsdealsummary[]
+    dashapp_team                                     dashapp_team[]
+
+    @@index([brodcast_partner_id], map: "dashapp_leagueinfo_brodcast_partner_id_40f27555")
+    @@index([modified_by_id], map: "dashapp_leagueinfo_modified_by_id_d356e033")
+    @@index([ott_partner_id], map: "dashapp_leagueinfo_ott_partner_id_8e1cbaf6")
+    @@index([sport_id], map: "dashapp_leagueinfo_sport_id_8e48e5cd")
+}
+
+model dashapp_leagueinfo_active_campaigns {
+    id                      BigInt                  @id @default(autoincrement())
+    leagueinfo_id           BigInt
+    activecampaigns_id      BigInt
+    dashapp_activecampaigns dashapp_activecampaigns @relation(fields: [activecampaigns_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo      dashapp_leagueinfo      @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, activecampaigns_id], map: "dashapp_leagueinfo_active_campaigns_leagueinfo_id_activecampaig")
+    @@index([activecampaigns_id], map: "dashapp_leagueinfo_active_campaigns_activecampaigns_id_f6081957")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_active_campaigns_leagueinfo_id_cfd03ed5")
+}
+
+model dashapp_leagueinfo_age {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    age_id             BigInt
+    dashapp_age        dashapp_age        @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, age_id], map: "dashapp_leagueinfo_age_leagueinfo_id_age_id_0cf79630_uniq")
+    @@index([age_id], map: "dashapp_leagueinfo_age_age_id_29563f08")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_age_leagueinfo_id_6fa66a9a")
+}
+
+model dashapp_leagueinfo_gender {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    gender_id          BigInt
+    dashapp_gender     dashapp_gender     @relation(fields: [gender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, gender_id], map: "dashapp_leagueinfo_gender_leagueinfo_id_gender_id_117785c3_uniq")
+    @@index([gender_id], map: "dashapp_leagueinfo_gender_gender_id_1d1defcd")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_gender_leagueinfo_id_0aa33e31")
+}
+
+model dashapp_leagueinfo_income {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    income_id          BigInt
+    dashapp_income     dashapp_income     @relation(fields: [income_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, income_id], map: "dashapp_leagueinfo_income_leagueinfo_id_income_id_b79c2469_uniq")
+    @@index([income_id], map: "dashapp_leagueinfo_income_income_id_96258983")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_income_leagueinfo_id_71484152")
+}
+
+model dashapp_leagueinfo_key_markets_primary {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    keymarket_id       BigInt
+    dashapp_keymarket  dashapp_keymarket  @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, keymarket_id], map: "dashapp_leagueinfo_key_markets_primary_leagueinfo_id_keymarket_")
+    @@index([keymarket_id], map: "dashapp_leagueinfo_key_markets_primary_keymarket_id_b6ff4ccd")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_key_markets_primary_leagueinfo_id_d1225e78")
+}
+
+model dashapp_leagueinfo_key_markets_secondary {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    keymarket_id       BigInt
+    dashapp_keymarket  dashapp_keymarket  @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, keymarket_id], map: "dashapp_leagueinfo_key_markets_secondary_leagueinfo_id_keymarke")
+    @@index([keymarket_id], map: "dashapp_leagueinfo_key_markets_secondary_keymarket_id_240da023")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_key_markets_secondary_leagueinfo_id_58ffc735")
+}
+
+model dashapp_leagueinfo_key_markets_tertiary {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    states_id          BigInt
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_states     dashapp_states     @relation(fields: [states_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, states_id], map: "dashapp_leagueinfo_key_markets_tertiary_leagueinfo_id_states_id")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_key_markets_tertiary_leagueinfo_id_0b4e2add")
+    @@index([states_id], map: "dashapp_leagueinfo_key_markets_tertiary_states_id_151c6068")
+}
+
+model dashapp_leagueinfo_marketing_platforms_primary {
+    id                        BigInt                    @id @default(autoincrement())
+    leagueinfo_id             BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_leagueinfo_marketing_platform_marketingplatform_id_fkey")
+    dashapp_leagueinfo        dashapp_leagueinfo        @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_leagueinfo_marketing_platforms_prima_leagueinfo_id_fkey")
+
+    @@unique([leagueinfo_id, marketingplatform_id], map: "dashapp_leagueinfo_marketing_platforms_primary_leagueinfo_id_ma")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_marketing_platforms_primary_leagueinfo_id_7c")
+    @@index([marketingplatform_id], map: "dashapp_leagueinfo_marketing_platforms_primary_marketingplatfor")
+}
+
+model dashapp_leagueinfo_marketing_platforms_secondary {
+    id                        BigInt                    @id @default(autoincrement())
+    leagueinfo_id             BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_leagueinfo_marketing_platfor_marketingplatform_id_fkey1")
+    dashapp_leagueinfo        dashapp_leagueinfo        @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_leagueinfo_marketing_platforms_secon_leagueinfo_id_fkey")
+
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_marketing_platforms_secondary_leagueinfo_id_")
+    @@index([marketingplatform_id], map: "dashapp_leagueinfo_marketing_platforms_secondary_marketingplatf")
+}
+
+model dashapp_leagueinfo_owner {
+    id                  BigInt              @id @default(autoincrement())
+    leagueinfo_id       BigInt
+    leagueowner_id      BigInt
+    dashapp_leagueinfo  dashapp_leagueinfo  @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueowner dashapp_leagueowner @relation(fields: [leagueowner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, leagueowner_id], map: "dashapp_leagueinfo_owner_leagueinfo_id_leagueowner_id_fbe00462_")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_owner_leagueinfo_id_dee74541")
+    @@index([leagueowner_id], map: "dashapp_leagueinfo_owner_leagueowner_id_2554f991")
+}
+
+model dashapp_leagueinfo_personality_traits {
+    id                     BigInt                 @id @default(autoincrement())
+    leagueinfo_id          BigInt
+    subpersonality_id      BigInt
+    dashapp_leagueinfo     dashapp_leagueinfo     @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, subpersonality_id], map: "dashapp_leagueinfo_personality_traits_leagueinfo_id_subpersonal")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_personality_traits_leagueinfo_id_c36afc9e")
+    @@index([subpersonality_id], map: "dashapp_leagueinfo_personality_traits_subpersonality_id_1587eaa")
+}
+
+model dashapp_leagueinfo_taglines {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    taglines_id        BigInt
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_taglines   dashapp_taglines   @relation(fields: [taglines_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, taglines_id], map: "dashapp_leagueinfo_taglines_leagueinfo_id_taglines_id_0f20f5ca_")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_taglines_leagueinfo_id_934f1967")
+    @@index([taglines_id], map: "dashapp_leagueinfo_taglines_taglines_id_edd75c38")
+}
+
+model dashapp_leagueinfo_tier {
+    id                 BigInt             @id @default(autoincrement())
+    leagueinfo_id      BigInt
+    tier_id            BigInt
+    dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier       dashapp_tier       @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([leagueinfo_id, tier_id], map: "dashapp_leagueinfo_tier_leagueinfo_id_tier_id_f1cc24bc_uniq")
+    @@index([leagueinfo_id], map: "dashapp_leagueinfo_tier_leagueinfo_id_0e1fa959")
+    @@index([tier_id], map: "dashapp_leagueinfo_tier_tier_id_fed81805")
+}
+
+model dashapp_leagueowner {
+    id                       BigInt                     @id @default(autoincrement())
+    created_date             DateTime?                  @default(now()) @db.Timestamp(6)
+    created_by               String?                    @db.VarChar(60)
+    modified_date            DateTime                   @updatedAt @db.Timestamp(6)
+    modified_by_id           BigInt?
+    name                     String                     @unique(map: "sqlite_autoindex_dashapp_leagueowner_1") @db.VarChar(512)
+    dashapp_leagueinfo_owner dashapp_leagueinfo_owner[]
+    auth_user                auth_user?                 @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_leagueowner_modified_by_id_e8fe8f6e")
+}
+
+model dashapp_level {
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime?                   @default(now()) @db.Timestamp(6)
+    created_by                String?                     @db.VarChar(60)
+    modified_date             DateTime                    @updatedAt @db.Timestamp(6)
+    modified_by_id            BigInt?
+    name                      String                      @unique(map: "sqlite_autoindex_dashapp_level_1") @db.VarChar(512)
+    auth_user                 auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sportsdealsummary dashapp_sportsdealsummary[]
+
+    @@index([modified_by_id], map: "dashapp_level_modified_by_id_76ee0cb5")
+}
+
+model dashapp_mainpersonality {
+    id                     BigInt                   @id @default(autoincrement())
+    created_date           DateTime?                @default(now()) @db.Timestamp(6)
+    created_by             String?                  @db.VarChar(60)
+    modified_date          DateTime                 @updatedAt @db.Timestamp(6)
+    name                   String                   @db.VarChar(60)
+    modified_by_id         BigInt?
+    auth_user              auth_user?               @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality[]
+
+    @@index([modified_by_id], map: "dashapp_mainpersonality_modified_by_id_431bf4a5")
+}
+
+model dashapp_marketingplatform {
+    id                                                BigInt                                              @id @default(autoincrement())
+    created_date                                      DateTime?                                           @default(now()) @db.Timestamp(6)
+    modified_by_id                                    BigInt?
+    modified_date                                     DateTime                                            @updatedAt @db.Timestamp(6)
+    created_by                                        String?                                             @db.VarChar(60)
+    platform                                          String                                              @unique(map: "sqlite_autoindex_dashapp_marketingplatform_1") @db.VarChar(20)
+    dashapp_activation_type                           dashapp_activation_type[]
+    dashapp_companydata_marketing_platforms_primary   dashapp_companydata_marketing_platforms_primary[]
+    dashapp_companydata_marketing_platforms_secondary dashapp_companydata_marketing_platforms_secondary[]
+    dashapp_leagueinfo_marketing_platforms_primary    dashapp_leagueinfo_marketing_platforms_primary[]
+    dashapp_leagueinfo_marketing_platforms_secondary  dashapp_leagueinfo_marketing_platforms_secondary[]
+    auth_user                                         auth_user?                                          @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_marketing_platforms_primary          dashapp_team_marketing_platforms_primary[]
+    dashapp_team_marketing_platforms_secondary        dashapp_team_marketing_platforms_secondary[]
+
+    @@index([modified_by_id], map: "dashapp_marketingplatform_modified_by_id_6236b8b5")
+}
+
+model dashapp_ottpartner {
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime?            @default(now()) @db.Timestamp(6)
+    created_by         String?              @db.VarChar(60)
+    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_by_id     BigInt?
+    name               String               @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
+    dashapp_leagueinfo dashapp_leagueinfo[]
+    auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_ottpartner_modified_by_id_8e9a4877")
+}
+
+model dashapp_parentorg {
+    id                  BigInt                @id @default(autoincrement())
+    created_date        DateTime?             @default(now()) @db.Timestamp(6)
+    created_by          String?               @db.VarChar(60)
+    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_by_id      BigInt?
+    name                String                @unique(map: "sqlite_autoindex_dashapp_parentorg_1") @db.VarChar(512)
+    dashapp_companydata dashapp_companydata[]
+    auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_parentorg_modified_by_id_6ffc2f7f")
+}
+
+model dashapp_partner {
+    id             BigInt     @id @default(autoincrement())
+    created_date   DateTime?  @default(now()) @db.Timestamp(6)
+    created_by     String?    @db.VarChar(60)
+    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_by_id BigInt?
+    name           String     @unique(map: "sqlite_autoindex_dashapp_partner_1") @db.VarChar(512)
+    auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_partner_modified_by_id_56622e99")
+}
+
+model dashapp_property {
+    id                          BigInt                        @id @default(autoincrement())
+    created_date                DateTime?                     @default(now()) @db.Timestamp(6)
+    created_by                  String?                       @db.VarChar(60)
+    modified_date               DateTime                      @updatedAt @db.Timestamp(6)
+    modified_by_id              BigInt?
+    name                        String                        @unique(map: "sqlite_autoindex_dashapp_property_1") @db.VarChar(512)
+    dashapp_activation_property dashapp_activation_property[]
+    auth_user                   auth_user?                    @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_property_modified_by_id_159f6568")
+}
+
+model dashapp_sport {
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime?            @default(now()) @db.Timestamp(6)
+    created_by         String?              @db.VarChar(60)
+    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_by_id     BigInt?
+    name               String               @unique(map: "sqlite_autoindex_dashapp_sport_1") @db.VarChar(512)
+    dashapp_athlete    dashapp_athlete[]
+    dashapp_leagueinfo dashapp_leagueinfo[]
+    auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team       dashapp_team[]
+
+    @@index([modified_by_id], map: "dashapp_sport_modified_by_id_48a645cc")
+}
+
+model dashapp_sportsdealsummary {
+    id                  BigInt               @id @default(autoincrement())
+    created_date        DateTime?            @default(now()) @db.Timestamp(6)
+    created_by          String?              @db.VarChar(60)
+    modified_date       DateTime             @updatedAt @db.Timestamp(6)
+    type                String               @db.VarChar(32)
+    status              String?              @db.VarChar(32)
+    commencement_date   String?              @db.VarChar(32)
+    expiration_date     String?              @db.VarChar(32)
+    duration            String?              @db.VarChar(32)
+    annual_value        Decimal?             @db.Decimal
+    total_value         Decimal?             @db.Decimal
+    territory           String?              @db.VarChar(32)
+    brand_id            BigInt?
+    league_id           BigInt?
+    level_id            BigInt?
+    modified_by_id      BigInt?
+    team_id             BigInt?
+    athlete_id          BigInt?
+    media_link          String?              @db.VarChar(512)
+    dashapp_athlete     dashapp_athlete?     @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata dashapp_companydata? @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo  dashapp_leagueinfo?  @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_level       dashapp_level?       @relation(fields: [level_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team        dashapp_team?        @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([athlete_id], map: "dashapp_sportsdealsummary_athlete_id_0b3f96ad")
+    @@index([brand_id], map: "dashapp_sportsdealsummary_brand_id_8f2c9d3f")
+    @@index([league_id], map: "dashapp_sportsdealsummary_league_id_3b81f0e1")
+    @@index([level_id], map: "dashapp_sportsdealsummary_level_id_37c970ab")
+    @@index([modified_by_id], map: "dashapp_sportsdealsummary_modified_by_id_ac4739a8")
+    @@index([team_id], map: "dashapp_sportsdealsummary_team_id_197e50ed")
+}
+
+model dashapp_states {
+    id                                       BigInt                                     @id @default(autoincrement())
+    created_date                             DateTime?                                  @default(now()) @db.Timestamp(6)
+    modified_by_id                           BigInt?
+    modified_date                            DateTime                                   @updatedAt @db.Timestamp(6)
+    created_by                               String?                                    @db.VarChar(60)
+    state                                    String                                     @unique(map: "sqlite_autoindex_dashapp_states_1") @db.VarChar(50)
+    dashapp_activation_market                dashapp_activation_market[]
+    dashapp_athlete_key_markets_tertiary     dashapp_athlete_key_markets_tertiary[]
+    dashapp_companydata_key_markets_tertiary dashapp_companydata_key_markets_tertiary[]
+    dashapp_leagueinfo_key_markets_tertiary  dashapp_leagueinfo_key_markets_tertiary[]
+    auth_user                                auth_user?                                 @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_key_markets_tertiary        dashapp_team_key_markets_tertiary[]
+
+    @@index([modified_by_id], map: "dashapp_states_modified_by_id_3acf32e3")
+}
+
+model dashapp_subpersonality {
+    id                                     BigInt                                   @id @default(autoincrement())
+    created_date                           DateTime?                                @default(now()) @db.Timestamp(6)
+    created_by                             String?                                  @db.VarChar(60)
+    modified_date                          DateTime                                 @updatedAt @db.Timestamp(6)
+    name                                   String                                   @db.VarChar(60)
+    main_personality_id                    BigInt
+    modified_by_id                         BigInt?
+    dashapp_athlete_personality_traits     dashapp_athlete_personality_traits[]
+    dashapp_companydata_personality_traits dashapp_companydata_personality_traits[]
+    dashapp_leagueinfo_personality_traits  dashapp_leagueinfo_personality_traits[]
+    dashapp_mainpersonality                dashapp_mainpersonality                  @relation(fields: [main_personality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                              auth_user?                               @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_personality_traits        dashapp_team_personality_traits[]
+
+    @@index([main_personality_id], map: "dashapp_subpersonality_main_personality_id_2905ff96")
+    @@index([modified_by_id], map: "dashapp_subpersonality_modified_by_id_13e7170d")
+}
+
+model dashapp_taglines {
+    id                           BigInt                         @id @default(autoincrement())
+    created_date                 DateTime?                      @default(now()) @db.Timestamp(6)
+    created_by                   String?                        @db.VarChar(60)
+    modified_date                DateTime                       @updatedAt @db.Timestamp(6)
+    modified_by_id               BigInt?
+    name                         String                         @unique(map: "sqlite_autoindex_dashapp_taglines_1") @db.VarChar(512)
+    dashapp_companydata_taglines dashapp_companydata_taglines[]
+    dashapp_leagueinfo_taglines  dashapp_leagueinfo_taglines[]
+    auth_user                    auth_user?                     @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_taglines        dashapp_team_taglines[]
+
+    @@index([modified_by_id], map: "dashapp_taglines_modified_by_id_4854394b")
+}
+
+model dashapp_team {
+    id                                         BigInt                                       @id @default(autoincrement())
+    created_date                               DateTime?                                    @default(now()) @db.Timestamp(6)
+    created_by                                 String?                                      @db.VarChar(60)
+    modified_date                              DateTime                                     @updatedAt @db.Timestamp(6)
+    team_name                                  String                                       @unique(map: "sqlite_autoindex_dashapp_team_1") @db.VarChar(512)
+    year_of_inception                          String?                                      @db.VarChar(512)
+    franchise_fee                              Decimal?                                     @db.Decimal
+    hq_state                                   String?                                      @db.VarChar(50)
+    instagram                                  String?                                      @db.VarChar(512)
+    facebook                                   String?                                      @db.VarChar(512)
+    twitter                                    String?                                      @db.VarChar(512)
+    linkedin                                   String?                                      @db.VarChar(512)
+    website                                    String?                                      @db.VarChar(512)
+    strategy_overview                          String?
+    hq_city_id                                 BigInt?
+    league_id                                  BigInt?
+    modified_by_id                             BigInt?
+    sport_id                                   BigInt?
+    budget_range_from                          Float?
+    budget_range_to                            Float?
+    youtube                                    String?                                      @db.VarChar(512)
+    dashapp_activation                         dashapp_activation[]
+    dashapp_sportsdealsummary                  dashapp_sportsdealsummary[]
+    dashapp_hqcity                             dashapp_hqcity?                              @relation(fields: [hq_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo                         dashapp_leagueinfo?                          @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                                  auth_user?                                   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sport                              dashapp_sport?                               @relation(fields: [sport_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_active_campaigns              dashapp_team_active_campaigns[]
+    dashapp_team_age                           dashapp_team_age[]
+    dashapp_team_gender                        dashapp_team_gender[]
+    dashapp_team_income                        dashapp_team_income[]
+    dashapp_team_key_markets_primary           dashapp_team_key_markets_primary[]
+    dashapp_team_key_markets_secondary         dashapp_team_key_markets_secondary[]
+    dashapp_team_key_markets_tertiary          dashapp_team_key_markets_tertiary[]
+    dashapp_team_marketing_platforms_primary   dashapp_team_marketing_platforms_primary[]
+    dashapp_team_marketing_platforms_secondary dashapp_team_marketing_platforms_secondary[]
+    dashapp_team_owner                         dashapp_team_owner[]
+    dashapp_team_personality_traits            dashapp_team_personality_traits[]
+    dashapp_team_taglines                      dashapp_team_taglines[]
+    dashapp_team_tier                          dashapp_team_tier[]
+    dashapp_teamcontact                        dashapp_teamcontact[]
+    dashapp_teamendorsements                   dashapp_teamendorsements[]
+
+    @@index([hq_city_id], map: "dashapp_team_hq_city_id_fa8703dd")
+    @@index([league_id], map: "dashapp_team_league_id_30ad02cd")
+    @@index([modified_by_id], map: "dashapp_team_modified_by_id_a08635ef")
+    @@index([sport_id], map: "dashapp_team_sport_id_a02a07a2")
+}
+
+model dashapp_team_active_campaigns {
+    id                      BigInt                  @id @default(autoincrement())
+    team_id                 BigInt
+    activecampaigns_id      BigInt
+    dashapp_activecampaigns dashapp_activecampaigns @relation(fields: [activecampaigns_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team            dashapp_team            @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, activecampaigns_id], map: "dashapp_team_active_campaigns_team_id_activecampaigns_id_096c7c")
+    @@index([activecampaigns_id], map: "dashapp_team_active_campaigns_activecampaigns_id_ee36c5cf")
+    @@index([team_id], map: "dashapp_team_active_campaigns_team_id_444427ca")
+}
+
+model dashapp_team_age {
+    id           BigInt       @id @default(autoincrement())
+    team_id      BigInt
+    age_id       BigInt
+    dashapp_age  dashapp_age  @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, age_id], map: "dashapp_team_age_team_id_age_id_77b469fe_uniq")
+    @@index([age_id], map: "dashapp_team_age_age_id_93e7aee9")
+    @@index([team_id], map: "dashapp_team_age_team_id_b1ffa160")
+}
+
+model dashapp_team_gender {
+    id             BigInt         @id @default(autoincrement())
+    team_id        BigInt
+    gender_id      BigInt
+    dashapp_gender dashapp_gender @relation(fields: [gender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team   dashapp_team   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, gender_id], map: "dashapp_team_gender_team_id_gender_id_35e8bfa1_uniq")
+    @@index([gender_id], map: "dashapp_team_gender_gender_id_00d7641b")
+    @@index([team_id], map: "dashapp_team_gender_team_id_4fc23827")
+}
+
+model dashapp_team_income {
+    id             BigInt         @id @default(autoincrement())
+    team_id        BigInt
+    income_id      BigInt
+    dashapp_income dashapp_income @relation(fields: [income_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team   dashapp_team   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, income_id], map: "dashapp_team_income_team_id_income_id_418b4c9b_uniq")
+    @@index([income_id], map: "dashapp_team_income_income_id_97e882f6")
+    @@index([team_id], map: "dashapp_team_income_team_id_69f02667")
+}
+
+model dashapp_team_key_markets_primary {
+    id                BigInt            @id @default(autoincrement())
+    team_id           BigInt
+    keymarket_id      BigInt
+    dashapp_keymarket dashapp_keymarket @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team      dashapp_team      @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, keymarket_id], map: "dashapp_team_key_markets_primary_team_id_keymarket_id_de4c5e26_")
+    @@index([keymarket_id], map: "dashapp_team_key_markets_primary_keymarket_id_e2bad1fc")
+    @@index([team_id], map: "dashapp_team_key_markets_primary_team_id_b23227d4")
+}
+
+model dashapp_team_key_markets_secondary {
+    id                BigInt            @id @default(autoincrement())
+    team_id           BigInt
+    keymarket_id      BigInt
+    dashapp_keymarket dashapp_keymarket @relation(fields: [keymarket_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team      dashapp_team      @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, keymarket_id], map: "dashapp_team_key_markets_secondary_team_id_keymarket_id_a4b4bb5")
+    @@index([keymarket_id], map: "dashapp_team_key_markets_secondary_keymarket_id_8bcf6950")
+    @@index([team_id], map: "dashapp_team_key_markets_secondary_team_id_97fb0ff4")
+}
+
+model dashapp_team_key_markets_tertiary {
+    id             BigInt         @id @default(autoincrement())
+    team_id        BigInt
+    states_id      BigInt
+    dashapp_states dashapp_states @relation(fields: [states_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team   dashapp_team   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, states_id], map: "dashapp_team_key_markets_tertiary_team_id_states_id_4eca64f1_un")
+    @@index([states_id], map: "dashapp_team_key_markets_tertiary_states_id_4263ea76")
+    @@index([team_id], map: "dashapp_team_key_markets_tertiary_team_id_2e1025e5")
+}
+
+model dashapp_team_marketing_platforms_primary {
+    id                        BigInt                    @id @default(autoincrement())
+    team_id                   BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_team_marketing_platforms_prim_marketingplatform_id_fkey")
+    dashapp_team              dashapp_team              @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, marketingplatform_id], map: "dashapp_team_marketing_platforms_primary_team_id_marketingplatf")
+    @@index([marketingplatform_id], map: "dashapp_team_marketing_platforms_primary_marketingplatform_id_a")
+    @@index([team_id], map: "dashapp_team_marketing_platforms_primary_team_id_bcf289cf")
+}
+
+model dashapp_team_marketing_platforms_secondary {
+    id                        BigInt                    @id @default(autoincrement())
+    team_id                   BigInt
+    marketingplatform_id      BigInt
+    dashapp_marketingplatform dashapp_marketingplatform @relation(fields: [marketingplatform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "dashapp_team_marketing_platforms_seco_marketingplatform_id_fkey")
+    dashapp_team              dashapp_team              @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, marketingplatform_id], map: "dashapp_team_marketing_platforms_secondary_team_id_marketingpla")
+    @@index([marketingplatform_id], map: "dashapp_team_marketing_platforms_secondary_marketingplatform_id")
+    @@index([team_id], map: "dashapp_team_marketing_platforms_secondary_team_id_27163191")
+}
+
+model dashapp_team_owner {
+    id                BigInt            @id @default(autoincrement())
+    team_id           BigInt
+    teamowner_id      BigInt
+    dashapp_team      dashapp_team      @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_teamowner dashapp_teamowner @relation(fields: [teamowner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, teamowner_id], map: "dashapp_team_owner_team_id_teamowner_id_a9f50b7f_uniq")
+    @@index([team_id], map: "dashapp_team_owner_team_id_a6cb880b")
+    @@index([teamowner_id], map: "dashapp_team_owner_teamowner_id_5e0c237c")
+}
+
+model dashapp_team_personality_traits {
+    id                     BigInt                 @id @default(autoincrement())
+    team_id                BigInt
+    subpersonality_id      BigInt
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team           dashapp_team           @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, subpersonality_id], map: "dashapp_team_personality_traits_team_id_subpersonality_id_14dd1")
+    @@index([subpersonality_id], map: "dashapp_team_personality_traits_subpersonality_id_b3ad5333")
+    @@index([team_id], map: "dashapp_team_personality_traits_team_id_693f77e3")
+}
+
+model dashapp_team_taglines {
+    id               BigInt           @id @default(autoincrement())
+    team_id          BigInt
+    taglines_id      BigInt
+    dashapp_taglines dashapp_taglines @relation(fields: [taglines_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team     dashapp_team     @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, taglines_id], map: "dashapp_team_taglines_team_id_taglines_id_34dfb3e8_uniq")
+    @@index([taglines_id], map: "dashapp_team_taglines_taglines_id_a09072e9")
+    @@index([team_id], map: "dashapp_team_taglines_team_id_34ebae82")
+}
+
+model dashapp_team_tier {
+    id           BigInt       @id @default(autoincrement())
+    team_id      BigInt
+    tier_id      BigInt
+    dashapp_team dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier dashapp_tier @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@unique([team_id, tier_id], map: "dashapp_team_tier_team_id_tier_id_2978b40f_uniq")
+    @@index([team_id], map: "dashapp_team_tier_team_id_ee72e812")
+    @@index([tier_id], map: "dashapp_team_tier_tier_id_f9d64076")
+}
+
+model dashapp_teamcontact {
+    id                  BigInt       @id @default(autoincrement())
+    created_date        DateTime?    @default(now()) @db.Timestamp(6)
+    created_by          String?      @db.VarChar(60)
+    modified_date       DateTime     @updatedAt @db.Timestamp(6)
+    contact_name        String       @db.VarChar(512)
+    contact_designation String?      @db.VarChar(512)
+    contact_email       String?      @db.VarChar(512)
+    contact_linkedin    String?      @db.VarChar(512)
+    modified_by_id      BigInt?
+    team_id             BigInt
+    contact_no          String?      @db.VarChar(512)
+    auth_user           auth_user?   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team        dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_teamcontact_modified_by_id_a74039ab")
+    @@index([team_id], map: "dashapp_teamcontact_team_id_12a62efe")
+}
+
+model dashapp_teamendorsements {
+    id             BigInt       @id @default(autoincrement())
+    created_date   DateTime?    @default(now()) @db.Timestamp(6)
+    created_by     String?      @db.VarChar(60)
+    modified_date  DateTime     @updatedAt @db.Timestamp(6)
+    active         Boolean
+    modified_by_id BigInt?
+    team_id        BigInt
+    name           String       @unique(map: "sqlite_autoindex_dashapp_teamendorsements_1") @db.VarChar(512)
+    auth_user      auth_user?   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team   dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_teamendorsements_modified_by_id_6a821591")
+    @@index([team_id], map: "dashapp_teamendorsements_team_id_3a1dec2d")
+}
+
+model dashapp_teamowner {
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime?            @default(now()) @db.Timestamp(6)
+    created_by         String?              @db.VarChar(60)
+    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_by_id     BigInt?
+    name               String               @unique(map: "sqlite_autoindex_dashapp_teamowner_1") @db.VarChar(512)
+    dashapp_team_owner dashapp_team_owner[]
+    auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_teamowner_modified_by_id_0a1a1b30")
+}
+
+model dashapp_territory {
+    id             BigInt     @id @default(autoincrement())
+    created_date   DateTime?  @default(now()) @db.Timestamp(6)
+    created_by     String?    @db.VarChar(60)
+    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_by_id BigInt?
+    name           String     @unique(map: "sqlite_autoindex_dashapp_territory_1") @db.VarChar(512)
+    auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_territory_modified_by_id_36ab1fe8")
+}
+
+model dashapp_tier {
+    id                       BigInt                     @id @default(autoincrement())
+    created_date             DateTime?                  @default(now()) @db.Timestamp(6)
+    created_by               String?                    @db.VarChar(60)
+    modified_date            DateTime                   @updatedAt @db.Timestamp(6)
+    name                     String                     @db.VarChar(40)
+    modified_by_id           BigInt?
+    dashapp_athlete_tier     dashapp_athlete_tier[]
+    dashapp_companydata_tier dashapp_companydata_tier[]
+    dashapp_leagueinfo_tier  dashapp_leagueinfo_tier[]
+    dashapp_team_tier        dashapp_team_tier[]
+    auth_user                auth_user?                 @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([modified_by_id], map: "dashapp_tier_modified_by_id_cafe9708")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model django_admin_log {
+    id                  BigInt               @id @default(autoincrement())
+    object_id           String?
+    object_repr         String               @db.VarChar(200)
+    action_flag         BigInt
+    change_message      String
+    content_type_id     BigInt?
+    user_id             BigInt
+    action_time         DateTime             @db.Timestamp(6)
+    django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
+    @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+}
+
+model django_content_type {
+    id               BigInt             @id @default(autoincrement())
+    app_label        String             @db.VarChar(100)
+    model            String             @db.VarChar(100)
+    auth_permission  auth_permission[]
+    django_admin_log django_admin_log[]
+
+    @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+}
+
+model django_migrations {
+    id      BigInt   @id @default(autoincrement())
+    app     String   @db.VarChar(255)
+    name    String   @db.VarChar(255)
+    applied DateTime @db.Timestamp(6)
+}
+
+model django_session {
+    session_key  String   @id @db.VarChar(40)
+    session_data String
+    expire_date  DateTime @db.Timestamp(6)
+
+    @@index([expire_date], map: "django_session_expire_date_a5c62663")
+}
