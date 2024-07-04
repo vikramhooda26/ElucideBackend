@@ -1076,6 +1076,20 @@ CREATE TABLE "dashapp_tier" (
 );
 
 -- CreateTable
+CREATE TABLE "django_admin_log" (
+    "id" BIGSERIAL NOT NULL,
+    "object_id" TEXT,
+    "object_repr" VARCHAR(200) NOT NULL,
+    "action_flag" BIGINT NOT NULL,
+    "change_message" TEXT NOT NULL,
+    "content_type_id" BIGINT,
+    "user_id" BIGINT NOT NULL,
+    "action_time" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "django_admin_log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "django_content_type" (
     "id" BIGSERIAL NOT NULL,
     "app_label" VARCHAR(100) NOT NULL,
@@ -1878,6 +1892,12 @@ CREATE INDEX "dashapp_territory_modified_by_id_36ab1fe8" ON "dashapp_territory"(
 CREATE INDEX "dashapp_tier_modified_by_id_cafe9708" ON "dashapp_tier"("modified_by_id");
 
 -- CreateIndex
+CREATE INDEX "django_admin_log_content_type_id_c4bce8eb" ON "django_admin_log"("content_type_id");
+
+-- CreateIndex
+CREATE INDEX "django_admin_log_user_id_c564eba6" ON "django_admin_log"("user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "django_content_type_app_label_model_76bd3d3b_uniq" ON "django_content_type"("app_label", "model");
 
 -- CreateIndex
@@ -2407,4 +2427,10 @@ ALTER TABLE "dashapp_territory" ADD CONSTRAINT "dashapp_territory_modified_by_id
 
 -- AddForeignKey
 ALTER TABLE "dashapp_tier" ADD CONSTRAINT "dashapp_tier_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "django_admin_log" ADD CONSTRAINT "django_admin_log_content_type_id_fkey" FOREIGN KEY ("content_type_id") REFERENCES "django_content_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "django_admin_log" ADD CONSTRAINT "django_admin_log_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
