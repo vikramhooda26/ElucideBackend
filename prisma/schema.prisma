@@ -93,6 +93,8 @@ model auth_user {
     dashapp_territory          dashapp_territory[]
     dashapp_tier               dashapp_tier[]
     django_admin_log           django_admin_log[]
+    dashapp_metric_created_by  dashapp_metric[]             @relation(name: "created_by")
+    dashapp_metric_modified_by dashapp_metric[]             @relation(name: "modified_by")
 }
 
 model auth_user_groups {
@@ -121,9 +123,9 @@ model auth_user_user_permissions {
 
 model dashapp_activation {
     id                          BigInt                        @id @default(autoincrement())
-    created_date                DateTime?                     @db.Timestamp(6)
+    created_date                DateTime                      @default(now())
     created_by                  String?                       @db.VarChar(60)
-    modified_date               DateTime                      @updatedAt @db.Timestamp(6)
+    modified_date               DateTime                      @updatedAt
     Year                        String?                       @db.VarChar(32)
     brand_id                    BigInt?
     league_id                   BigInt?
@@ -198,9 +200,9 @@ model dashapp_activation_type {
 
 model dashapp_activecampaigns {
     id                                   BigInt                                 @id @default(autoincrement())
-    created_date                         DateTime?                              @db.Timestamp(6)
+    created_date                         DateTime                               @default(now())
     created_by                           String?                                @db.VarChar(60)
-    modified_date                        DateTime                               @updatedAt @db.Timestamp(6)
+    modified_date                        DateTime                               @updatedAt
     modified_by_id                       BigInt?
     name                                 String                                 @unique(map: "sqlite_autoindex_dashapp_activecampaigns_1") @db.VarChar(512)
     auth_user                            auth_user?                             @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -213,9 +215,9 @@ model dashapp_activecampaigns {
 
 model dashapp_age {
     id                         BigInt                       @id @default(autoincrement())
-    created_date               DateTime?                    @db.Timestamp(6)
+    created_date               DateTime                     @default(now())
     modified_by_id             BigInt?
-    modified_date              DateTime                     @updatedAt @db.Timestamp(6)
+    modified_date              DateTime                     @updatedAt
     created_by                 String?                      @db.VarChar(60)
     age_range                  String                       @unique(map: "sqlite_autoindex_dashapp_age_1") @db.VarChar(20)
     auth_user                  auth_user?                   @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -227,11 +229,29 @@ model dashapp_age {
     @@index([modified_by_id], map: "dashapp_age_modified_by_id_67fff9b6")
 }
 
+model dashapp_metric {
+    id             BigInt              @id @default(autoincrement())
+    created_date   DateTime            @default(now())
+    modified_date  DateTime            @updatedAt
+    created_by_id  BigInt?
+    modified_by_id BigInt?
+    created_by     auth_user?          @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by    auth_user?          @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    viewship_type  viewship_type?
+    viewership     String?
+    reach          String?
+    year           String?
+    leagueinfo_id  BigInt?
+    team_id        BigInt?
+    leagueinfo     dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
+    team           dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
+}
+
 model dashapp_agency {
     id                  BigInt                @id @default(autoincrement())
-    created_date        DateTime?             @db.Timestamp(6)
+    created_date        DateTime              @default(now())
     created_by          String?               @db.VarChar(60)
-    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_date       DateTime              @updatedAt
     modified_by_id      BigInt?
     name                String                @unique(map: "sqlite_autoindex_dashapp_agency_1") @db.VarChar(512)
     auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -243,9 +263,9 @@ model dashapp_agency {
 
 model dashapp_assets {
     id                        BigInt                      @id @default(autoincrement())
-    created_date              DateTime?                   @db.Timestamp(6)
+    created_date              DateTime                    @default(now())
     created_by                String?                     @db.VarChar(60)
-    modified_date             DateTime                    @updatedAt @db.Timestamp(6)
+    modified_date             DateTime                    @updatedAt
     modified_by_id            BigInt?
     name                      String                      @unique(map: "sqlite_autoindex_dashapp_assets_1") @db.VarChar(512)
     dashapp_activation_assets dashapp_activation_assets[]
@@ -256,9 +276,9 @@ model dashapp_assets {
 
 model dashapp_athlete {
     id                                    BigInt                                  @id @default(autoincrement())
-    created_date                          DateTime?                               @db.Timestamp(6)
+    created_date                          DateTime                                @default(now())
     created_by                            String?                                 @db.VarChar(60)
-    modified_date                         DateTime                                @updatedAt @db.Timestamp(6)
+    modified_date                         DateTime                                @updatedAt
     athlete_name                          String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
     nationality                           String?                                 @db.VarChar(512)
     instagram                             String?                                 @db.VarChar(512)
@@ -333,7 +353,7 @@ model dashapp_athlete_personality_traits {
     athlete_id             BigInt
     subpersonality_id      BigInt
     dashapp_athlete        dashapp_athlete        @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([athlete_id, subpersonality_id], map: "dashapp_athlete_personality_traits_athlete_id_subpersonality_id")
     @@index([athlete_id], map: "dashapp_athlete_personality_traits_athlete_id_d34493e8")
@@ -390,9 +410,9 @@ model dashapp_athlete_tier {
 
 model dashapp_athletecontact {
     id                  BigInt          @id @default(autoincrement())
-    created_date        DateTime?       @db.Timestamp(6)
+    created_date        DateTime        @default(now())
     created_by          String?         @db.VarChar(60)
-    modified_date       DateTime        @updatedAt @db.Timestamp(6)
+    modified_date       DateTime        @updatedAt
     contact_name        String          @db.VarChar(512)
     contact_designation String?         @db.VarChar(512)
     contact_email       String?         @db.VarChar(512)
@@ -409,9 +429,9 @@ model dashapp_athletecontact {
 
 model dashapp_brandcontact {
     id                  BigInt              @id @default(autoincrement())
-    created_date        DateTime?           @db.Timestamp(6)
+    created_date        DateTime            @default(now())
     created_by          String?             @db.VarChar(60)
-    modified_date       DateTime            @updatedAt @db.Timestamp(6)
+    modified_date       DateTime            @updatedAt
     contact_name        String              @db.VarChar(512)
     contact_designation String?             @db.VarChar(512)
     contact_email       String?             @db.VarChar(512)
@@ -428,9 +448,9 @@ model dashapp_brandcontact {
 
 model dashapp_brandendorsements {
     id                  BigInt              @id @default(autoincrement())
-    created_date        DateTime?           @db.Timestamp(6)
+    created_date        DateTime            @default(now())
     created_by          String?             @db.VarChar(60)
-    modified_date       DateTime            @updatedAt @db.Timestamp(6)
+    modified_date       DateTime            @updatedAt
     active              Boolean
     brand_id            BigInt
     modified_by_id      BigInt?
@@ -444,9 +464,9 @@ model dashapp_brandendorsements {
 
 model dashapp_broadcastpartner {
     id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @db.Timestamp(6)
+    created_date       DateTime             @default(now())
     created_by         String?              @db.VarChar(60)
-    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_date      DateTime             @updatedAt
     modified_by_id     BigInt?
     name               String               @unique(map: "sqlite_autoindex_dashapp_broadcastpartner_1") @db.VarChar(512)
     auth_user          auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -457,9 +477,9 @@ model dashapp_broadcastpartner {
 
 model dashapp_category {
     id                  BigInt                @id @default(autoincrement())
-    created_date        DateTime?             @db.Timestamp(6)
+    created_date        DateTime              @default(now())
     created_by          String?               @db.VarChar(60)
-    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_date       DateTime              @updatedAt
     modified_by_id      BigInt?
     name                String                @unique(map: "sqlite_autoindex_dashapp_category_1") @db.VarChar(512)
     auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -470,9 +490,9 @@ model dashapp_category {
 
 model dashapp_companydata {
     id                                                BigInt                                              @id @default(autoincrement())
-    created_date                                      DateTime?                                           @db.Timestamp(6)
+    created_date                                      DateTime                                            @default(now())
     created_by                                        String?                                             @db.VarChar(60)
-    modified_date                                     DateTime                                            @updatedAt @db.Timestamp(6)
+    modified_date                                     DateTime                                            @updatedAt
     company_name                                      String                                              @unique(map: "sqlite_autoindex_dashapp_companydata_1") @db.VarChar(512)
     hq_state                                          String?                                             @db.VarChar(50)
     instagram                                         String?                                             @db.VarChar(512)
@@ -627,7 +647,7 @@ model dashapp_companydata_personality_traits {
     companydata_id         BigInt
     subpersonality_id      BigInt
     dashapp_companydata    dashapp_companydata    @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([companydata_id, subpersonality_id], map: "dashapp_companydata_personality_traits_companydata_id_subperson")
     @@index([companydata_id], map: "dashapp_companydata_personality_traits_companydata_id_7c3c6376")
@@ -660,9 +680,9 @@ model dashapp_companydata_tier {
 
 model dashapp_gender {
     id                            BigInt                          @id @default(autoincrement())
-    created_date                  DateTime?                       @db.Timestamp(6)
+    created_date                  DateTime                        @default(now())
     modified_by_id                BigInt?
-    modified_date                 DateTime                        @updatedAt @db.Timestamp(6)
+    modified_date                 DateTime                        @updatedAt
     created_by                    String?                         @db.VarChar(60)
     gender_is                     String                          @unique(map: "sqlite_autoindex_dashapp_gender_1") @db.VarChar(20)
     dashapp_athlete_target_gender dashapp_athlete_target_gender[]
@@ -676,9 +696,9 @@ model dashapp_gender {
 
 model dashapp_hqcity {
     id                  BigInt                @id @default(autoincrement())
-    created_date        DateTime?             @db.Timestamp(6)
+    created_date        DateTime              @default(now())
     created_by          String?               @db.VarChar(60)
-    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_date       DateTime              @updatedAt
     modified_by_id      BigInt?
     name                String                @unique(map: "sqlite_autoindex_dashapp_hqcity_1") @db.VarChar(512)
     dashapp_companydata dashapp_companydata[]
@@ -690,9 +710,9 @@ model dashapp_hqcity {
 
 model dashapp_income {
     id                            BigInt                          @id @default(autoincrement())
-    created_date                  DateTime?                       @db.Timestamp(6)
+    created_date                  DateTime                        @default(now())
     modified_by_id                BigInt?
-    modified_date                 DateTime                        @updatedAt @db.Timestamp(6)
+    modified_date                 DateTime                        @updatedAt
     created_by                    String?                         @db.VarChar(60)
     income_class                  String                          @unique(map: "sqlite_autoindex_dashapp_income_1") @db.VarChar(20)
     dashapp_athlete_target_income dashapp_athlete_target_income[]
@@ -706,9 +726,9 @@ model dashapp_income {
 
 model dashapp_keymarket {
     id                                        BigInt                                      @id @default(autoincrement())
-    created_date                              DateTime?                                   @db.Timestamp(6)
+    created_date                              DateTime                                    @default(now())
     modified_by_id                            BigInt?
-    modified_date                             DateTime                                    @updatedAt @db.Timestamp(6)
+    modified_date                             DateTime                                    @updatedAt
     created_by                                String?                                     @db.VarChar(60)
     zone                                      String                                      @unique(map: "sqlite_autoindex_dashapp_keymarket_1") @db.VarChar(20)
     dashapp_athlete_key_markets_primary       dashapp_athlete_key_markets_primary[]
@@ -726,9 +746,9 @@ model dashapp_keymarket {
 
 model dashapp_league {
     id             BigInt     @id @default(autoincrement())
-    created_date   DateTime?  @db.Timestamp(6)
+    created_date   DateTime   @default(now())
     created_by     String?    @db.VarChar(60)
-    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_date  DateTime   @updatedAt
     modified_by_id BigInt?
     name           String     @unique(map: "sqlite_autoindex_dashapp_league_1") @db.VarChar(512)
     auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -738,9 +758,9 @@ model dashapp_league {
 
 model dashapp_leaguecontact {
     id                  BigInt             @id @default(autoincrement())
-    created_date        DateTime?          @db.Timestamp(6)
+    created_date        DateTime           @default(now())
     created_by          String?            @db.VarChar(60)
-    modified_date       DateTime           @updatedAt @db.Timestamp(6)
+    modified_date       DateTime           @updatedAt
     contact_name        String             @db.VarChar(512)
     contact_designation String?            @db.VarChar(512)
     contact_email       String?            @db.VarChar(512)
@@ -757,9 +777,9 @@ model dashapp_leaguecontact {
 
 model dashapp_leagueendorsements {
     id                 BigInt             @id @default(autoincrement())
-    created_date       DateTime?          @db.Timestamp(6)
+    created_date       DateTime           @default(now())
     created_by         String?            @db.VarChar(60)
-    modified_date      DateTime           @updatedAt @db.Timestamp(6)
+    modified_date      DateTime           @updatedAt
     active             Boolean
     league_id          BigInt
     modified_by_id     BigInt?
@@ -773,9 +793,9 @@ model dashapp_leagueendorsements {
 
 model dashapp_leagueinfo {
     id                                               BigInt                                             @id @default(autoincrement())
-    created_date                                     DateTime?                                          @db.Timestamp(6)
+    created_date                                     DateTime                                           @default(now())
     created_by                                       String?                                            @db.VarChar(60)
-    modified_date                                    DateTime                                           @updatedAt @db.Timestamp(6)
+    modified_date                                    DateTime                                           @updatedAt
     year_of_inception                                String?                                            @db.VarChar(512)
     format                                           String?                                            @db.VarChar(32)
     instagram                                        String?                                            @db.VarChar(512)
@@ -814,6 +834,7 @@ model dashapp_leagueinfo {
     dashapp_leagueinfo_tier                          dashapp_leagueinfo_tier[]
     dashapp_sportsdealsummary                        dashapp_sportsdealsummary[]
     dashapp_team                                     dashapp_team[]
+    dashapp_metric                                   dashapp_metric[]
 
     @@index([brodcast_partner_id], map: "dashapp_leagueinfo_brodcast_partner_id_40f27555")
     @@index([modified_by_id], map: "dashapp_leagueinfo_modified_by_id_d356e033")
@@ -945,7 +966,7 @@ model dashapp_leagueinfo_personality_traits {
     leagueinfo_id          BigInt
     subpersonality_id      BigInt
     dashapp_leagueinfo     dashapp_leagueinfo     @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([leagueinfo_id, subpersonality_id], map: "dashapp_leagueinfo_personality_traits_leagueinfo_id_subpersonal")
     @@index([leagueinfo_id], map: "dashapp_leagueinfo_personality_traits_leagueinfo_id_c36afc9e")
@@ -978,9 +999,9 @@ model dashapp_leagueinfo_tier {
 
 model dashapp_leagueowner {
     id                       BigInt                     @id @default(autoincrement())
-    created_date             DateTime?                  @db.Timestamp(6)
+    created_date             DateTime                   @default(now())
     created_by               String?                    @db.VarChar(60)
-    modified_date            DateTime                   @updatedAt @db.Timestamp(6)
+    modified_date            DateTime                   @updatedAt
     modified_by_id           BigInt?
     name                     String                     @unique(map: "sqlite_autoindex_dashapp_leagueowner_1") @db.VarChar(512)
     dashapp_leagueinfo_owner dashapp_leagueinfo_owner[]
@@ -991,9 +1012,9 @@ model dashapp_leagueowner {
 
 model dashapp_level {
     id                        BigInt                      @id @default(autoincrement())
-    created_date              DateTime?                   @db.Timestamp(6)
+    created_date              DateTime                    @default(now())
     created_by                String?                     @db.VarChar(60)
-    modified_date             DateTime                    @updatedAt @db.Timestamp(6)
+    modified_date             DateTime                    @updatedAt
     modified_by_id            BigInt?
     name                      String                      @unique(map: "sqlite_autoindex_dashapp_level_1") @db.VarChar(512)
     auth_user                 auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1004,9 +1025,9 @@ model dashapp_level {
 
 model dashapp_mainpersonality {
     id                     BigInt                   @id @default(autoincrement())
-    created_date           DateTime?                @db.Timestamp(6)
+    created_date           DateTime                 @default(now())
     created_by             String?                  @db.VarChar(60)
-    modified_date          DateTime                 @updatedAt @db.Timestamp(6)
+    modified_date          DateTime                 @updatedAt
     name                   String                   @db.VarChar(60)
     modified_by_id         BigInt?
     auth_user              auth_user?               @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1017,9 +1038,9 @@ model dashapp_mainpersonality {
 
 model dashapp_marketingplatform {
     id                                                BigInt                                              @id @default(autoincrement())
-    created_date                                      DateTime?                                           @db.Timestamp(6)
+    created_date                                      DateTime                                            @default(now())
     modified_by_id                                    BigInt?
-    modified_date                                     DateTime                                            @updatedAt @db.Timestamp(6)
+    modified_date                                     DateTime                                            @updatedAt
     created_by                                        String?                                             @db.VarChar(60)
     platform                                          String                                              @unique(map: "sqlite_autoindex_dashapp_marketingplatform_1") @db.VarChar(20)
     dashapp_activation_type                           dashapp_activation_type[]
@@ -1036,9 +1057,9 @@ model dashapp_marketingplatform {
 
 model dashapp_ottpartner {
     id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @db.Timestamp(6)
+    created_date       DateTime             @default(now())
     created_by         String?              @db.VarChar(60)
-    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_date      DateTime             @updatedAt
     modified_by_id     BigInt?
     name               String               @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
     dashapp_leagueinfo dashapp_leagueinfo[]
@@ -1049,9 +1070,9 @@ model dashapp_ottpartner {
 
 model dashapp_parentorg {
     id                  BigInt                @id @default(autoincrement())
-    created_date        DateTime?             @db.Timestamp(6)
+    created_date        DateTime              @default(now())
     created_by          String?               @db.VarChar(60)
-    modified_date       DateTime              @updatedAt @db.Timestamp(6)
+    modified_date       DateTime              @updatedAt
     modified_by_id      BigInt?
     name                String                @unique(map: "sqlite_autoindex_dashapp_parentorg_1") @db.VarChar(512)
     dashapp_companydata dashapp_companydata[]
@@ -1062,9 +1083,9 @@ model dashapp_parentorg {
 
 model dashapp_partner {
     id             BigInt     @id @default(autoincrement())
-    created_date   DateTime?  @db.Timestamp(6)
+    created_date   DateTime   @default(now())
     created_by     String?    @db.VarChar(60)
-    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_date  DateTime   @updatedAt
     modified_by_id BigInt?
     name           String     @unique(map: "sqlite_autoindex_dashapp_partner_1") @db.VarChar(512)
     auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1074,9 +1095,9 @@ model dashapp_partner {
 
 model dashapp_property {
     id                          BigInt                        @id @default(autoincrement())
-    created_date                DateTime?                     @db.Timestamp(6)
+    created_date                DateTime                      @default(now())
     created_by                  String?                       @db.VarChar(60)
-    modified_date               DateTime                      @updatedAt @db.Timestamp(6)
+    modified_date               DateTime                      @updatedAt
     modified_by_id              BigInt?
     name                        String                        @unique(map: "sqlite_autoindex_dashapp_property_1") @db.VarChar(512)
     dashapp_activation_property dashapp_activation_property[]
@@ -1087,9 +1108,9 @@ model dashapp_property {
 
 model dashapp_sport {
     id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @db.Timestamp(6)
+    created_date       DateTime             @default(now())
     created_by         String?              @db.VarChar(60)
-    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_date      DateTime             @updatedAt
     modified_by_id     BigInt?
     name               String               @unique(map: "sqlite_autoindex_dashapp_sport_1") @db.VarChar(512)
     dashapp_athlete    dashapp_athlete[]
@@ -1102,9 +1123,9 @@ model dashapp_sport {
 
 model dashapp_sportsdealsummary {
     id                  BigInt               @id @default(autoincrement())
-    created_date        DateTime?            @db.Timestamp(6)
+    created_date        DateTime             @default(now())
     created_by          String?              @db.VarChar(60)
-    modified_date       DateTime             @updatedAt @db.Timestamp(6)
+    modified_date       DateTime             @updatedAt
     type                String               @db.VarChar(32)
     status              String?              @db.VarChar(32)
     commencement_date   String?              @db.VarChar(32)
@@ -1137,9 +1158,9 @@ model dashapp_sportsdealsummary {
 
 model dashapp_states {
     id                                       BigInt                                     @id @default(autoincrement())
-    created_date                             DateTime?                                  @db.Timestamp(6)
+    created_date                             DateTime                                   @default(now())
     modified_by_id                           BigInt?
-    modified_date                            DateTime                                   @updatedAt @db.Timestamp(6)
+    modified_date                            DateTime                                   @updatedAt
     created_by                               String?                                    @db.VarChar(60)
     state                                    String                                     @unique(map: "sqlite_autoindex_dashapp_states_1") @db.VarChar(50)
     dashapp_activation_market                dashapp_activation_market[]
@@ -1154,9 +1175,9 @@ model dashapp_states {
 
 model dashapp_subpersonality {
     id                                     BigInt                                   @id @default(autoincrement())
-    created_date                           DateTime?                                @db.Timestamp(6)
+    created_date                           DateTime                                 @default(now())
     created_by                             String?                                  @db.VarChar(60)
-    modified_date                          DateTime                                 @updatedAt @db.Timestamp(6)
+    modified_date                          DateTime                                 @updatedAt
     name                                   String                                   @db.VarChar(60)
     main_personality_id                    BigInt
     modified_by_id                         BigInt?
@@ -1173,9 +1194,9 @@ model dashapp_subpersonality {
 
 model dashapp_taglines {
     id                           BigInt                         @id @default(autoincrement())
-    created_date                 DateTime?                      @db.Timestamp(6)
+    created_date                 DateTime                       @default(now())
     created_by                   String?                        @db.VarChar(60)
-    modified_date                DateTime                       @updatedAt @db.Timestamp(6)
+    modified_date                DateTime                       @updatedAt
     modified_by_id               BigInt?
     name                         String                         @unique(map: "sqlite_autoindex_dashapp_taglines_1") @db.VarChar(512)
     dashapp_companydata_taglines dashapp_companydata_taglines[]
@@ -1188,9 +1209,9 @@ model dashapp_taglines {
 
 model dashapp_team {
     id                                         BigInt                                       @id @default(autoincrement())
-    created_date                               DateTime?                                    @db.Timestamp(6)
+    created_date                               DateTime                                     @default(now())
     created_by                                 String?                                      @db.VarChar(60)
-    modified_date                              DateTime                                     @updatedAt @db.Timestamp(6)
+    modified_date                              DateTime                                     @updatedAt
     team_name                                  String                                       @unique(map: "sqlite_autoindex_dashapp_team_1") @db.VarChar(512)
     year_of_inception                          String?                                      @db.VarChar(512)
     franchise_fee                              Decimal?                                     @db.Decimal
@@ -1229,6 +1250,7 @@ model dashapp_team {
     dashapp_team_tier                          dashapp_team_tier[]
     dashapp_teamcontact                        dashapp_teamcontact[]
     dashapp_teamendorsements                   dashapp_teamendorsements[]
+    dashapp_metric                             dashapp_metric[]
 
     @@index([hq_city_id], map: "dashapp_team_hq_city_id_fa8703dd")
     @@index([league_id], map: "dashapp_team_league_id_30ad02cd")
@@ -1360,7 +1382,7 @@ model dashapp_team_personality_traits {
     id                     BigInt                 @id @default(autoincrement())
     team_id                BigInt
     subpersonality_id      BigInt
-    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subpersonality dashapp_subpersonality @relation(fields: [subpersonality_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
     dashapp_team           dashapp_team           @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([team_id, subpersonality_id], map: "dashapp_team_personality_traits_team_id_subpersonality_id_14dd1")
@@ -1394,9 +1416,9 @@ model dashapp_team_tier {
 
 model dashapp_teamcontact {
     id                  BigInt       @id @default(autoincrement())
-    created_date        DateTime?    @db.Timestamp(6)
+    created_date        DateTime     @default(now())
     created_by          String?      @db.VarChar(60)
-    modified_date       DateTime     @updatedAt @db.Timestamp(6)
+    modified_date       DateTime     @updatedAt
     contact_name        String       @db.VarChar(512)
     contact_designation String?      @db.VarChar(512)
     contact_email       String?      @db.VarChar(512)
@@ -1413,9 +1435,9 @@ model dashapp_teamcontact {
 
 model dashapp_teamendorsements {
     id             BigInt       @id @default(autoincrement())
-    created_date   DateTime?    @db.Timestamp(6)
+    created_date   DateTime     @default(now())
     created_by     String?      @db.VarChar(60)
-    modified_date  DateTime     @updatedAt @db.Timestamp(6)
+    modified_date  DateTime     @updatedAt
     active         Boolean
     modified_by_id BigInt?
     team_id        BigInt
@@ -1429,9 +1451,9 @@ model dashapp_teamendorsements {
 
 model dashapp_teamowner {
     id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @db.Timestamp(6)
+    created_date       DateTime             @default(now())
     created_by         String?              @db.VarChar(60)
-    modified_date      DateTime             @updatedAt @db.Timestamp(6)
+    modified_date      DateTime             @updatedAt
     modified_by_id     BigInt?
     name               String               @unique(map: "sqlite_autoindex_dashapp_teamowner_1") @db.VarChar(512)
     dashapp_team_owner dashapp_team_owner[]
@@ -1442,9 +1464,9 @@ model dashapp_teamowner {
 
 model dashapp_territory {
     id             BigInt     @id @default(autoincrement())
-    created_date   DateTime?  @db.Timestamp(6)
+    created_date   DateTime   @default(now())
     created_by     String?    @db.VarChar(60)
-    modified_date  DateTime   @updatedAt @db.Timestamp(6)
+    modified_date  DateTime   @updatedAt
     modified_by_id BigInt?
     name           String     @unique(map: "sqlite_autoindex_dashapp_territory_1") @db.VarChar(512)
     auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1454,9 +1476,9 @@ model dashapp_territory {
 
 model dashapp_tier {
     id                       BigInt                     @id @default(autoincrement())
-    created_date             DateTime?                  @db.Timestamp(6)
+    created_date             DateTime                   @default(now())
     created_by               String?                    @db.VarChar(60)
-    modified_date            DateTime                   @updatedAt @db.Timestamp(6)
+    modified_date            DateTime                   @updatedAt
     name                     String                     @db.VarChar(40)
     modified_by_id           BigInt?
     dashapp_athlete_tier     dashapp_athlete_tier[]
