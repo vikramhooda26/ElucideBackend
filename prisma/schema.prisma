@@ -92,7 +92,6 @@ model auth_user {
     dashapp_teamowner          dashapp_teamowner[]
     dashapp_territory          dashapp_territory[]
     dashapp_tier               dashapp_tier[]
-    django_admin_log           django_admin_log[]
 }
 
 model auth_user_groups {
@@ -1468,29 +1467,11 @@ model dashapp_tier {
     @@index([modified_by_id], map: "dashapp_tier_modified_by_id_cafe9708")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model django_admin_log {
-    id                  BigInt               @id @default(autoincrement())
-    object_id           String?
-    object_repr         String               @db.VarChar(200)
-    action_flag         BigInt
-    change_message      String
-    content_type_id     BigInt?
-    user_id             BigInt
-    action_time         DateTime             @db.Timestamp(6)
-    django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    auth_user           auth_user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-    @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
-    @@index([user_id], map: "django_admin_log_user_id_c564eba6")
-}
-
 model django_content_type {
-    id               BigInt             @id @default(autoincrement())
-    app_label        String             @db.VarChar(100)
-    model            String             @db.VarChar(100)
-    auth_permission  auth_permission[]
-    django_admin_log django_admin_log[]
+    id              BigInt            @id @default(autoincrement())
+    app_label       String            @db.VarChar(100)
+    model           String            @db.VarChar(100)
+    auth_permission auth_permission[]
 
     @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
 }
