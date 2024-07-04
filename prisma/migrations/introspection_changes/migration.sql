@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "viewship_type" AS ENUM ('OTT', 'BROADCAST');
+
 -- CreateTable
 CREATE TABLE "auth_group" (
     "id" BIGSERIAL NOT NULL,

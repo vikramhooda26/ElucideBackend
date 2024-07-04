@@ -1509,3 +1509,8 @@ model django_session {
 
     @@index([expire_date], map: "django_session_expire_date_a5c62663")
 }
+
+enum viewship_type {
+    OTT
+    BROADCAST
+}
