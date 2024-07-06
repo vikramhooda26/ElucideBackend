@@ -66,9 +66,9 @@ CREATE TABLE "auth_user_user_permissions" (
 -- CreateTable
 CREATE TABLE "dashapp_activation" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "Year" VARCHAR(32),
     "brand_id" BIGINT,
     "league_id" BIGINT,
@@ -119,9 +119,9 @@ CREATE TABLE "dashapp_activation_type" (
 -- CreateTable
 CREATE TABLE "dashapp_activecampaigns" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -131,9 +131,9 @@ CREATE TABLE "dashapp_activecampaigns" (
 -- CreateTable
 CREATE TABLE "dashapp_age" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "age_range" VARCHAR(20) NOT NULL,
 
@@ -143,8 +143,8 @@ CREATE TABLE "dashapp_age" (
 -- CreateTable
 CREATE TABLE "dashapp_metric" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "modified_date" TIMESTAMP(3),
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by_id" BIGINT,
     "modified_by_id" BIGINT,
     "viewship_type" "viewship_type",
@@ -158,40 +158,11 @@ CREATE TABLE "dashapp_metric" (
 );
 
 -- CreateTable
-CREATE TABLE "association_level" (
-    "id" BIGSERIAL NOT NULL,
-    "name" VARCHAR(512),
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "modified_date" TIMESTAMP(3),
-    "created_by_id" BIGINT,
-    "modified_by_id" BIGINT,
-
-    CONSTRAINT "association_level_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "association" (
-    "id" BIGSERIAL NOT NULL,
-    "cost" DECIMAL,
-    "association_level_id" BIGINT,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "modified_date" TIMESTAMP(3),
-    "created_by_id" BIGINT,
-    "modified_by_id" BIGINT,
-    "team_id" BIGINT,
-    "leagueInfo_id" BIGINT,
-    "athlete_id" BIGINT,
-    "brand_id" BIGINT,
-
-    CONSTRAINT "association_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "dashapp_agency" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -201,9 +172,9 @@ CREATE TABLE "dashapp_agency" (
 -- CreateTable
 CREATE TABLE "dashapp_assets" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -213,9 +184,9 @@ CREATE TABLE "dashapp_assets" (
 -- CreateTable
 CREATE TABLE "dashapp_athlete" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "athlete_name" VARCHAR(512) NOT NULL,
     "nationality" VARCHAR(512),
     "instagram" VARCHAR(512),
@@ -308,9 +279,9 @@ CREATE TABLE "dashapp_athlete_tier" (
 -- CreateTable
 CREATE TABLE "dashapp_athletecontact" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "contact_name" VARCHAR(512) NOT NULL,
     "contact_designation" VARCHAR(512),
     "contact_email" VARCHAR(512),
@@ -325,9 +296,9 @@ CREATE TABLE "dashapp_athletecontact" (
 -- CreateTable
 CREATE TABLE "dashapp_brandcontact" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "contact_name" VARCHAR(512) NOT NULL,
     "contact_designation" VARCHAR(512),
     "contact_email" VARCHAR(512),
@@ -342,9 +313,9 @@ CREATE TABLE "dashapp_brandcontact" (
 -- CreateTable
 CREATE TABLE "dashapp_brandendorsements" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "active" BOOLEAN NOT NULL,
     "brand_id" BIGINT NOT NULL,
     "modified_by_id" BIGINT,
@@ -356,9 +327,9 @@ CREATE TABLE "dashapp_brandendorsements" (
 -- CreateTable
 CREATE TABLE "dashapp_broadcastpartner" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -368,9 +339,9 @@ CREATE TABLE "dashapp_broadcastpartner" (
 -- CreateTable
 CREATE TABLE "dashapp_category" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -380,9 +351,9 @@ CREATE TABLE "dashapp_category" (
 -- CreateTable
 CREATE TABLE "dashapp_companydata" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "company_name" VARCHAR(512) NOT NULL,
     "hq_state" VARCHAR(50),
     "instagram" VARCHAR(512),
@@ -512,9 +483,9 @@ CREATE TABLE "dashapp_companydata_tier" (
 -- CreateTable
 CREATE TABLE "dashapp_gender" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "gender_is" VARCHAR(20) NOT NULL,
 
@@ -524,9 +495,9 @@ CREATE TABLE "dashapp_gender" (
 -- CreateTable
 CREATE TABLE "dashapp_hqcity" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -536,9 +507,9 @@ CREATE TABLE "dashapp_hqcity" (
 -- CreateTable
 CREATE TABLE "dashapp_income" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "income_class" VARCHAR(20) NOT NULL,
 
@@ -548,9 +519,9 @@ CREATE TABLE "dashapp_income" (
 -- CreateTable
 CREATE TABLE "dashapp_keymarket" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "zone" VARCHAR(20) NOT NULL,
 
@@ -560,9 +531,9 @@ CREATE TABLE "dashapp_keymarket" (
 -- CreateTable
 CREATE TABLE "dashapp_league" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -572,9 +543,9 @@ CREATE TABLE "dashapp_league" (
 -- CreateTable
 CREATE TABLE "dashapp_leaguecontact" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "contact_name" VARCHAR(512) NOT NULL,
     "contact_designation" VARCHAR(512),
     "contact_email" VARCHAR(512),
@@ -589,9 +560,9 @@ CREATE TABLE "dashapp_leaguecontact" (
 -- CreateTable
 CREATE TABLE "dashapp_leagueendorsements" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "active" BOOLEAN NOT NULL,
     "league_id" BIGINT NOT NULL,
     "modified_by_id" BIGINT,
@@ -603,9 +574,9 @@ CREATE TABLE "dashapp_leagueendorsements" (
 -- CreateTable
 CREATE TABLE "dashapp_leagueinfo" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "year_of_inception" VARCHAR(512),
     "format" VARCHAR(32),
     "instagram" VARCHAR(512),
@@ -746,9 +717,9 @@ CREATE TABLE "dashapp_leagueinfo_tier" (
 -- CreateTable
 CREATE TABLE "dashapp_leagueowner" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -758,9 +729,9 @@ CREATE TABLE "dashapp_leagueowner" (
 -- CreateTable
 CREATE TABLE "dashapp_level" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -770,9 +741,9 @@ CREATE TABLE "dashapp_level" (
 -- CreateTable
 CREATE TABLE "dashapp_mainpersonality" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "name" VARCHAR(60) NOT NULL,
     "modified_by_id" BIGINT,
 
@@ -782,9 +753,9 @@ CREATE TABLE "dashapp_mainpersonality" (
 -- CreateTable
 CREATE TABLE "dashapp_marketingplatform" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "platform" VARCHAR(20) NOT NULL,
 
@@ -794,9 +765,9 @@ CREATE TABLE "dashapp_marketingplatform" (
 -- CreateTable
 CREATE TABLE "dashapp_ottpartner" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -806,9 +777,9 @@ CREATE TABLE "dashapp_ottpartner" (
 -- CreateTable
 CREATE TABLE "dashapp_parentorg" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -818,9 +789,9 @@ CREATE TABLE "dashapp_parentorg" (
 -- CreateTable
 CREATE TABLE "dashapp_partner" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -830,9 +801,9 @@ CREATE TABLE "dashapp_partner" (
 -- CreateTable
 CREATE TABLE "dashapp_property" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -842,9 +813,9 @@ CREATE TABLE "dashapp_property" (
 -- CreateTable
 CREATE TABLE "dashapp_sport" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -854,9 +825,9 @@ CREATE TABLE "dashapp_sport" (
 -- CreateTable
 CREATE TABLE "dashapp_sportsdealsummary" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "type" VARCHAR(32) NOT NULL,
     "status" VARCHAR(32),
     "commencement_date" VARCHAR(32),
@@ -879,9 +850,9 @@ CREATE TABLE "dashapp_sportsdealsummary" (
 -- CreateTable
 CREATE TABLE "dashapp_states" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_by_id" BIGINT,
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "created_by" VARCHAR(60),
     "state" VARCHAR(50) NOT NULL,
 
@@ -891,9 +862,9 @@ CREATE TABLE "dashapp_states" (
 -- CreateTable
 CREATE TABLE "dashapp_subpersonality" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "name" VARCHAR(60) NOT NULL,
     "main_personality_id" BIGINT NOT NULL,
     "modified_by_id" BIGINT,
@@ -904,9 +875,9 @@ CREATE TABLE "dashapp_subpersonality" (
 -- CreateTable
 CREATE TABLE "dashapp_taglines" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -916,9 +887,9 @@ CREATE TABLE "dashapp_taglines" (
 -- CreateTable
 CREATE TABLE "dashapp_team" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "team_name" VARCHAR(512) NOT NULL,
     "year_of_inception" VARCHAR(512),
     "franchise_fee" DECIMAL,
@@ -1060,9 +1031,9 @@ CREATE TABLE "dashapp_team_tier" (
 -- CreateTable
 CREATE TABLE "dashapp_teamcontact" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "contact_name" VARCHAR(512) NOT NULL,
     "contact_designation" VARCHAR(512),
     "contact_email" VARCHAR(512),
@@ -1077,9 +1048,9 @@ CREATE TABLE "dashapp_teamcontact" (
 -- CreateTable
 CREATE TABLE "dashapp_teamendorsements" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "active" BOOLEAN NOT NULL,
     "modified_by_id" BIGINT,
     "team_id" BIGINT NOT NULL,
@@ -1091,9 +1062,9 @@ CREATE TABLE "dashapp_teamendorsements" (
 -- CreateTable
 CREATE TABLE "dashapp_teamowner" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -1103,9 +1074,9 @@ CREATE TABLE "dashapp_teamowner" (
 -- CreateTable
 CREATE TABLE "dashapp_territory" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "modified_by_id" BIGINT,
     "name" VARCHAR(512) NOT NULL,
 
@@ -1115,9 +1086,9 @@ CREATE TABLE "dashapp_territory" (
 -- CreateTable
 CREATE TABLE "dashapp_tier" (
     "id" BIGSERIAL NOT NULL,
-    "created_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "created_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" VARCHAR(60),
-    "modified_date" TIMESTAMP(3),
+    "modified_date" TIMESTAMP(3) NOT NULL,
     "name" VARCHAR(40) NOT NULL,
     "modified_by_id" BIGINT,
 
@@ -1267,18 +1238,6 @@ CREATE UNIQUE INDEX "sqlite_autoindex_dashapp_age_1" ON "dashapp_age"("age_range
 
 -- CreateIndex
 CREATE INDEX "dashapp_age_modified_by_id_67fff9b6" ON "dashapp_age"("modified_by_id");
-
--- CreateIndex
-CREATE INDEX "association_team_id_idx" ON "association"("team_id");
-
--- CreateIndex
-CREATE INDEX "association_league_info_id_idx" ON "association"("leagueInfo_id");
-
--- CreateIndex
-CREATE INDEX "association_athlete_id_idx" ON "association"("athlete_id");
-
--- CreateIndex
-CREATE INDEX "association_brand_id_idx" ON "association"("brand_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sqlite_autoindex_dashapp_agency_1" ON "dashapp_agency"("name");
@@ -2034,40 +1993,13 @@ ALTER TABLE "dashapp_age" ADD CONSTRAINT "dashapp_age_modified_by_id_fkey" FOREI
 ALTER TABLE "dashapp_metric" ADD CONSTRAINT "dashapp_metric_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "dashapp_metric" ADD CONSTRAINT "dashapp_metric_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
 ALTER TABLE "dashapp_metric" ADD CONSTRAINT "dashapp_metric_leagueinfo_id_fkey" FOREIGN KEY ("leagueinfo_id") REFERENCES "dashapp_leagueinfo"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "dashapp_metric" ADD CONSTRAINT "dashapp_metric_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "dashapp_metric" ADD CONSTRAINT "dashapp_metric_team_id_fkey" FOREIGN KEY ("team_id") REFERENCES "dashapp_team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association_level" ADD CONSTRAINT "association_level_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "association_level" ADD CONSTRAINT "association_level_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_association_level_id_fkey" FOREIGN KEY ("association_level_id") REFERENCES "association_level"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_team_id_fkey" FOREIGN KEY ("team_id") REFERENCES "dashapp_team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_leagueInfo_id_fkey" FOREIGN KEY ("leagueInfo_id") REFERENCES "dashapp_leagueinfo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_athlete_id_fkey" FOREIGN KEY ("athlete_id") REFERENCES "dashapp_athlete"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_brand_id_fkey" FOREIGN KEY ("brand_id") REFERENCES "dashapp_companydata"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "association" ADD CONSTRAINT "association_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "dashapp_agency" ADD CONSTRAINT "dashapp_agency_modified_by_id_fkey" FOREIGN KEY ("modified_by_id") REFERENCES "auth_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
