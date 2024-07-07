@@ -406,8 +406,8 @@ model dashapp_athlete_personality_traits {
 model dashapp_athlete_target_age {
     id              BigInt          @id @default(autoincrement())
     athlete_id      BigInt
-    age_id          BigInt
-    dashapp_age     dashapp_age     @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    age_id          BigInt?
+    dashapp_age     dashapp_age?    @relation(fields: [age_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([athlete_id, age_id], map: "dashapp_athlete_target_age_athlete_id_age_id_6741741d_uniq")
@@ -595,8 +595,8 @@ model dashapp_companydata_active_campaigns {
 model dashapp_companydata_age {
     id                  BigInt              @id @default(autoincrement())
     companydata_id      BigInt
-    age_id              BigInt
-    dashapp_age         dashapp_age         @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    age_id              BigInt?
+    dashapp_age         dashapp_age?        @relation(fields: [age_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([companydata_id, age_id], map: "dashapp_companydata_age_companydata_id_age_id_bc1a8f03_uniq")
@@ -902,8 +902,8 @@ model dashapp_leagueinfo_active_campaigns {
 model dashapp_leagueinfo_age {
     id                 BigInt             @id @default(autoincrement())
     leagueinfo_id      BigInt
-    age_id             BigInt
-    dashapp_age        dashapp_age        @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    age_id             BigInt?
+    dashapp_age        dashapp_age?       @relation(fields: [age_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([leagueinfo_id, age_id], map: "dashapp_leagueinfo_age_leagueinfo_id_age_id_0cf79630_uniq")
@@ -1319,8 +1319,8 @@ model dashapp_team_active_campaigns {
 model dashapp_team_age {
     id           BigInt       @id @default(autoincrement())
     team_id      BigInt
-    age_id       BigInt
-    dashapp_age  dashapp_age  @relation(fields: [age_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    age_id       BigInt?
+    dashapp_age  dashapp_age? @relation(fields: [age_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_team dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([team_id, age_id], map: "dashapp_team_age_team_id_age_id_77b469fe_uniq")
