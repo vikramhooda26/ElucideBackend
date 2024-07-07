@@ -40,65 +40,67 @@ model auth_permission {
 }
 
 model auth_user {
-    id                            BigInt                       @id @default(autoincrement())
-    password                      String                       @db.VarChar(128)
-    last_login                    DateTime?                    @db.Timestamp(6)
-    is_superuser                  Boolean
-    username                      String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
-    last_name                     String                       @db.VarChar(150)
-    email                         String                       @db.VarChar(254)
-    is_staff                      Boolean
-    is_active                     Boolean
-    date_joined                   DateTime                     @db.Timestamp(6)
-    first_name                    String                       @db.VarChar(150)
-    auth_user_groups              auth_user_groups[]
-    auth_user_user_permissions    auth_user_user_permissions[]
-    dashapp_activation            dashapp_activation[]
-    dashapp_activecampaigns       dashapp_activecampaigns[]
-    dashapp_age                   dashapp_age[]
-    dashapp_agency                dashapp_agency[]
-    dashapp_assets                dashapp_assets[]
-    dashapp_athlete               dashapp_athlete[]
-    dashapp_athletecontact        dashapp_athletecontact[]
-    dashapp_brandcontact          dashapp_brandcontact[]
-    dashapp_brandendorsements     dashapp_brandendorsements[]
-    dashapp_broadcastpartner      dashapp_broadcastpartner[]
-    dashapp_category              dashapp_category[]
-    dashapp_companydata           dashapp_companydata[]
-    dashapp_gender                dashapp_gender[]
-    dashapp_hqcity                dashapp_hqcity[]
-    dashapp_income                dashapp_income[]
-    dashapp_keymarket             dashapp_keymarket[]
-    dashapp_league                dashapp_league[]
-    dashapp_leaguecontact         dashapp_leaguecontact[]
-    dashapp_leagueendorsements    dashapp_leagueendorsements[]
-    dashapp_leagueinfo            dashapp_leagueinfo[]
-    dashapp_leagueowner           dashapp_leagueowner[]
-    dashapp_level                 dashapp_level[]
-    dashapp_mainpersonality       dashapp_mainpersonality[]
-    dashapp_marketingplatform     dashapp_marketingplatform[]
-    dashapp_ottpartner            dashapp_ottpartner[]
-    dashapp_parentorg             dashapp_parentorg[]
-    dashapp_partner               dashapp_partner[]
-    dashapp_property              dashapp_property[]
-    dashapp_sport                 dashapp_sport[]
-    dashapp_sportsdealsummary     dashapp_sportsdealsummary[]
-    dashapp_states                dashapp_states[]
-    dashapp_subpersonality        dashapp_subpersonality[]
-    dashapp_taglines              dashapp_taglines[]
-    dashapp_team                  dashapp_team[]
-    dashapp_teamcontact           dashapp_teamcontact[]
-    dashapp_teamendorsements      dashapp_teamendorsements[]
-    dashapp_teamowner             dashapp_teamowner[]
-    dashapp_territory             dashapp_territory[]
-    dashapp_tier                  dashapp_tier[]
-    django_admin_log              django_admin_log[]
-    dashapp_metric_created_by     dashapp_metric[]             @relation(name: "created_by")
-    dashapp_metric_modified_by    dashapp_metric[]             @relation(name: "modified_by")
-    association_level_created_by  association_level[]          @relation(name: "created_by")
-    association_level_modified_by association_level[]          @relation(name: "modified_by")
-    association_created_by        association[]                @relation(name: "created_by")
-    association_modified_by       association[]                @relation(name: "modified_by")
+    id                                 BigInt                       @id @default(autoincrement())
+    password                           String                       @db.VarChar(128)
+    last_login                         DateTime?                    @db.Timestamp(6)
+    is_superuser                       Boolean
+    username                           String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    last_name                          String                       @db.VarChar(150)
+    email                              String                       @db.VarChar(254)
+    is_staff                           Boolean
+    is_active                          Boolean
+    date_joined                        DateTime                     @db.Timestamp(6)
+    first_name                         String                       @db.VarChar(150)
+    auth_user_groups                   auth_user_groups[]
+    auth_user_user_permissions         auth_user_user_permissions[]
+    dashapp_activation                 dashapp_activation[]
+    dashapp_activecampaigns            dashapp_activecampaigns[]
+    dashapp_age                        dashapp_age[]
+    dashapp_agency                     dashapp_agency[]
+    dashapp_assets                     dashapp_assets[]
+    dashapp_athlete                    dashapp_athlete[]
+    dashapp_athletecontact             dashapp_athletecontact[]
+    dashapp_brandcontact               dashapp_brandcontact[]
+    dashapp_brandendorsements          dashapp_brandendorsements[]
+    dashapp_broadcastpartner           dashapp_broadcastpartner[]
+    dashapp_category                   dashapp_category[]
+    dashapp_companydata                dashapp_companydata[]
+    dashapp_gender                     dashapp_gender[]
+    dashapp_hqcity                     dashapp_hqcity[]
+    dashapp_income                     dashapp_income[]
+    dashapp_keymarket                  dashapp_keymarket[]
+    dashapp_league                     dashapp_league[]
+    dashapp_leaguecontact              dashapp_leaguecontact[]
+    dashapp_leagueendorsements         dashapp_leagueendorsements[]
+    dashapp_leagueinfo                 dashapp_leagueinfo[]
+    dashapp_leagueowner                dashapp_leagueowner[]
+    dashapp_level                      dashapp_level[]
+    dashapp_mainpersonality            dashapp_mainpersonality[]
+    dashapp_marketingplatform          dashapp_marketingplatform[]
+    dashapp_ottpartner                 dashapp_ottpartner[]
+    dashapp_parentorg                  dashapp_parentorg[]
+    dashapp_partner                    dashapp_partner[]
+    dashapp_property                   dashapp_property[]
+    dashapp_sport                      dashapp_sport[]
+    dashapp_sportsdealsummary          dashapp_sportsdealsummary[]
+    dashapp_states                     dashapp_states[]
+    dashapp_subpersonality             dashapp_subpersonality[]
+    dashapp_taglines                   dashapp_taglines[]
+    dashapp_team                       dashapp_team[]
+    dashapp_teamcontact                dashapp_teamcontact[]
+    dashapp_teamendorsements           dashapp_teamendorsements[]
+    dashapp_teamowner                  dashapp_teamowner[]
+    dashapp_territory                  dashapp_territory[]
+    dashapp_tier                       dashapp_tier[]
+    django_admin_log                   django_admin_log[]
+    dashapp_metric_created_by          dashapp_metric[]             @relation(name: "created_by")
+    dashapp_metric_modified_by         dashapp_metric[]             @relation(name: "modified_by")
+    association_level_created_by       association_level[]          @relation(name: "created_by")
+    association_level_modified_by      association_level[]          @relation(name: "modified_by")
+    association_created_by             association[]                @relation(name: "created_by")
+    association_modified_by            association[]                @relation(name: "modified_by")
+    dashapp_athlete_status_created_by  dashapp_athlete_status[]     @relation(name: "created_by")
+    dashapp_athlete_status_modified_by dashapp_athlete_status[]     @relation(name: "modified_by")
 }
 
 model auth_user_groups {
@@ -331,6 +333,8 @@ model dashapp_athlete {
     agency_id                             BigInt?
     modified_by_id                        BigInt?
     sport_id                              BigInt?
+    status_id                             BigInt?
+    status                                dashapp_athlete_status?                 @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     youtube                               String?                                 @db.VarChar(512)
     dashapp_activation                    dashapp_activation[]
     dashapp_agency                        dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -351,6 +355,18 @@ model dashapp_athlete {
     @@index([agency_id], map: "dashapp_athlete_agency_id_50deebaa")
     @@index([modified_by_id], map: "dashapp_athlete_modified_by_id_b04f0216")
     @@index([sport_id], map: "dashapp_athlete_sport_id_13503f1a")
+}
+
+model dashapp_athlete_status {
+    id              BigInt            @id @default(autoincrement())
+    created_date    DateTime          @default(now())
+    modified_date   DateTime?         @updatedAt
+    created_by_id   BigInt?
+    modified_by_id  BigInt?
+    status          String            @unique
+    created_by      auth_user?        @relation(name: "created_by", fields: [created_by_id], references: [id])
+    modified_by     auth_user?        @relation(name: "modified_by", fields: [modified_by_id], references: [id])
+    dashapp_athlete dashapp_athlete[]
 }
 
 model dashapp_athlete_key_markets_primary {

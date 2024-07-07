@@ -21,10 +21,14 @@ app.use(express.urlencoded({ extended: true }));
 
 // async function main() {
 //   try {
-//     await prisma.dashapp_age.deleteMany({
-//       where: { OR: [{ id: 6 }, { id: 7 }] },
+//     await prisma.dashapp_athlete_status.createMany({
+//       data: [
+//         { status: "Active" },
+//         { status: "Retired" },
+//         { status: "Non-Playing Personality" },
+//       ],
 //     });
-//     console.log("successfully deleted");
+//     console.log("successfully added status");
 //   } catch (error) {
 //     console.error(error);
 //   }
