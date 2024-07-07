@@ -324,6 +324,7 @@ model dashapp_athlete {
     created_by                            String?                                 @db.VarChar(60)
     modified_date                         DateTime?                               @updatedAt
     athlete_name                          String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
+    age                                   Int?
     nationality                           String?                                 @db.VarChar(512)
     instagram                             String?                                 @db.VarChar(512)
     facebook                              String?                                 @db.VarChar(512)
@@ -334,6 +335,8 @@ model dashapp_athlete {
     modified_by_id                        BigInt?
     sport_id                              BigInt?
     status_id                             BigInt?
+    state_id                              BigInt?
+    state                                 dashapp_states?                         @relation(fields: [state_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     status                                dashapp_athlete_status?                 @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     youtube                               String?                                 @db.VarChar(512)
     dashapp_activation                    dashapp_activation[]
@@ -1226,6 +1229,7 @@ model dashapp_states {
     dashapp_leagueinfo_key_markets_tertiary  dashapp_leagueinfo_key_markets_tertiary[]
     auth_user                                auth_user?                                 @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team_key_markets_tertiary        dashapp_team_key_markets_tertiary[]
+    dashapp_athlete                          dashapp_athlete[]
 
     @@index([modified_by_id], map: "dashapp_states_modified_by_id_3acf32e3")
 }
