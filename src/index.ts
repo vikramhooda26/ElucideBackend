@@ -21,16 +21,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // async function main() {
 //   try {
-//     await prisma.dashapp_keyplatform.createMany({
+//     await prisma.dashapp_subcategory.createMany({
 //       data: [
-//         { platform: "Instagram" },
-//         { platform: "Facebook" },
-//         { platform: "X" },
-//         { platform: "YouTube" },
-//         { platform: "LinkedIn" },
+//         { subcategory: "TV Channels", category_id: 39 },
+//         { subcategory: "Radio", category_id: 39 },
+//         { subcategory: "Print", category_id: 39 },
+//         { subcategory: "OOH", category_id: 39 },
+//         { subcategory: "Social Media Platforms", category_id: 39 },
 //       ],
 //     });
-//     console.log("successfully added status");
+//     console.log("successfully added categories");
 //   } catch (error) {
 //     console.error(error);
 //   }
@@ -38,6 +38,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // await main();
 
-app.listen(port, () =>
-  console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
-);
+// app.listen(port, () =>
+//   console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
+// );

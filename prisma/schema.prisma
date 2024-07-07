@@ -57,7 +57,6 @@ model auth_user {
     dashapp_activecampaigns            dashapp_activecampaigns[]
     dashapp_age                        dashapp_age[]
     dashapp_agency                     dashapp_agency[]
-    dashapp_assets                     dashapp_assets[]
     dashapp_athlete                    dashapp_athlete[]
     dashapp_athletecontact             dashapp_athletecontact[]
     dashapp_brandcontact               dashapp_brandcontact[]
@@ -106,6 +105,8 @@ model auth_user {
     dashapp_keyplatform_modified_by    dashapp_keyplatform[]        @relation(name: "modified_by")
     dashapp_subcategory_created_by     dashapp_subcategory[]        @relation(name: "created_by")
     dashapp_subcategory_modified_by    dashapp_subcategory[]        @relation(name: "modified_by")
+    dashapp_assets_created_by          dashapp_assets[]             @relation(name: "created_by")
+    dashapp_assets_modified_by         dashapp_assets[]             @relation(name: "modified_by")
 }
 
 model auth_user_groups {
@@ -133,26 +134,25 @@ model auth_user_user_permissions {
 }
 
 model dashapp_activation {
-    id                          BigInt                        @id @default(autoincrement())
-    created_date                DateTime?                     @default(now())
-    created_by                  String?                       @db.VarChar(60)
-    modified_date               DateTime?                     @updatedAt
-    Year                        String?                       @db.VarChar(32)
-    brand_id                    BigInt?
-    league_id                   BigInt?
-    modified_by_id              BigInt?
-    team_id                     BigInt?
-    athlete_id                  BigInt?
-    name                        String?                       @db.VarChar(512)
-    dashapp_athlete             dashapp_athlete?              @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_companydata         dashapp_companydata?          @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo          dashapp_leagueinfo?           @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    auth_user                   auth_user?                    @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team                dashapp_team?                 @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_activation_assets   dashapp_activation_assets[]
-    dashapp_activation_market   dashapp_activation_market[]
-    dashapp_activation_property dashapp_activation_property[]
-    dashapp_activation_type     dashapp_activation_type[]
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime?                   @default(now())
+    created_by                String?                     @db.VarChar(60)
+    modified_date             DateTime?                   @updatedAt
+    Year                      String?                     @db.VarChar(32)
+    brand_id                  BigInt?
+    league_id                 BigInt?
+    modified_by_id            BigInt?
+    team_id                   BigInt?
+    athlete_id                BigInt?
+    name                      String?                     @db.VarChar(512)
+    dashapp_athlete           dashapp_athlete?            @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata       dashapp_companydata?        @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo        dashapp_leagueinfo?         @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user                 auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team              dashapp_team?               @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_activation_assets dashapp_activation_assets[]
+    dashapp_activation_market dashapp_activation_market[]
+    dashapp_activation_type   dashapp_activation_type[]
 
     @@index([athlete_id], map: "dashapp_activation_athlete_id_5a5f74c2")
     @@index([brand_id], map: "dashapp_activation_brand_id_26863c7c")
@@ -183,18 +183,6 @@ model dashapp_activation_market {
     @@unique([activation_id, states_id], map: "dashapp_activation_market_activation_id_states_id_183f6a91_uniq")
     @@index([activation_id], map: "dashapp_activation_market_activation_id_96b431ca")
     @@index([states_id], map: "dashapp_activation_market_states_id_c9a25e38")
-}
-
-model dashapp_activation_property {
-    id                 BigInt             @id @default(autoincrement())
-    activation_id      BigInt
-    property_id        BigInt
-    dashapp_activation dashapp_activation @relation(fields: [activation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_property   dashapp_property   @relation(fields: [property_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-    @@unique([activation_id, property_id], map: "dashapp_activation_property_activation_id_property_id_6abe3c06_")
-    @@index([activation_id], map: "dashapp_activation_property_activation_id_450c90ea")
-    @@index([property_id], map: "dashapp_activation_property_property_id_4ed0ce2c")
 }
 
 model dashapp_activation_type {
@@ -296,6 +284,33 @@ model association {
     @@index([brand_id], map: "association_brand_id_idx")
 }
 
+model dashapp_sportsdeal_assets {
+    sportsdeal_id BigInt
+    asset_id      BigInt
+
+    dashapp_sportsdealsummary dashapp_sportsdealsummary @relation(fields: [sportsdeal_id], references: [id], onDelete: Cascade)
+    dashapp_assets            dashapp_assets            @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+
+    @@id([sportsdeal_id, asset_id])
+    @@index([asset_id], map: "dashapp_sportsdeal_assets_asset_id_idx")
+    @@index([sportsdeal_id], map: "dashapp_sportsdeal_assets_sportsdeal_id_idx")
+}
+
+model dashapp_assets {
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime                    @default(now())
+    modified_date             DateTime?                   @updatedAt
+    created_by_id             BigInt?
+    modified_by_id            BigInt?
+    created_by                auth_user?                  @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_by               auth_user?                  @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    asset                     String                      @unique(map: "sqlite_autoindex_dashapp_assets_1") @db.VarChar(512)
+    dashapp_activation_assets dashapp_activation_assets[]
+    sportsdeals               dashapp_sportsdeal_assets[]
+
+    @@index([modified_by_id], map: "dashapp_assets_modified_by_id_3abba2bb")
+}
+
 model dashapp_agency {
     id                  BigInt                @id @default(autoincrement())
     created_date        DateTime?             @default(now())
@@ -308,19 +323,6 @@ model dashapp_agency {
     dashapp_companydata dashapp_companydata[]
 
     @@index([modified_by_id], map: "dashapp_agency_modified_by_id_c3305979")
-}
-
-model dashapp_assets {
-    id                        BigInt                      @id @default(autoincrement())
-    created_date              DateTime?                   @default(now())
-    created_by                String?                     @db.VarChar(60)
-    modified_date             DateTime?                   @updatedAt
-    modified_by_id            BigInt?
-    name                      String                      @unique(map: "sqlite_autoindex_dashapp_assets_1") @db.VarChar(512)
-    dashapp_activation_assets dashapp_activation_assets[]
-    auth_user                 auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-    @@index([modified_by_id], map: "dashapp_assets_modified_by_id_3abba2bb")
 }
 
 model dashapp_athlete {
@@ -1193,14 +1195,13 @@ model dashapp_partner {
 }
 
 model dashapp_property {
-    id                          BigInt                        @id @default(autoincrement())
-    created_date                DateTime?                     @default(now())
-    created_by                  String?                       @db.VarChar(60)
-    modified_date               DateTime?                     @updatedAt
-    modified_by_id              BigInt?
-    name                        String                        @unique(map: "sqlite_autoindex_dashapp_property_1") @db.VarChar(512)
-    dashapp_activation_property dashapp_activation_property[]
-    auth_user                   auth_user?                    @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id             BigInt     @id @default(autoincrement())
+    created_date   DateTime?  @default(now())
+    created_by     String?    @db.VarChar(60)
+    modified_date  DateTime?  @updatedAt
+    modified_by_id BigInt?
+    name           String     @unique(map: "sqlite_autoindex_dashapp_property_1") @db.VarChar(512)
+    auth_user      auth_user? @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@index([modified_by_id], map: "dashapp_property_modified_by_id_159f6568")
 }
@@ -1221,31 +1222,32 @@ model dashapp_sport {
 }
 
 model dashapp_sportsdealsummary {
-    id                  BigInt               @id @default(autoincrement())
-    created_date        DateTime?            @default(now())
-    created_by          String?              @db.VarChar(60)
-    modified_date       DateTime?            @updatedAt
-    type                String               @db.VarChar(32)
-    status              String?              @db.VarChar(32)
-    commencement_date   String?              @db.VarChar(32)
-    expiration_date     String?              @db.VarChar(32)
-    duration            String?              @db.VarChar(32)
-    annual_value        Decimal?             @db.Decimal
-    total_value         Decimal?             @db.Decimal
-    territory           String?              @db.VarChar(32)
+    id                  BigInt                      @id @default(autoincrement())
+    created_date        DateTime?                   @default(now())
+    created_by          String?                     @db.VarChar(60)
+    modified_date       DateTime?                   @updatedAt
+    type                String                      @db.VarChar(32)
+    status              String?                     @db.VarChar(32)
+    commencement_date   String?                     @db.VarChar(32)
+    expiration_date     String?                     @db.VarChar(32)
+    duration            String?                     @db.VarChar(32)
+    annual_value        Decimal?                    @db.Decimal
+    total_value         Decimal?                    @db.Decimal
+    territory           String?                     @db.VarChar(32)
     brand_id            BigInt?
     league_id           BigInt?
     level_id            BigInt?
     modified_by_id      BigInt?
     team_id             BigInt?
     athlete_id          BigInt?
-    media_link          String?              @db.VarChar(512)
-    dashapp_athlete     dashapp_athlete?     @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_companydata dashapp_companydata? @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo  dashapp_leagueinfo?  @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_level       dashapp_level?       @relation(fields: [level_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    auth_user           auth_user?           @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team        dashapp_team?        @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    media_link          String?                     @db.VarChar(512)
+    assets              dashapp_sportsdeal_assets[]
+    dashapp_athlete     dashapp_athlete?            @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_companydata dashapp_companydata?        @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo  dashapp_leagueinfo?         @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_level       dashapp_level?              @relation(fields: [level_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    auth_user           auth_user?                  @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team        dashapp_team?               @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@index([athlete_id], map: "dashapp_sportsdealsummary_athlete_id_0b3f96ad")
     @@index([brand_id], map: "dashapp_sportsdealsummary_brand_id_8f2c9d3f")
