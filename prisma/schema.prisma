@@ -63,7 +63,8 @@ model auth_user {
     dashapp_brandcontact               dashapp_brandcontact[]
     dashapp_brandendorsements          dashapp_brandendorsements[]
     dashapp_broadcastpartner           dashapp_broadcastpartner[]
-    dashapp_category                   dashapp_category[]
+    dashapp_category_created_by        dashapp_category[]           @relation(name: "created_by")
+    dashapp_category_modified_by       dashapp_category[]           @relation(name: "modified_by")
     dashapp_companydata                dashapp_companydata[]
     dashapp_gender                     dashapp_gender[]
     dashapp_hqcity                     dashapp_hqcity[]
@@ -103,6 +104,8 @@ model auth_user {
     dashapp_athlete_status_modified_by dashapp_athlete_status[]     @relation(name: "modified_by")
     dashapp_keyplatform_created_by     dashapp_keyplatform[]        @relation(name: "created_by")
     dashapp_keyplatform_modified_by    dashapp_keyplatform[]        @relation(name: "modified_by")
+    dashapp_subcategory_created_by     dashapp_subcategory[]        @relation(name: "created_by")
+    dashapp_subcategory_modified_by    dashapp_subcategory[]        @relation(name: "modified_by")
 }
 
 model auth_user_groups {
@@ -543,15 +546,32 @@ model dashapp_broadcastpartner {
 
 model dashapp_category {
     id                  BigInt                @id @default(autoincrement())
-    created_date        DateTime?             @default(now())
-    created_by          String?               @db.VarChar(60)
+    created_date        DateTime              @default(now())
     modified_date       DateTime?             @updatedAt
+    created_by_id       BigInt?
     modified_by_id      BigInt?
-    name                String                @unique(map: "sqlite_autoindex_dashapp_category_1") @db.VarChar(512)
-    auth_user           auth_user?            @relation(fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    category            String                @unique(map: "sqlite_autoindex_dashapp_category_1") @db.VarChar(512)
+    created_by          auth_user?            @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_by         auth_user?            @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_companydata dashapp_companydata[]
+    dashapp_subcategory dashapp_subcategory[]
 
     @@index([modified_by_id], map: "dashapp_category_modified_by_id_b813aa82")
+}
+
+model dashapp_subcategory {
+    id             BigInt           @id @default(autoincrement())
+    created_date   DateTime         @default(now())
+    modified_date  DateTime?        @updatedAt
+    created_by_id  BigInt?
+    modified_by_id BigInt?
+    subcategory    String           @unique
+    category_id    BigInt
+    category       dashapp_category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    created_by     auth_user?       @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_by    auth_user?       @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+    @@index([created_by_id, modified_by_id])
 }
 
 model dashapp_companydata {
