@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { prisma } from "./db/index.js";
+// import { prisma } from "./db/index.js";
 
 dotenv.config();
 const app = express();
@@ -19,18 +19,18 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-async function main() {
-  try {
-    await prisma.dashapp_age.deleteMany({
-      where: { OR: [{ id: 6 }, { id: 7 }] },
-    });
-    console.log("successfully deleted");
-  } catch (error) {
-    console.error(error);
-  }
-}
+// async function main() {
+//   try {
+//     await prisma.dashapp_age.deleteMany({
+//       where: { OR: [{ id: 6 }, { id: 7 }] },
+//     });
+//     console.log("successfully deleted");
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
-await main();
+// await main();
 
 app.listen(port, () =>
   console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),

@@ -331,8 +331,6 @@ model dashapp_athlete {
     agency_id                             BigInt?
     modified_by_id                        BigInt?
     sport_id                              BigInt?
-    budget_range_from                     Float?
-    budget_range_to                       Float?
     youtube                               String?                                 @db.VarChar(512)
     dashapp_activation                    dashapp_activation[]
     dashapp_agency                        dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -853,8 +851,6 @@ model dashapp_leagueinfo {
     ott_partner_id                                   BigInt?
     sport_id                                         BigInt?
     property_name                                    String                                             @unique(map: "sqlite_autoindex_dashapp_leagueinfo_1") @db.VarChar(512)
-    budget_range_from                                Float?
-    budget_range_to                                  Float?
     youtube                                          String?                                            @db.VarChar(512)
     dashapp_activation                               dashapp_activation[]
     dashapp_leaguecontact                            dashapp_leaguecontact[]
@@ -1271,8 +1267,6 @@ model dashapp_team {
     league_id                                  BigInt?
     modified_by_id                             BigInt?
     sport_id                                   BigInt?
-    budget_range_from                          Float?
-    budget_range_to                            Float?
     youtube                                    String?                                      @db.VarChar(512)
     dashapp_activation                         dashapp_activation[]
     dashapp_sportsdealsummary                  dashapp_sportsdealsummary[]
