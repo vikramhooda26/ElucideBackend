@@ -442,9 +442,9 @@ model dashapp_athlete_target_income {
 model dashapp_athlete_tier {
     id              BigInt          @id @default(autoincrement())
     athlete_id      BigInt
-    tier_id         BigInt
+    tier_id         BigInt?
     dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_tier    dashapp_tier    @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier    dashapp_tier?   @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([athlete_id, tier_id], map: "dashapp_athlete_tier_athlete_id_tier_id_d69bb0ef_uniq")
     @@index([athlete_id], map: "dashapp_athlete_tier_athlete_id_b973a60b")
@@ -713,9 +713,9 @@ model dashapp_companydata_taglines {
 model dashapp_companydata_tier {
     id                  BigInt              @id @default(autoincrement())
     companydata_id      BigInt
-    tier_id             BigInt
+    tier_id             BigInt?
     dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_tier        dashapp_tier        @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier        dashapp_tier?       @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([companydata_id, tier_id], map: "dashapp_companydata_tier_companydata_id_tier_id_bb150350_uniq")
     @@index([companydata_id], map: "dashapp_companydata_tier_companydata_id_fb5ce29c")
@@ -1033,9 +1033,9 @@ model dashapp_leagueinfo_taglines {
 model dashapp_leagueinfo_tier {
     id                 BigInt             @id @default(autoincrement())
     leagueinfo_id      BigInt
-    tier_id            BigInt
+    tier_id            BigInt?
     dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_tier       dashapp_tier       @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier       dashapp_tier?      @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([leagueinfo_id, tier_id], map: "dashapp_leagueinfo_tier_leagueinfo_id_tier_id_f1cc24bc_uniq")
     @@index([leagueinfo_id], map: "dashapp_leagueinfo_tier_leagueinfo_id_0e1fa959")
@@ -1449,11 +1449,11 @@ model dashapp_team_taglines {
 }
 
 model dashapp_team_tier {
-    id           BigInt       @id @default(autoincrement())
+    id           BigInt        @id @default(autoincrement())
     team_id      BigInt
-    tier_id      BigInt
-    dashapp_team dashapp_team @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_tier dashapp_tier @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    tier_id      BigInt?
+    dashapp_team dashapp_team  @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_tier dashapp_tier? @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@unique([team_id, tier_id], map: "dashapp_team_tier_team_id_tier_id_2978b40f_uniq")
     @@index([team_id], map: "dashapp_team_tier_team_id_ee72e812")
