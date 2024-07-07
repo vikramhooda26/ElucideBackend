@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-// import { prisma } from "./db/index.js";
+import { prisma } from "./db/index.js";
 
 dotenv.config();
 const app = express();
@@ -19,22 +19,24 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// async function main() {
-//   try {
-//     await prisma.dashapp_athlete_status.createMany({
-//       data: [
-//         { status: "Active" },
-//         { status: "Retired" },
-//         { status: "Non-Playing Personality" },
-//       ],
-//     });
-//     console.log("successfully added status");
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+async function main() {
+  try {
+    await prisma.dashapp_keyplatform.createMany({
+      data: [
+        { platform: "Instagram" },
+        { platform: "Facebook" },
+        { platform: "X" },
+        { platform: "YouTube" },
+        { platform: "LinkedIn" },
+      ],
+    });
+    console.log("successfully added status");
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-// await main();
+await main();
 
 app.listen(port, () =>
   console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),

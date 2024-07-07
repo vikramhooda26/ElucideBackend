@@ -101,6 +101,8 @@ model auth_user {
     association_modified_by            association[]                @relation(name: "modified_by")
     dashapp_athlete_status_created_by  dashapp_athlete_status[]     @relation(name: "created_by")
     dashapp_athlete_status_modified_by dashapp_athlete_status[]     @relation(name: "modified_by")
+    dashapp_keyplatform_created_by     dashapp_keyplatform[]        @relation(name: "created_by")
+    dashapp_keyplatform_modified_by    dashapp_keyplatform[]        @relation(name: "modified_by")
 }
 
 model auth_user_groups {
@@ -336,6 +338,10 @@ model dashapp_athlete {
     sport_id                              BigInt?
     status_id                             BigInt?
     state_id                              BigInt?
+    keyplatform_primary_id                BigInt?
+    keyplatform_primary                   dashapp_keyplatform?                    @relation(name: "primary", fields: [keyplatform_primary_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    keyplatform_secondary_id              BigInt?
+    keyplatform_secondary                 dashapp_keyplatform?                    @relation(name: "secondary", fields: [keyplatform_secondary_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     state                                 dashapp_states?                         @relation(fields: [state_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     status                                dashapp_athlete_status?                 @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     youtube                               String?                                 @db.VarChar(512)
@@ -783,6 +789,19 @@ model dashapp_income {
     dashapp_team_income           dashapp_team_income[]
 
     @@index([modified_by_id], map: "dashapp_income_modified_by_id_a4631d6c")
+}
+
+model dashapp_keyplatform {
+    id                        BigInt            @id @default(autoincrement())
+    created_date              DateTime          @default(now())
+    modified_date             DateTime?         @updatedAt
+    created_by_id             BigInt?
+    modified_by_id            BigInt?
+    created_by                auth_user?        @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_by               auth_user?        @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    platform                  String            @unique
+    dashapp_athlete_primary   dashapp_athlete[] @relation(name: "primary")
+    dashapp_athlete_secondary dashapp_athlete[] @relation(name: "secondary")
 }
 
 model dashapp_keymarket {
