@@ -107,6 +107,15 @@ model auth_user {
     dashapp_subcategory_modified_by    dashapp_subcategory[]        @relation(name: "modified_by")
     dashapp_assets_created_by          dashapp_assets[]             @relation(name: "created_by")
     dashapp_assets_modified_by         dashapp_assets[]             @relation(name: "modified_by")
+    refresh_token                      refresh_token[]
+}
+
+model refresh_token {
+    id           BigInt    @id @default(autoincrement())
+    created_date DateTime  @default(now())
+    token        String
+    user_id      BigInt
+    user         auth_user @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model auth_user_groups {
