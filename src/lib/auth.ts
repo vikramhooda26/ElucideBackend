@@ -25,14 +25,14 @@ export const generateRefreshToken = async (user: TUser) => {
     return refreshToken;
 };
 
-export const validatePassword = async (
+export const verifyPassword = async (
     password: string,
     hashedPassword: string,
 ): Promise<boolean> => {
     return await bcrypt.compare(password, hashedPassword);
 };
 
-export const userExists = async (username: string) => {
+export const checkUserExistence = async (username: string) => {
     const user = await prisma.auth_user.findFirst({
         where: { username },
         select: {
