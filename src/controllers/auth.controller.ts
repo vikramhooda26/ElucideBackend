@@ -42,11 +42,11 @@ export const loginController = asyncHandler(async (req, res) => {
     }
 
     const csrf = generateAccessToken({
-        id: JSON.stringify(user.id),
+        id: Number(user.id),
         username: user.username,
     });
     const refreshToken = generateRefreshToken({
-        id: JSON.stringify(user.id),
+        id: Number(user.id),
         username: user.username,
     });
 

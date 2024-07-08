@@ -1,6 +1,7 @@
 import { prisma } from "../db/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { tokenManager } from "../managers/TokenManager.js";
 
 const ACCESS_TOKEN_SECRET =
     process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
@@ -8,20 +9,33 @@ const REFRESH_TOKEN_SECRET =
     process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
 
 type TUser = {
-    id: string;
+    id: number;
     username: string;
 };
 
 export const generateAccessToken = (user: TUser) => {
-    return jwt.sign(user, ACCESS_TOKEN_SECRET, {
+    const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
         expiresIn: "30m",
     });
+
+    tokenManager.setToken(user.id, accessToken);
+    return accessToken;
 };
 
 export const generateRefreshToken = async (user: TUser) => {
     const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-    // add logic to push the refreshToken to database
+    await prisma.refresh_token.create({
+        data: {
+            token: refreshToken,
+            user: {
+                connect: {
+                    id: user.id,
+                },
+            },
+        },
+    });
+
     return refreshToken;
 };
 
