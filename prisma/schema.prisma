@@ -47,6 +47,7 @@ model auth_user {
     username                           String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
     last_name                          String                       @db.VarChar(150)
     email                              String                       @db.VarChar(254)
+    role                               role                         @default(USER)
     is_staff                           Boolean
     is_active                          Boolean
     date_joined                        DateTime                     @db.Timestamp(6)
@@ -1645,4 +1646,11 @@ model django_session {
 enum viewship_type {
     OTT
     BROADCAST
+}
+
+enum role {
+    SUPER_ADMIN
+    ADMIN
+    STAFF
+    USER
 }
