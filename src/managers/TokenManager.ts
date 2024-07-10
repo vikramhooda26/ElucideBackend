@@ -1,6 +1,6 @@
 class TokenManager {
     private static instance: TokenManager;
-    private tokenStore: Map<Number, string>;
+    private tokenStore: Map<number, string>;
 
     private constructor() {
         this.tokenStore = new Map<number, string>();

@@ -58,5 +58,8 @@ export const loginController = asyncHandler(async (req, res) => {
     res.cookie(COOKIE_NAME.CSRF, csrf, cookieOptions);
     res.cookie(COOKIE_NAME.REFRESH_TOKEN, refreshToken, cookieOptions);
 
-    res.status(200).send("Logged in");
+    res.status(200).json({
+        userId: user.id,
+        username: user.username,
+    });
 });
