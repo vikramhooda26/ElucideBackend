@@ -1,4 +1,3 @@
-import { CookieOptions } from "express";
 import asyncHandler from "express-async-handler";
 import z from "zod";
 import {
@@ -6,6 +5,7 @@ import {
     generateRefreshToken,
     checkUserExistence,
     verifyPassword,
+    cookieOptions,
 } from "../lib/auth.js";
 import { COOKIE_NAME } from "../lib/constants.js";
 
@@ -44,16 +44,13 @@ export const loginController = asyncHandler(async (req, res) => {
     const csrf = generateAccessToken({
         id: Number(user.id),
         username: user.username,
+        role: user.role,
     });
     const refreshToken = generateRefreshToken({
         id: Number(user.id),
         username: user.username,
+        role: user.role,
     });
-
-    const cookieOptions = {
-        httpOnly: true,
-        secure: true,
-    } satisfies CookieOptions;
 
     res.cookie(COOKIE_NAME.CSRF, csrf, cookieOptions);
     res.cookie(COOKIE_NAME.REFRESH_TOKEN, refreshToken, cookieOptions);
@@ -61,5 +58,6 @@ export const loginController = asyncHandler(async (req, res) => {
     res.status(200).json({
         userId: user.id,
         username: user.username,
+        role: user.role,
     });
 });

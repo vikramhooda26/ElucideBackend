@@ -2,16 +2,13 @@ import { prisma } from "../db/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { tokenManager } from "../managers/TokenManager.js";
+import { CookieOptions } from "express";
+import { TUser } from "./types.js";
 
 const ACCESS_TOKEN_SECRET =
     process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
 const REFRESH_TOKEN_SECRET =
     process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
-
-type TUser = {
-    id: number;
-    username: string;
-};
 
 export const generateAccessToken = (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
@@ -53,14 +50,24 @@ export const checkUserExistence = async (username: string) => {
             id: true,
             username: true,
             password: true,
+            role: true,
         },
     });
 
     return user
-        ? { id: user.id, username: user.username, password: user.password }
+        ? {
+              id: user.id,
+              username: user.username,
+              password: user.password,
+              role: user.role,
+          }
         : {};
 };
 
-export const verifyAccessToken = () => {};
+export const verifyAccessToken = (token: string) => {
+    return jwt.verify(token, ACCESS_TOKEN_SECRET);
+};
 
-export const verifyRefreshToken = () => {};
+export const verifyRefreshToken = (token: string) => {
+    return jwt.verify(token, REFRESH_TOKEN_SECRET);
+};

@@ -16,6 +16,9 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
+    "files": [
+        "types.d.ts"
+    ],
     "dependencies": {
         "@prisma/client": "^5.15.1",
         "bcrypt": "^5.1.1",
