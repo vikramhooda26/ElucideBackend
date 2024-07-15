@@ -1,5 +1,4 @@
 import asyncHandler from "express-async-handler";
-import z from "zod";
 import {
     generateAccessToken,
     generateRefreshToken,
@@ -9,23 +8,8 @@ import {
 import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
 
-const userValidationSchema = z.object({
-    username: z.string().min(1, "Required"),
-    password: z.string().min(1, "Required"),
-});
-
 export const loginController = asyncHandler(async (req, res) => {
-    const validationResult = userValidationSchema.safeParse(req.body);
-
-    if (!validationResult.success) {
-        res.status(401).json({
-            username: validationResult.error?.formErrors.fieldErrors.username,
-            password: validationResult.error?.formErrors.fieldErrors.password,
-        });
-        return;
-    }
-
-    const { username, password } = validationResult.data;
+    const { username, password } = req.validatedData;
 
     const user = await checkUserExistence(username);
 
@@ -59,3 +43,5 @@ export const loginController = asyncHandler(async (req, res) => {
         role: user.role,
     });
 });
+
+export const registerController = asyncHandler(async (req, res) => {});

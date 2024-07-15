@@ -43,15 +43,12 @@ model auth_user {
     id                                 BigInt                       @id @default(autoincrement())
     password                           String                       @db.VarChar(128)
     last_login                         DateTime?                    @db.Timestamp(6)
-    is_superuser                       Boolean
     username                           String                       @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    first_name                         String                       @db.VarChar(150)
     last_name                          String                       @db.VarChar(150)
     email                              String                       @db.VarChar(254)
     role                               role                         @default(USER)
-    is_staff                           Boolean
-    is_active                          Boolean
     date_joined                        DateTime                     @db.Timestamp(6)
-    first_name                         String                       @db.VarChar(150)
     auth_user_groups                   auth_user_groups[]
     auth_user_user_permissions         auth_user_user_permissions[]
     dashapp_activation                 dashapp_activation[]
