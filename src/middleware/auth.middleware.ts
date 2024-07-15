@@ -9,23 +9,23 @@ import {
 import { prisma } from "../db/index.js";
 import { TokenExpiredError } from "jsonwebtoken";
 import { TUser } from "../lib/types.js";
+import { ForbiddenError } from "../lib/errors.js";
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
-    const token = req.cookies[COOKIE_NAME.CSRF];
-
-    if (!token) {
-        res.sendStatus(403);
-    }
-
     try {
+        const token = req.cookies[COOKIE_NAME.CSRF];
+
+        if (!token) {
+            throw new ForbiddenError();
+        }
+
         req.user = verifyAccessToken(token);
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
             const refreshToken = req.cookies[COOKIE_NAME.REFRESH_TOKEN];
             if (!refreshToken) {
-                res.sendStatus(403);
-                return;
+                throw new ForbiddenError();
             }
             try {
                 const decodedRefreshToken = verifyRefreshToken(refreshToken);
@@ -35,8 +35,7 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 });
 
                 if (existingToken.length < 1) {
-                    res.sendStatus(403);
-                    return;
+                    throw new ForbiddenError();
                 }
 
                 await prisma.auth_user.deleteMany({
@@ -60,10 +59,10 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 next();
             } catch (error) {
                 console.error(error);
-                res.sendStatus(403);
+                throw new ForbiddenError();
             }
         } else {
-            res.sendStatus(403);
+            throw new ForbiddenError();
         }
     }
 });

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/auth.router.js";
+import { globalErrorHandler } from "./middleware/error.middleware.js";
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("api/auth/", authRouter);
+
+app.use(globalErrorHandler);
 
 app.listen(port, () =>
     console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),

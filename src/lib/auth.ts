@@ -2,7 +2,6 @@ import { prisma } from "../db/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { tokenManager } from "../managers/TokenManager.js";
-import { CookieOptions } from "express";
 import { TUser } from "./types.js";
 
 const ACCESS_TOKEN_SECRET =

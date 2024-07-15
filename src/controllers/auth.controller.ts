@@ -5,9 +5,9 @@ import {
     generateRefreshToken,
     checkUserExistence,
     verifyPassword,
-    cookieOptions,
 } from "../lib/auth.js";
-import { COOKIE_NAME } from "../lib/constants.js";
+import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
+import { ForbiddenError } from "../lib/errors.js";
 
 const userValidationSchema = z.object({
     username: z.string().min(1, "Required"),
@@ -30,15 +30,13 @@ export const loginController = asyncHandler(async (req, res) => {
     const user = await checkUserExistence(username);
 
     if (!user.username) {
-        res.sendStatus(403);
-        return;
+        throw new ForbiddenError();
     }
 
     const passwordIsValid = await verifyPassword(password, user.password);
 
     if (!passwordIsValid) {
-        res.sendStatus(403);
-        return;
+        throw new ForbiddenError();
     }
 
     const csrf = generateAccessToken({
