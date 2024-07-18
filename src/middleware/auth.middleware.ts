@@ -7,9 +7,11 @@ import {
     verifyRefreshToken,
 } from "../lib/auth.js";
 import { prisma } from "../db/index.js";
-import { TokenExpiredError } from "jsonwebtoken";
+import pkg from "jsonwebtoken";
 import { TUser } from "../lib/types.js";
 import { ForbiddenError } from "../lib/errors.js";
+
+const { TokenExpiredError } = pkg;
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
     try {
