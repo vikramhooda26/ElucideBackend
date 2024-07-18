@@ -7,6 +7,8 @@ import {
 } from "../lib/auth.js";
 import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
+import { prisma } from "../db/index.js";
+import { getHashedPassword } from "../lib/helper.js";
 
 export const loginController = asyncHandler(async (req, res) => {
     const { username, password } = req.validatedData;
@@ -44,4 +46,23 @@ export const loginController = asyncHandler(async (req, res) => {
     });
 });
 
-export const registerController = asyncHandler(async (req, res) => {});
+export const registerController = asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, username, password, role } =
+        req.validatedData;
+
+    const hashedPassword = await getHashedPassword(password);
+
+    await prisma.auth_user.create({
+        data: {
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            username,
+            role,
+            password: hashedPassword,
+            date_joined: new Date(Date.now()),
+        },
+    });
+
+    res.status(200).send("Success");
+});

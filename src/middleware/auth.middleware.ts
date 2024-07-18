@@ -32,17 +32,13 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
             try {
                 const decodedRefreshToken = verifyRefreshToken(refreshToken);
 
-                const existingToken = await prisma.auth_user.findMany({
+                const { count } = await prisma.auth_user.deleteMany({
                     where: { refresh_token: refreshToken },
                 });
 
-                if (existingToken.length < 1) {
+                if (count < 1) {
                     throw new ForbiddenError();
                 }
-
-                await prisma.auth_user.deleteMany({
-                    where: { refresh_token: refreshToken },
-                });
 
                 const newAccessToken = generateAccessToken(
                     decodedRefreshToken as TUser,
