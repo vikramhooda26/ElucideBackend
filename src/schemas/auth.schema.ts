@@ -6,7 +6,7 @@ export const userValidationSchema = z.object({
     password: z.string().min(1, "Required"),
 });
 
-export const registrationValidationSchema = z.object({
+export const userRegistrationSchema = z.object({
     firstName: z.string().min(1, "Required"),
     lastName: z.string().min(1, "Required"),
     email: z.string().email("Invalid email").min(1, "Required"),
@@ -16,3 +16,6 @@ export const registrationValidationSchema = z.object({
     }),
     password: z.string().min(1, "Required"),
 });
+
+export type TUserValidation = z.infer<typeof userValidationSchema>;
+export type TUserRegistration = z.infer<typeof userRegistrationSchema>;

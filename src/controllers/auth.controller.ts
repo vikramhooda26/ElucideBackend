@@ -5,13 +5,14 @@ import {
     checkUserExistence,
     verifyPassword,
 } from "../lib/auth.js";
-import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
+import { COOKIE_NAME, STATUS_CODE, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
 import { prisma } from "../db/index.js";
-import { getHashedPassword } from "../lib/helper.js";
+import { hashPassword } from "../lib/helper.js";
+import { TUserRegistration, TUserValidation } from "../schemas/auth.schema.js";
 
-export const loginController = asyncHandler(async (req, res) => {
-    const { username, password } = req.validatedData;
+export const loginHandler = asyncHandler(async (req, res) => {
+    const { username, password } = req.validatedData as TUserValidation;
 
     const user = await checkUserExistence(username);
 
@@ -19,9 +20,9 @@ export const loginController = asyncHandler(async (req, res) => {
         throw new ForbiddenError();
     }
 
-    const passwordIsValid = await verifyPassword(password, user.password);
+    const isPasswordValid = await verifyPassword(password, user.password);
 
-    if (!passwordIsValid) {
+    if (!isPasswordValid) {
         throw new ForbiddenError();
     }
 
@@ -39,18 +40,18 @@ export const loginController = asyncHandler(async (req, res) => {
     res.cookie(COOKIE_NAME.CSRF, csrf, cookieOptions);
     res.cookie(COOKIE_NAME.REFRESH_TOKEN, refreshToken, cookieOptions);
 
-    res.status(200).json({
+    res.status(STATUS_CODE.OK).json({
         userId: user.id,
         username: user.username,
         role: user.role,
     });
 });
 
-export const registerController = asyncHandler(async (req, res) => {
+export const registerHandler = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, username, password, role } =
-        req.validatedData;
+        req.validatedData as TUserRegistration;
 
-    const hashedPassword = await getHashedPassword(password);
+    const hashedPassword = await hashPassword(password);
 
     await prisma.auth_user.create({
         data: {
@@ -64,5 +65,5 @@ export const registerController = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(200).send("Success");
+    res.status(STATUS_CODE.OK).send("Registered");
 });

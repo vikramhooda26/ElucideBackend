@@ -1,20 +1,33 @@
 import { Router } from "express";
 import {
-    addAthleteController,
-    fetchAllAthletesController,
-    fetchAthleteByIdController,
+    createAthlete,
+    updateAthleteById,
+    getAllAthletes,
+    getAthleteById,
 } from "../controllers/athlete.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
-import { athleteSchema } from "../schemas/athlete.schema.js";
+import {
+    createAthleteSchema,
+    editAthleteSchema,
+} from "../schemas/athlete.schema.js";
 
 export const athleteRouter = Router();
 
-athleteRouter.get("/:id", fetchAthleteByIdController);
-athleteRouter.get("/", fetchAllAthletesController);
+athleteRouter.get("/", getAllAthletes);
+
+athleteRouter.get("/:id", getAthleteById);
+
 athleteRouter.post(
     "/create",
     roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
-    validateSchema(athleteSchema),
-    addAthleteController,
+    validateSchema(createAthleteSchema),
+    createAthlete,
+);
+
+athleteRouter.put(
+    "/edit/:id",
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    validateSchema(editAthleteSchema),
+    updateAthleteById,
 );
