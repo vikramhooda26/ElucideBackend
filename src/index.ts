@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/auth.router.js";
 import { globalErrorHandler } from "./middleware/error.middleware.js";
+import { authMiddleware } from "./middleware/auth.middleware.js";
+import { athleteRouter } from "./routes/athlete.router.js";
 
 dotenv.config();
 const app = express();
@@ -23,7 +25,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth/", authRouter);
+app.use("/api/auth", authRouter);
+app.use(authMiddleware);
+app.use("/api/admin/athlete", athleteRouter);
 
 app.use(globalErrorHandler);
 

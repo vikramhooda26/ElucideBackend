@@ -21,7 +21,7 @@ authRouter.post(
 authRouter.post(
     "/register",
     authMiddleware,
-    roleMiddleware("SUPER_ADMIN"),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(registrationValidationSchema),
     registerController,
 );
