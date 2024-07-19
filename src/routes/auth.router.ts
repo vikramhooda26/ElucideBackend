@@ -5,18 +5,23 @@ import {
 } from "../controllers/auth.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { validateSchema } from "../middleware/validate.middleware.js";
 import {
-    validateLoginInput,
-    validateRegistrationInput,
-} from "../middleware/validation.middleware.js";
+    registrationValidationSchema,
+    userValidationSchema,
+} from "../schemas/auth.schema.js";
 
 export const authRouter = Router();
 
-authRouter.post("/login", validateLoginInput, loginController);
+authRouter.post(
+    "/login",
+    validateSchema(userValidationSchema),
+    loginController,
+);
 authRouter.post(
     "/register",
     authMiddleware,
     roleMiddleware("SUPER_ADMIN"),
-    validateRegistrationInput,
+    validateSchema(registrationValidationSchema),
     registerController,
 );
