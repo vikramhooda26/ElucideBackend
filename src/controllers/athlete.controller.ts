@@ -113,7 +113,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).send("Created");
 });
 
-export const updateAthleteById = asyncHandler(async (req, res) => {
+export const editAthleteById = asyncHandler(async (req, res) => {
     const athleteId = req.params.id;
 
     if (!athleteId) {
@@ -208,4 +208,18 @@ export const updateAthleteById = asyncHandler(async (req, res) => {
     });
 
     res.status(STATUS_CODE.OK).send("Updated");
+});
+
+export const removeAthleteById = asyncHandler(async (req, res) => {
+    const athleteId = req.params.id;
+
+    if (!athleteId) {
+        throw new BadRequestError("id not found");
+    }
+
+    await prisma.dashapp_athlete.delete({
+        where: { id: Number(athleteId) },
+    });
+
+    res.status(STATUS_CODE.OK).send("Deleted");
 });
