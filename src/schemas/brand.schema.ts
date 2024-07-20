@@ -1,4 +1,4 @@
-import z, { array } from "zod";
+import z from "zod";
 
 export const createBrandSchema = z.object({
     companyName: z.string(),
