@@ -1,10 +1,10 @@
 import { Router } from "express";
 import {
     createAthlete,
-    editAthleteById,
+    editAthlete,
     getAllAthletes,
     getAthleteById,
-    removeAthleteById,
+    removeAthlete,
 } from "../controllers/athlete.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -30,11 +30,11 @@ athleteRouter.put(
     "/edit/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editAthleteSchema),
-    editAthleteById,
+    editAthlete,
 );
 
 athleteRouter.delete(
     "/delete/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    removeAthleteById,
+    removeAthlete,
 );

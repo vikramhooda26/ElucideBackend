@@ -110,10 +110,10 @@ export const createAthlete = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Created");
+    res.status(STATUS_CODE.OK).send("Athlete created");
 });
 
-export const editAthleteById = asyncHandler(async (req, res) => {
+export const editAthlete = asyncHandler(async (req, res) => {
     const athleteId = req.params.id;
 
     if (!athleteId) {
@@ -207,10 +207,10 @@ export const editAthleteById = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Updated");
+    res.status(STATUS_CODE.OK).send("Athlete updated");
 });
 
-export const removeAthleteById = asyncHandler(async (req, res) => {
+export const removeAthlete = asyncHandler(async (req, res) => {
     const athleteId = req.params.id;
 
     if (!athleteId) {
@@ -221,5 +221,5 @@ export const removeAthleteById = asyncHandler(async (req, res) => {
         where: { id: Number(athleteId) },
     });
 
-    res.status(STATUS_CODE.OK).send("Deleted");
+    res.status(STATUS_CODE.OK).send("Athlete removed");
 });

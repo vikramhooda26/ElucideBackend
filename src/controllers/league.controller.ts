@@ -203,10 +203,10 @@ export const createLeague = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Created");
+    res.status(STATUS_CODE.OK).send("League created");
 });
 
-export const editLeagueById = asyncHandler(async (req, res) => {
+export const editLeague = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
 
     if (!leagueId) {
@@ -416,5 +416,17 @@ export const editLeagueById = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Updated");
+    res.status(STATUS_CODE.OK).send("League updated");
+});
+
+export const removeLeague = asyncHandler(async (req, res) => {
+    const { leagueId } = req.params;
+
+    if (!leagueId) {
+        throw new BadRequestError("League ID not found");
+    }
+
+    await prisma.dashapp_leagueinfo.delete({ where: { id: Number(leagueId) } });
+
+    res.status(STATUS_CODE.OK).send("League removed");
 });

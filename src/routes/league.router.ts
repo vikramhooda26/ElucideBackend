@@ -1,9 +1,10 @@
 import { Router } from "express";
 import {
     createLeague,
-    editLeagueById,
+    editLeague,
     getAllLeagues,
     getLeagueById,
+    removeLeague,
 } from "../controllers/league.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -29,5 +30,11 @@ leagueRouter.put(
     "/edit/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editLeagueSchema),
-    editLeagueById,
+    editLeague,
+);
+
+leagueRouter.delete(
+    "delete/:id",
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    removeLeague,
 );
