@@ -905,14 +905,15 @@ model dashapp_keymarket {
 }
 
 model dashapp_league {
-    id             BigInt     @id @default(autoincrement())
-    created_date   DateTime?  @default(now())
-    created_by_id  BigInt?
-    created_by     auth_user? @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-    modified_date  DateTime?  @updatedAt
-    modified_by_id BigInt?
-    name           String     @unique(map: "sqlite_autoindex_dashapp_league_1") @db.VarChar(512)
-    modified_by    auth_user? @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime?            @default(now())
+    created_by_id      BigInt?
+    created_by         auth_user?           @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_date      DateTime?            @updatedAt
+    modified_by_id     BigInt?
+    name               String               @unique(map: "sqlite_autoindex_dashapp_league_1") @db.VarChar(512)
+    modified_by        auth_user?           @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo[]
 
     @@index([modified_by_id], map: "dashapp_league_modified_by_id_e0e124d6")
 }
@@ -971,6 +972,8 @@ model dashapp_leagueinfo {
     brodcast_partner_id                              BigInt?
     modified_by_id                                   BigInt?
     ott_partner_id                                   BigInt?
+    league_id                                        BigInt?
+    league                                           dashapp_league?                                    @relation(fields: [league_id], references: [id], onDelete: Cascade)
     sport_id                                         BigInt?
     property_name                                    String                                             @unique(map: "sqlite_autoindex_dashapp_leagueinfo_1") @db.VarChar(512)
     youtube                                          String?                                            @db.VarChar(512)
