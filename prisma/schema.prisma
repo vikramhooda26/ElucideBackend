@@ -1347,6 +1347,7 @@ model dashapp_states {
     modified_by                              auth_user?                                 @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team_key_markets_tertiary        dashapp_team_key_markets_tertiary[]
     dashapp_athlete                          dashapp_athlete[]
+    dashapp_team                             dashapp_team[]
 
     @@index([modified_by_id], map: "dashapp_states_modified_by_id_3acf32e3")
 }
@@ -1396,7 +1397,8 @@ model dashapp_team {
     team_name                                  String                                       @unique(map: "sqlite_autoindex_dashapp_team_1") @db.VarChar(512)
     year_of_inception                          String?                                      @db.VarChar(512)
     franchise_fee                              Decimal?                                     @db.Decimal
-    hq_state                                   String?                                      @db.VarChar(50)
+    hq_state_id                                BigInt?
+    hq_state                                   dashapp_states?                              @relation(fields: [hq_state_id], references: [id], onDelete: SetNull)
     instagram                                  String?                                      @db.VarChar(512)
     facebook                                   String?                                      @db.VarChar(512)
     twitter                                    String?                                      @db.VarChar(512)
