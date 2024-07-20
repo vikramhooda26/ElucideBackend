@@ -1,9 +1,9 @@
-import z from "zod";
+import z, { array } from "zod";
 
 export const createBrandSchema = z.object({
     companyName: z.string(),
     parentOrgId: z.number().optional(),
-    categoryId: z.number().optional(),
+    subCategoryIds: z.number().array().optional(),
     hqCityId: z.number().optional(),
     hqStateId: z.number().optional(),
     agencyId: z.number().optional(),

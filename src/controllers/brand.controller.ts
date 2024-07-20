@@ -45,7 +45,7 @@ export const createBrand = asyncHandler(async (req, res) => {
     const {
         companyName,
         parentOrgId,
-        categoryId,
+        subCategoryIds,
         hqCityId,
         hqStateId,
         agencyId,
@@ -78,10 +78,10 @@ export const createBrand = asyncHandler(async (req, res) => {
                     id: parentOrgId,
                 },
             },
-            dashapp_category: {
-                connect: {
-                    id: categoryId,
-                },
+            dashapp_companydata_subcategory: {
+                create: subCategoryIds?.map((subCategoryId) => ({
+                    dashapp_subcategory: { connect: { id: subCategoryId } },
+                })),
             },
             dashapp_hqcity: {
                 connect: {

@@ -605,23 +605,23 @@ model dashapp_category {
     category            String                @unique(map: "sqlite_autoindex_dashapp_category_1") @db.VarChar(512)
     created_by          auth_user?            @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     modified_by         auth_user?            @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-    dashapp_companydata dashapp_companydata[]
     dashapp_subcategory dashapp_subcategory[]
 
     @@index([modified_by_id], map: "dashapp_category_modified_by_id_b813aa82")
 }
 
 model dashapp_subcategory {
-    id             BigInt           @id @default(autoincrement())
-    created_date   DateTime         @default(now())
-    modified_date  DateTime?        @updatedAt
-    created_by_id  BigInt?
-    modified_by_id BigInt?
-    subcategory    String           @unique
-    category_id    BigInt
-    category       dashapp_category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    created_by     auth_user?       @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-    modified_by    auth_user?       @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    id                              BigInt                            @id @default(autoincrement())
+    created_date                    DateTime                          @default(now())
+    modified_date                   DateTime?                         @updatedAt
+    created_by_id                   BigInt?
+    modified_by_id                  BigInt?
+    subcategory                     String                            @unique
+    category_id                     BigInt
+    category                        dashapp_category                  @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    created_by                      auth_user?                        @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    modified_by                     auth_user?                        @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+    dashapp_companydata_subcategory dashapp_companydata_subcategory[]
 
     @@index([created_by_id, modified_by_id])
 }
@@ -642,7 +642,6 @@ model dashapp_companydata {
     website                                           String?                                             @db.VarChar(512)
     strategy_overview                                 String?
     agency_id                                         BigInt?
-    category_id                                       BigInt?
     hq_city_id                                        BigInt?
     modified_by_id                                    BigInt?
     parent_organization_id                            BigInt?
@@ -651,7 +650,6 @@ model dashapp_companydata {
     dashapp_brandcontact                              dashapp_brandcontact[]
     dashapp_brandendorsements                         dashapp_brandendorsements[]
     dashapp_agency                                    dashapp_agency?                                     @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_category                                  dashapp_category?                                   @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_hqcity                                    dashapp_hqcity?                                     @relation(fields: [hq_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     modified_by                                       auth_user?                                          @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_parentorg                                 dashapp_parentorg?                                  @relation(fields: [parent_organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -668,9 +666,9 @@ model dashapp_companydata {
     dashapp_companydata_taglines                      dashapp_companydata_taglines[]
     dashapp_companydata_tier                          dashapp_companydata_tier[]
     dashapp_sportsdealsummary                         dashapp_sportsdealsummary[]
+    dashapp_companydata_subcategory                   dashapp_companydata_subcategory[]
 
     @@index([agency_id], map: "dashapp_companydata_agency_id_095c43b0")
-    @@index([category_id], map: "dashapp_companydata_category_id_84d9e9fb")
     @@index([hq_city_id], map: "dashapp_companydata_hq_city_id_f599445d")
     @@index([modified_by_id], map: "dashapp_companydata_modified_by_id_91329cae")
     @@index([parent_organization_id], map: "dashapp_companydata_parent_organization_id_c6c032d1")
@@ -792,6 +790,18 @@ model dashapp_companydata_personality_traits {
     @@unique([companydata_id, subpersonality_id], map: "dashapp_companydata_personality_traits_companydata_id_subperson")
     @@index([companydata_id], map: "dashapp_companydata_personality_traits_companydata_id_7c3c6376")
     @@index([subpersonality_id], map: "dashapp_companydata_personality_traits_subpersonality_id_38b67e")
+}
+
+model dashapp_companydata_subcategory {
+    id                  BigInt               @id @default(autoincrement())
+    companydata_id      BigInt?
+    subcategory_id      BigInt?
+    dashapp_companydata dashapp_companydata? @relation(fields: [companydata_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_subcategory dashapp_subcategory? @relation(fields: [subcategory_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+    @@unique([companydata_id, subcategory_id])
+    @@index([companydata_id])
+    @@index([subcategory_id])
 }
 
 model dashapp_companydata_taglines {
