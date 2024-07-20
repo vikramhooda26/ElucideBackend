@@ -307,7 +307,7 @@ model association_level {
 
 model association {
     id                   BigInt               @id @default(autoincrement())
-    cost                 Decimal?             @db.Decimal()
+    cost                 String?
     association_level_id BigInt?
     association_level    association_level?   @relation(fields: [association_level_id], references: [id])
     created_date         DateTime?            @default(now())
