@@ -4,12 +4,14 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 
+// TODO verify that the edit method is correct and contains all the required fields (AI generated)
+
 export const getAllTeams = asyncHandler(async (req, res) => {
     const teams = await prisma.dashapp_team.findMany({
         select: { id: true, team_name: true },
     });
 
-    if (!teams) {
+    if (teams.length < 1) {
         throw new NotFoundError("No team found");
     }
 

@@ -306,29 +306,26 @@ model association_level {
 }
 
 model association {
-    id                   BigInt               @id @default(autoincrement())
+    id                   BigInt              @id @default(autoincrement())
     cost                 String?
     association_level_id BigInt?
-    association_level    association_level?   @relation(fields: [association_level_id], references: [id])
-    created_date         DateTime?            @default(now())
-    modified_date        DateTime?            @updatedAt
+    association_level    association_level?  @relation(fields: [association_level_id], references: [id])
+    created_date         DateTime?           @default(now())
+    modified_date        DateTime?           @updatedAt
     created_by_id        BigInt?
     modified_by_id       BigInt?
     team_id              BigInt?
     leagueInfo_id        BigInt?
     athlete_id           BigInt?
-    brand_id             BigInt?
-    dashapp_team         dashapp_team?        @relation(fields: [team_id], references: [id])
-    dashapp_leagueinfo   dashapp_leagueinfo?  @relation(fields: [leagueInfo_id], references: [id])
-    dashapp_athlete      dashapp_athlete?     @relation(fields: [athlete_id], references: [id])
-    dashapp_companydata  dashapp_companydata? @relation(fields: [brand_id], references: [id])
-    created_by           auth_user?           @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    modified_by          auth_user?           @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team         dashapp_team?       @relation(fields: [team_id], references: [id])
+    dashapp_leagueinfo   dashapp_leagueinfo? @relation(fields: [leagueInfo_id], references: [id])
+    dashapp_athlete      dashapp_athlete?    @relation(fields: [athlete_id], references: [id])
+    created_by           auth_user?          @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by          auth_user?          @relation(name: "modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     @@index([team_id], map: "association_team_id_idx")
     @@index([leagueInfo_id], map: "association_league_info_id_idx")
     @@index([athlete_id], map: "association_athlete_id_idx")
-    @@index([brand_id], map: "association_brand_id_idx")
 }
 
 model dashapp_sportsdeal_assets {
@@ -636,7 +633,8 @@ model dashapp_companydata {
     created_by                                        auth_user?                                          @relation(name: "created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     modified_date                                     DateTime?                                           @updatedAt
     company_name                                      String                                              @unique(map: "sqlite_autoindex_dashapp_companydata_1") @db.VarChar(512)
-    hq_state                                          String?                                             @db.VarChar(50)
+    hq_state_id                                       BigInt?
+    hq_state                                          dashapp_states?                                     @relation(fields: [hq_state_id], references: [id], onDelete: SetNull)
     instagram                                         String?                                             @db.VarChar(512)
     facebook                                          String?                                             @db.VarChar(512)
     twitter                                           String?                                             @db.VarChar(512)
@@ -670,7 +668,6 @@ model dashapp_companydata {
     dashapp_companydata_taglines                      dashapp_companydata_taglines[]
     dashapp_companydata_tier                          dashapp_companydata_tier[]
     dashapp_sportsdealsummary                         dashapp_sportsdealsummary[]
-    association                                       association[]
 
     @@index([agency_id], map: "dashapp_companydata_agency_id_095c43b0")
     @@index([category_id], map: "dashapp_companydata_category_id_84d9e9fb")
@@ -1348,6 +1345,7 @@ model dashapp_states {
     dashapp_team_key_markets_tertiary        dashapp_team_key_markets_tertiary[]
     dashapp_athlete                          dashapp_athlete[]
     dashapp_team                             dashapp_team[]
+    dashapp_companydata                      dashapp_companydata[]
 
     @@index([modified_by_id], map: "dashapp_states_modified_by_id_3acf32e3")
 }

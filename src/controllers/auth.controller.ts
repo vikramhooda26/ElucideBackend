@@ -8,7 +8,7 @@ import {
 import { COOKIE_NAME, STATUS_CODE, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
 import { prisma } from "../db/index.js";
-import { hashPassword } from "../lib/helper.js";
+import { hashPassword } from "../lib/helpers.js";
 import { TUserRegistration, TUserValidation } from "../schemas/auth.schema.js";
 
 export const loginHandler = asyncHandler(async (req, res) => {

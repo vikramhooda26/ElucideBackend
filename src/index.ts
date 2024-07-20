@@ -8,6 +8,7 @@ import { authMiddleware } from "./middleware/auth.middleware.js";
 import { athleteRouter } from "./routes/athlete.router.js";
 import { leagueRouter } from "./routes/league.router.js";
 import { teamRouter } from "./routes/team.router.js";
+import { brandRouter } from "./routes/brand.router.js";
 
 dotenv.config();
 const app = express();
@@ -32,6 +33,7 @@ app.use(authMiddleware);
 app.use("/api/admin/athlete", athleteRouter);
 app.use("/api/admin/league", leagueRouter);
 app.use("/api/admin/team", teamRouter);
+app.use("/api/admin/brand", brandRouter);
 
 app.use(globalErrorHandler);
 
