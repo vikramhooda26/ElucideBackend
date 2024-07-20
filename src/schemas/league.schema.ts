@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const createLeagueSchema = z.object({
-    leagueName: z.string().min(1, "Required"),
+    propertyName: z.string().min(1, "Required"),
     sportId: z.number().optional(),
     leagueOwnerIds: z.number().array().optional(),
     personalityTraitIds: z.number().array().optional(),

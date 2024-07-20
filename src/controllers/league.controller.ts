@@ -42,7 +42,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
 
 export const createLeague = asyncHandler(async (req, res) => {
     const {
-        leagueName,
+        propertyName,
         sportId,
         leagueOwnerIds,
         yearOfInception,
@@ -74,7 +74,7 @@ export const createLeague = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_leagueinfo.create({
         data: {
-            property_name: leagueName,
+            property_name: propertyName,
             dashapp_sport: {
                 connect: { id: sportId },
             },
@@ -214,7 +214,7 @@ export const editLeague = asyncHandler(async (req, res) => {
     }
 
     const {
-        leagueName,
+        propertyName,
         sportId,
         leagueOwnerIds,
         yearOfInception,
@@ -249,7 +249,7 @@ export const editLeague = asyncHandler(async (req, res) => {
             id: Number(leagueId),
         },
         data: {
-            property_name: leagueName,
+            property_name: propertyName,
             dashapp_sport: sportId
                 ? {
                       connect: { id: sportId },
