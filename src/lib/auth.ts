@@ -47,9 +47,12 @@ export const checkUserExistence = async (username: string) => {
         where: { username },
         select: {
             id: true,
+            first_name: true,
+            email: true,
+            last_name: true,
             username: true,
-            password: true,
             role: true,
+            password: true,
         },
     });
 
@@ -59,6 +62,9 @@ export const checkUserExistence = async (username: string) => {
               username: user.username,
               password: user.password,
               role: user.role,
+              firstName: user.first_name,
+              lastName: user.last_name,
+              email: user.email,
           }
         : {};
 };

@@ -41,9 +41,12 @@ export const loginHandler = asyncHandler(async (req, res) => {
     res.cookie(COOKIE_NAME.REFRESH_TOKEN, refreshToken, cookieOptions);
 
     res.status(STATUS_CODE.OK).json({
-        userId: user.id,
+        userId: Number(user.id),
         username: user.username,
         role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
     });
 });
 
