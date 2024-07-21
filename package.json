@@ -11,7 +11,8 @@
         "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
         "format:fix": "prettier --write \"**/*.{ts,tsx,json}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,json}\"",
-        "prepare": "husky"
+        "prepare": "husky",
+        "postinstall": "prisma generate"
     },
     "keywords": [],
     "author": "",
