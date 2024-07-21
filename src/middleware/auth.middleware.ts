@@ -43,7 +43,7 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 const newAccessToken = generateAccessToken(
                     decodedRefreshToken as TUser,
                 );
-                const newRefreshToken = generateRefreshToken(
+                const newRefreshToken = await generateRefreshToken(
                     decodedRefreshToken as TUser,
                 );
 

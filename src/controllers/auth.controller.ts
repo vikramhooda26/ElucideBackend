@@ -31,7 +31,7 @@ export const loginHandler = asyncHandler(async (req, res) => {
         username: user.username,
         role: user.role,
     });
-    const refreshToken = generateRefreshToken({
+    const refreshToken = await generateRefreshToken({
         id: Number(user.id),
         username: user.username,
         role: user.role,
