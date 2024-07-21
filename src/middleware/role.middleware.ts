@@ -5,7 +5,10 @@ import { ForbiddenError } from "../lib/errors.js";
 export const roleMiddleware =
     (allowedRoles: TRole[]) =>
     (req: Request, res: Response, next: NextFunction) => {
-        if (!allowedRoles || !allowedRoles.some(req.user.role)) {
+        if (
+            !allowedRoles ||
+            !allowedRoles.some((role) => role === req.user.role)
+        ) {
             throw new ForbiddenError();
         }
         next();
