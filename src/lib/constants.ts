@@ -8,6 +8,7 @@ export const COOKIE_NAME = {
 export const cookieOptions = {
     httpOnly: true,
     secure: true,
+    sameSite: 'None',
 } satisfies CookieOptions;
 
 export const STATUS_CODE = {
