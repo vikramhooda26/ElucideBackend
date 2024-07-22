@@ -6,10 +6,14 @@ info:
     platform
   version: 1.0.0
 servers:
-  - url: https://elucide-sports-backend.vercel.app
+  - url: http://{{elucide-sports-dev-url}}
 tags:
   - name: authentication
     description: Authentication Documentation
+  - name: league
+  - name: athlete
+  - name: team
+  - name: brand
 paths:
   /api/auth/login:
     post:
@@ -40,12 +44,92 @@ paths:
             schema:
               type: object
               example:
-                firstName: Mohan
-                lastName: Kumar
-                email: mohan.kumar@gmail.com
-                username: mohan_gr8
-                password: EasyPassword
-                role: ADMIN
+                firstName: Dummy
+                lastName: User
+                email: dummy_user@gmail.com
+                username: dummy_username
+                password: simplepassword
+                role: SUPER_ADMIN
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/league:
+    get:
+      tags:
+        - league
+      summary: get-all-leagues
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/league/2:
+    get:
+      tags:
+        - league
+      summary: get-league-by-id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/athlete:
+    get:
+      tags:
+        - athlete
+      summary: get-all-athletes
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/athlete/2:
+    get:
+      tags:
+        - athlete
+      summary: get-athlete-by-id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/team:
+    get:
+      tags:
+        - team
+      summary: get-all-teams
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/team/3:
+    get:
+      tags:
+        - team
+      summary: get-team-by-id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/brand:
+    get:
+      tags:
+        - brand
+      summary: get-all-brands
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/brand/5:
+    get:
+      tags:
+        - brand
+      summary: get-brand-by-id
       responses:
         '200':
           description: Successful response
