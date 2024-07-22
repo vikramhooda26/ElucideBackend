@@ -27,12 +27,12 @@ export const loginHandler = asyncHandler(async (req, res) => {
     }
 
     const csrf = generateAccessToken({
-        id: JSON.stringify(user.id),
+        id: user.id.toString(),
         username: user.username,
         role: user.role,
     });
     const refreshToken = await generateRefreshToken({
-        id: JSON.stringify(user.id),
+        id: user.id.toString(),
         username: user.username,
         role: user.role,
     });
