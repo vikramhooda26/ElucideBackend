@@ -6,6 +6,8 @@ import {
     TCreateLeagueSchema,
     TEditLeagueSchema,
 } from "../schemas/league.schema.js";
+import { leagueSelect } from "../db/league.payload.js";
+import { LeagueResponseDTO } from "../dto/league.dto.js";
 
 // TODO verify that the edit method is correct and contains all the required fields (AI generated)
 
@@ -18,13 +20,17 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 
     const league = await prisma.dashapp_leagueinfo.findUnique({
         where: { id: BigInt(leagueId) },
+        select: leagueSelect,
     });
 
     if (!league) {
         throw new NotFoundError("This league does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(league);
+    const leagueResponse: LeagueResponseDTO =
+        LeagueResponseDTO.toResponse(league);
+
+    res.status(STATUS_CODE.OK).json(leagueResponse);
 });
 
 export const getAllLeagues = asyncHandler(async (req, res) => {
