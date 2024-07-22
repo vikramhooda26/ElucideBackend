@@ -8,11 +8,34 @@ import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
     const teams = await prisma.dashapp_team.findMany({
-        select: { id: true, team_name: true },
+        select: {
+            id: true,
+            team_name: true,
+            created_date: true,
+            modified_date: true,
+            created_by: {
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    first_name: true,
+                    last_name: true,
+                },
+            },
+            modified_by: {
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    first_name: true,
+                    last_name: true,
+                },
+            },
+        },
     });
 
     if (teams.length < 1) {
-        throw new NotFoundError("No team found");
+        throw new NotFoundError("Team data does not exists");
     }
 
     res.status(STATUS_CODE.OK).json(teams);
@@ -26,7 +49,7 @@ export const getTeamById = asyncHandler(async (req, res) => {
     }
 
     const team = await prisma.dashapp_team.findUnique({
-        where: { id: Number(teamId) },
+        where: { id: BigInt(teamId) },
     });
 
     if (!team) {
@@ -73,37 +96,39 @@ export const createTeam = asyncHandler(async (req, res) => {
         data: {
             team_name: teamName,
             dashapp_sport: {
-                connect: { id: sportId },
+                connect: sportId ? { id: BigInt(sportId) } : undefined,
             },
             dashapp_leagueinfo: {
-                connect: { id: leagueId },
+                connect: leagueId ? { id: BigInt(leagueId) } : undefined,
             },
             dashapp_team_owner: {
                 connect: teamOwnerIds?.map((teamOwnerId) => ({
-                    id: teamOwnerId,
+                    id: BigInt(teamOwnerId),
                 })),
             },
             year_of_inception: yearOfInception,
             franchise_fee: franchiseFee,
             dashapp_hqcity: {
-                connect: { id: hqCityId },
+                connect: hqCityId ? { id: BigInt(hqCityId) } : undefined,
             },
             hq_state: {
-                connect: {
-                    id: hqStateId,
-                },
+                connect: hqStateId
+                    ? {
+                          id: BigInt(hqStateId),
+                      }
+                    : undefined,
             },
             dashapp_team_personality_traits: {
                 create: personalityTraitIds?.map((traitId) => ({
                     dashapp_subpersonality: {
-                        connect: { id: traitId },
+                        connect: { id: BigInt(traitId) },
                     },
                 })),
             },
             dashapp_team_tier: {
                 create: tierIds?.map((tierId) => ({
                     dashapp_tier: {
-                        connect: { id: tierId },
+                        connect: { id: BigInt(tierId) },
                     },
                 })),
             },
@@ -111,14 +136,14 @@ export const createTeam = asyncHandler(async (req, res) => {
             dashapp_team_taglines: {
                 create: taglineIds?.map((taglineId) => ({
                     dashapp_taglines: {
-                        connect: { id: taglineId },
+                        connect: { id: BigInt(taglineId) },
                     },
                 })),
             },
             dashapp_team_active_campaigns: {
                 create: activeCampaignIds?.map((activeCampaignId) => ({
                     dashapp_activecampaigns: {
-                        connect: { id: activeCampaignId },
+                        connect: { id: BigInt(activeCampaignId) },
                     },
                 })),
             },
@@ -126,7 +151,7 @@ export const createTeam = asyncHandler(async (req, res) => {
                 create: marketingPlatformPrimaryIds?.map(
                     (marketingPlatformPrimaryId) => ({
                         dashapp_marketingplatform: {
-                            connect: { id: marketingPlatformPrimaryId },
+                            connect: { id: BigInt(marketingPlatformPrimaryId) },
                         },
                     }),
                 ),
@@ -135,7 +160,9 @@ export const createTeam = asyncHandler(async (req, res) => {
                 create: marketingPlatformSecondaryIds?.map(
                     (marketingPlatformSecondaryId) => ({
                         dashapp_marketingplatform: {
-                            connect: { id: marketingPlatformSecondaryId },
+                            connect: {
+                                id: BigInt(marketingPlatformSecondaryId),
+                            },
                         },
                     }),
                 ),
@@ -143,43 +170,45 @@ export const createTeam = asyncHandler(async (req, res) => {
             dashapp_team_age: {
                 create: ageIds?.map((ageId) => ({
                     dashapp_age: {
-                        connect: { id: ageId },
+                        connect: { id: BigInt(ageId) },
                     },
                 })),
             },
             dashapp_team_gender: {
                 create: genderIds?.map((genderId) => ({
                     dashapp_gender: {
-                        connect: { id: genderId },
+                        connect: { id: BigInt(genderId) },
                     },
                 })),
             },
             dashapp_team_income: {
                 create: incomeIds?.map((incomeId) => ({
                     dashapp_income: {
-                        connect: { id: incomeId },
+                        connect: { id: BigInt(incomeId) },
                     },
                 })),
             },
             dashapp_team_key_markets_primary: {
                 create: primaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: marketId } },
+                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
                 })),
             },
             dashapp_team_key_markets_secondary: {
                 create: secondaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: marketId } },
+                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
                 })),
             },
             dashapp_team_key_markets_tertiary: {
                 create: tertiaryIds?.map((tertiaryId) => ({
-                    dashapp_states: { connect: { id: tertiaryId } },
+                    dashapp_states: { connect: { id: BigInt(tertiaryId) } },
                 })),
             },
             association: {
-                connect: {
-                    id: associationId,
-                },
+                connect: associationId
+                    ? {
+                          id: BigInt(associationId),
+                      }
+                    : undefined,
             },
             dashapp_metric: {
                 create: metrics?.map((metric) => ({
@@ -247,28 +276,34 @@ export const editTeam = asyncHandler(async (req, res) => {
         where: { id: Number(teamId) },
         data: {
             team_name: teamName,
-            dashapp_sport: sportId ? { connect: { id: sportId } } : undefined,
+            dashapp_sport: sportId
+                ? { connect: { id: BigInt(sportId) } }
+                : undefined,
             dashapp_leagueinfo: leagueId
-                ? { connect: { id: leagueId } }
+                ? { connect: { id: BigInt(leagueId) } }
                 : undefined,
             dashapp_team_owner: teamOwnerIds
                 ? {
                       connect: teamOwnerIds.map((teamOwnerId) => ({
-                          id: teamOwnerId,
+                          id: BigInt(teamOwnerId),
                       })),
                   }
                 : undefined,
             year_of_inception: yearOfInception,
             franchise_fee: franchiseFee,
             dashapp_hqcity: hqCityId
-                ? { connect: { id: hqCityId } }
+                ? { connect: { id: BigInt(hqCityId) } }
                 : undefined,
-            hq_state: hqStateId ? { connect: { id: hqStateId } } : undefined,
+            hq_state: hqStateId
+                ? { connect: { id: BigInt(hqStateId) } }
+                : undefined,
             dashapp_team_personality_traits: personalityTraitIds
                 ? {
                       deleteMany: {},
                       create: personalityTraitIds.map((traitId) => ({
-                          dashapp_subpersonality: { connect: { id: traitId } },
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -276,7 +311,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: tierIds.map((tierId) => ({
-                          dashapp_tier: { connect: { id: tierId } },
+                          dashapp_tier: { connect: { id: BigInt(tierId) } },
                       })),
                   }
                 : undefined,
@@ -285,7 +320,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: taglineIds.map((taglineId) => ({
-                          dashapp_taglines: { connect: { id: taglineId } },
+                          dashapp_taglines: {
+                              connect: { id: BigInt(taglineId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -294,7 +331,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                       deleteMany: {},
                       create: activeCampaignIds.map((activeCampaignId) => ({
                           dashapp_activecampaigns: {
-                              connect: { id: activeCampaignId },
+                              connect: { id: BigInt(activeCampaignId) },
                           },
                       })),
                   }
@@ -307,7 +344,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                               (marketingPlatformPrimaryId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
-                                          id: marketingPlatformPrimaryId,
+                                          id: BigInt(
+                                              marketingPlatformPrimaryId,
+                                          ),
                                       },
                                   },
                               }),
@@ -322,7 +361,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                               (marketingPlatformSecondaryId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
-                                          id: marketingPlatformSecondaryId,
+                                          id: BigInt(
+                                              marketingPlatformSecondaryId,
+                                          ),
                                       },
                                   },
                               }),
@@ -333,7 +374,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: ageIds.map((ageId) => ({
-                          dashapp_age: { connect: { id: ageId } },
+                          dashapp_age: { connect: { id: BigInt(ageId) } },
                       })),
                   }
                 : undefined,
@@ -341,7 +382,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: genderIds.map((genderId) => ({
-                          dashapp_gender: { connect: { id: genderId } },
+                          dashapp_gender: { connect: { id: BigInt(genderId) } },
                       })),
                   }
                 : undefined,
@@ -349,7 +390,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: incomeIds.map((incomeId) => ({
-                          dashapp_income: { connect: { id: incomeId } },
+                          dashapp_income: { connect: { id: BigInt(incomeId) } },
                       })),
                   }
                 : undefined,
@@ -357,7 +398,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: primaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: { connect: { id: marketId } },
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -365,7 +408,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: secondaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: { connect: { id: marketId } },
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -373,12 +418,14 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: tertiaryIds.map((tertiaryId) => ({
-                          dashapp_states: { connect: { id: tertiaryId } },
+                          dashapp_states: {
+                              connect: { id: BigInt(tertiaryId) },
+                          },
                       })),
                   }
                 : undefined,
             association: associationId
-                ? { connect: { id: associationId } }
+                ? { connect: { id: BigInt(associationId) } }
                 : undefined,
             dashapp_metric: metrics
                 ? {
@@ -404,7 +451,7 @@ export const editTeam = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).send("Team updated");
 });
 
-export const removeTeam = asyncHandler(async (req, res) => {
+export const deleteTeam = asyncHandler(async (req, res) => {
     const { teamId } = req.params;
 
     if (!teamId) {
@@ -412,11 +459,11 @@ export const removeTeam = asyncHandler(async (req, res) => {
     }
 
     const deletedTeam = await prisma.dashapp_team.delete({
-        where: { id: Number(teamId) },
+        where: { id: BigInt(teamId) },
         select: { id: true },
     });
 
-    if (!deletedTeam.id) {
+    if (!deletedTeam) {
         throw new NotFoundError("This team does not exists");
     }
 

@@ -4,7 +4,7 @@ import {
     editLeague,
     getAllLeagues,
     getLeagueById,
-    removeLeague,
+    deleteLeague,
 } from "../controllers/league.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -36,5 +36,5 @@ leagueRouter.put(
 leagueRouter.delete(
     "delete/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    removeLeague,
+    deleteLeague,
 );

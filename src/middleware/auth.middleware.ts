@@ -32,8 +32,8 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
             try {
                 const decodedRefreshToken = verifyRefreshToken(refreshToken);
 
-                const { count } = await prisma.auth_user.deleteMany({
-                    where: { refresh_token: refreshToken },
+                const { count } = await prisma.refresh_token.deleteMany({
+                    where: { token: refreshToken },
                 });
 
                 if (count < 1) {

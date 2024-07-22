@@ -1,9 +1,9 @@
 class TokenManager {
     private static instance: TokenManager;
-    private tokenStore: Map<number, string>;
+    private tokenStore: Map<string, string>;
 
     private constructor() {
-        this.tokenStore = new Map<number, string>();
+        this.tokenStore = new Map<string, string>();
     }
 
     static getInstance() {
@@ -13,19 +13,19 @@ class TokenManager {
         return TokenManager.instance;
     }
 
-    setToken(userId: number, accessToken: string) {
+    setToken(userId: string, accessToken: string) {
         this.tokenStore.set(userId, accessToken);
     }
 
-    getToken(userId: number): string | undefined {
+    getToken(userId: string): string | undefined {
         return this.tokenStore.get(userId);
     }
 
-    removeToken(userId: number) {
+    removeToken(userId: string) {
         this.tokenStore.delete(userId);
     }
 
-    hasToken(userId: number): boolean {
+    hasToken(userId: string): boolean {
         return this.tokenStore.has(userId);
     }
 }

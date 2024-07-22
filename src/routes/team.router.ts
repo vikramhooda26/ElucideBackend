@@ -4,7 +4,7 @@ import {
     editTeam,
     getAllTeams,
     getTeamById,
-    removeTeam,
+    deleteTeam,
 } from "../controllers/team.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -33,5 +33,5 @@ teamRouter.put(
 teamRouter.delete(
     "delete/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    removeTeam,
+    deleteTeam,
 );

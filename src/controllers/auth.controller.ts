@@ -16,7 +16,7 @@ export const loginHandler = asyncHandler(async (req, res) => {
 
     const user = await checkUserExistence(username);
 
-    if (!user.username) {
+    if (!user) {
         throw new ForbiddenError();
     }
 
@@ -27,12 +27,12 @@ export const loginHandler = asyncHandler(async (req, res) => {
     }
 
     const csrf = generateAccessToken({
-        id: Number(user.id),
+        id: JSON.stringify(user.id),
         username: user.username,
         role: user.role,
     });
     const refreshToken = await generateRefreshToken({
-        id: Number(user.id),
+        id: JSON.stringify(user.id),
         username: user.username,
         role: user.role,
     });
@@ -41,7 +41,7 @@ export const loginHandler = asyncHandler(async (req, res) => {
     res.cookie(COOKIE_NAME.REFRESH_TOKEN, refreshToken, cookieOptions);
 
     res.status(STATUS_CODE.OK).json({
-        userId: Number(user.id),
+        userId: user.id,
         username: user.username,
         role: user.role,
         firstName: user.firstName,

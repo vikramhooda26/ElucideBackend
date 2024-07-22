@@ -10,6 +10,10 @@ import { leagueRouter } from "./routes/league.router.js";
 import { teamRouter } from "./routes/team.router.js";
 import { brandRouter } from "./routes/brand.router.js";
 
+(BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+};
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;

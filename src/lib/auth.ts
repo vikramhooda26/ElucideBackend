@@ -26,7 +26,7 @@ export const generateRefreshToken = async (user: TUser) => {
             token: refreshToken,
             user: {
                 connect: {
-                    id: user.id,
+                    id: BigInt(user.id),
                 },
             },
         },
@@ -66,7 +66,7 @@ export const checkUserExistence = async (username: string) => {
               lastName: user.last_name,
               email: user.email,
           }
-        : {};
+        : null;
 };
 
 export const verifyAccessToken = (token: string) => {
