@@ -7,8 +7,6 @@ import {
     TEditBrandSchema,
 } from "../schemas/brand.schema.js";
 
-// TODO verify that the edit method is correct and contains all the required fields (AI generated)
-
 export const getAllBrands = asyncHandler(async (req, res) => {
     const brands = await prisma.dashapp_companydata.findMany({
         select: {

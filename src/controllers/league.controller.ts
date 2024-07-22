@@ -9,8 +9,6 @@ import {
 import { leagueSelect } from "../types/league.type.js";
 import { LeagueResponseDTO } from "../dto/league.dto.js";
 
-// TODO verify that the edit method is correct and contains all the required fields (AI generated)
-
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
 

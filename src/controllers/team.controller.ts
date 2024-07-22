@@ -6,8 +6,6 @@ import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
 import { TeamResponseDTO } from "../dto/team.dto.js";
 
-// TODO verify that the edit method is correct and contains all the required fields (AI generated)
-
 export const getAllTeams = asyncHandler(async (req, res) => {
     const teams = await prisma.dashapp_team.findMany({
         select: {
