@@ -45,7 +45,7 @@ export const getAllBrands = asyncHandler(async (req, res) => {
 });
 
 export const getBrandById = asyncHandler(async (req, res) => {
-    const { brandId } = req.params;
+    const brandId = req.params.id;
 
     if (!brandId) {
         throw new BadRequestError("Brand ID not found");
@@ -227,7 +227,7 @@ export const createBrand = asyncHandler(async (req, res) => {
 });
 
 export const editBrand = asyncHandler(async (req, res) => {
-    const { brandId } = req.params;
+    const brandId = req.params.id;
 
     if (!brandId) {
         throw new BadRequestError("Brand ID not found");
@@ -427,7 +427,7 @@ export const editBrand = asyncHandler(async (req, res) => {
 });
 
 export const deleteBrand = asyncHandler(async (req, res) => {
-    const { brandId } = req.params;
+    const brandId = req.params.id;
 
     if (!brandId) {
         throw new BadRequestError("Brand ID not found");

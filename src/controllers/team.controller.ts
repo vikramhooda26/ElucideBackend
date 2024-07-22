@@ -42,7 +42,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
 });
 
 export const getTeamById = asyncHandler(async (req, res) => {
-    const { teamId } = req.params;
+    const teamId = req.params.id;
 
     if (!teamId) {
         throw new BadRequestError("Team ID not found");
@@ -234,7 +234,7 @@ export const createTeam = asyncHandler(async (req, res) => {
 });
 
 export const editTeam = asyncHandler(async (req, res) => {
-    const { teamId } = req.params;
+    const teamId = req.params.id;
 
     if (!teamId) {
         throw new BadRequestError("Team ID not found");
@@ -452,7 +452,7 @@ export const editTeam = asyncHandler(async (req, res) => {
 });
 
 export const deleteTeam = asyncHandler(async (req, res) => {
-    const { teamId } = req.params;
+    const teamId = req.params.id;
 
     if (!teamId) {
         throw new BadRequestError("Team ID not found");

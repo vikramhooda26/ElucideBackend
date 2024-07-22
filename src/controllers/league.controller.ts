@@ -10,7 +10,7 @@ import {
 // TODO verify that the edit method is correct and contains all the required fields (AI generated)
 
 export const getLeagueById = asyncHandler(async (req, res) => {
-    const { leagueId } = req.params;
+    const leagueId = req.params.id;
 
     if (!leagueId) {
         throw new BadRequestError("League ID not found");
@@ -239,7 +239,7 @@ export const createLeague = asyncHandler(async (req, res) => {
 });
 
 export const editLeague = asyncHandler(async (req, res) => {
-    const { leagueId } = req.params;
+    const leagueId = req.params.id;
 
     if (!leagueId) {
         throw new BadRequestError("League ID not found");
@@ -468,7 +468,7 @@ export const editLeague = asyncHandler(async (req, res) => {
 });
 
 export const deleteLeague = asyncHandler(async (req, res) => {
-    const { leagueId } = req.params;
+    const leagueId = req.params.id;
 
     if (!leagueId) {
         throw new BadRequestError("League ID not found");

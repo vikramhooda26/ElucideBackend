@@ -8,7 +8,7 @@ import {
 } from "../schemas/athlete.schema.js";
 
 export const getAthleteById = asyncHandler(async (req, res) => {
-    const { athleteId } = req.params;
+    const athleteId = req.params.id;
 
     if (!athleteId) {
         throw new BadRequestError("Athlete ID not found");
@@ -151,7 +151,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
 });
 
 export const editAthlete = asyncHandler(async (req, res) => {
-    const { athleteId } = req.params;
+    const athleteId = req.params.id;
 
     if (!athleteId) {
         throw new BadRequestError("Athlete ID not found");
@@ -266,7 +266,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
 });
 
 export const removeAthlete = asyncHandler(async (req, res) => {
-    const { athleteId } = req.params;
+    const athleteId = req.params.id;
 
     if (!athleteId) {
         throw new BadRequestError("Athlete ID not found");

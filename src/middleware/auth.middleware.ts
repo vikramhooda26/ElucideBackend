@@ -7,7 +7,7 @@ import {
     verifyRefreshToken,
 } from "../lib/auth.js";
 import { prisma } from "../db/index.js";
-import pkg from "jsonwebtoken";
+import pkg, { JwtPayload } from "jsonwebtoken";
 import { TUser } from "../lib/types.js";
 import { ForbiddenError } from "../lib/errors.js";
 
@@ -30,7 +30,9 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 throw new ForbiddenError();
             }
             try {
-                const decodedRefreshToken = verifyRefreshToken(refreshToken);
+                const decodedRefreshToken = verifyRefreshToken(
+                    refreshToken,
+                ) as JwtPayload;
 
                 const { count } = await prisma.refresh_token.deleteMany({
                     where: { token: refreshToken },
@@ -40,12 +42,15 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                     throw new ForbiddenError();
                 }
 
-                const newAccessToken = generateAccessToken(
-                    decodedRefreshToken as TUser,
-                );
-                const newRefreshToken = await generateRefreshToken(
-                    decodedRefreshToken as TUser,
-                );
+                const newTokenPayload = {
+                    id: decodedRefreshToken.id,
+                    role: decodedRefreshToken.role,
+                    username: decodedRefreshToken.username,
+                } satisfies TUser;
+
+                const newAccessToken = generateAccessToken(newTokenPayload);
+                const newRefreshToken =
+                    await generateRefreshToken(newTokenPayload);
 
                 req.user = verifyAccessToken(newAccessToken);
                 res.cookie(COOKIE_NAME.CSRF, newAccessToken, cookieOptions);
