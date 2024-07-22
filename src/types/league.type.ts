@@ -232,6 +232,14 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 contact_linkedin: true,
             },
         },
+        dashapp_metric: {
+            select: {
+                viewership: true,
+                viewship_type: true,
+                year: true,
+                reach: true,
+            },
+        },
     },
 );
 

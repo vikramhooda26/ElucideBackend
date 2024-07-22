@@ -3,6 +3,8 @@ import { prisma } from "../db/index.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
+import { teamSelect } from "../types/team.type.js";
+import { TeamResponseDTO } from "../dto/team.dto.js";
 
 // TODO verify that the edit method is correct and contains all the required fields (AI generated)
 
@@ -50,13 +52,16 @@ export const getTeamById = asyncHandler(async (req, res) => {
 
     const team = await prisma.dashapp_team.findUnique({
         where: { id: BigInt(teamId) },
+        select: teamSelect,
     });
 
     if (!team) {
         throw new NotFoundError("This team does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(team);
+    const teamResponse: TeamResponseDTO = TeamResponseDTO.toResponse(team);
+
+    res.status(STATUS_CODE.OK).json(teamResponse);
 });
 
 export const createTeam = asyncHandler(async (req, res) => {
