@@ -1,0 +1,53 @@
+openapi: 3.0.0
+info:
+  title: Elucide-sports
+  description: >-
+    A data intensive sports data management and sponsorship decision making
+    platform
+  version: 1.0.0
+servers:
+  - url: https://elucide-sports-backend.vercel.app
+tags:
+  - name: authentication
+    description: Authentication Documentation
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - authentication
+      summary: Login API
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                username: dummy_username
+                password: simplepassword
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/register:
+    post:
+      tags:
+        - authentication
+      summary: Register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                firstName: Mohan
+                lastName: Kumar
+                email: mohan.kumar@gmail.com
+                username: mohan_gr8
+                password: EasyPassword
+                role: ADMIN
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

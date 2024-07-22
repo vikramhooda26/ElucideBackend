@@ -68,5 +68,5 @@ export const registerHandler = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Registered");
+    res.status(STATUS_CODE.OK).send(`${firstName} ${lastName} registered`);
 });

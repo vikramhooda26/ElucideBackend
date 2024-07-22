@@ -11,13 +11,18 @@ export const globalErrorHandler = (
     console.error(err);
 
     if (err instanceof CustomError) {
-        return res
-            .status(err.statusCode)
-            .json({ message: err.message, stack: err.stack });
+        return res.status(err.statusCode).json({
+            message: err.message,
+            ...(process.env.NODE_ENV === "development" && {
+                stack: err.stack,
+            }),
+        });
     }
 
     res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
         message: err.message,
-        stack: err.stack,
+        ...(process.env.NODE_ENV === "development" && {
+            stack: err.stack,
+        }),
     });
 };
