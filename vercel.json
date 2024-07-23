@@ -4,7 +4,7 @@
     "routes": [{ "src": "/(.*)", "dest": "/src" }],
     "functions": {
         "src/**/*.ts": {
-            "timeout": 30
+            "maxDuration": 50
         }
     }
 }
