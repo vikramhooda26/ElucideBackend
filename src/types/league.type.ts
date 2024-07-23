@@ -190,7 +190,6 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             },
         },
         dashapp_activation: {
-            // TODO: have to add property and partner after asking the client
             select: {
                 name: true,
                 dashapp_activation_type: {
@@ -218,6 +217,11 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                                 state: true,
                             },
                         },
+                    },
+                },
+                dashapp_companydata: {
+                    select: {
+                        company_name: true,
                     },
                 },
                 Year: true,

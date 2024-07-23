@@ -55,6 +55,7 @@ export class TeamResponseDTO {
         name: string | null;
         type: string[];
         year: string | null;
+        partner?: string;
     }[];
     contactPersons?: {
         name: string;
@@ -166,6 +167,7 @@ export class TeamResponseDTO {
                 market: activation.dashapp_activation_market.map(
                     (market) => market.dashapp_states.state,
                 ),
+                partner: activation.dashapp_companydata?.company_name,
                 name: activation.name,
                 type: activation.dashapp_activation_type.map(
                     (type) => type.dashapp_marketingplatform.platform,

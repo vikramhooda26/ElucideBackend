@@ -226,6 +226,11 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
                     },
                 },
             },
+            dashapp_companydata: {
+                select: {
+                    company_name: true,
+                },
+            },
             Year: true,
         },
     },

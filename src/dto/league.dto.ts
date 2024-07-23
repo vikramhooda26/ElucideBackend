@@ -53,6 +53,7 @@ export class LeagueResponseDTO {
         name: string | null;
         type: string[];
         year: string | null;
+        partner?: string;
     }[];
     contactPersons?: {
         name: string;
@@ -167,6 +168,7 @@ export class LeagueResponseDTO {
                 type: activation.dashapp_activation_type.map(
                     (type) => type.dashapp_marketingplatform.platform,
                 ),
+                partner: activation.dashapp_companydata?.company_name,
                 year: activation.Year,
             }),
             (leagueDTO.contactPersons = leagueDetails.dashapp_leaguecontact.map(
