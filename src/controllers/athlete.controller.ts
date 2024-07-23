@@ -189,7 +189,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
     } = req.validatedData as TEditAthleteSchema;
 
     await prisma.dashapp_athlete.update({
-        where: { id: Number(athleteId) },
+        where: { id: BigInt(athleteId) },
         data: {
             athlete_name: athleteName,
             association: associationId
