@@ -4,7 +4,7 @@
     "functions": {
         "api/**/*.ts": {
             "maxDuration": 60,
-            "runtime": "nodejs"
+            "runtime": "nodejs@20.11.0"
         }
     }
 }
