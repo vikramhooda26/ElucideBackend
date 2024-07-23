@@ -4,12 +4,15 @@ import {
     generateRefreshToken,
     checkUserExistence,
     verifyPassword,
+    verifyRefreshToken,
 } from "../lib/auth.js";
 import { COOKIE_NAME, STATUS_CODE, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
 import { prisma } from "../db/index.js";
 import { hashPassword } from "../lib/helpers.js";
 import { TUserRegistration, TUserValidation } from "../schemas/auth.schema.js";
+import { JwtPayload } from "jsonwebtoken";
+import { tokenManager } from "../managers/TokenManager.js";
 
 export const loginHandler = asyncHandler(async (req, res) => {
     const { username, password } = req.validatedData as TUserValidation;
@@ -27,12 +30,12 @@ export const loginHandler = asyncHandler(async (req, res) => {
     }
 
     const csrf = generateAccessToken({
-        id: user.id.toString(),
+        userId: user.id.toString(),
         username: user.username,
         role: user.role,
     });
     const refreshToken = await generateRefreshToken({
-        id: user.id.toString(),
+        userId: user.id.toString(),
         username: user.username,
         role: user.role,
     });
@@ -69,4 +72,22 @@ export const registerHandler = asyncHandler(async (req, res) => {
     });
 
     res.status(STATUS_CODE.OK).send(`${firstName} ${lastName} registered`);
+});
+
+export const logoutHandler = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies[COOKIE_NAME.REFRESH_TOKEN];
+
+    const decodedToken = verifyRefreshToken(refreshToken) as JwtPayload;
+
+    const userId = decodedToken.userId;
+
+    tokenManager.removeToken(userId);
+    await prisma.refresh_token.deleteMany({
+        where: { user_id: userId },
+    });
+
+    res.clearCookie(COOKIE_NAME.CSRF);
+    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+
+    res.status(STATUS_CODE.OK).send("Logged out");
 });

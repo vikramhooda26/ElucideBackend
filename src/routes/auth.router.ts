@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
     loginHandler,
+    logoutHandler,
     registerHandler,
 } from "../controllers/auth.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
@@ -14,6 +15,7 @@ import {
 export const authRouter = Router();
 
 authRouter.post("/login", validateSchema(userValidationSchema), loginHandler);
+
 authRouter.post(
     "/register",
     authMiddleware,
@@ -21,3 +23,5 @@ authRouter.post(
     validateSchema(userRegistrationSchema),
     registerHandler,
 );
+
+authRouter.post("/logout", logoutHandler);

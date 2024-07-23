@@ -14,7 +14,7 @@ export const generateAccessToken = (user: TUser) => {
         expiresIn: "30m",
     });
 
-    tokenManager.setToken(user.id, accessToken);
+    tokenManager.setToken(user.userId, accessToken);
     return accessToken;
 };
 
@@ -26,7 +26,7 @@ export const generateRefreshToken = async (user: TUser) => {
             token: refreshToken,
             user: {
                 connect: {
-                    id: BigInt(user.id),
+                    id: BigInt(user.userId),
                 },
             },
         },
