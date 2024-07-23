@@ -5,6 +5,5 @@
         "api/**/*.ts": {
             "maxDuration": 60
         }
-    },
-    "builds": [{ "src": "./src/index.ts", "use": "@vercel/node" }]
+    }
 }
