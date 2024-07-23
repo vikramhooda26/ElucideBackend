@@ -2,8 +2,7 @@
     "version": 2,
     "functions": {
         "src/**/*.ts": {
-            "runtime": "@vercel/node",
-            "maxDuration": 30
+            "maxDuration": 60
         }
     }
 }
