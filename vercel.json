@@ -3,8 +3,8 @@
     "version": 2,
     "functions": {
         "src/**/*.ts": {
-            "maxDuration": 60,
-            "includeFiles": "/src/**/*.ts"
+            "maxDuration": 60
         }
-    }
+    },
+    "rewrites": [{ "source": "/src/**/*.ts", "destination": "/api" }]
 }
