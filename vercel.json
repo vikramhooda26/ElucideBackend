@@ -2,5 +2,5 @@
     "version": 2,
     "builds": [{ "src": "./src/index.ts", "use": "@vercel/node" }],
     "routes": [{ "src": "/(.*)", "dest": "/src" }],
-    "functions": { "./src/**/*": { "maxDuration": 60 } }
+    "functions": [{ "./src/**/*": { "maxDuration": 60 } }]
 }
