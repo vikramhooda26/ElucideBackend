@@ -1,6 +1,5 @@
 {
     "version": 2,
     "builds": [{ "src": "./src/index.ts", "use": "@vercel/node" }],
-    "routes": [{ "src": "/(.*)", "dest": "/src" }],
-    "functions": { "src/controllers/team.controller.ts": { "maxDuration": 60 } }
+    "routes": [{ "src": "/(.*)", "dest": "/src" }]
 }
