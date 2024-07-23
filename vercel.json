@@ -1,8 +1,9 @@
 {
     "version": 2,
     "functions": {
-        "src/**/*.ts": {
+        "src/index.ts": {
             "maxDuration": 60
         }
-    }
+    },
+    "routes": [{ "src": "/(.*)", "dest": "/src/index.ts" }]
 }
