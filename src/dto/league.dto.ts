@@ -47,7 +47,6 @@ export class LeagueResponseDTO {
         type: string;
     }[];
     activationSummary?: {
-        // TODO: have to add property_name and partner after asking the client
         asset: string[];
         market: string[];
         name: string | null;
