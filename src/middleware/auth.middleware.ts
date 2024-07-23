@@ -43,7 +43,7 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 }
 
                 const newTokenPayload = {
-                    id: decodedRefreshToken.id,
+                    userId: decodedRefreshToken.id,
                     role: decodedRefreshToken.role,
                     username: decodedRefreshToken.username,
                 } satisfies TUser;
