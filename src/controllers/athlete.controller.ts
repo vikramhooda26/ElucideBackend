@@ -150,23 +150,27 @@ export const createAthlete = asyncHandler(async (req, res) => {
                 : undefined,
             created_by: { connect: { id: BigInt(userId) } },
             modified_by: { connect: { id: BigInt(userId) } },
-            facebook: facebook ?? null,
-            instagram: instagram ?? null,
-            twitter: twitter ?? null,
-            linkedin: linkedin ?? null,
-            youtube: youtube ?? null,
-            website: website ?? null,
+            facebook: facebook ?? undefined,
+            instagram: instagram ?? undefined,
+            twitter: twitter ?? undefined,
+            linkedin: linkedin ?? undefined,
+            youtube: youtube ?? undefined,
+            website: website ?? undefined,
             dashapp_agency: {
                 connect: agencyId ? { id: BigInt(agencyId) } : undefined,
             },
-            dashapp_sport: { connect: { id: BigInt(sportId) } },
+            dashapp_sport: {
+                connect: sportId ? { id: BigInt(sportId) } : undefined,
+            },
             nationality,
             dashapp_athlete_personality_traits: {
-                create: subPersonalityTraitIds?.map((traitId) => ({
-                    dashapp_subpersonality: {
-                        connect: { id: BigInt(traitId) },
-                    },
-                })),
+                create: subPersonalityTraitIds
+                    ? subPersonalityTraitIds.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      }))
+                    : undefined,
             },
             age: Number(age),
             dashapp_athlete_target_age: {
