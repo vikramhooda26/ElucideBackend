@@ -91,7 +91,28 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
         throw new NotFoundError("Athlete data does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(athletes);
+    res.status(STATUS_CODE.OK).send(
+        athletes.map((athlete) => ({
+            id: athlete.id,
+            athleteName: athlete.athlete_name,
+            createdDate: athlete.created_date,
+            modifiedData: athlete.modified_date,
+            createdBy: {
+                userId: athlete.created_by?.id,
+                email: athlete.created_by?.email,
+                firstName: athlete.created_by?.first_name,
+                lastName: athlete.created_by?.last_name,
+                username: athlete.created_by?.username,
+            },
+            modifiedBy: {
+                userId: athlete.modified_by?.id,
+                email: athlete.modified_by?.email,
+                firstName: athlete.modified_by?.first_name,
+                lastName: athlete.modified_by?.last_name,
+                username: athlete.modified_by?.username,
+            },
+        })),
+    );
 });
 
 export const createAthlete = asyncHandler(async (req, res) => {

@@ -71,7 +71,9 @@ export const registerHandler = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send(`${firstName} ${lastName} registered`);
+    res.status(STATUS_CODE.OK).json({
+        message: `${firstName} ${lastName} registered`,
+    });
 });
 
 export const logoutHandler = asyncHandler(async (req, res) => {
@@ -89,5 +91,7 @@ export const logoutHandler = asyncHandler(async (req, res) => {
     res.clearCookie(COOKIE_NAME.CSRF);
     res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
 
-    res.status(STATUS_CODE.OK).send("Logged out");
+    res.status(STATUS_CODE.OK).json({
+        message: "Logged out",
+    });
 });
