@@ -162,12 +162,12 @@ export const createLeague = asyncHandler(async (req, res) => {
                     },
                 })),
             },
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
+            instagram: instagram ?? "N/A",
+            facebook: facebook ?? "N/A",
+            linkedin: linkedin ?? "N/A",
+            twitter: twitter ?? "N/A",
+            youtube: youtube ?? "N/A",
+            website: website ?? "N/A",
             strategy_overview: strategyOverview,
             dashapp_leagueinfo_taglines: {
                 create: taglineIds?.map((taglineId) => ({
