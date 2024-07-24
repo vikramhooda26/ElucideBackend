@@ -6,6 +6,8 @@ import {
     TCreateBrandSchema,
     TEditBrandSchema,
 } from "../schemas/brand.schema.js";
+import { brandSelect } from "../types/brand.type.js";
+import { BrandResponseDTO } from "../dto/brand.dto.js";
 
 export const getAllBrands = asyncHandler(async (req, res) => {
     const brands = await prisma.dashapp_companydata.findMany({
@@ -51,13 +53,16 @@ export const getBrandById = asyncHandler(async (req, res) => {
 
     const brand = await prisma.dashapp_companydata.findUnique({
         where: { id: BigInt(brandId) },
+        select: brandSelect,
     });
 
     if (!brand) {
         throw new NotFoundError("This brand does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(brand);
+    const brandResponse: BrandResponseDTO = BrandResponseDTO.toResponse(brand);
+
+    res.status(STATUS_CODE.OK).json(brandResponse);
 });
 
 export const createBrand = asyncHandler(async (req, res) => {
