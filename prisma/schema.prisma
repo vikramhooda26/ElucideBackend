@@ -275,46 +275,46 @@ model dashapp_assets {
 }
 
 model dashapp_athlete {
-    id                                                                                BigInt                                  @id @default(autoincrement())
-    created_date                                                                      DateTime?                               @default(now())
-    modified_date                                                                     DateTime?
-    athlete_name                                                                      String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
-    nationality                                                                       String?                                 @db.VarChar(512)
-    instagram                                                                         String?                                 @db.VarChar(512)
-    facebook                                                                          String?                                 @db.VarChar(512)
-    twitter                                                                           String?                                 @db.VarChar(512)
-    linkedin                                                                          String?                                 @db.VarChar(512)
-    website                                                                           String?                                 @db.VarChar(512)
-    agency_id                                                                         BigInt?
-    modified_by_id                                                                    BigInt?
-    sport_id                                                                          BigInt?
-    youtube                                                                           String?                                 @db.VarChar(512)
-    status_id                                                                         BigInt?
-    age                                                                               Int?
-    state_id                                                                          BigInt?
-    keyplatform_primary_id                                                            BigInt?
-    keyplatform_secondary_id                                                          BigInt?
-    created_by_id                                                                     BigInt?
-    association                                                                       association[]
-    dashapp_activation                                                                dashapp_activation[]
-    dashapp_agency                                                                    dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    auth_user_dashapp_athlete_created_by_idToauth_user                                auth_user?                              @relation("dashapp_athlete_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
-    dashapp_keyplatform_dashapp_athlete_keyplatform_primary_idTodashapp_keyplatform   dashapp_keyplatform?                    @relation("dashapp_athlete_keyplatform_primary_idTodashapp_keyplatform", fields: [keyplatform_primary_id], references: [id], onUpdate: NoAction)
-    dashapp_keyplatform_dashapp_athlete_keyplatform_secondary_idTodashapp_keyplatform dashapp_keyplatform?                    @relation("dashapp_athlete_keyplatform_secondary_idTodashapp_keyplatform", fields: [keyplatform_secondary_id], references: [id], onUpdate: NoAction)
-    auth_user_dashapp_athlete_modified_by_idToauth_user                               auth_user?                              @relation("dashapp_athlete_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_sport                                                                     dashapp_sport?                          @relation(fields: [sport_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_states                                                                    dashapp_states?                         @relation(fields: [state_id], references: [id], onUpdate: NoAction)
-    dashapp_athlete_status                                                            dashapp_athlete_status?                 @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-    dashapp_athlete_key_markets_primary                                               dashapp_athlete_key_markets_primary[]
-    dashapp_athlete_key_markets_secondary                                             dashapp_athlete_key_markets_secondary[]
-    dashapp_athlete_key_markets_tertiary                                              dashapp_athlete_key_markets_tertiary[]
-    dashapp_athlete_personality_traits                                                dashapp_athlete_personality_traits[]
-    dashapp_athlete_target_age                                                        dashapp_athlete_target_age[]
-    dashapp_athlete_target_gender                                                     dashapp_athlete_target_gender[]
-    dashapp_athlete_target_income                                                     dashapp_athlete_target_income[]
-    dashapp_athlete_tier                                                              dashapp_athlete_tier[]
-    dashapp_athletecontact                                                            dashapp_athletecontact[]
-    dashapp_sportsdealsummary                                                         dashapp_sportsdealsummary[]
+    id                                    BigInt                                  @id @default(autoincrement())
+    created_date                          DateTime?                               @default(now())
+    modified_date                         DateTime?
+    athlete_name                          String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
+    nationality                           String?                                 @db.VarChar(512)
+    instagram                             String?                                 @db.VarChar(512)
+    facebook                              String?                                 @db.VarChar(512)
+    twitter                               String?                                 @db.VarChar(512)
+    linkedin                              String?                                 @db.VarChar(512)
+    website                               String?                                 @db.VarChar(512)
+    agency_id                             BigInt?
+    modified_by_id                        BigInt?
+    sport_id                              BigInt?
+    youtube                               String?                                 @db.VarChar(512)
+    status_id                             BigInt?
+    age                                   Int?
+    state_id                              BigInt?
+    keyplatform_primary_id                BigInt?
+    keyplatform_secondary_id              BigInt?
+    created_by_id                         BigInt?
+    association                           association[]
+    dashapp_activation                    dashapp_activation[]
+    dashapp_agency                        dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    created_by                            auth_user?                              @relation("dashapp_athlete_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
+    dashapp_athlete_keyplatform_primary   dashapp_keyplatform?                    @relation("dashapp_athlete_keyplatform_primary_idTodashapp_keyplatform", fields: [keyplatform_primary_id], references: [id], onUpdate: NoAction)
+    dashapp_athlete_keyplatform_secondary dashapp_keyplatform?                    @relation("dashapp_athlete_keyplatform_secondary_idTodashapp_keyplatform", fields: [keyplatform_secondary_id], references: [id], onUpdate: NoAction)
+    modified_by                           auth_user?                              @relation("dashapp_athlete_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sport                         dashapp_sport?                          @relation(fields: [sport_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_states                        dashapp_states?                         @relation(fields: [state_id], references: [id], onUpdate: NoAction)
+    dashapp_athlete_status                dashapp_athlete_status?                 @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+    dashapp_athlete_key_markets_primary   dashapp_athlete_key_markets_primary[]
+    dashapp_athlete_key_markets_secondary dashapp_athlete_key_markets_secondary[]
+    dashapp_athlete_key_markets_tertiary  dashapp_athlete_key_markets_tertiary[]
+    dashapp_athlete_personality_traits    dashapp_athlete_personality_traits[]
+    dashapp_athlete_target_age            dashapp_athlete_target_age[]
+    dashapp_athlete_target_gender         dashapp_athlete_target_gender[]
+    dashapp_athlete_target_income         dashapp_athlete_target_income[]
+    dashapp_athlete_tier                  dashapp_athlete_tier[]
+    dashapp_athletecontact                dashapp_athletecontact[]
+    dashapp_sportsdealsummary             dashapp_sportsdealsummary[]
 
     @@index([agency_id], map: "dashapp_athlete_agency_id_50deebaa")
     @@index([modified_by_id], map: "dashapp_athlete_modified_by_id_b04f0216")
