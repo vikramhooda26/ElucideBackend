@@ -41,7 +41,28 @@ export const getAllBrands = asyncHandler(async (req, res) => {
         throw new NotFoundError("Brands data does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(brands);
+    res.status(STATUS_CODE.OK).json(
+        brands.map((brand) => ({
+            id: brand.id,
+            athleteName: brand.company_name,
+            createdDate: brand.created_date,
+            modifiedData: brand.modified_date,
+            createdBy: {
+                userId: brand.created_by?.id,
+                email: brand.created_by?.email,
+                firstName: brand.created_by?.first_name,
+                lastName: brand.created_by?.last_name,
+                username: brand.created_by?.username,
+            },
+            modifiedBy: {
+                userId: brand.modified_by?.id,
+                email: brand.modified_by?.email,
+                firstName: brand.modified_by?.first_name,
+                lastName: brand.modified_by?.last_name,
+                username: brand.modified_by?.username,
+            },
+        })),
+    );
 });
 
 export const getBrandById = asyncHandler(async (req, res) => {
@@ -226,7 +247,9 @@ export const createBrand = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Brand created");
+    res.status(STATUS_CODE.OK).json({
+        message: "Brand created",
+    });
 });
 
 export const editBrand = asyncHandler(async (req, res) => {
@@ -426,7 +449,9 @@ export const editBrand = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Brand updated");
+    res.status(STATUS_CODE.OK).json({
+        message: "Brand details updated",
+    });
 });
 
 export const deleteBrand = asyncHandler(async (req, res) => {
@@ -445,5 +470,7 @@ export const deleteBrand = asyncHandler(async (req, res) => {
         throw new NotFoundError("This brand does not exists");
     }
 
-    res.status(STATUS_CODE.OK).send("Brand deleted");
+    res.status(STATUS_CODE.OK).json({
+        message: "Brand deleted",
+    });
 });

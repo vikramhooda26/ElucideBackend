@@ -63,7 +63,28 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
         throw new NotFoundError("League data does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(leagues);
+    res.status(STATUS_CODE.OK).json(
+        leagues.map((league) => ({
+            id: league.id,
+            leagueName: league.property_name,
+            createdDate: league.created_date,
+            modifiedData: league.modified_date,
+            createdBy: {
+                userId: league.created_by?.id,
+                email: league.created_by?.email,
+                firstName: league.created_by?.first_name,
+                lastName: league.created_by?.last_name,
+                username: league.created_by?.username,
+            },
+            modifiedBy: {
+                userId: league.modified_by?.id,
+                email: league.modified_by?.email,
+                firstName: league.modified_by?.first_name,
+                lastName: league.modified_by?.last_name,
+                username: league.modified_by?.username,
+            },
+        })),
+    );
 });
 
 export const createLeague = asyncHandler(async (req, res) => {
@@ -239,7 +260,9 @@ export const createLeague = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("League created");
+    res.status(STATUS_CODE.OK).json({
+        message: "League created",
+    });
 });
 
 export const editLeague = asyncHandler(async (req, res) => {
@@ -468,7 +491,9 @@ export const editLeague = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("League updated");
+    res.status(STATUS_CODE.OK).json({
+        message: "League details updated",
+    });
 });
 
 export const deleteLeague = asyncHandler(async (req, res) => {
@@ -480,5 +505,7 @@ export const deleteLeague = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_leagueinfo.delete({ where: { id: BigInt(leagueId) } });
 
-    res.status(STATUS_CODE.OK).send("League deleted");
+    res.status(STATUS_CODE.OK).json({
+        message: "League deleted",
+    });
 });

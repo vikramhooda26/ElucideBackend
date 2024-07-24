@@ -91,7 +91,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
         throw new NotFoundError("Athlete data does not exists");
     }
 
-    res.status(STATUS_CODE.OK).send(
+    res.status(STATUS_CODE.OK).json(
         athletes.map((athlete) => ({
             id: athlete.id,
             athleteName: athlete.athlete_name,
@@ -333,7 +333,9 @@ export const editAthlete = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Athlete updated");
+    res.status(STATUS_CODE.OK).json({
+        message: "Athlete details updated",
+    });
 });
 
 export const removeAthlete = asyncHandler(async (req, res) => {
@@ -347,5 +349,7 @@ export const removeAthlete = asyncHandler(async (req, res) => {
         where: { id: BigInt(athleteId) },
     });
 
-    res.status(STATUS_CODE.OK).send("Athlete deleted");
+    res.status(STATUS_CODE.OK).json({
+        message: "Athlete deleted",
+    });
 });

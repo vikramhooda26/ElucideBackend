@@ -38,7 +38,28 @@ export const getAllTeams = asyncHandler(async (req, res) => {
         throw new NotFoundError("Team data does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(teams);
+    res.status(STATUS_CODE.OK).json(
+        teams.map((team) => ({
+            id: team.id,
+            athleteName: team.team_name,
+            createdDate: team.created_date,
+            modifiedData: team.modified_date,
+            createdBy: {
+                userId: team.created_by?.id,
+                email: team.created_by?.email,
+                firstName: team.created_by?.first_name,
+                lastName: team.created_by?.last_name,
+                username: team.created_by?.username,
+            },
+            modifiedBy: {
+                userId: team.modified_by?.id,
+                email: team.modified_by?.email,
+                firstName: team.modified_by?.first_name,
+                lastName: team.modified_by?.last_name,
+                username: team.modified_by?.username,
+            },
+        })),
+    );
 });
 
 export const getTeamById = asyncHandler(async (req, res) => {
@@ -233,7 +254,9 @@ export const createTeam = asyncHandler(async (req, res) => {
         },
     });
 
-    res.status(STATUS_CODE.OK).send("Team created");
+    res.status(STATUS_CODE.OK).json({
+        message: "Team created",
+    });
 });
 
 export const editTeam = asyncHandler(async (req, res) => {
@@ -451,7 +474,9 @@ export const editTeam = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    res.status(STATUS_CODE.OK).send("Team updated");
+    res.status(STATUS_CODE.OK).json({
+        message: "Team details updated",
+    });
 });
 
 export const deleteTeam = asyncHandler(async (req, res) => {
@@ -470,5 +495,7 @@ export const deleteTeam = asyncHandler(async (req, res) => {
         throw new NotFoundError("This team does not exists");
     }
 
-    res.status(STATUS_CODE.OK).send("Team deleted");
+    res.status(STATUS_CODE.OK).json({
+        message: "Team deleted",
+    });
 });
