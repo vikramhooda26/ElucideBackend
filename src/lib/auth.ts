@@ -24,7 +24,7 @@ export const generateRefreshToken = async (user: TUser) => {
     await prisma.refresh_token.create({
         data: {
             token: refreshToken,
-            user: {
+            auth_user: {
                 connect: {
                     id: BigInt(user.userId),
                 },
