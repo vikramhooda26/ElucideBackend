@@ -120,7 +120,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         athleteName,
         age,
         genderId,
-        incomeId,
+        incomeIds,
         associationId,
         userId,
         facebook,
@@ -156,9 +156,9 @@ export const createAthlete = asyncHandler(async (req, res) => {
             linkedin: linkedin ?? null,
             youtube: youtube ?? null,
             website: website ?? null,
-            dashapp_agency: agencyId
-                ? { connect: { id: BigInt(agencyId) } }
-                : undefined,
+            dashapp_agency: {
+                connect: agencyId ? { id: BigInt(agencyId) } : undefined,
+            },
             dashapp_sport: { connect: { id: BigInt(sportId) } },
             nationality,
             dashapp_athlete_personality_traits: {
@@ -186,10 +186,10 @@ export const createAthlete = asyncHandler(async (req, res) => {
                     : undefined,
             },
             dashapp_athlete_target_income: {
-                create: incomeId
-                    ? {
+                create: incomeIds
+                    ? incomeIds.map((incomeId) => ({
                           dashapp_income: { connect: { id: BigInt(incomeId) } },
-                      }
+                      }))
                     : undefined,
             },
             dashapp_athlete_key_markets_primary: {
@@ -238,7 +238,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         athleteName,
         age,
         genderId,
-        incomeId,
+        incomeIds,
         associationId,
         userId,
         facebook,
@@ -306,10 +306,10 @@ export const editAthlete = asyncHandler(async (req, res) => {
             },
             dashapp_athlete_target_income: {
                 deleteMany: {},
-                create: incomeId
-                    ? {
+                create: incomeIds
+                    ? incomeIds.map((incomeId) => ({
                           dashapp_income: { connect: { id: BigInt(incomeId) } },
-                      }
+                      }))
                     : undefined,
             },
             dashapp_athlete_key_markets_primary: {
