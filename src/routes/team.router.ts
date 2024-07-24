@@ -31,7 +31,7 @@ teamRouter.put(
 );
 
 teamRouter.delete(
-    "delete/:id",
+    "/delete/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     deleteTeam,
 );
