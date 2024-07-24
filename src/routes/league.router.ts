@@ -34,7 +34,7 @@ leagueRouter.put(
 );
 
 leagueRouter.delete(
-    "delete/:id",
+    "/delete/:id",
     roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     deleteLeague,
 );
