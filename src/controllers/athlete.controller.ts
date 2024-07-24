@@ -6,6 +6,35 @@ import {
     TCreateAthleteSchema,
     TEditAthleteSchema,
 } from "../schemas/athlete.schema.js";
+import { athleteSelect } from "../types/athlete.type.js";
+import { AthleteResponseDTO } from "../dto/athlete.dto.js";
+
+const findAgeRange = async (age: number): Promise<string | undefined> => {
+    const ageRanges = await prisma.dashapp_age.findMany({
+        select: { age_range: true },
+    });
+
+    if (!ageRanges) {
+        return undefined;
+    }
+
+    let matchedAgeRange: string | undefined;
+
+    ageRanges.find((range) => {
+        const [minAge, maxAge] = range.age_range.split(/[-+]/).map(Number);
+        if (
+            (minAge && maxAge && age >= minAge && age <= maxAge) ||
+            ((!maxAge || maxAge === 0) && age >= minAge)
+        ) {
+            matchedAgeRange = range.age_range;
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    return matchedAgeRange;
+};
 
 export const getAthleteById = asyncHandler(async (req, res) => {
     const athleteId = req.params.id;
@@ -16,13 +45,17 @@ export const getAthleteById = asyncHandler(async (req, res) => {
 
     const athlete = await prisma.dashapp_athlete.findUnique({
         where: { id: BigInt(athleteId) },
+        select: athleteSelect,
     });
 
     if (!athlete) {
         throw new NotFoundError("This athlete does not exists");
     }
 
-    res.status(STATUS_CODE.OK).json(athlete);
+    const athleteResponse: AthleteResponseDTO =
+        AthleteResponseDTO.toResponse(athlete);
+
+    res.status(STATUS_CODE.OK).json(athleteResponse);
 });
 
 export const getAllAthletes = asyncHandler(async (req, res) => {
@@ -64,7 +97,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
 export const createAthlete = asyncHandler(async (req, res) => {
     const {
         athleteName,
-        ageId,
+        age,
         genderId,
         incomeId,
         associationId,
@@ -83,6 +116,10 @@ export const createAthlete = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
     } = req.validatedData as TCreateAthleteSchema;
+
+    const ageRange = age ? await findAgeRange(Number(age)) : undefined;
+
+    console.log("\n\nageRange:", ageRange);
 
     await prisma.dashapp_athlete.create({
         data: {
@@ -110,9 +147,14 @@ export const createAthlete = asyncHandler(async (req, res) => {
                     },
                 })),
             },
+            age: Number(age),
             dashapp_athlete_target_age: {
-                create: ageId
-                    ? { dashapp_age: { connect: { id: BigInt(ageId) } } }
+                create: ageRange
+                    ? {
+                          dashapp_age: {
+                              connect: { age_range: ageRange },
+                          },
+                      }
                     : undefined,
             },
             dashapp_athlete_target_gender: {
@@ -145,9 +187,14 @@ export const createAthlete = asyncHandler(async (req, res) => {
                 })),
             },
         },
+        select: {
+            id: true,
+        },
     });
 
-    res.status(STATUS_CODE.OK).send("Athlete created");
+    res.status(STATUS_CODE.OK).json({
+        message: "Athlete created",
+    });
 });
 
 export const editAthlete = asyncHandler(async (req, res) => {
@@ -168,7 +215,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
 
     const {
         athleteName,
-        ageId,
+        age,
         genderId,
         incomeId,
         associationId,
@@ -188,10 +235,13 @@ export const editAthlete = asyncHandler(async (req, res) => {
         tertiaryIds,
     } = req.validatedData as TEditAthleteSchema;
 
+    const ageRange = age ? await findAgeRange(Number(age)) : undefined;
+
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
         data: {
             athlete_name: athleteName,
+            age: Number(age),
             association: associationId
                 ? { connect: { id: BigInt(associationId) } }
                 : undefined,
@@ -221,8 +271,8 @@ export const editAthlete = asyncHandler(async (req, res) => {
             },
             dashapp_athlete_target_age: {
                 deleteMany: {},
-                create: ageId
-                    ? { dashapp_age: { connect: { id: BigInt(ageId) } } }
+                create: ageRange
+                    ? { dashapp_age: { connect: { age_range: ageRange } } }
                     : undefined,
             },
             dashapp_athlete_target_gender: {
