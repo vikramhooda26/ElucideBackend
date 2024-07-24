@@ -108,7 +108,7 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
         select: {
             annual_value: true,
             total_value: true,
-            assets: {
+            dashapp_sportsdeal_assets: {
                 select: { dashapp_assets: { select: { asset: true } } },
             },
             commencement_date: true,
@@ -137,10 +137,10 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     dashapp_athlete_target_income: {
         select: { dashapp_income: { select: { income_class: true } } },
     },
-    keyplatform_primary: { select: { platform: true } },
-    keyplatform_secondary: { select: { platform: true } },
-    status: { select: { status: true } },
-    state: { select: { state: true } },
+    dashapp_athlete_keyplatform_primary: { select: { platform: true } },
+    dashapp_athlete_keyplatform_secondary: { select: { platform: true } },
+    dashapp_athlete_status: { select: { status: true } },
+    dashapp_states: { select: { state: true } },
 });
 
 export type TAthleteDetails = Prisma.dashapp_athleteGetPayload<{

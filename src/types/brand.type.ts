@@ -13,11 +13,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 dashapp_subcategory: {
                     select: {
                         subcategory: true,
-                        category: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        dashapp_category: { select: { category: true } },
                     },
                 },
             },
@@ -27,7 +23,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 name: true,
             },
         },
-        hq_state: {
+        dashapp_states: {
             select: {
                 state: true,
             },
@@ -179,7 +175,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 total_value: true,
                 territory: true,
                 media_link: true,
-                assets: {
+                dashapp_sportsdeal_assets: {
                     select: {
                         dashapp_assets: {
                             select: {

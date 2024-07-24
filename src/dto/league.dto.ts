@@ -34,7 +34,7 @@ export class LeagueResponseDTO {
     NCCS?: string[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
-        assets: { dashapp_assets: { asset: string } }[];
+        assets: string[];
         commencementDate: string | null;
         duration: string | null;
         expirationDate: string | null;
@@ -143,7 +143,9 @@ export class LeagueResponseDTO {
         leagueDTO.sportsDealSummary =
             leagueDetails.dashapp_sportsdealsummary.map((deal) => ({
                 annualValue: deal.annual_value,
-                assets: deal.assets,
+                assets: deal.dashapp_sportsdeal_assets.map(
+                    (asset) => asset.dashapp_assets.asset,
+                ),
                 commencementDate: deal.commencement_date,
                 duration: deal.duration,
                 expirationDate: deal.expiration_date,

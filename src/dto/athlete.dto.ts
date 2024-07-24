@@ -119,7 +119,9 @@ export class AthleteResponseDTO {
             athleteDetails.dashapp_sportsdealsummary.map((deal) => ({
                 annualValue: deal.annual_value,
                 totalValue: deal.total_value,
-                assets: deal.assets.map((asset) => asset.dashapp_assets.asset),
+                assets: deal.dashapp_sportsdeal_assets.map(
+                    (asset) => asset.dashapp_assets.asset,
+                ),
                 commencementDate: deal.commencement_date,
                 expirationDate: deal.expiration_date,
                 duration: deal.duration,
@@ -146,11 +148,11 @@ export class AthleteResponseDTO {
             (income) => income.dashapp_income?.income_class,
         );
         athleteDTO.keyPlatformPrimary =
-            athleteDetails.keyplatform_primary?.platform;
+            athleteDetails.dashapp_athlete_keyplatform_primary?.platform;
         athleteDTO.keyPlatformSecondary =
-            athleteDetails.keyplatform_secondary?.platform;
-        athleteDTO.status = athleteDetails.status?.status;
-        athleteDTO.state = athleteDetails.state?.state;
+            athleteDetails.dashapp_athlete_keyplatform_secondary?.platform;
+        athleteDTO.status = athleteDetails.dashapp_athlete_status?.status;
+        athleteDTO.state = athleteDetails.dashapp_states?.state;
 
         return athleteDTO;
     }

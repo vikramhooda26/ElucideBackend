@@ -159,7 +159,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_sportsdealsummary: {
             select: {
-                assets: {
+                dashapp_sportsdeal_assets: {
                     select: {
                         dashapp_assets: {
                             select: {

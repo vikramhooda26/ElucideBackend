@@ -135,7 +135,7 @@ export const createTeam = asyncHandler(async (req, res) => {
             dashapp_hqcity: {
                 connect: hqCityId ? { id: BigInt(hqCityId) } : undefined,
             },
-            hq_state: {
+            dashapp_states: {
                 connect: hqStateId
                     ? {
                           id: BigInt(hqStateId),
@@ -320,7 +320,7 @@ export const editTeam = asyncHandler(async (req, res) => {
             dashapp_hqcity: hqCityId
                 ? { connect: { id: BigInt(hqCityId) } }
                 : undefined,
-            hq_state: hqStateId
+            dashapp_states: hqStateId
                 ? { connect: { id: BigInt(hqStateId) } }
                 : undefined,
             dashapp_team_personality_traits: personalityTraitIds

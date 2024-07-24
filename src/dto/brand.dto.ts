@@ -6,7 +6,7 @@ export class BrandResponseDTO {
     parentOrg?: string;
     subcategory?: {
         subcategory: string | undefined;
-        category: { category: string } | undefined;
+        category: string | undefined;
     }[];
     hqCity?: string;
     hqState?: string;
@@ -74,11 +74,12 @@ export class BrandResponseDTO {
         brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
             (subcategory) => ({
                 subcategory: subcategory.dashapp_subcategory?.subcategory,
-                category: subcategory.dashapp_subcategory?.category,
+                category:
+                    subcategory.dashapp_subcategory?.dashapp_category.category,
             }),
         );
         brandDTO.hqCity = brandDetails.dashapp_hqcity?.name;
-        brandDTO.hqState = brandDetails.hq_state?.state;
+        brandDTO.hqState = brandDetails.dashapp_states?.state;
         brandDTO.agency = brandDetails.dashapp_agency?.name;
         brandDTO.tier = brandDetails.dashapp_companydata_tier.map(
             (tier) => tier.dashapp_tier?.name,
@@ -141,7 +142,9 @@ export class BrandResponseDTO {
         brandDTO.sportsDealSummary = brandDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value,
-                assets: deal.assets.map((asset) => asset.dashapp_assets.asset),
+                assets: deal.dashapp_sportsdeal_assets.map(
+                    (asset) => asset.dashapp_assets.asset,
+                ),
                 athleteName: deal.dashapp_athlete?.athlete_name,
                 leagueName: deal.dashapp_leagueinfo?.property_name,
                 teamName: deal.dashapp_team?.team_name,

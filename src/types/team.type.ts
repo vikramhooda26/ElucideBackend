@@ -28,7 +28,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
             name: true,
         },
     },
-    hq_state: {
+    dashapp_states: {
         select: {
             state: true,
         },
@@ -166,7 +166,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     },
     dashapp_sportsdealsummary: {
         select: {
-            assets: {
+            dashapp_sportsdeal_assets: {
                 select: {
                     dashapp_assets: {
                         select: {

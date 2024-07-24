@@ -37,7 +37,7 @@ export class TeamResponseDTO {
     }[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
-        assets: { dashapp_assets: { asset: string } }[];
+        assets: string[];
         commencementDate: string | null;
         duration: string | null;
         expirationDate: string | null;
@@ -82,7 +82,7 @@ export class TeamResponseDTO {
         teamDTO.yearOfInception = teamDetails.year_of_inception;
         teamDTO.franchiseFee = teamDetails.franchise_fee;
         teamDTO.hqCity = teamDetails.dashapp_hqcity?.name;
-        teamDTO.hqState = teamDetails.hq_state?.state;
+        teamDTO.hqState = teamDetails.dashapp_states?.state;
         teamDTO.instagram = teamDetails.instagram;
         teamDTO.facebook = teamDetails.facebook;
         teamDTO.twitter = teamDetails.twitter;
@@ -146,7 +146,9 @@ export class TeamResponseDTO {
         teamDTO.sportsDealSummary = teamDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value,
-                assets: deal.assets,
+                assets: deal.dashapp_sportsdeal_assets.map(
+                    (assest) => assest.dashapp_assets.asset,
+                ),
                 commencementDate: deal.commencement_date,
                 duration: deal.duration,
                 expirationDate: deal.expiration_date,

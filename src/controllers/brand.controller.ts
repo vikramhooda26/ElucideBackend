@@ -139,7 +139,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             },
-            hq_state: {
+            dashapp_states: {
                 connect: hqStateId
                     ? {
                           id: BigInt(hqStateId),
@@ -307,7 +307,7 @@ export const editBrand = asyncHandler(async (req, res) => {
             dashapp_hqcity: hqCityId
                 ? { connect: { id: BigInt(hqCityId) } }
                 : undefined,
-            hq_state: hqStateId
+            dashapp_states: hqStateId
                 ? { connect: { id: BigInt(hqStateId) } }
                 : undefined,
             dashapp_agency: agencyId
