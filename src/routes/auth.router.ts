@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    fetchUserDetails,
     loginHandler,
     logoutHandler,
     registerHandler,
@@ -23,5 +24,7 @@ authRouter.post(
     validateSchema(userRegistrationSchema),
     registerHandler,
 );
+
+authRouter.get("get-user-details", authMiddleware, fetchUserDetails);
 
 authRouter.post("/logout", logoutHandler);

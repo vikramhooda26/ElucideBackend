@@ -13,6 +13,7 @@ import { hashPassword } from "../lib/helpers.js";
 import { TUserRegistration, TUserValidation } from "../schemas/auth.schema.js";
 import { JwtPayload } from "jsonwebtoken";
 import { tokenManager } from "../managers/TokenManager.js";
+import { Request, Response } from "express";
 
 export const loginHandler = asyncHandler(async (req, res) => {
     const { username, password } = req.validatedData as TUserValidation;
@@ -95,3 +96,38 @@ export const logoutHandler = asyncHandler(async (req, res) => {
         message: "Logged out",
     });
 });
+
+export const fetchUserDetails = async (req: Request, res: Response) => {
+    const { userId } = req.user;
+
+    try {
+        const user = await prisma.auth_user.findUnique({
+            where: { id: BigInt(userId) },
+            select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                username: true,
+                email: true,
+                role: true,
+            },
+        });
+
+        if (!user) {
+            res.clearCookie(COOKIE_NAME.CSRF);
+            res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+            tokenManager.removeToken(userId);
+
+            throw new ForbiddenError();
+        }
+
+        res.status(STATUS_CODE.OK).json(user);
+    } catch (error) {
+        console.error(error);
+        res.clearCookie(COOKIE_NAME.CSRF);
+        res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+        tokenManager.removeToken(userId);
+
+        throw new ForbiddenError("Could not fetch user details");
+    }
+};
