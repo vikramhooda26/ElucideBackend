@@ -10,6 +10,8 @@ import { leagueRouter } from "./routes/league.router.js";
 import { teamRouter } from "./routes/team.router.js";
 import { brandRouter } from "./routes/brand.router.js";
 import { fetchAllMetadata } from "./controllers/metadata.controller.js";
+import { validateSchema } from "./middleware/validate.middleware.js";
+import { getAllMetadataSchema } from "./schemas/metadata.schema.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -40,7 +42,12 @@ app.use("/api/admin/league", leagueRouter);
 app.use("/api/admin/team", teamRouter);
 app.use("/api/admin/brand", brandRouter);
 
-app.get("/api/admin/metadata/get-all", authMiddleware, fetchAllMetadata);
+app.get(
+    "/api/admin/metadata/get-all",
+    authMiddleware,
+    validateSchema(getAllMetadataSchema),
+    fetchAllMetadata,
+);
 
 app.use(globalErrorHandler);
 

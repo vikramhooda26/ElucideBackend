@@ -42,6 +42,18 @@ model association_level {
     modified_by    auth_user?    @relation("association_level_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model dashapp_format {
+    id                 BigInt               @id @default(autoincrement())
+    created_date       DateTime             @default(now())
+    modified_date      DateTime             @updatedAt
+    created_by_id      BigInt?
+    modified_by_id     BigInt?
+    format             String
+    created_by         auth_user?           @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by        auth_user?           @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo[]
+}
+
 model auth_user {
     id                                                                              BigInt                       @id @default(autoincrement())
     password                                                                        String                       @db.VarChar(128)
@@ -144,6 +156,8 @@ model auth_user {
     dashapp_tier_dashapp_tier_modified_by_idToauth_user                             dashapp_tier[]               @relation("dashapp_tier_modified_by_idToauth_user")
     django_admin_log                                                                django_admin_log[]
     refresh_token                                                                   refresh_token[]
+    dashapp_format_created_by                                                       dashapp_format[]             @relation("created_by")
+    dashapp_format_modified_by                                                      dashapp_format[]             @relation("modified_by")
 }
 
 model dashapp_activation {
@@ -855,7 +869,8 @@ model dashapp_leagueinfo {
     created_date                                     DateTime?                                          @default(now())
     modified_date                                    DateTime?
     year_of_inception                                String?                                            @db.VarChar(512)
-    format                                           String?                                            @db.VarChar(32)
+    format_id                                        BigInt?
+    format                                           dashapp_format?                                    @relation(fields: [format_id], references: [id], onDelete: SetNull)
     instagram                                        String?                                            @db.VarChar(512)
     facebook                                         String?                                            @db.VarChar(512)
     twitter                                          String?                                            @db.VarChar(512)
