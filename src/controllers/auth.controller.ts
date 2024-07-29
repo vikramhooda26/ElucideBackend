@@ -121,7 +121,14 @@ export const fetchUserDetails = async (req: Request, res: Response) => {
             throw new ForbiddenError();
         }
 
-        res.status(STATUS_CODE.OK).json(user);
+        res.status(STATUS_CODE.OK).json({
+            userId: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+        });
     } catch (error) {
         console.error(error);
         res.clearCookie(COOKIE_NAME.CSRF);
