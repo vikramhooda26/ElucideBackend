@@ -25,6 +25,6 @@ authRouter.post(
     registerHandler,
 );
 
-authRouter.get("get-user-details", authMiddleware, fetchUserDetails);
+authRouter.get("/get-user-details", authMiddleware, fetchUserDetails);
 
 authRouter.post("/logout", logoutHandler);
