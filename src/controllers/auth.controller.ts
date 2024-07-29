@@ -89,8 +89,8 @@ export const logoutHandler = asyncHandler(async (req, res) => {
         where: { user_id: userId },
     });
 
-    res.clearCookie(COOKIE_NAME.CSRF);
-    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+    res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
+    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
 
     res.status(STATUS_CODE.OK).json({
         message: "Logged out",
@@ -114,8 +114,8 @@ export const fetchUserDetails = async (req: Request, res: Response) => {
         });
 
         if (!user) {
-            res.clearCookie(COOKIE_NAME.CSRF);
-            res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+            res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
+            res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
             tokenManager.removeToken(userId);
 
             throw new ForbiddenError();
@@ -131,8 +131,8 @@ export const fetchUserDetails = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error(error);
-        res.clearCookie(COOKIE_NAME.CSRF);
-        res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+        res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
+        res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
         tokenManager.removeToken(userId);
 
         throw new ForbiddenError("Could not fetch user details");
