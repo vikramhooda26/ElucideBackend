@@ -30,6 +30,7 @@ export class LeagueResponseDTO {
         mainPersonalityTrait: string;
     }[];
     endorsements?: string[];
+    format?: string;
     age?: (string | undefined)[];
     NCCS?: string[];
     sportsDealSummary?: {
@@ -89,6 +90,7 @@ export class LeagueResponseDTO {
         leagueDTO.taglines = leagueDetails.dashapp_leagueinfo_taglines.map(
             (tagline) => tagline.dashapp_taglines.name,
         );
+        leagueDTO.format = leagueDetails.format?.format;
         leagueDTO.activeCampaigns =
             leagueDetails.dashapp_leagueinfo_active_campaigns.map(
                 (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,

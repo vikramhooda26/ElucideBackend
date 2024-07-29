@@ -17,7 +17,7 @@ export const createLeagueSchema = z.object({
     tertiaryIds: z.string().array().optional(),
     incomeIds: z.string().array().optional(),
     yearOfInception: z.string().optional(),
-    format: z.string().optional(),
+    formatId: z.string().optional(),
     broadCastPartnerId: z.string().optional(),
     ottPartnerId: z.string().optional(),
     instagram: z.string().optional(),

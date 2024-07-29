@@ -93,7 +93,7 @@ export const createLeague = asyncHandler(async (req, res) => {
         sportId,
         leagueOwnerIds,
         yearOfInception,
-        format,
+        formatId,
         broadCastPartnerId,
         ottPartnerId,
         personalityTraitIds,
@@ -133,7 +133,11 @@ export const createLeague = asyncHandler(async (req, res) => {
                 })),
             },
             year_of_inception: yearOfInception,
-            format,
+            format: formatId
+                ? {
+                      connect: { id: BigInt(formatId) },
+                  }
+                : undefined,
             dashapp_broadcastpartner: {
                 connect: broadCastPartnerId
                     ? {
@@ -277,7 +281,7 @@ export const editLeague = asyncHandler(async (req, res) => {
         sportId,
         leagueOwnerIds,
         yearOfInception,
-        format,
+        formatId,
         broadCastPartnerId,
         ottPartnerId,
         personalityTraitIds,
@@ -325,7 +329,11 @@ export const editLeague = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             year_of_inception: yearOfInception,
-            format,
+            format: formatId
+                ? {
+                      connect: { id: BigInt(formatId) },
+                  }
+                : undefined,
             dashapp_broadcastpartner: broadCastPartnerId
                 ? {
                       connect: { id: BigInt(broadCastPartnerId) },

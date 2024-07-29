@@ -32,6 +32,11 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 name: true,
             },
         },
+        format: {
+            select: {
+                format: true,
+            },
+        },
         instagram: true,
         facebook: true,
         linkedin: true,
