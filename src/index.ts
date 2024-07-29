@@ -9,6 +9,7 @@ import { athleteRouter } from "./routes/athlete.router.js";
 import { leagueRouter } from "./routes/league.router.js";
 import { teamRouter } from "./routes/team.router.js";
 import { brandRouter } from "./routes/brand.router.js";
+import { fetchAllMetadata } from "./controllers/metadata.controller.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -38,6 +39,8 @@ app.use("/api/admin/athlete", athleteRouter);
 app.use("/api/admin/league", leagueRouter);
 app.use("/api/admin/team", teamRouter);
 app.use("/api/admin/brand", brandRouter);
+
+app.get("/api/admin/metadata/get-all", authMiddleware, fetchAllMetadata);
 
 app.use(globalErrorHandler);
 
