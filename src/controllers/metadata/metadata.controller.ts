@@ -97,44 +97,52 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             tiers,
             associationLevels,
         ] = await Promise.all([
-            age ? getAllAgeRanges() : Promise.resolve([]),
-            gender ? getAllGenders() : Promise.resolve([]),
-            city ? getAllCities() : Promise.resolve([]),
-            state ? getAllStates() : Promise.resolve([]),
-            activeCampaign ? getAllActiveCampaigns() : Promise.resolve([]),
-            agency ? getAllAgencies() : Promise.resolve([]),
-            asset ? getAllAssets() : Promise.resolve([]),
-            broadcastPartner ? getAllBroadcastPartners() : Promise.resolve([]),
-            category ? getAllCategories() : Promise.resolve([]),
-            format ? getAllFormats() : Promise.resolve([]),
-            keyMarkets ? getAllKeyMarkets() : Promise.resolve([]),
-            league ? getAllLeagues() : Promise.resolve([]),
-            leagueOwner ? getAllLeagueOwners() : Promise.resolve([]),
+            age ? getAllAgeRanges() : Promise.resolve(undefined),
+            gender ? getAllGenders() : Promise.resolve(undefined),
+            city ? getAllCities() : Promise.resolve(undefined),
+            state ? getAllStates() : Promise.resolve(undefined),
+            activeCampaign
+                ? getAllActiveCampaigns()
+                : Promise.resolve(undefined),
+            agency ? getAllAgencies() : Promise.resolve(undefined),
+            asset ? getAllAssets() : Promise.resolve(undefined),
+            broadcastPartner
+                ? getAllBroadcastPartners()
+                : Promise.resolve(undefined),
+            category ? getAllCategories() : Promise.resolve(undefined),
+            format ? getAllFormats() : Promise.resolve(undefined),
+            keyMarkets ? getAllKeyMarkets() : Promise.resolve(undefined),
+            league ? getAllLeagues() : Promise.resolve(undefined),
+            leagueOwner ? getAllLeagueOwners() : Promise.resolve(undefined),
             marketingPlatform
                 ? getAllMarketingPlatforms()
-                : Promise.resolve([]),
-            nccs ? getAllNCCS() : Promise.resolve([]),
-            ottPartner ? getAllOTTPartners() : Promise.resolve([]),
-            parentOrg ? getAllParentOrgs() : Promise.resolve([]),
-            personalityTrait ? getAllPersonalityTraits() : Promise.resolve([]),
+                : Promise.resolve(undefined),
+            nccs ? getAllNCCS() : Promise.resolve(undefined),
+            ottPartner ? getAllOTTPartners() : Promise.resolve(undefined),
+            parentOrg ? getAllParentOrgs() : Promise.resolve(undefined),
+            personalityTrait
+                ? getAllPersonalityTraits()
+                : Promise.resolve(undefined),
             sportsDealSummaryLevel
                 ? getAllSportsDealSummaryLevels()
-                : Promise.resolve([]),
+                : Promise.resolve(undefined),
             sportsDealSummaryStatus
                 ? getAllSportsDealSummaryStatuses()
-                : Promise.resolve([]),
+                : Promise.resolve(undefined),
             sportsDealSummaryTerritory
                 ? getAllSportsDealSummaryTerritories()
-                : Promise.resolve([]),
+                : Promise.resolve(undefined),
             sportsDealSummaryType
                 ? getAllSportsDealSummaryTypes()
-                : Promise.resolve([]),
-            tagline ? getAllTaglines() : Promise.resolve([]),
-            teamOwner ? getAllTeamOwners() : Promise.resolve([]),
-            tertiary ? getAllTertiaries() : Promise.resolve([]),
-            sport ? getAllSports() : Promise.resolve([]),
-            tier ? getAllTiers() : Promise.resolve([]),
-            associationLevel ? getAllAssociationLevels() : Promise.resolve([]),
+                : Promise.resolve(undefined),
+            tagline ? getAllTaglines() : Promise.resolve(undefined),
+            teamOwner ? getAllTeamOwners() : Promise.resolve(undefined),
+            tertiary ? getAllTertiaries() : Promise.resolve(undefined),
+            sport ? getAllSports() : Promise.resolve(undefined),
+            tier ? getAllTiers() : Promise.resolve(undefined),
+            associationLevel
+                ? getAllAssociationLevels()
+                : Promise.resolve(undefined),
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {
