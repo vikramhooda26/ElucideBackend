@@ -29,6 +29,7 @@ import {
     getAllTeamOwners,
     getAllTertiaries,
 } from "../services/metadata.service.js";
+import asyncHandler from "express-async-handler";
 
 export const fetchAllMetadata = async (req: Request, res: Response) => {
     const {
@@ -169,3 +170,18 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const fetchMetadataLastUpdated = asyncHandler((req, res) => {
+    const lastUpdatedTimestamps = metadataStore.getAllLastUpdated();
+
+    const timestamps = Object.keys(lastUpdatedTimestamps).reduce(
+        (acc, key) => {
+            const lastUpdated = metadataStore.getLastUpdated(key);
+            acc[key] = lastUpdated ? lastUpdated.toISOString() : null;
+            return acc;
+        },
+        {} as Record<string, string | null>,
+    );
+
+    res.status(STATUS_CODE.OK).json(timestamps);
+});
