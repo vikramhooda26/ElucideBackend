@@ -96,7 +96,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
             id: athlete.id,
             athleteName: athlete.athlete_name,
             createdDate: athlete.created_date,
-            modifiedData: athlete.modified_date,
+            modifiedDate: athlete.modified_date,
             createdBy: {
                 userId: athlete.created_by?.id,
                 email: athlete.created_by?.email,

@@ -46,7 +46,7 @@ export const getAllBrands = asyncHandler(async (req, res) => {
             id: brand.id,
             athleteName: brand.company_name,
             createdDate: brand.created_date,
-            modifiedData: brand.modified_date,
+            modifiedDate: brand.modified_date,
             createdBy: {
                 userId: brand.created_by?.id,
                 email: brand.created_by?.email,

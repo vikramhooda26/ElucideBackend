@@ -138,47 +138,40 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {
-            console.log(
-                "\n\nkey === METADATA_KEYS[key]:",
-                key,
-                ":",
-                req.validatedData[key as keyof TGetAllMetadataSchema],
-            );
             if (req.validatedData[key as keyof TGetAllMetadataSchema]) {
-                console.log("\n\nEntered if statement last updated wala");
                 metadataStore.setHasUpdated(key, false);
             }
         });
 
         res.status(STATUS_CODE.OK).json({
-            ageRanges,
-            genders,
-            cities,
-            states,
-            activeCampaigns,
-            agencies,
-            assets,
-            broadcastPartners,
-            categories,
-            formats,
-            keyMarketsList,
-            leagues,
-            leagueOwners,
-            marketingPlatforms,
-            nccsList,
-            ottPartners,
-            parentOrgs,
-            personalityTraits,
-            sportsDealSummaryLevels,
-            sportsDealSummaryStatuses,
-            sportsDealSummaryTerritories,
-            sportsDealSummaryTypes,
-            taglines,
-            teamOwners,
-            tertiaries,
-            sports,
-            tiers,
-            associationLevels,
+            age: ageRanges,
+            gender: genders,
+            city: cities,
+            state: states,
+            activeCampaign: activeCampaigns,
+            agency: agencies,
+            asset: assets,
+            broadcastPartner: broadcastPartners,
+            category: categories,
+            format: formats,
+            keyMarkets: keyMarketsList,
+            league: leagues,
+            leagueOwner: leagueOwners,
+            marketingPlatform: marketingPlatforms,
+            nccs: nccsList,
+            ottPartner: ottPartners,
+            parentOrg: parentOrgs,
+            personalityTrait: personalityTraits,
+            sportsDealSummaryLevel: sportsDealSummaryLevels,
+            sportsDealSummaryStatus: sportsDealSummaryStatuses,
+            sportsDealSummaryTerritory: sportsDealSummaryTerritories,
+            sportsDealSummaryType: sportsDealSummaryTypes,
+            tagline: taglines,
+            teamOwner: teamOwners,
+            tertiary: tertiaries,
+            sport: sports,
+            tier: tiers,
+            associationLevel: associationLevels,
         });
     } catch (error) {
         console.error("Error fetching metadata:", error);

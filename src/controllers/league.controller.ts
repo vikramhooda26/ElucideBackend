@@ -68,7 +68,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
             id: league.id,
             leagueName: league.property_name,
             createdDate: league.created_date,
-            modifiedData: league.modified_date,
+            modifiedDate: league.modified_date,
             createdBy: {
                 userId: league.created_by?.id,
                 email: league.created_by?.email,
