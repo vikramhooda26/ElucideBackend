@@ -41,9 +41,9 @@ export const getAllTeams = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(
         teams.map((team) => ({
             id: team.id,
-            athleteName: team.team_name,
+            teamName: team.team_name,
             createdDate: team.created_date,
-            modifiedData: team.modified_date,
+            modifiedDate: team.modified_date,
             createdBy: {
                 userId: team.created_by?.id,
                 email: team.created_by?.email,
