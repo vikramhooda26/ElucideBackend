@@ -48,7 +48,7 @@ export const METADATA_KEYS = {
     CITY: "city",
     FORMAT: "format",
     GENDER: "gender",
-    KEY_MARKETS: "keyMarkets",
+    KEY_MARKETS: "keyMarket",
     LEAGUE: "league",
     LEAGUE_OWNER: "leagueOwner",
     MARKETING_PLATFORM: "marketingPlatform",
