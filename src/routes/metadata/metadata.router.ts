@@ -3,7 +3,7 @@ import { validateSchema } from "../../middleware/validate.middleware.js";
 import { getAllMetadataSchema } from "../../schemas/metadata.schema.js";
 import {
     fetchAllMetadata,
-    fetchMetadataLastUpdated,
+    fetchMetadataHasUpdated,
 } from "../../controllers/metadata.controller.js";
 
 export const metadataRouter = Router();
@@ -14,4 +14,4 @@ metadataRouter.get(
     fetchAllMetadata,
 );
 
-metadataRouter.get("/last-updated", fetchMetadataLastUpdated);
+metadataRouter.get("/has-updated", fetchMetadataHasUpdated);

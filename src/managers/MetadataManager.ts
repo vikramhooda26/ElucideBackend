@@ -1,9 +1,17 @@
+import { METADATA_KEYS } from "../lib/constants.js";
+
 class MetadataStore {
     private static instance: MetadataStore;
-    private lastUpdated: Record<string, Date>;
+    private hasUpdated: Record<string, boolean>;
 
     private constructor() {
-        this.lastUpdated = {};
+        this.hasUpdated = Object.values(METADATA_KEYS).reduce(
+            (acc, key) => {
+                acc[key] = true;
+                return acc;
+            },
+            {} as Record<string, boolean>,
+        );
     }
 
     static getInstance(): MetadataStore {
@@ -14,16 +22,16 @@ class MetadataStore {
         return MetadataStore.instance;
     }
 
-    getLastUpdated(metadataType: string): Date {
-        return this.lastUpdated[metadataType];
+    getHasUpdated(metadataType: string): boolean {
+        return this.hasUpdated[metadataType];
     }
 
-    setLastUpdated(metadataType: string, date: Date) {
-        this.lastUpdated[metadataType] = date;
+    setHasUpdated(metadataType: string, hasUpdated: boolean) {
+        this.hasUpdated[metadataType] = hasUpdated;
     }
 
-    getAllLastUpdated(): Record<string, Date | undefined> {
-        return this.lastUpdated;
+    getAllRecords(): Record<string, boolean | undefined> {
+        return this.hasUpdated;
     }
 }
 

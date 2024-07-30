@@ -128,11 +128,13 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         Object.values(METADATA_KEYS).forEach((key) => {
             console.log(
                 "\n\nkey === METADATA_KEYS[key]:",
+                key,
+                ":",
                 req.validatedData[key as keyof TGetAllMetadataSchema],
             );
             if (req.validatedData[key as keyof TGetAllMetadataSchema]) {
                 console.log("\n\nEntered if statement last updated wala");
-                metadataStore.setLastUpdated(key, new Date());
+                metadataStore.setHasUpdated(key, false);
             }
         });
 
@@ -171,17 +173,8 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
     }
 };
 
-export const fetchMetadataLastUpdated = asyncHandler((req, res) => {
-    const lastUpdatedTimestamps = metadataStore.getAllLastUpdated();
+export const fetchMetadataHasUpdated = asyncHandler((req, res) => {
+    const hasUpdatedRecords = metadataStore.getAllRecords();
 
-    const timestamps = Object.keys(lastUpdatedTimestamps).reduce(
-        (acc, key) => {
-            const lastUpdated = metadataStore.getLastUpdated(key);
-            acc[key] = lastUpdated ? lastUpdated.toISOString() : null;
-            return acc;
-        },
-        {} as Record<string, string | null>,
-    );
-
-    res.status(STATUS_CODE.OK).json(timestamps);
+    res.status(STATUS_CODE.OK).json(hasUpdatedRecords);
 });

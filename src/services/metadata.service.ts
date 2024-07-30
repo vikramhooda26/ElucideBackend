@@ -5,84 +5,120 @@ export const getAllAgeRanges = async () => {
         select: { id: true, age_range: true },
     });
 
-    return ageRanges;
+    return ageRanges.map((ageRange) => ({
+        id: ageRange.id,
+        range: ageRange.age_range,
+    }));
 };
 
 export const getAllGenders = async () => {
     const genders = await prisma.dashapp_gender.findMany({
         select: { id: true, gender_is: true },
     });
-    return genders;
+    return genders.map((gender) => ({
+        id: gender.id,
+        gender: gender.gender_is,
+    }));
 };
 
 export const getAllCities = async () => {
     const cities = await prisma.dashapp_hqcity.findMany({
         select: { id: true, name: true },
     });
-    return cities;
+    return cities.map((city) => ({
+        id: city.id,
+        name: city.name,
+    }));
 };
 
 export const getAllStates = async () => {
     const states = await prisma.dashapp_states.findMany({
         select: { id: true, state: true },
     });
-    return states;
+    return states.map((state) => ({
+        id: state.id,
+        name: state.state,
+    }));
 };
 
 export const getAllActiveCampaigns = async () => {
     const activeCampaigns = await prisma.dashapp_activecampaigns.findMany({
         select: { id: true, name: true },
     });
-    return activeCampaigns;
+    return activeCampaigns.map((campaign) => ({
+        id: campaign.id,
+        name: campaign.name,
+    }));
 };
 
 export const getAllAgencies = async () => {
     const agencies = await prisma.dashapp_agency.findMany({
         select: { id: true, name: true },
     });
-    return agencies;
+    return agencies.map((agency) => ({
+        id: agency.id,
+        name: agency.name,
+    }));
 };
 
 export const getAllAssets = async () => {
     const assets = await prisma.dashapp_assets.findMany({
         select: { id: true, asset: true },
     });
-    return assets;
+    return assets.map((asset) => ({
+        id: asset.id,
+        name: asset.asset,
+    }));
 };
 
 export const getAllBroadcastPartners = async () => {
     const broadcastPartners = await prisma.dashapp_broadcastpartner.findMany({
         select: { id: true, name: true },
     });
-    return broadcastPartners;
+    return broadcastPartners.map((partner) => ({
+        id: partner.id,
+        name: partner.name,
+    }));
 };
 
 export const getAllCategories = async () => {
     const categories = await prisma.dashapp_subcategory.findMany({
         select: { id: true, subcategory: true },
     });
-    return categories;
+    return categories.map((category) => ({
+        id: category.id,
+        name: category.subcategory,
+    }));
 };
 
 export const getAllFormats = async () => {
     const formats = await prisma.dashapp_format.findMany({
         select: { id: true, format: true },
     });
-    return formats;
+    return formats.map((format) => ({
+        id: format.id,
+        name: format.format,
+    }));
 };
 
 export const getAllKeyMarkets = async () => {
     const keyMarketsList = await prisma.dashapp_keymarket.findMany({
         select: { id: true, zone: true },
     });
-    return keyMarketsList;
+    return keyMarketsList.map((market) => ({
+        id: market.id,
+        zone: market.zone,
+    }));
 };
 
 export const getAllLeagues = async () => {
     const leagues = await prisma.dashapp_leagueinfo.findMany({
         select: { id: true, property_name: true },
     });
-    return leagues;
+    return leagues.map((league) => ({
+        id: league.id,
+        name: league.property_name,
+    }));
 };
 
 export const getAllLeagueOwners = async () => {
@@ -92,42 +128,60 @@ export const getAllLeagueOwners = async () => {
             dashapp_leagueowner: { select: { name: true } },
         },
     });
-    return leagueOwners;
+    return leagueOwners.map((owner) => ({
+        id: owner.id,
+        name: owner.dashapp_leagueowner.name,
+    }));
 };
 
 export const getAllMarketingPlatforms = async () => {
     const marketingPlatforms = await prisma.dashapp_marketingplatform.findMany({
         select: { id: true, platform: true },
     });
-    return marketingPlatforms;
+    return marketingPlatforms.map((platform) => ({
+        id: platform.id,
+        name: platform.platform,
+    }));
 };
 
 export const getAllNCCS = async () => {
     const nccsList = await prisma.dashapp_income.findMany({
         select: { id: true, income_class: true },
     });
-    return nccsList;
+    return nccsList.map((nccs) => ({
+        id: nccs.id,
+        class: nccs.income_class,
+    }));
 };
 
 export const getAllOTTPartners = async () => {
     const ottPartners = await prisma.dashapp_ottpartner.findMany({
         select: { id: true, name: true },
     });
-    return ottPartners;
+    return ottPartners.map((partner) => ({
+        id: partner.id,
+        name: partner.name,
+    }));
 };
 
 export const getAllParentOrgs = async () => {
     const parentOrgs = await prisma.dashapp_parentorg.findMany({
         select: { id: true, name: true },
     });
-    return parentOrgs;
+    return parentOrgs.map((org) => ({
+        id: org.id,
+        name: org.name,
+    }));
 };
 
 export const getAllPersonalityTraits = async () => {
     const personalityTraits = await prisma.dashapp_subpersonality.findMany({
         select: { id: true, name: true },
     });
-    return personalityTraits;
+    return personalityTraits.map((trait) => ({
+        id: trait.id,
+        name: trait.name,
+    }));
 };
 
 export const getAllSportsDealSummaryLevels = async () => {
@@ -138,7 +192,10 @@ export const getAllSportsDealSummaryLevels = async () => {
                 dashapp_companydata: { select: { company_name: true } },
             },
         });
-    return sportsDealSummaryLevels;
+    return sportsDealSummaryLevels.map((level) => ({
+        id: level.id,
+        name: level.dashapp_companydata?.company_name,
+    }));
 };
 
 export const getAllSportsDealSummaryStatuses = async () => {
@@ -146,7 +203,10 @@ export const getAllSportsDealSummaryStatuses = async () => {
         await prisma.dashapp_athlete_status.findMany({
             select: { id: true, status: true },
         });
-    return sportsDealSummaryStatuses;
+    return sportsDealSummaryStatuses.map((status) => ({
+        id: status.id,
+        name: status.status,
+    }));
 };
 
 export const getAllSportsDealSummaryTerritories = async () => {
@@ -154,7 +214,10 @@ export const getAllSportsDealSummaryTerritories = async () => {
         await prisma.dashapp_territory.findMany({
             select: { id: true, name: true },
         });
-    return sportsDealSummaryTerritories;
+    return sportsDealSummaryTerritories.map((territory) => ({
+        id: territory.id,
+        name: territory.name,
+    }));
 };
 
 export const getAllSportsDealSummaryTypes = async () => {
@@ -167,21 +230,30 @@ export const getAllSportsDealSummaryTypes = async () => {
                 },
             },
         });
-    return sportsDealSummaryTypes;
+    return sportsDealSummaryTypes.map((type) => ({
+        id: type.id,
+        name: type.dashapp_marketingplatform.platform,
+    }));
 };
 
 export const getAllTaglines = async () => {
     const taglines = await prisma.dashapp_taglines.findMany({
         select: { id: true, name: true },
     });
-    return taglines;
+    return taglines.map((tagline) => ({
+        id: tagline.id,
+        name: tagline.name,
+    }));
 };
 
 export const getAllTeamOwners = async () => {
     const teamOwners = await prisma.dashapp_teamowner.findMany({
         select: { id: true, name: true },
     });
-    return teamOwners;
+    return teamOwners.map((owner) => ({
+        id: owner.id,
+        name: owner.name,
+    }));
 };
 
 export const getAllTertiaries = async () => {
