@@ -9,7 +9,7 @@ import { athleteRouter } from "./routes/athlete.router.js";
 import { leagueRouter } from "./routes/league.router.js";
 import { teamRouter } from "./routes/team.router.js";
 import { brandRouter } from "./routes/brand.router.js";
-import { fetchAllMetadata } from "./controllers/metadata.controller.js";
+import { fetchAllMetadata } from "./controllers/metadata/metadata.controller.js";
 import { validateSchema } from "./middleware/validate.middleware.js";
 import { getAllMetadataSchema } from "./schemas/metadata.schema.js";
 import { metadataRouter } from "./routes/metadata/metadata.router.js";

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { metadataStore } from "../managers/MetadataManager.js";
-import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
-import { TGetAllMetadataSchema } from "../schemas/metadata.schema.js";
+import { metadataStore } from "../../managers/MetadataManager.js";
+import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
+import { TGetAllMetadataSchema } from "../../schemas/metadata.schema.js";
 import {
     getAllAgeRanges,
     getAllGenders,
@@ -28,12 +28,16 @@ import {
     getAllTaglines,
     getAllTeamOwners,
     getAllTertiaries,
-} from "../services/metadata.service.js";
+    getAllSports,
+    getAllTiers,
+    getAllAssociationLevels,
+} from "../../services/metadata.service.js";
 import asyncHandler from "express-async-handler";
 
 export const fetchAllMetadata = async (req: Request, res: Response) => {
     const {
         age,
+        sport,
         activeCampaign,
         agency,
         asset,
@@ -58,6 +62,8 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         tagline,
         teamOwner,
         tertiary,
+        tier,
+        associationLevel,
     } = req.validatedData as TGetAllMetadataSchema;
 
     try {
@@ -87,6 +93,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             taglines,
             teamOwners,
             tertiaries,
+            sports,
+            tiers,
+            associationLevels,
         ] = await Promise.all([
             age ? getAllAgeRanges() : Promise.resolve([]),
             gender ? getAllGenders() : Promise.resolve([]),
@@ -123,6 +132,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             tagline ? getAllTaglines() : Promise.resolve([]),
             teamOwner ? getAllTeamOwners() : Promise.resolve([]),
             tertiary ? getAllTertiaries() : Promise.resolve([]),
+            sport ? getAllSports() : Promise.resolve([]),
+            tier ? getAllTiers() : Promise.resolve([]),
+            associationLevel ? getAllAssociationLevels() : Promise.resolve([]),
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {
@@ -164,6 +176,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             taglines,
             teamOwners,
             tertiaries,
+            sports,
+            tiers,
+            associationLevels,
         });
     } catch (error) {
         console.error("Error fetching metadata:", error);

@@ -4,11 +4,11 @@ import { getAllMetadataSchema } from "../../schemas/metadata.schema.js";
 import {
     fetchAllMetadata,
     fetchMetadataHasUpdated,
-} from "../../controllers/metadata.controller.js";
+} from "../../controllers/metadata/metadata.controller.js";
 
 export const metadataRouter = Router();
 
-metadataRouter.get(
+metadataRouter.post(
     "/get-all",
     validateSchema(getAllMetadataSchema),
     fetchAllMetadata,

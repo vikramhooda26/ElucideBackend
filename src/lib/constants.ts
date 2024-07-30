@@ -64,4 +64,7 @@ export const METADATA_KEYS = {
     TAGLINE: "tagline",
     TEAM_OWNER: "teamOwner",
     TERTIARY: "tertiary",
+    SPORT: "sport",
+    TIER: "tier",
+    ASSOCIATION_LEVELS: "associationLevels",
 } as const;

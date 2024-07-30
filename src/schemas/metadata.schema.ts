@@ -2,6 +2,7 @@ import z from "zod";
 
 export const getAllMetadataSchema = z.object({
     age: z.boolean().optional(),
+    tier: z.boolean().optional(),
     gender: z.boolean().optional(),
     personalityTrait: z.boolean().optional(),
     state: z.boolean().optional(),
@@ -27,6 +28,8 @@ export const getAllMetadataSchema = z.object({
     sportsDealSummaryStatus: z.boolean().optional(),
     sportsDealSummaryTerritory: z.boolean().optional(),
     asset: z.boolean().optional(),
+    sport: z.boolean().optional(),
+    associationLevel: z.boolean().optional(),
 });
 
 export type TGetAllMetadataSchema = z.infer<typeof getAllMetadataSchema>;

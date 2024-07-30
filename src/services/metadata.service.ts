@@ -97,7 +97,7 @@ export const getAllFormats = async () => {
     });
     return formats.map((format) => ({
         id: format.id,
-        name: format.format,
+        format: format.format,
     }));
 };
 
@@ -189,12 +189,13 @@ export const getAllSportsDealSummaryLevels = async () => {
         await prisma.dashapp_sportsdealsummary.findMany({
             select: {
                 id: true,
-                dashapp_companydata: { select: { company_name: true } },
+                dashapp_level: { select: { name: true } },
             },
         });
+
     return sportsDealSummaryLevels.map((level) => ({
         id: level.id,
-        name: level.dashapp_companydata?.company_name,
+        name: level.dashapp_level?.name,
     }));
 };
 
@@ -205,7 +206,7 @@ export const getAllSportsDealSummaryStatuses = async () => {
         });
     return sportsDealSummaryStatuses.map((status) => ({
         id: status.id,
-        name: status.status,
+        status: status.status,
     }));
 };
 
@@ -259,4 +260,38 @@ export const getAllTeamOwners = async () => {
 export const getAllTertiaries = async () => {
     const tertiaries = await getAllStates();
     return tertiaries;
+};
+
+export const getAllSports = async () => {
+    const sports = await prisma.dashapp_sport.findMany({
+        select: { id: true, name: true },
+    });
+
+    return sports.map((sport) => ({ id: sport.id, name: sport.name }));
+};
+
+export const getAllTiers = async () => {
+    const tiers = await prisma.dashapp_tier.findMany({
+        select: { id: true, name: true },
+    });
+
+    return tiers.map((tier) => ({ id: tier.id, name: tier.name }));
+};
+
+export const getAllAssociationLevels = async () => {
+    const associationLevels = await prisma.association.findMany({
+        select: {
+            association_level: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    });
+
+    return associationLevels.map((associationLevel) => ({
+        id: associationLevel.association_level?.id,
+        name: associationLevel.association_level?.name,
+    }));
 };
