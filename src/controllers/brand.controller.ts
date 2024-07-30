@@ -44,7 +44,7 @@ export const getAllBrands = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(
         brands.map((brand) => ({
             id: brand.id,
-            athleteName: brand.company_name,
+            brandName: brand.company_name,
             createdDate: brand.created_date,
             modifiedDate: brand.modified_date,
             createdBy: {
