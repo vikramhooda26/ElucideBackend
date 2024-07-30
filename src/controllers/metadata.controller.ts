@@ -1,8 +1,34 @@
 import { Request, Response } from "express";
 import { metadataStore } from "../managers/MetadataManager.js";
-import { STATUS_CODE } from "../lib/constants.js";
-import { prisma } from "../db/index.js";
+import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { TGetAllMetadataSchema } from "../schemas/metadata.schema.js";
+import {
+    getAllAgeRanges,
+    getAllGenders,
+    getAllCities,
+    getAllStates,
+    getAllActiveCampaigns,
+    getAllAgencies,
+    getAllAssets,
+    getAllBroadcastPartners,
+    getAllCategories,
+    getAllFormats,
+    getAllKeyMarkets,
+    getAllLeagues,
+    getAllLeagueOwners,
+    getAllMarketingPlatforms,
+    getAllNCCS,
+    getAllOTTPartners,
+    getAllParentOrgs,
+    getAllPersonalityTraits,
+    getAllSportsDealSummaryLevels,
+    getAllSportsDealSummaryStatuses,
+    getAllSportsDealSummaryTerritories,
+    getAllSportsDealSummaryTypes,
+    getAllTaglines,
+    getAllTeamOwners,
+    getAllTertiaries,
+} from "../services/metadata.service.js";
 
 export const fetchAllMetadata = async (req: Request, res: Response) => {
     const {
@@ -33,192 +59,113 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         tertiary,
     } = req.validatedData as TGetAllMetadataSchema;
 
-    const ageRanges = age
-        ? await prisma.dashapp_age.findMany({
-              select: { id: true, age_range: true },
-          })
-        : [];
+    try {
+        const [
+            ageRanges,
+            genders,
+            cities,
+            states,
+            activeCampaigns,
+            agencies,
+            assets,
+            broadcastPartners,
+            categories,
+            formats,
+            keyMarketsList,
+            leagues,
+            leagueOwners,
+            marketingPlatforms,
+            nccsList,
+            ottPartners,
+            parentOrgs,
+            personalityTraits,
+            sportsDealSummaryLevels,
+            sportsDealSummaryStatuses,
+            sportsDealSummaryTerritories,
+            sportsDealSummaryTypes,
+            taglines,
+            teamOwners,
+            tertiaries,
+        ] = await Promise.all([
+            age ? getAllAgeRanges() : Promise.resolve([]),
+            gender ? getAllGenders() : Promise.resolve([]),
+            city ? getAllCities() : Promise.resolve([]),
+            state ? getAllStates() : Promise.resolve([]),
+            activeCampaign ? getAllActiveCampaigns() : Promise.resolve([]),
+            agency ? getAllAgencies() : Promise.resolve([]),
+            asset ? getAllAssets() : Promise.resolve([]),
+            broadcastPartner ? getAllBroadcastPartners() : Promise.resolve([]),
+            category ? getAllCategories() : Promise.resolve([]),
+            format ? getAllFormats() : Promise.resolve([]),
+            keyMarkets ? getAllKeyMarkets() : Promise.resolve([]),
+            league ? getAllLeagues() : Promise.resolve([]),
+            leagueOwner ? getAllLeagueOwners() : Promise.resolve([]),
+            marketingPlatform
+                ? getAllMarketingPlatforms()
+                : Promise.resolve([]),
+            nccs ? getAllNCCS() : Promise.resolve([]),
+            ottPartner ? getAllOTTPartners() : Promise.resolve([]),
+            parentOrg ? getAllParentOrgs() : Promise.resolve([]),
+            personalityTrait ? getAllPersonalityTraits() : Promise.resolve([]),
+            sportsDealSummaryLevel
+                ? getAllSportsDealSummaryLevels()
+                : Promise.resolve([]),
+            sportsDealSummaryStatus
+                ? getAllSportsDealSummaryStatuses()
+                : Promise.resolve([]),
+            sportsDealSummaryTerritory
+                ? getAllSportsDealSummaryTerritories()
+                : Promise.resolve([]),
+            sportsDealSummaryType
+                ? getAllSportsDealSummaryTypes()
+                : Promise.resolve([]),
+            tagline ? getAllTaglines() : Promise.resolve([]),
+            teamOwner ? getAllTeamOwners() : Promise.resolve([]),
+            tertiary ? getAllTertiaries() : Promise.resolve([]),
+        ]);
 
-    const genders = gender
-        ? await prisma.dashapp_gender.findMany({
-              select: { id: true, gender_is: true },
-          })
-        : [];
+        Object.values(METADATA_KEYS).forEach((key) => {
+            console.log(
+                "\n\nkey === METADATA_KEYS[key]:",
+                req.validatedData[key as keyof TGetAllMetadataSchema],
+            );
+            if (req.validatedData[key as keyof TGetAllMetadataSchema]) {
+                console.log("\n\nEntered if statement last updated wala");
+                metadataStore.setLastUpdated(key, new Date());
+            }
+        });
 
-    const cities = city
-        ? await prisma.dashapp_hqcity.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const states = state
-        ? await prisma.dashapp_states.findMany({
-              select: { id: true, state: true },
-          })
-        : [];
-
-    const activeCampaigns = activeCampaign
-        ? await prisma.dashapp_activecampaigns.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const agencies = agency
-        ? await prisma.dashapp_agency.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const assets = asset
-        ? await prisma.dashapp_assets.findMany({
-              select: { id: true, asset: true },
-          })
-        : [];
-
-    const broadcastPartners = broadcastPartner
-        ? await prisma.dashapp_broadcastpartner.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const categories = category
-        ? await prisma.dashapp_subcategory.findMany({
-              select: { id: true, subcategory: true },
-          })
-        : [];
-
-    const formats = format
-        ? await prisma.dashapp_format.findMany({
-              select: { id: true, format: true },
-          })
-        : [];
-
-    const keyMarketsList = keyMarkets
-        ? await prisma.dashapp_keymarket.findMany({
-              select: { id: true, zone: true },
-          })
-        : [];
-
-    const leagues = league
-        ? await prisma.dashapp_leagueinfo.findMany({
-              select: { id: true, property_name: true },
-          })
-        : [];
-
-    const leagueOwners = leagueOwner
-        ? await prisma.dashapp_leagueinfo_owner.findMany({
-              select: {
-                  id: true,
-                  dashapp_leagueowner: { select: { name: true } },
-              },
-          })
-        : [];
-
-    const marketingPlatforms = marketingPlatform
-        ? await prisma.dashapp_marketingplatform.findMany({
-              select: { id: true, platform: true },
-          })
-        : [];
-
-    const nccsList = nccs
-        ? await prisma.dashapp_income.findMany({
-              select: { id: true, income_class: true },
-          })
-        : [];
-
-    const ottPartners = ottPartner
-        ? await prisma.dashapp_ottpartner.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const parentOrgs = parentOrg
-        ? await prisma.dashapp_parentorg.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const personalityTraits = personalityTrait
-        ? await prisma.dashapp_subpersonality.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const sportsDealSummaryLevels = sportsDealSummaryLevel
-        ? await prisma.dashapp_sportsdealsummary.findMany({
-              select: {
-                  id: true,
-                  dashapp_companydata: { select: { company_name: true } },
-              },
-          })
-        : [];
-
-    const sportsDealSummaryStatuses = sportsDealSummaryStatus
-        ? await prisma.dashapp_athlete_status.findMany({
-              select: { id: true, status: true },
-          })
-        : [];
-
-    const sportsDealSummaryTerritories = sportsDealSummaryTerritory
-        ? await prisma.dashapp_territory.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const sportsDealSummaryTypes = sportsDealSummaryType
-        ? await prisma.dashapp_activation_type.findMany({
-              select: {
-                  id: true,
-                  dashapp_marketingplatform: {
-                      select: { platform: true },
-                  },
-              },
-          })
-        : [];
-
-    const taglines = tagline
-        ? await prisma.dashapp_taglines.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const teamOwners = teamOwner
-        ? await prisma.dashapp_teamowner.findMany({
-              select: { id: true, name: true },
-          })
-        : [];
-
-    const tertiaries = tertiary
-        ? await prisma.dashapp_states.findMany({
-              select: { id: true, state: true },
-          })
-        : [];
-
-    res.status(STATUS_CODE.OK).json({
-        ageRanges,
-        genders,
-        cities,
-        states,
-        activeCampaigns,
-        agencies,
-        assets,
-        broadcastPartners,
-        categories,
-        formats,
-        keyMarketsList,
-        leagues,
-        leagueOwners,
-        marketingPlatforms,
-        nccsList,
-        ottPartners,
-        parentOrgs,
-        personalityTraits,
-        sportsDealSummaryLevels,
-        sportsDealSummaryStatuses,
-        sportsDealSummaryTerritories,
-        sportsDealSummaryTypes,
-        taglines,
-        teamOwners,
-        tertiaries,
-    });
+        res.status(STATUS_CODE.OK).json({
+            ageRanges,
+            genders,
+            cities,
+            states,
+            activeCampaigns,
+            agencies,
+            assets,
+            broadcastPartners,
+            categories,
+            formats,
+            keyMarketsList,
+            leagues,
+            leagueOwners,
+            marketingPlatforms,
+            nccsList,
+            ottPartners,
+            parentOrgs,
+            personalityTraits,
+            sportsDealSummaryLevels,
+            sportsDealSummaryStatuses,
+            sportsDealSummaryTerritories,
+            sportsDealSummaryTypes,
+            taglines,
+            teamOwners,
+            tertiaries,
+        });
+    } catch (error) {
+        console.error("Error fetching metadata:", error);
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+            error: "Failed to fetch metadata",
+        });
+    }
 };

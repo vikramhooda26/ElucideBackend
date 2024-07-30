@@ -1,9 +1,9 @@
 class MetadataStore {
     private static instance: MetadataStore;
-    private lastUpdated: Date;
+    private lastUpdated: Record<string, Date>;
 
     private constructor() {
-        this.lastUpdated = new Date();
+        this.lastUpdated = {};
     }
 
     static getInstance(): MetadataStore {
@@ -14,12 +14,12 @@ class MetadataStore {
         return MetadataStore.instance;
     }
 
-    getLastUpdated(): Date {
-        return this.lastUpdated;
+    getLastUpdated(metadataType: string): Date {
+        return this.lastUpdated[metadataType];
     }
 
-    setLastUpdated(date: Date) {
-        this.lastUpdated = date;
+    setLastUpdated(metadataType: string, date: Date) {
+        this.lastUpdated[metadataType] = date;
     }
 }
 
