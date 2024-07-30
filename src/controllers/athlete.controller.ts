@@ -59,6 +59,8 @@ export const getAthleteById = asyncHandler(async (req, res) => {
 });
 
 export const getAllAthletes = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
     const athletes = await prisma.dashapp_athlete.findMany({
         select: {
             id: true,
@@ -84,7 +86,9 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
             },
             modified_date: true,
         },
-        orderBy: { created_date: "desc" },
+        orderBy: { modified_date: "desc" },
+        take: Number.isNaN(Number(take)) ? undefined : Number(take),
+        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
 
     if (athletes.length < 1) {

@@ -10,6 +10,8 @@ import { brandSelect } from "../types/brand.type.js";
 import { BrandResponseDTO } from "../dto/brand.dto.js";
 
 export const getAllBrands = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
     const brands = await prisma.dashapp_companydata.findMany({
         select: {
             id: true,
@@ -35,6 +37,9 @@ export const getAllBrands = asyncHandler(async (req, res) => {
                 },
             },
         },
+        orderBy: { modified_date: "desc" },
+        take: Number.isNaN(Number(take)) ? undefined : Number(take),
+        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
 
     if (brands.length < 1) {
