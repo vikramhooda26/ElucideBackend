@@ -16,6 +16,7 @@ import { ageRangeRouter } from "./routes/metadata/age.router.js";
 import { assetRouter } from "./routes/metadata/asset.router.js";
 import { broadcastPartnerRouter } from "./routes/metadata/broadcast.router.js";
 import { categoryRouter } from "./routes/metadata/category.router.js";
+import { subcategoryRouter } from "./routes/metadata/subcategory.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -52,6 +53,7 @@ app.use("/api/admin/age-range", ageRangeRouter);
 app.use("/api/admin/asset", assetRouter);
 app.use("/api/admin/boadcast-partner", broadcastPartnerRouter);
 app.use("/api/admin/category", categoryRouter);
+app.use("/api/admin/subcategory", subcategoryRouter);
 
 app.use(globalErrorHandler);
 
