@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { TAthleteDetails } from "../types/athlete.type.js";
 
 export class AthleteResponseDTO {
+    athleteId?: bigint;
     athleteName?: string;
     nationality!: string | null;
     sport?: string;
@@ -63,6 +64,7 @@ export class AthleteResponseDTO {
 
     static toResponse(athleteDetails: TAthleteDetails): AthleteResponseDTO {
         const athleteDTO = new AthleteResponseDTO();
+        athleteDTO.athleteId = athleteDetails.id;
         athleteDTO.athleteName = athleteDetails.athlete_name;
         athleteDTO.nationality = athleteDetails.nationality;
         athleteDTO.sport = athleteDetails.dashapp_sport?.name;

@@ -5,7 +5,7 @@ import { STATUS_CODE } from "../../lib/constants.js";
 import {
     TCreateActiveCampaignSchema,
     TEditActiveCampaignSchema,
-} from "../../schemas/campaign.schema.js";
+} from "../../schemas/metadata/campaign.schema.js";
 
 export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -143,13 +143,19 @@ export const deleteActiveCampaign = asyncHandler(async (req, res) => {
         throw new BadRequestError("Active Campaign ID not found");
     }
 
-    const deletedData = await prisma.dashapp_activecampaigns.delete({
+    const activeCampaign = await prisma.dashapp_agency.findUnique({
         where: { id: BigInt(activeCampaignId) },
+        select: { id: true },
     });
 
-    if (!deletedData) {
+    if (!activeCampaign) {
         throw new NotFoundError("This Active Campaign does not exists");
     }
+
+    await prisma.dashapp_activecampaigns.delete({
+        where: { id: BigInt(activeCampaignId) },
+        select: { id: true },
+    });
 
     res.status(STATUS_CODE.OK).json({
         message: "Active Campaign deleted",

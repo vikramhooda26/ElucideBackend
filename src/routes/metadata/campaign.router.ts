@@ -11,7 +11,7 @@ import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
     createActiveCampaignSchema,
     editActiveCampaignSchema,
-} from "../../schemas/campaign.schema.js";
+} from "../../schemas/metadata/campaign.schema.js";
 
 export const activeCampaignRouter = Router();
 

@@ -69,9 +69,6 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 select: {
                     id: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
-                    username: true,
                 },
             },
             created_date: true,
@@ -79,9 +76,6 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 select: {
                     id: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
-                    username: true,
                 },
             },
             modified_date: true,
@@ -104,16 +98,10 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
             createdBy: {
                 userId: athlete.created_by?.id,
                 email: athlete.created_by?.email,
-                firstName: athlete.created_by?.first_name,
-                lastName: athlete.created_by?.last_name,
-                username: athlete.created_by?.username,
             },
             modifiedBy: {
                 userId: athlete.modified_by?.id,
                 email: athlete.modified_by?.email,
-                firstName: athlete.modified_by?.first_name,
-                lastName: athlete.modified_by?.last_name,
-                username: athlete.modified_by?.username,
             },
         })),
     );

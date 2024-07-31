@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateSchema } from "../../middleware/validate.middleware.js";
-import { getAllMetadataSchema } from "../../schemas/metadata.schema.js";
+import { getAllMetadataSchema } from "../../schemas/metadata/metadata.schema.js";
 import {
     fetchAllMetadata,
     fetchMetadataHasUpdated,

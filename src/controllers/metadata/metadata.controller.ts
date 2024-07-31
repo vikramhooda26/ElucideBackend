@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { metadataStore } from "../../managers/MetadataManager.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import { TGetAllMetadataSchema } from "../../schemas/metadata.schema.js";
+import { TGetAllMetadataSchema } from "../../schemas/metadata/metadata.schema.js";
 import {
     getAllAgeRanges,
     getAllGenders,

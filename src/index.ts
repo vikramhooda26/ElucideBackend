@@ -11,6 +11,7 @@ import { teamRouter } from "./routes/team.router.js";
 import { brandRouter } from "./routes/brand.router.js";
 import { metadataRouter } from "./routes/metadata/metadata.router.js";
 import { activeCampaignRouter } from "./routes/metadata/campaign.router.js";
+import { agencyRouter } from "./routes/metadata/agency.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -42,6 +43,7 @@ app.use("/api/admin/team", teamRouter);
 app.use("/api/admin/brand", brandRouter);
 app.use("/api/admin/metadata", metadataRouter);
 app.use("/api/admin/active-campaign", activeCampaignRouter);
+app.use("/api/admin/agency", agencyRouter);
 
 app.use(globalErrorHandler);
 
