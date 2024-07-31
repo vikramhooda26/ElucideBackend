@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import { STATUS_CODE } from "../../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import {
     TCreateAgeRangeSchema,
     TEditAgeRangeSchema,
 } from "../../schemas/metadata/age.schema.js";
+import { metadataStore } from "../../managers/MetadataManager.js";
 
 const validateAgeRange = (ageRange: string): boolean => {
     if (ageRange.includes("+")) {
@@ -130,6 +131,8 @@ export const createAgeRange = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.AGE, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Age range created",
     });
@@ -170,6 +173,8 @@ export const editAgeRange = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.AGE, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Age range updated",
     });
@@ -195,6 +200,8 @@ export const deleteAgeRange = asyncHandler(async (req, res) => {
         where: { id: BigInt(ageRangeId) },
         select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.AGE, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Age range deleted",

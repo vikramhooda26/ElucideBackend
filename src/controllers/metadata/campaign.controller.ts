@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import { STATUS_CODE } from "../../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import {
     TCreateActiveCampaignSchema,
     TEditActiveCampaignSchema,
 } from "../../schemas/metadata/campaign.schema.js";
+import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -96,6 +97,8 @@ export const createActiveCampaign = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ACTIVE_CAMPAIGN, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Active campaign created",
     });
@@ -131,6 +134,8 @@ export const editActiveCampaign = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ACTIVE_CAMPAIGN, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Active campaign details updated",
     });
@@ -156,6 +161,8 @@ export const deleteActiveCampaign = asyncHandler(async (req, res) => {
         where: { id: BigInt(activeCampaignId) },
         select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.ACTIVE_CAMPAIGN, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Active Campaign deleted",

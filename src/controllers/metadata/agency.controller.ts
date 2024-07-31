@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import { STATUS_CODE } from "../../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import {
     TCreateAgencySchema,
     TEditAgencySchema,
 } from "../../schemas/metadata/agency.schema.js";
+import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllAgencies = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -93,6 +94,8 @@ export const createAgency = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.AGENCY, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Agency created",
     });
@@ -129,6 +132,8 @@ export const editAgency = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.AGENCY, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Agency details updated",
     });
@@ -153,6 +158,8 @@ export const deleteAgency = asyncHandler(async (req, res) => {
     await prisma.dashapp_agency.delete({
         where: { id: BigInt(agencyId) },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.AGENCY, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Agency deleted",
