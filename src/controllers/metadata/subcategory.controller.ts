@@ -29,6 +29,7 @@ export const getAllSubcategories = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -53,6 +54,7 @@ export const getAllSubcategories = asyncHandler(async (req, res) => {
                 userId: subcategory.modified_by?.id,
                 email: subcategory.modified_by?.email,
             },
+            count: subcategory._count,
         })),
     );
 });

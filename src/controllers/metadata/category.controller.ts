@@ -29,6 +29,7 @@ export const getAllCategories = expressAsyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -53,6 +54,7 @@ export const getAllCategories = expressAsyncHandler(async (req, res) => {
                 userId: category.modified_by?.id,
                 email: category.modified_by?.email,
             },
+            count: category._count,
         })),
     );
 });

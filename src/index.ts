@@ -52,7 +52,7 @@ app.use("/api/admin/active-campaign", activeCampaignRouter);
 app.use("/api/admin/agency", agencyRouter);
 app.use("/api/admin/age-range", ageRangeRouter);
 app.use("/api/admin/asset", assetRouter);
-app.use("/api/admin/boadcast-partner", broadcastPartnerRouter);
+app.use("/api/admin/broadcast-partner", broadcastPartnerRouter);
 app.use("/api/admin/category", categoryRouter);
 app.use("/api/admin/subcategory", subcategoryRouter);
 app.use("/api/admin/gender", genderRouter);

@@ -29,6 +29,7 @@ export const getAllGenders = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -53,6 +54,7 @@ export const getAllGenders = asyncHandler(async (req, res) => {
                 userId: gender.modified_by?.id,
                 email: gender.modified_by?.email,
             },
+            count: gender._count,
         })),
     );
 });

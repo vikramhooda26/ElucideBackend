@@ -80,6 +80,10 @@ export const registerHandler = asyncHandler(async (req, res) => {
 export const logoutHandler = asyncHandler(async (req, res) => {
     const refreshToken = req.cookies[COOKIE_NAME.REFRESH_TOKEN];
 
+    if (!refreshToken) {
+        throw new ForbiddenError();
+    }
+
     const decodedToken = verifyRefreshToken(refreshToken) as JwtPayload;
 
     const userId = decodedToken.userId;

@@ -29,6 +29,7 @@ export const getAllBroadcastPartners = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -53,6 +54,7 @@ export const getAllBroadcastPartners = asyncHandler(async (req, res) => {
                 userId: broadcastPartner.modified_by?.id,
                 email: broadcastPartner.modified_by?.email,
             },
+            count: broadcastPartner._count,
         })),
     );
 });

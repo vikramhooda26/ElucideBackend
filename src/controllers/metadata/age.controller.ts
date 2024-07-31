@@ -60,6 +60,7 @@ export const getAllAgeRanges = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -84,6 +85,7 @@ export const getAllAgeRanges = asyncHandler(async (req, res) => {
                 userId: range.modified_by?.id,
                 email: range.modified_by?.email,
             },
+            count: range._count,
         })),
     );
 });

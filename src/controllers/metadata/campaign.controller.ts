@@ -29,6 +29,7 @@ export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -41,7 +42,7 @@ export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         activeCampaign.map((campaign) => ({
-            id: campaign.id,
+            activeCampaignId: campaign.id,
             activeCampaignName: campaign.name,
             createdDate: campaign.created_date,
             modifiedDate: campaign.modified_date,
@@ -53,6 +54,7 @@ export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
                 userId: campaign.modified_by?.id,
                 email: campaign.modified_by?.email,
             },
+            count: campaign._count,
         })),
     );
 });
@@ -79,7 +81,7 @@ export const getActiveCampaignById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        id: activeCampaign.id,
+        activeCampaignId: activeCampaign.id,
         activeCampaignName: activeCampaign.name,
     });
 });

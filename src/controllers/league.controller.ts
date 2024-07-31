@@ -58,6 +58,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
                     last_name: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -70,7 +71,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         leagues.map((league) => ({
-            id: league.id,
+            leagueId: league.id,
             leagueName: league.property_name,
             createdDate: league.created_date,
             modifiedDate: league.modified_date,
@@ -88,6 +89,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
                 lastName: league.modified_by?.last_name,
                 username: league.modified_by?.username,
             },
+            count: league._count,
         })),
     );
 });

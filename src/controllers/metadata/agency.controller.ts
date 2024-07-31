@@ -29,6 +29,7 @@ export const getAllAgencies = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -41,7 +42,7 @@ export const getAllAgencies = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         agencies.map((agency) => ({
-            id: agency.id,
+            agencyId: agency.id,
             agencyName: agency.name,
             createdDate: agency.created_date,
             modifiedDate: agency.modified_date,
@@ -53,6 +54,7 @@ export const getAllAgencies = asyncHandler(async (req, res) => {
                 userId: agency.modified_by?.id,
                 email: agency.modified_by?.email,
             },
+            count: agency._count,
         })),
     );
 });

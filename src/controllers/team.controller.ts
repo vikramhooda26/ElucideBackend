@@ -33,6 +33,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
                     last_name: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -45,7 +46,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         teams.map((team) => ({
-            id: team.id,
+            teamId: team.id,
             teamName: team.team_name,
             createdDate: team.created_date,
             modifiedDate: team.modified_date,
@@ -63,6 +64,7 @@ export const getAllTeams = asyncHandler(async (req, res) => {
                 lastName: team.modified_by?.last_name,
                 username: team.modified_by?.username,
             },
+            count: team._count,
         })),
     );
 });

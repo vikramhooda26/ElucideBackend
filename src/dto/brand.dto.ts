@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { TBrandDetails } from "../types/brand.type.js";
 
 export class BrandResponseDTO {
+    brandId?: bigint;
     companyName?: string;
     parentOrg?: string;
     subcategory?: {
@@ -69,7 +70,8 @@ export class BrandResponseDTO {
 
     static toResponse(brandDetails: TBrandDetails): BrandResponseDTO {
         const brandDTO = new BrandResponseDTO();
-        brandDTO.companyName = brandDetails.company_name;
+        (brandDTO.brandId = brandDetails.id),
+            (brandDTO.companyName = brandDetails.company_name);
         brandDTO.parentOrg = brandDetails.dashapp_parentorg?.name;
         brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
             (subcategory) => ({

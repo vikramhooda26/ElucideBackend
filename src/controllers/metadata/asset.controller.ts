@@ -29,6 +29,7 @@ export const getAllAssets = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -53,6 +54,7 @@ export const getAllAssets = asyncHandler(async (req, res) => {
                 userId: asset.modified_by?.id,
                 email: asset.modified_by?.email,
             },
+            count: asset._count,
         })),
     );
 });

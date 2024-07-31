@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 
 export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
     {
+        id: true,
         company_name: true,
         dashapp_parentorg: {
             select: {

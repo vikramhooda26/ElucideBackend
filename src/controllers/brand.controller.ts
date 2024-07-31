@@ -21,21 +21,16 @@ export const getAllBrands = asyncHandler(async (req, res) => {
             modified_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
             created_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -49,23 +44,18 @@ export const getAllBrands = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(
         brands.map((brand) => ({
             id: brand.id,
-            brandName: brand.company_name,
+            name: brand.company_name,
             createdDate: brand.created_date,
             modifiedDate: brand.modified_date,
             createdBy: {
                 userId: brand.created_by?.id,
                 email: brand.created_by?.email,
-                firstName: brand.created_by?.first_name,
-                lastName: brand.created_by?.last_name,
-                username: brand.created_by?.username,
             },
             modifiedBy: {
                 userId: brand.modified_by?.id,
                 email: brand.modified_by?.email,
-                firstName: brand.modified_by?.first_name,
-                lastName: brand.modified_by?.last_name,
-                username: brand.modified_by?.username,
             },
+            count: brand._count,
         })),
     );
 });

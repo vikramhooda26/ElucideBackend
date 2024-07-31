@@ -2,6 +2,7 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TTeamDetails } from "../types/team.type.js";
 
 export class TeamResponseDTO {
+    teamId?: bigint;
     teamName?: string;
     teamOwners?: string[];
     sport?: string;
@@ -73,7 +74,8 @@ export class TeamResponseDTO {
 
     static toResponse(teamDetails: TTeamDetails): TeamResponseDTO {
         const teamDTO = new TeamResponseDTO();
-        teamDTO.teamName = teamDetails.team_name;
+        (teamDTO.teamId = teamDetails.id),
+            (teamDTO.teamName = teamDetails.team_name);
         teamDTO.teamOwners = teamDetails.dashapp_team_owner.map(
             (owner) => owner.dashapp_teamowner.name,
         );

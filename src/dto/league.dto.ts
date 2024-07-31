@@ -2,6 +2,7 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TLeagueDetails } from "../types/league.type.js";
 
 export class LeagueResponseDTO {
+    leagueId?: bigint;
     leagueName?: string;
     sport?: string;
     leagueOwners?: string[];
@@ -71,7 +72,8 @@ export class LeagueResponseDTO {
 
     static toResponse(leagueDetails: TLeagueDetails): LeagueResponseDTO {
         const leagueDTO = new LeagueResponseDTO();
-        leagueDTO.leagueName = leagueDetails.property_name;
+        (leagueDTO.leagueId = leagueDetails.id),
+            (leagueDTO.leagueName = leagueDetails.property_name);
         leagueDTO.sport = leagueDetails.dashapp_sport?.name;
         leagueDTO.leagueOwners = leagueDetails.dashapp_leagueinfo_owner.map(
             (owner) => owner.dashapp_leagueowner.name,

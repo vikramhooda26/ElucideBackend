@@ -79,6 +79,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 },
             },
             modified_date: true,
+            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -91,7 +92,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         athletes.map((athlete) => ({
-            id: athlete.id,
+            athleteId: athlete.id,
             athleteName: athlete.athlete_name,
             createdDate: athlete.created_date,
             modifiedDate: athlete.modified_date,
@@ -103,6 +104,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 userId: athlete.modified_by?.id,
                 email: athlete.modified_by?.email,
             },
+            count: athlete._count,
         })),
     );
 });

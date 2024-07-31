@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client";
 
 export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
     {
+        id: true,
         property_name: true,
         dashapp_sport: {
             select: {
