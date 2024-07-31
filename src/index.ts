@@ -19,6 +19,7 @@ import { categoryRouter } from "./routes/metadata/category.router.js";
 import { subcategoryRouter } from "./routes/metadata/subcategory.router.js";
 import { genderRouter } from "./routes/metadata/gender.router.js";
 import { cityRouter } from "./routes/metadata/city.router.js";
+import { stateRouter } from "./routes/metadata/state.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -58,6 +59,7 @@ app.use("/api/admin/category", categoryRouter);
 app.use("/api/admin/subcategory", subcategoryRouter);
 app.use("/api/admin/gender", genderRouter);
 app.use("/api/admin/city", cityRouter);
+app.use("/api/admin/state", stateRouter);
 
 app.use(globalErrorHandler);
 
