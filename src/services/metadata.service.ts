@@ -145,12 +145,12 @@ export const getAllMarketingPlatforms = async () => {
 };
 
 export const getAllNCCS = async () => {
-    const nccsList = await prisma.dashapp_income.findMany({
-        select: { id: true, income_class: true },
+    const nccsList = await prisma.dashapp_nccs.findMany({
+        select: { id: true, nccs_class: true },
     });
     return nccsList.map((nccs) => ({
         id: nccs.id,
-        class: nccs.income_class,
+        class: nccs.nccs_class,
     }));
 };
 
