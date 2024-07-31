@@ -14,6 +14,7 @@ import { activeCampaignRouter } from "./routes/metadata/campaign.router.js";
 import { agencyRouter } from "./routes/metadata/agency.router.js";
 import { ageRangeRouter } from "./routes/metadata/age.router.js";
 import { assetRouter } from "./routes/metadata/asset.router.js";
+import { broadcastPartnerRouter } from "./routes/metadata/broadcast.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -48,6 +49,7 @@ app.use("/api/admin/active-campaign", activeCampaignRouter);
 app.use("/api/admin/agency", agencyRouter);
 app.use("/api/admin/age-range", ageRangeRouter);
 app.use("/api/admin/asset", assetRouter);
+app.use("/api/admin/boadcast-partner", broadcastPartnerRouter);
 
 app.use(globalErrorHandler);
 

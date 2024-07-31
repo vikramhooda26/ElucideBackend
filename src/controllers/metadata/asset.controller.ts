@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import { STATUS_CODE } from "../../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import {
     TCreateAssetSchema,
     TEditAssetSchema,
 } from "../../schemas/metadata/asset.schema.js";
+import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllAssets = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -93,6 +94,8 @@ export const createAsset = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Asset created",
     });
@@ -127,6 +130,8 @@ export const editAsset = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Asset updated",
     });
@@ -152,6 +157,8 @@ export const deleteAsset = asyncHandler(async (req, res) => {
         where: { id: BigInt(assetId) },
         select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Asset deleted",
