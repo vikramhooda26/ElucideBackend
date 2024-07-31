@@ -98,8 +98,8 @@ model auth_user {
     dashapp_gender_dashapp_gender_modified_by_idToauth_user                         dashapp_gender[]             @relation("dashapp_gender_modified_by_idToauth_user")
     dashapp_hqcity_dashapp_hqcity_created_by_idToauth_user                          dashapp_hqcity[]             @relation("dashapp_hqcity_created_by_idToauth_user")
     dashapp_hqcity_dashapp_hqcity_modified_by_idToauth_user                         dashapp_hqcity[]             @relation("dashapp_hqcity_modified_by_idToauth_user")
-    dashapp_income_dashapp_income_created_by_idToauth_user                          dashapp_income[]             @relation("dashapp_income_created_by_idToauth_user")
-    dashapp_income_dashapp_income_modified_by_idToauth_user                         dashapp_income[]             @relation("dashapp_income_modified_by_idToauth_user")
+    dashapp_income_dashapp_income_created_by_idToauth_user                          dashapp_nccs[]               @relation("dashapp_income_created_by_idToauth_user")
+    dashapp_income_dashapp_income_modified_by_idToauth_user                         dashapp_nccs[]               @relation("dashapp_income_modified_by_idToauth_user")
     dashapp_keymarket_dashapp_keymarket_created_by_idToauth_user                    dashapp_keymarket[]          @relation("dashapp_keymarket_created_by_idToauth_user")
     dashapp_keymarket_dashapp_keymarket_modified_by_idToauth_user                   dashapp_keymarket[]          @relation("dashapp_keymarket_modified_by_idToauth_user")
     dashapp_keyplatform_dashapp_keyplatform_created_by_idToauth_user                dashapp_keyplatform[]        @relation("dashapp_keyplatform_created_by_idToauth_user")
@@ -424,7 +424,7 @@ model dashapp_athlete_target_income {
     athlete_id      BigInt
     income_id       BigInt
     dashapp_athlete dashapp_athlete @relation(fields: [athlete_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-    dashapp_income  dashapp_income  @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    dashapp_nccs    dashapp_nccs    @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([athlete_id, income_id], map: "dashapp_athlete_target_income_athlete_id_income_id_2bdbc731_uni")
     @@index([athlete_id], map: "dashapp_athlete_target_income_athlete_id_45c8a20b")
@@ -617,7 +617,7 @@ model dashapp_companydata_income {
     companydata_id      BigInt
     income_id           BigInt
     dashapp_companydata dashapp_companydata @relation(fields: [companydata_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-    dashapp_income      dashapp_income      @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    dashapp_nccs        dashapp_nccs        @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([companydata_id, income_id], map: "dashapp_companydata_income_companydata_id_income_id_7777bde5_un")
     @@index([companydata_id], map: "dashapp_companydata_income_companydata_id_87e1704b")
@@ -762,12 +762,12 @@ model dashapp_hqcity {
     @@index([modified_by_id], map: "dashapp_hqcity_modified_by_id_ba6f7792")
 }
 
-model dashapp_income {
+model dashapp_nccs {
     id                            BigInt                          @id @default(autoincrement())
     created_date                  DateTime?                       @default(now())
     modified_by_id                BigInt?
     modified_date                 DateTime?
-    income_class                  String                          @unique(map: "sqlite_autoindex_dashapp_income_1") @db.VarChar(20)
+    nccs_class                    String                          @unique(map: "sqlite_autoindex_dashapp_income_1") @db.VarChar(20)
     created_by_id                 BigInt?
     dashapp_athlete_target_income dashapp_athlete_target_income[]
     dashapp_companydata_income    dashapp_companydata_income[]
@@ -958,7 +958,7 @@ model dashapp_leagueinfo_income {
     id                 BigInt             @id @default(autoincrement())
     leagueinfo_id      BigInt
     income_id          BigInt
-    dashapp_income     dashapp_income     @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    dashapp_nccs       dashapp_nccs       @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
     dashapp_leagueinfo dashapp_leagueinfo @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([leagueinfo_id, income_id], map: "dashapp_leagueinfo_income_leagueinfo_id_income_id_b79c2469_uniq")
@@ -1433,11 +1433,11 @@ model dashapp_team_gender {
 }
 
 model dashapp_team_income {
-    id             BigInt         @id @default(autoincrement())
-    team_id        BigInt
-    income_id      BigInt
-    dashapp_income dashapp_income @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-    dashapp_team   dashapp_team   @relation(fields: [team_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    id           BigInt       @id @default(autoincrement())
+    team_id      BigInt
+    income_id    BigInt
+    dashapp_nccs dashapp_nccs @relation(fields: [income_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    dashapp_team dashapp_team @relation(fields: [team_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     @@unique([team_id, income_id], map: "dashapp_team_income_team_id_income_id_418b4c9b_uniq")
     @@index([income_id], map: "dashapp_team_income_income_id_97e882f6")
