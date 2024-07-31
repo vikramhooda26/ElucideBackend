@@ -15,7 +15,6 @@ export const getAllMetadataSchema = z.object({
     marketingPlatform: z.boolean().optional(),
     nccs: z.boolean().optional(),
     keyMarket: z.boolean().optional(),
-    // current tertiary is mapped to states, ask the client if that's correct or if that needs to be mapped to keyMarkets
     tertiary: z.boolean().optional(),
     league: z.boolean().optional(),
     teamOwner: z.boolean().optional(),
