@@ -21,6 +21,7 @@ import { genderRouter } from "./routes/metadata/gender.router.js";
 import { cityRouter } from "./routes/metadata/city.router.js";
 import { stateRouter } from "./routes/metadata/state.router.js";
 import { nccsRouter } from "./routes/metadata/nccs.router.js";
+import { keyMarketRouter } from "./routes/metadata/market.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -62,6 +63,7 @@ app.use("/api/admin/gender", genderRouter);
 app.use("/api/admin/city", cityRouter);
 app.use("/api/admin/state", stateRouter);
 app.use("/api/admin/nccs", nccsRouter);
+app.use("/api/admin/key-market", keyMarketRouter);
 
 app.use(globalErrorHandler);
 

@@ -1,4 +1,4 @@
-import expressAsyncHandler from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
@@ -8,7 +8,7 @@ import {
 } from "../../schemas/metadata/nccs.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
-export const getAllNccs = expressAsyncHandler(async (req, res) => {
+export const getAllNccs = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
     const nccs = await prisma.dashapp_nccs.findMany({
@@ -59,7 +59,7 @@ export const getAllNccs = expressAsyncHandler(async (req, res) => {
     );
 });
 
-export const getNccsById = expressAsyncHandler(async (req, res) => {
+export const getNccsById = asyncHandler(async (req, res) => {
     const nccsId = req.params.id;
 
     if (!nccsId) {
@@ -84,7 +84,7 @@ export const getNccsById = expressAsyncHandler(async (req, res) => {
     });
 });
 
-export const createNccs = expressAsyncHandler(async (req, res) => {
+export const createNccs = asyncHandler(async (req, res) => {
     const { nccsClass, userId } = req.validatedData as TCreateNccsSchema;
 
     await prisma.dashapp_nccs.create({
@@ -103,7 +103,7 @@ export const createNccs = expressAsyncHandler(async (req, res) => {
     });
 });
 
-export const editNccs = expressAsyncHandler(async (req, res) => {
+export const editNccs = asyncHandler(async (req, res) => {
     const nccsId = req.params.id;
 
     if (!nccsId) {
@@ -139,7 +139,7 @@ export const editNccs = expressAsyncHandler(async (req, res) => {
     });
 });
 
-export const deleteNccs = expressAsyncHandler(async (req, res) => {
+export const deleteNccs = asyncHandler(async (req, res) => {
     const nccsId = req.params.id;
 
     if (!nccsId) {
