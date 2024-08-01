@@ -1246,7 +1246,7 @@ model dashapp_sportsdealsummary {
     duration                  String?                     @db.VarChar(32)
     annual_value              Decimal?                    @db.Decimal
     total_value               Decimal?                    @db.Decimal
-    territory                 String?                     @db.VarChar(32)
+    territory_id              BigInt?
     brand_id                  BigInt?
     league_id                 BigInt?
     level_id                  BigInt?
@@ -1255,6 +1255,7 @@ model dashapp_sportsdealsummary {
     athlete_id                BigInt?
     media_link                String?                     @db.VarChar(512)
     created_by_id             BigInt?
+    dashapp_territory         dashapp_territory?          @relation(fields: [territory_id], references: [id], onDelete: SetNull)
     dashapp_sportsdeal_assets dashapp_sportsdeal_assets[]
     dashapp_athlete           dashapp_athlete?            @relation(fields: [athlete_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
     dashapp_companydata       dashapp_companydata?        @relation(fields: [brand_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
@@ -1605,14 +1606,15 @@ model dashapp_teamowner {
 }
 
 model dashapp_territory {
-    id             BigInt     @id @default(autoincrement())
-    created_date   DateTime?  @default(now())
-    modified_date  DateTime?
-    modified_by_id BigInt?
-    name           String     @unique(map: "sqlite_autoindex_dashapp_territory_1") @db.VarChar(512)
-    created_by_id  BigInt?
-    created_by     auth_user? @relation("dashapp_territory_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
-    modified_by    auth_user? @relation("dashapp_territory_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime?                   @default(now())
+    modified_date             DateTime?
+    modified_by_id            BigInt?
+    name                      String                      @unique(map: "sqlite_autoindex_dashapp_territory_1") @db.VarChar(512)
+    created_by_id             BigInt?
+    created_by                auth_user?                  @relation("dashapp_territory_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
+    modified_by               auth_user?                  @relation("dashapp_territory_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_sportsdealsummary dashapp_sportsdealsummary[]
 
     @@index([modified_by_id], map: "dashapp_territory_modified_by_id_36ab1fe8")
 }
