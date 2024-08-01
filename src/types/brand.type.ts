@@ -106,9 +106,9 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         dashapp_companydata_income: {
             select: {
-                dashapp_income: {
+                dashapp_nccs: {
                     select: {
-                        income_class: true,
+                        nccs_class: true,
                     },
                 },
             },

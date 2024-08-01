@@ -104,7 +104,7 @@ export const createBrand = asyncHandler(async (req, res) => {
         marketingPlatformSecondaryIds,
         ageIds,
         genderIds,
-        incomeIds,
+        nccsIds,
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
@@ -211,9 +211,9 @@ export const createBrand = asyncHandler(async (req, res) => {
                 })),
             },
             dashapp_companydata_income: {
-                create: incomeIds?.map((incomeId) => ({
-                    dashapp_income: {
-                        connect: { id: BigInt(incomeId) },
+                create: nccsIds?.map((nccsId) => ({
+                    dashapp_nccs: {
+                        connect: { id: BigInt(nccsId) },
                     },
                 })),
             },
@@ -276,7 +276,7 @@ export const editBrand = asyncHandler(async (req, res) => {
         marketingPlatformSecondaryIds,
         ageIds,
         genderIds,
-        incomeIds,
+        nccsIds,
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
@@ -396,11 +396,11 @@ export const editBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_income: incomeIds
+            dashapp_companydata_income: nccsIds
                 ? {
                       deleteMany: {},
-                      create: incomeIds.map((incomeId) => ({
-                          dashapp_income: { connect: { id: BigInt(incomeId) } },
+                      create: nccsIds.map((nccsId) => ({
+                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
                       })),
                   }
                 : undefined,

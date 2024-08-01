@@ -27,7 +27,7 @@ export class BrandResponseDTO {
     secondaryMarketingPlatforms?: string[];
     age?: (string | undefined)[];
     gender?: (string | undefined)[];
-    income?: (string | undefined)[];
+    nccs?: (string | undefined)[];
     keyMarketPrimary?: string[];
     keyMarketSecondary?: string[];
     keyMarketTertiary?: string[];
@@ -117,8 +117,8 @@ export class BrandResponseDTO {
         brandDTO.gender = brandDetails.dashapp_companydata_gender.map(
             (gender) => gender.dashapp_gender?.gender_is,
         );
-        brandDTO.income = brandDetails.dashapp_companydata_income.map(
-            (income) => income.dashapp_income?.income_class,
+        brandDTO.nccs = brandDetails.dashapp_companydata_income.map(
+            (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
         brandDTO.keyMarketPrimary =
             brandDetails.dashapp_companydata_key_markets_primary.map(

@@ -15,7 +15,7 @@ export const createAthleteSchema = z.object({
     website: z.string().optional(),
     subPersonalityTraitIds: z.string().array().optional(),
     genderId: z.string().optional(),
-    incomeIds: z.string().array().optional(),
+    nccsIds: z.string().array().optional(),
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),

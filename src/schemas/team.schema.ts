@@ -27,7 +27,7 @@ export const createTeamSchema = z.object({
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
-    incomeIds: z.string().array().optional(),
+    nccsIds: z.string().array().optional(),
     associationId: z.string().optional(),
     metrics: z
         .object({

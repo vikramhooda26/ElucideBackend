@@ -156,9 +156,9 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_leagueinfo_income: {
             select: {
-                dashapp_income: {
+                dashapp_nccs: {
                     select: {
-                        income_class: true,
+                        nccs_class: true,
                     },
                 },
             },

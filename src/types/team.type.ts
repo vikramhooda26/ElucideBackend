@@ -100,9 +100,9 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     },
     dashapp_team_income: {
         select: {
-            dashapp_income: {
+            dashapp_nccs: {
                 select: {
-                    income_class: true,
+                    nccs_class: true,
                 },
             },
         },

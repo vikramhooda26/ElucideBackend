@@ -21,7 +21,7 @@ export const createBrandSchema = z.object({
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
-    incomeIds: z.string().array().optional(),
+    nccsIds: z.string().array().optional(),
     marketingPlatformPrimaryIds: z.string().array().optional(),
     marketingPlatformSecondaryIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),

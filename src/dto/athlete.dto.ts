@@ -147,7 +147,7 @@ export class AthleteResponseDTO {
             (gender) => gender.dashapp_gender?.gender_is,
         );
         athleteDTO.nccs = athleteDetails.dashapp_athlete_target_income.map(
-            (income) => income.dashapp_income?.income_class,
+            (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
         athleteDTO.keyPlatformPrimary =
             athleteDetails.dashapp_athlete_keyplatform_primary?.platform;

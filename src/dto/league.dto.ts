@@ -33,7 +33,7 @@ export class LeagueResponseDTO {
     endorsements?: string[];
     format?: string;
     age?: (string | undefined)[];
-    NCCS?: string[];
+    nccs?: string[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
         assets: string[];
@@ -141,8 +141,8 @@ export class LeagueResponseDTO {
         leagueDTO.age = leagueDetails.dashapp_leagueinfo_age.map(
             (age) => age.dashapp_age?.age_range,
         );
-        leagueDTO.NCCS = leagueDetails.dashapp_leagueinfo_income.map(
-            (income) => income.dashapp_income.income_class,
+        leagueDTO.nccs = leagueDetails.dashapp_leagueinfo_income.map(
+            (nccs) => nccs.dashapp_nccs.nccs_class,
         );
         leagueDTO.sportsDealSummary =
             leagueDetails.dashapp_sportsdealsummary.map((deal) => ({

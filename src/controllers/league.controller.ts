@@ -121,7 +121,7 @@ export const createLeague = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        incomeIds,
+        nccsIds,
         metrics,
         associationId,
     } = req.validatedData as TCreateLeagueSchema;
@@ -229,9 +229,9 @@ export const createLeague = asyncHandler(async (req, res) => {
                 })),
             },
             dashapp_leagueinfo_income: {
-                create: incomeIds?.map((incomeId) => ({
-                    dashapp_income: {
-                        connect: { id: BigInt(incomeId) },
+                create: nccsIds?.map((nccsId) => ({
+                    dashapp_nccs: {
+                        connect: { id: BigInt(nccsId) },
                     },
                 })),
             },
@@ -309,7 +309,7 @@ export const editLeague = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        incomeIds,
+        nccsIds,
         metrics,
         associationId,
     } = req.validatedData as TEditLeagueSchema;
@@ -446,11 +446,11 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_leagueinfo_income: incomeIds
+            dashapp_leagueinfo_income: nccsIds
                 ? {
                       deleteMany: {},
-                      create: incomeIds.map((incomeId) => ({
-                          dashapp_income: { connect: { id: BigInt(incomeId) } },
+                      create: nccsIds.map((nccsId) => ({
+                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
                       })),
                   }
                 : undefined,

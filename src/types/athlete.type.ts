@@ -136,7 +136,7 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
         select: { dashapp_gender: { select: { gender_is: true } } },
     },
     dashapp_athlete_target_income: {
-        select: { dashapp_income: { select: { income_class: true } } },
+        select: { dashapp_nccs: { select: { nccs_class: true } } },
     },
     dashapp_athlete_keyplatform_primary: { select: { platform: true } },
     dashapp_athlete_keyplatform_secondary: { select: { platform: true } },

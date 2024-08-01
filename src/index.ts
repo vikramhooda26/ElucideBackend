@@ -66,3 +66,9 @@ app.use(globalErrorHandler);
 app.listen(port, () =>
     console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
 );
+
+/**
+ * @todo
+ * Ensure that the database is working properly after the changes made to the dashapp_income table
+ * Finish the entire backend at any cost on thursday because the frontend needs me ASAP
+ */

@@ -25,7 +25,7 @@ export class TeamResponseDTO {
     secondaryMarketingPlatforms?: string[];
     age?: (string | undefined)[];
     gender?: (string | undefined)[];
-    income?: (string | undefined)[];
+    nccs?: (string | undefined)[];
     keyMarketPrimary?: string[];
     keyMarketSecondary?: string[];
     keyMarketTertiary?: string[];
@@ -115,8 +115,8 @@ export class TeamResponseDTO {
         teamDTO.gender = teamDetails.dashapp_team_gender.map(
             (gender) => gender.dashapp_gender?.gender_is,
         );
-        teamDTO.income = teamDetails.dashapp_team_income.map(
-            (income) => income.dashapp_income?.income_class,
+        teamDTO.nccs = teamDetails.dashapp_team_income.map(
+            (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
         teamDTO.keyMarketPrimary =
             teamDetails.dashapp_team_key_markets_primary.map(

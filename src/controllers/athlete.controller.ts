@@ -114,7 +114,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         athleteName,
         age,
         genderId,
-        incomeIds,
+        nccsIds,
         associationId,
         userId,
         facebook,
@@ -184,9 +184,9 @@ export const createAthlete = asyncHandler(async (req, res) => {
                     : undefined,
             },
             dashapp_athlete_target_income: {
-                create: incomeIds
-                    ? incomeIds.map((incomeId) => ({
-                          dashapp_income: { connect: { id: BigInt(incomeId) } },
+                create: nccsIds
+                    ? nccsIds.map((nccsId) => ({
+                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
                       }))
                     : undefined,
             },
@@ -236,7 +236,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         athleteName,
         age,
         genderId,
-        incomeIds,
+        nccsIds,
         associationId,
         userId,
         facebook,
@@ -304,9 +304,9 @@ export const editAthlete = asyncHandler(async (req, res) => {
             },
             dashapp_athlete_target_income: {
                 deleteMany: {},
-                create: incomeIds
-                    ? incomeIds.map((incomeId) => ({
-                          dashapp_income: { connect: { id: BigInt(incomeId) } },
+                create: nccsIds
+                    ? nccsIds.map((nccsId) => ({
+                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
                       }))
                     : undefined,
             },
