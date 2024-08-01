@@ -34,6 +34,7 @@ import { taglineRouter } from "./routes/metadata/tagline.router.js";
 import { teamOwnerRouter } from "./routes/metadata/team-owner.router.js";
 import { territoryRouter } from "./routes/metadata/territory.router.js";
 import { tierRouter } from "./routes/metadata/tier.router.js";
+import { activationRouter } from "./routes/metadata/activation.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -88,15 +89,10 @@ app.use("/api/admin/tagline", taglineRouter);
 app.use("/api/admin/team-owner", teamOwnerRouter);
 app.use("/api/admin/territory", territoryRouter);
 app.use("/api/admin/tier", tierRouter);
+app.use("/api/admin/activation", activationRouter);
 
 app.use(globalErrorHandler);
 
 app.listen(port, () =>
     console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
 );
-
-/**
- * @todo
- * Ensure that the database is working properly after the changes made to the dashapp_income table
- * Finish the entire backend at any cost on thursday because the frontend needs me ASAP
- */
