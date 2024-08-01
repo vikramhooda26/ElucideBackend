@@ -24,6 +24,7 @@ import { nccsRouter } from "./routes/metadata/nccs.router.js";
 import { keyMarketRouter } from "./routes/metadata/market.router.js";
 import { leagueOwnerRouter } from "./routes/metadata/league-owner.router.js";
 import { levelRouter } from "./routes/metadata/level.router.js";
+import { personalityRouter } from "./routes/metadata/persoanlity.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -68,6 +69,7 @@ app.use("/api/admin/nccs", nccsRouter);
 app.use("/api/admin/key-market", keyMarketRouter);
 app.use("/api/admin/league-owner", leagueOwnerRouter);
 app.use("/api/admin/level", levelRouter);
+app.use("/api/admin/personality", personalityRouter);
 
 app.use(globalErrorHandler);
 
