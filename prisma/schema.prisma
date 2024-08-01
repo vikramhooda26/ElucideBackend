@@ -9,7 +9,7 @@ datasource db {
 
 model association {
     id                   BigInt              @id @default(autoincrement())
-    cost                 String?
+    cost                 Decimal?            @db.Decimal()
     association_level_id BigInt?
     created_date         DateTime?           @default(now())
     modified_date        DateTime?
@@ -25,9 +25,10 @@ model association {
     modified_by          auth_user?          @relation("association_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team         dashapp_team?       @relation(fields: [team_id], references: [id])
 
-    @@index([athlete_id])
+    @@index([athlete_id, cost])
     @@index([leagueInfo_id], map: "association_league_info_id_idx")
     @@index([team_id])
+    @@index([association_level_id])
 }
 
 model association_level {
