@@ -26,6 +26,7 @@ import { leagueOwnerRouter } from "./routes/metadata/league-owner.router.js";
 import { levelRouter } from "./routes/metadata/level.router.js";
 import { personalityRouter } from "./routes/metadata/persoanlity.router.js";
 import { subpersonalityRouter } from "./routes/metadata/subpersonality.router.js";
+import { marketingPlatformRouter } from "./routes/metadata/marketing-platform.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -72,6 +73,7 @@ app.use("/api/admin/league-owner", leagueOwnerRouter);
 app.use("/api/admin/level", levelRouter);
 app.use("/api/admin/personality", personalityRouter);
 app.use("/api/admin/subpersonality", subpersonalityRouter);
+app.use("/api/admin/marketing-platform", marketingPlatformRouter);
 
 app.use(globalErrorHandler);
 
