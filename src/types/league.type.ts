@@ -191,7 +191,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 duration: true,
                 annual_value: true,
                 total_value: true,
-                territory: true,
+                dashapp_territory: { select: { name: true } },
                 media_link: true,
             },
         },

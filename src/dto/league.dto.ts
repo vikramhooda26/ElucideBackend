@@ -24,7 +24,7 @@ export class LeagueResponseDTO {
     primaryMarketingPlatforms?: string[];
     secondaryMarketingPlatforms?: string[];
     associationLevel!: (string | null | undefined)[];
-    associationCost?: (string | null)[];
+    associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
     personalityTraits?: {
         subPersonalityTriats: string;
@@ -44,7 +44,7 @@ export class LeagueResponseDTO {
         mediaLink: string | null;
         partner?: string;
         status: string | null;
-        territory: string | null;
+        territory?: string;
         totalValue: Prisma.Decimal | null;
         type: string;
     }[];
@@ -157,7 +157,7 @@ export class LeagueResponseDTO {
                 mediaLink: deal.media_link,
                 partner: deal.dashapp_companydata?.company_name,
                 status: deal.status,
-                territory: deal.territory,
+                territory: deal.dashapp_territory?.name,
                 totalValue: deal.total_value,
                 type: deal.type,
             }));

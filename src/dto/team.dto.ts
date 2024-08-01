@@ -30,7 +30,7 @@ export class TeamResponseDTO {
     keyMarketSecondary?: string[];
     keyMarketTertiary?: string[];
     associationLevel!: (string | null | undefined)[];
-    associationCost?: (string | null)[];
+    associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
     personalityTraits?: {
         subPersonalityTraits: string;
@@ -46,7 +46,7 @@ export class TeamResponseDTO {
         mediaLink: string | null;
         partner?: string;
         status: string | null;
-        territory: string | null;
+        territory?: string;
         totalValue: Prisma.Decimal | null;
         type: string;
     }[];
@@ -158,7 +158,7 @@ export class TeamResponseDTO {
                 mediaLink: deal.media_link,
                 partner: deal.dashapp_companydata?.company_name,
                 status: deal.status,
-                territory: deal.territory,
+                territory: deal.dashapp_territory?.name,
                 totalValue: deal.total_value,
                 type: deal.type,
             }),

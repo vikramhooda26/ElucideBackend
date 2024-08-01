@@ -48,7 +48,7 @@ export class BrandResponseDTO {
         mediaLink: string | null;
         partner?: string;
         status: string | null;
-        territory: string | null;
+        territory?: string;
         totalValue: Prisma.Decimal | null;
         type: string;
     }[];
@@ -160,7 +160,7 @@ export class BrandResponseDTO {
                     deal.dashapp_leagueinfo?.property_name ||
                     deal.dashapp_team?.team_name,
                 status: deal.status,
-                territory: deal.territory,
+                territory: deal.dashapp_territory?.name,
                 totalValue: deal.total_value,
                 type: deal.type,
             }),

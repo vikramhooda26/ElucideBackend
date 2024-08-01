@@ -174,7 +174,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 expiration_date: true,
                 duration: true,
                 total_value: true,
-                territory: true,
+                dashapp_territory: { select: { name: true } },
                 media_link: true,
                 dashapp_sportsdeal_assets: {
                     select: {

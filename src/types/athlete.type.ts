@@ -115,7 +115,7 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             commencement_date: true,
             expiration_date: true,
             duration: true,
-            territory: true,
+            dashapp_territory: { select: { name: true } },
             media_link: true,
             dashapp_level: { select: { name: true } },
             status: true,

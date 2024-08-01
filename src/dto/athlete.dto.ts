@@ -24,7 +24,7 @@ export class AthleteResponseDTO {
     age?: number | null;
     association?: {
         associationLevel: { name: string | null } | null;
-        costOfAssociation: string | null;
+        costOfAssociation: Prisma.Decimal | null;
     }[];
     activations?: {
         year?: string | null;
@@ -127,7 +127,7 @@ export class AthleteResponseDTO {
                 commencementDate: deal.commencement_date,
                 expirationDate: deal.expiration_date,
                 duration: deal.duration,
-                territory: deal.territory,
+                territory: deal.dashapp_territory?.name,
                 mediaLink: deal.media_link,
                 level: deal.dashapp_level?.name,
                 status: deal.status,
