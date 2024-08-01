@@ -30,6 +30,7 @@ import { marketingPlatformRouter } from "./routes/metadata/marketing-platform.ro
 import { ottPartnerRouter } from "./routes/metadata/ott-partner.router.js";
 import { parentOrgRouter } from "./routes/metadata/parent-org.router.js";
 import { sportRouter } from "./routes/metadata/sport.router.js";
+import { taglineRouter } from "./routes/metadata/tagline.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -80,6 +81,7 @@ app.use("/api/admin/marketing-platform", marketingPlatformRouter);
 app.use("/api/admin/ott-partner", ottPartnerRouter);
 app.use("/api/admin/parent-org", parentOrgRouter);
 app.use("/api/admin/sport", sportRouter);
+app.use("/api/admin/tagline", taglineRouter);
 
 app.use(globalErrorHandler);
 
