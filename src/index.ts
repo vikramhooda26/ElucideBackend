@@ -33,6 +33,7 @@ import { sportRouter } from "./routes/metadata/sport.router.js";
 import { taglineRouter } from "./routes/metadata/tagline.router.js";
 import { teamOwnerRouter } from "./routes/metadata/team-owner.router.js";
 import { territoryRouter } from "./routes/metadata/territory.router.js";
+import { tierRouter } from "./routes/metadata/tier.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -86,6 +87,7 @@ app.use("/api/admin/sport", sportRouter);
 app.use("/api/admin/tagline", taglineRouter);
 app.use("/api/admin/team-owner", teamOwnerRouter);
 app.use("/api/admin/territory", territoryRouter);
+app.use("/api/admin/tier", tierRouter);
 
 app.use(globalErrorHandler);
 
