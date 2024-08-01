@@ -1,13 +1,13 @@
 import asyncHandler from "express-async-handler";
-import { prisma } from "../../db/index.js";
-import { STATUS_CODE } from "../../lib/constants.js";
-import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import { activationSelect } from "../../types/activation.type.js";
-import { ActivationResponseDTO } from "../../dto/activation.dto.js";
+import { prisma } from "../db/index.js";
+import { STATUS_CODE } from "../lib/constants.js";
+import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { activationSelect } from "../types/activation.type.js";
+import { ActivationResponseDTO } from "../dto/activation.dto.js";
 import {
     TCreateActivationSchema,
     TEditActivationSchema,
-} from "../../schemas/metadata/activation.schema.js";
+} from "../schemas/activation.schema.js";
 
 export const getAllActivations = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
