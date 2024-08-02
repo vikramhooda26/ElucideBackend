@@ -132,6 +132,8 @@ export const createAthlete = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
+        primarySocialMediaPlatformIds,
+        secondarySocialMediaPlatformIds,
     } = req.validatedData as TCreateAthleteSchema;
 
     const ageRange = age ? await findAgeRange(Number(age)) : undefined;
@@ -155,6 +157,30 @@ export const createAthlete = asyncHandler(async (req, res) => {
             dashapp_agency: {
                 connect: agencyId ? { id: BigInt(agencyId) } : undefined,
             },
+            dashapp_athlete_socialmedia_platform_primary:
+                primarySocialMediaPlatformIds
+                    ? {
+                          create: primarySocialMediaPlatformIds.map(
+                              (platformId) => ({
+                                  dashapp_socialmedia_platform: {
+                                      connect: { id: BigInt(platformId) },
+                                  },
+                              }),
+                          ),
+                      }
+                    : undefined,
+            dashapp_athlete_socialmedia_platform_secondary:
+                secondarySocialMediaPlatformIds
+                    ? {
+                          create: secondarySocialMediaPlatformIds.map(
+                              (platformId) => ({
+                                  dashapp_socialmedia_platform: {
+                                      connect: { id: BigInt(platformId) },
+                                  },
+                              }),
+                          ),
+                      }
+                    : undefined,
             dashapp_sport: {
                 connect: sportId ? { id: BigInt(sportId) } : undefined,
             },

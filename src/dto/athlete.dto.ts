@@ -4,7 +4,7 @@ import { TAthleteDetails } from "../types/athlete.type.js";
 export class AthleteResponseDTO {
     athleteId?: bigint;
     athleteName?: string;
-    nationality!: string | null;
+    nationality?: string;
     sport?: string;
     agency?: string;
     instagram?: string | null;
@@ -16,6 +16,8 @@ export class AthleteResponseDTO {
     keyMarketPrimary?: string[];
     keyMarketSecondary?: string[];
     keyMarketTertiary?: string[];
+    socialMediaPrimary?: (string | undefined)[];
+    socialMediaSecondary?: (string | undefined)[];
     tier?: (string | undefined)[];
     personalityTraits?: {
         subPersonality: string;
@@ -66,7 +68,7 @@ export class AthleteResponseDTO {
         const athleteDTO = new AthleteResponseDTO();
         athleteDTO.athleteId = athleteDetails.id;
         athleteDTO.athleteName = athleteDetails.athlete_name;
-        athleteDTO.nationality = athleteDetails.nationality;
+        athleteDTO.nationality = athleteDetails.nationality?.name;
         athleteDTO.sport = athleteDetails.dashapp_sport?.name;
         athleteDTO.agency = athleteDetails.dashapp_agency?.name;
         athleteDTO.instagram = athleteDetails.instagram;
@@ -75,6 +77,14 @@ export class AthleteResponseDTO {
         athleteDTO.website = athleteDetails.website;
         athleteDTO.twitter = athleteDetails.twitter;
         athleteDTO.facebook = athleteDetails.facebook;
+        athleteDTO.socialMediaPrimary =
+            athleteDetails.dashapp_athlete_socialmedia_platform_primary.map(
+                (platform) => platform.dashapp_socialmedia_platform?.name,
+            );
+        athleteDTO.socialMediaSecondary =
+            athleteDetails.dashapp_athlete_socialmedia_platform_secondary.map(
+                (platform) => platform.dashapp_socialmedia_platform?.name,
+            );
         athleteDTO.keyMarketPrimary =
             athleteDetails.dashapp_athlete_key_markets_primary.map(
                 (market) => market.dashapp_keymarket.zone,

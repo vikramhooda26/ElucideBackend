@@ -46,7 +46,6 @@ export const METADATA_KEYS = {
     BROADCAST_PARTNER: "broadcastPartner",
     CATEGORY: "category",
     CITY: "city",
-    NATIONALITY: "nationality",
     FORMAT: "format",
     GENDER: "gender",
     KEY_MARKETS: "keyMarket",
@@ -68,4 +67,6 @@ export const METADATA_KEYS = {
     SPORT: "sport",
     TIER: "tier",
     ASSOCIATION_LEVELS: "associationLevel",
+    NATIONALITY: "nationality",
+    SOCIAL_MEDIA: "socialMedia",
 } as const;

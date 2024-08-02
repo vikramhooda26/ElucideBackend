@@ -1,3 +1,4 @@
+import e from "express";
 import { prisma } from "../db/index.js";
 
 export const getAllAgeRanges = async () => {
@@ -293,5 +294,30 @@ export const getAllAssociationLevels = async () => {
     return associationLevels.map((associationLevel) => ({
         id: associationLevel.association_level?.id,
         name: associationLevel.association_level?.name,
+    }));
+};
+
+export const getAllNationalities = async () => {
+    const nationalities = await prisma.dashapp_countries.findMany({
+        select: {
+            id: true,
+            name: true,
+        },
+    });
+
+    return nationalities.map((nationality) => ({
+        id: nationality.id,
+        nationality: nationality.name,
+    }));
+};
+export const getAllSocialMedia = async () => {
+    const socialMediaplatforms =
+        await prisma.dashapp_socialmedia_platform.findMany({
+            select: { id: true, name: true },
+        });
+
+    return socialMediaplatforms.map((platform) => ({
+        id: platform.id,
+        name: platform.name,
     }));
 };

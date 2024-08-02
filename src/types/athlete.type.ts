@@ -3,6 +3,19 @@ import { Prisma } from "@prisma/client";
 export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     id: true,
     athlete_name: true,
+    instagram: true,
+    linkedin: true,
+    youtube: true,
+    website: true,
+    twitter: true,
+    facebook: true,
+    age: true,
+    dashapp_athlete_socialmedia_platform_primary: {
+        select: { dashapp_socialmedia_platform: { select: { name: true } } },
+    },
+    dashapp_athlete_socialmedia_platform_secondary: {
+        select: { dashapp_socialmedia_platform: { select: { name: true } } },
+    },
     nationality: { select: { name: true } },
     dashapp_sport: {
         select: {
@@ -14,12 +27,6 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             name: true,
         },
     },
-    instagram: true,
-    linkedin: true,
-    youtube: true,
-    website: true,
-    twitter: true,
-    facebook: true,
     dashapp_athlete_key_markets_primary: {
         select: {
             dashapp_keymarket: {
@@ -66,7 +73,6 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             },
         },
     },
-    age: true,
     association: {
         select: {
             association_level: {
