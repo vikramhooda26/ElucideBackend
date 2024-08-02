@@ -159,6 +159,8 @@ model auth_user {
     refresh_token                                                                   refresh_token[]
     dashapp_format_created_by                                                       dashapp_format[]             @relation("created_by")
     dashapp_format_modified_by                                                      dashapp_format[]             @relation("modified_by")
+    dashapp_countries_created_by                                                    dashapp_countries[]          @relation("created_by")
+    dashapp_countries_modified_by                                                   dashapp_countries[]          @relation("modified_by")
 }
 
 model dashapp_activation {
@@ -289,12 +291,24 @@ model dashapp_assets {
     @@index([modified_by_id], map: "dashapp_assets_modified_by_id_3abba2bb")
 }
 
+model dashapp_countries {
+    id              BigInt            @id @default(autoincrement())
+    created_date    DateTime          @default(now())
+    modified_date   DateTime          @updatedAt
+    modified_by_id  BigInt?
+    created_by_id   BigInt?
+    name            String            @unique
+    created_by      auth_user?        @relation("created_by", fields: [created_by_id], references: [id], onUpdate: NoAction)
+    modified_by     auth_user?        @relation("modified_by", fields: [modified_by_id], references: [id], onUpdate: NoAction)
+    dashapp_athlete dashapp_athlete[]
+}
+
 model dashapp_athlete {
     id                                    BigInt                                  @id @default(autoincrement())
     created_date                          DateTime?                               @default(now())
     modified_date                         DateTime?
     athlete_name                          String                                  @unique(map: "sqlite_autoindex_dashapp_athlete_1") @db.VarChar(512)
-    nationality                           String?                                 @db.VarChar(512)
+    nationality_id                        BigInt?
     instagram                             String?                                 @db.VarChar(512)
     facebook                              String?                                 @db.VarChar(512)
     twitter                               String?                                 @db.VarChar(512)
@@ -310,6 +324,7 @@ model dashapp_athlete {
     keyplatform_primary_id                BigInt?
     keyplatform_secondary_id              BigInt?
     created_by_id                         BigInt?
+    nationality                           dashapp_countries?                      @relation(fields: [nationality_id], references: [id], onDelete: SetNull)
     association                           association[]
     dashapp_activation                    dashapp_activation[]
     dashapp_agency                        dashapp_agency?                         @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
