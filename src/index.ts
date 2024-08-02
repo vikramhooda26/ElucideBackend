@@ -93,7 +93,7 @@ app.use("/api/admin/team-owner", teamOwnerRouter);
 app.use("/api/admin/territory", territoryRouter);
 app.use("/api/admin/tier", tierRouter);
 app.use("/api/admin/activation", activationRouter);
-app.use("/api/admin/sports-deal-summar", sportsDealSummaryRouter);
+app.use("/api/admin/sports-deal-summary", sportsDealSummaryRouter);
 app.use("/api/admin/association-level", associationLevel);
 app.use("/api/admin/nationality", nationalityRouter);
 
