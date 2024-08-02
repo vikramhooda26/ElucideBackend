@@ -46,6 +46,7 @@ export const METADATA_KEYS = {
     BROADCAST_PARTNER: "broadcastPartner",
     CATEGORY: "category",
     CITY: "city",
+    NATIONALITY: "nationality",
     FORMAT: "format",
     GENDER: "gender",
     KEY_MARKETS: "keyMarket",

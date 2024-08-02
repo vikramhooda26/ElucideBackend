@@ -37,6 +37,7 @@ import { tierRouter } from "./routes/metadata/tier.router.js";
 import { sportsDealSummaryRouter } from "./routes/sports-deal-summary.router.js";
 import { teamRouter } from "./routes/team.router.js";
 import { associationLevel } from "./routes/metadata/association-level.router.js";
+import { nationalityRouter } from "./routes/metadata/nationality.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -94,6 +95,7 @@ app.use("/api/admin/tier", tierRouter);
 app.use("/api/admin/activation", activationRouter);
 app.use("/api/admin/sports-deal-summar", sportsDealSummaryRouter);
 app.use("/api/admin/association-level", associationLevel);
+app.use("/api/admin/nationality", nationalityRouter);
 
 app.use(globalErrorHandler);
 

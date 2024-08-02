@@ -19,7 +19,7 @@ export const createAthleteSchema = z.object({
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
-    nationality: z.string().optional(),
+    nationalityId: z.string().optional(),
 });
 
 export const editAthleteSchema = createAthleteSchema.partial();

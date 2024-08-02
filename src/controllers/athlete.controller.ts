@@ -65,6 +65,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
         select: {
             id: true,
             athlete_name: true,
+            nationality: { select: { name: true } },
             created_by: {
                 select: {
                     id: true,
@@ -94,6 +95,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
         athletes.map((athlete) => ({
             athleteId: athlete.id,
             athleteName: athlete.athlete_name,
+            nationality: athlete.nationality?.name,
             createdDate: athlete.created_date,
             modifiedDate: athlete.modified_date,
             createdBy: {
@@ -125,7 +127,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         youtube,
         agencyId,
         sportId,
-        nationality,
+        nationalityId,
         subPersonalityTraitIds,
         primaryMarketIds,
         secondaryMarketIds,
@@ -156,7 +158,9 @@ export const createAthlete = asyncHandler(async (req, res) => {
             dashapp_sport: {
                 connect: sportId ? { id: BigInt(sportId) } : undefined,
             },
-            nationality,
+            nationality: nationalityId
+                ? { connect: { id: BigInt(nationalityId) } }
+                : undefined,
             dashapp_athlete_personality_traits: {
                 create: subPersonalityTraitIds
                     ? subPersonalityTraitIds.map((traitId) => ({
@@ -247,7 +251,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         youtube,
         agencyId,
         sportId,
-        nationality,
+        nationalityId,
         subPersonalityTraitIds,
         primaryMarketIds,
         secondaryMarketIds,
@@ -279,7 +283,9 @@ export const editAthlete = asyncHandler(async (req, res) => {
             dashapp_sport: sportId
                 ? { connect: { id: BigInt(sportId) } }
                 : undefined,
-            nationality,
+            nationality: nationalityId
+                ? { connect: { id: BigInt(nationalityId) } }
+                : undefined,
             dashapp_athlete_personality_traits: {
                 deleteMany: {},
                 create: subPersonalityTraitIds?.map((traitId) => ({
@@ -341,6 +347,14 @@ export const removeAthlete = asyncHandler(async (req, res) => {
 
     if (!athleteId) {
         throw new BadRequestError("Athlete ID not found");
+    }
+
+    const athleteExists = await prisma.dashapp_athlete.findUnique({
+        where: { id: BigInt(athleteId) },
+    });
+
+    if (!athleteExists) {
+        throw new NotFoundError("This athlete does not exists");
     }
 
     await prisma.dashapp_athlete.delete({

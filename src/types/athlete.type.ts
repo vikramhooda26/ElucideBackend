@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     id: true,
     athlete_name: true,
-    nationality: true,
+    nationality: { select: { name: true } },
     dashapp_sport: {
         select: {
             name: true,
