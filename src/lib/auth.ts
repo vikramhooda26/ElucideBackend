@@ -11,7 +11,7 @@ const REFRESH_TOKEN_SECRET =
 
 export const generateAccessToken = (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
-        expiresIn: "30m",
+        expiresIn: "30s",
     });
 
     tokenManager.setToken(user.userId, accessToken);
