@@ -1,8 +1,11 @@
-import { prisma } from "../db/index.js";
 import bcrypt from "bcrypt";
+import { Response } from "express";
 import jwt from "jsonwebtoken";
+import { prisma } from "../db/index.js";
 import { tokenManager } from "../managers/TokenManager.js";
+import { COOKIE_NAME } from "./constants.js";
 import { TUser } from "./types.js";
+import { printLogs } from "./log.js";
 
 const ACCESS_TOKEN_SECRET =
     process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
@@ -11,10 +14,11 @@ const REFRESH_TOKEN_SECRET =
 
 export const generateAccessToken = (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
-        expiresIn: "30s",
+        expiresIn: "30m",
     });
 
     tokenManager.setToken(user.userId, accessToken);
+
     return accessToken;
 };
 
@@ -75,4 +79,10 @@ export const verifyAccessToken = (token: string) => {
 
 export const verifyRefreshToken = (token: string) => {
     return jwt.verify(token, REFRESH_TOKEN_SECRET);
+};
+
+export const clearAuthCookies = (res: Response) => {
+    res.clearCookie(COOKIE_NAME.CSRF);
+    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+    return;
 };

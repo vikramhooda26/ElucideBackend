@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
 import {
+    clearAuthCookies,
     generateAccessToken,
     generateRefreshToken,
     verifyAccessToken,
@@ -14,21 +15,25 @@ import { ForbiddenError } from "../lib/errors.js";
 const { TokenExpiredError } = pkg;
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
+    const token = req.cookies[COOKIE_NAME.CSRF];
+
+    if (!token) {
+        clearAuthCookies(res);
+        throw new ForbiddenError();
+    }
+
     try {
-        const token = req.cookies[COOKIE_NAME.CSRF];
-
-        if (!token) {
-            throw new ForbiddenError();
-        }
-
         req.user = verifyAccessToken(token);
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
             const refreshToken = req.cookies[COOKIE_NAME.REFRESH_TOKEN];
+
             if (!refreshToken) {
+                clearAuthCookies(res);
                 throw new ForbiddenError();
             }
+
             try {
                 const decodedRefreshToken = verifyRefreshToken(
                     refreshToken,
@@ -39,7 +44,9 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 });
 
                 if (count < 1) {
-                    throw new ForbiddenError();
+                    throw new ForbiddenError(
+                        "Refresh token not found or already deleted",
+                    );
                 }
 
                 const newTokenPayload = {
@@ -53,18 +60,23 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                     await generateRefreshToken(newTokenPayload);
 
                 req.user = verifyAccessToken(newAccessToken);
+
                 res.cookie(COOKIE_NAME.CSRF, newAccessToken, cookieOptions);
                 res.cookie(
                     COOKIE_NAME.REFRESH_TOKEN,
                     newRefreshToken,
                     cookieOptions,
                 );
+
                 next();
             } catch (error) {
                 console.error(error);
+                clearAuthCookies(res);
                 throw new ForbiddenError();
             }
         } else {
+            console.error(error);
+            clearAuthCookies(res);
             throw new ForbiddenError();
         }
     }
