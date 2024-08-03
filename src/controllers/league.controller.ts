@@ -524,3 +524,5 @@ export const deleteLeague = asyncHandler(async (req, res) => {
         message: "League deleted",
     });
 });
+
+export const getFilteredLeague = asyncHandler(async (req, res) => {});

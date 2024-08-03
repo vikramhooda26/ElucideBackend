@@ -33,3 +33,12 @@ export class ForbiddenError extends CustomError {
         super(message || "Forbidden!", STATUS_CODE.FORBIDDEN);
     }
 }
+
+export class InternalServerError extends CustomError {
+    constructor(message?: string) {
+        super(
+            message || "Internal server error!",
+            STATUS_CODE.INTERNAL_SERVER_ERROR,
+        );
+    }
+}

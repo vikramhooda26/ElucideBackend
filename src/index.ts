@@ -39,6 +39,7 @@ import { teamRouter } from "./routes/team.router.js";
 import { associationLevel } from "./routes/metadata/association-level.router.js";
 import { nationalityRouter } from "./routes/metadata/nationality.router.js";
 import { socialMediaRouter } from "./routes/metadata/social-media.router.js";
+import { filterRouter } from "./routes/filter.router.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -98,6 +99,7 @@ app.use("/api/admin/sports-deal-summary", sportsDealSummaryRouter);
 app.use("/api/admin/association-level", associationLevel);
 app.use("/api/admin/nationality", nationalityRouter);
 app.use("/api/admin/social-media", socialMediaRouter);
+app.use("/api/admin/filter", filterRouter);
 
 app.use(globalErrorHandler);
 

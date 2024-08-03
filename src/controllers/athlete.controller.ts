@@ -1,13 +1,15 @@
 import asyncHandler from "express-async-handler";
-import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { prisma } from "../db/index.js";
+import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
+import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import {
     TCreateAthleteSchema,
     TEditAthleteSchema,
+    TFilteredAthleteSchema,
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
-import { AthleteResponseDTO } from "../dto/athlete.dto.js";
+import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 
 const findAgeRange = async (age: number): Promise<string | undefined> => {
     const ageRanges = await prisma.dashapp_age.findMany({
@@ -390,4 +392,37 @@ export const removeAthlete = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json({
         message: "Athlete deleted",
     });
+});
+
+/**
+ * @todo
+ * Fix this function, bring the queries inside the prisma findMany call itself.
+ * Use null instead of undefined if you do not want the data if not filter is given else use undefined.
+ * Send only the data that the get-all method does and then once they click on the list then they will hit the id API to get all the data.
+ * For convinience, put the database calls inside a service folder so that they're are reusable like here for instance.
+ * Make sure to validate the data coming in regardless
+ */
+
+export const getFilteredAthlete = asyncHandler(async (req, res) => {
+    const query = buildAthleteFilterQuery(
+        req.validatedData as TFilteredAthleteSchema,
+    );
+
+    const filteredAthletes = await prisma.dashapp_athlete.findMany({
+        where: {
+            AND: [
+                {
+                    age: req.validatedData.age
+                        ? {
+                              in: req.validatedData.age.map((v: string) =>
+                                  parseInt(v, 10),
+                              ),
+                          }
+                        : null,
+                },
+            ].filter(Boolean),
+        },
+    });
+
+    res.status(STATUS_CODE.OK).json(filteredAthletes);
 });

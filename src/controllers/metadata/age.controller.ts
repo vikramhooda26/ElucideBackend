@@ -7,37 +7,7 @@ import {
     TEditAgeRangeSchema,
 } from "../../schemas/metadata/age.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
-
-const validateAgeRange = (ageRange: string): boolean => {
-    if (ageRange.includes("+")) {
-        const parts = ageRange.split("+");
-        const [minAge, plus] = parts;
-        if (
-            parts.length !== 2 ||
-            plus !== "" ||
-            Number.isNaN(Number(minAge)) ||
-            Number(minAge) < 0
-        ) {
-            return false;
-        }
-        return true;
-    }
-    if (ageRange.includes("-")) {
-        const parts = ageRange.split("-");
-        const [minAge, maxAge] = parts;
-        if (
-            parts.length !== 2 ||
-            Number.isNaN(Number(maxAge)) ||
-            Number.isNaN(Number(minAge)) ||
-            Number(minAge) < 0 ||
-            Number(maxAge) < 0
-        ) {
-            return false;
-        }
-        return true;
-    }
-    return false;
-};
+import { validateRangeFormat } from "../../lib/helpers.js";
 
 export const getAllAgeRanges = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -118,7 +88,7 @@ export const getAgeRangeById = asyncHandler(async (req, res) => {
 export const createAgeRange = asyncHandler(async (req, res) => {
     const { ageRange, userId } = req.validatedData as TCreateAgeRangeSchema;
 
-    const isAgeRangeValid = validateAgeRange(ageRange);
+    const isAgeRangeValid = validateRangeFormat(ageRange);
 
     if (!isAgeRangeValid) {
         throw new BadRequestError("Invalid age range format");
@@ -158,7 +128,7 @@ export const editAgeRange = asyncHandler(async (req, res) => {
 
     const { ageRange, userId } = req.validatedData as TEditAgeRangeSchema;
 
-    const isAgeRangeValid = validateAgeRange(ageRange);
+    const isAgeRangeValid = validateRangeFormat(ageRange);
 
     if (!isAgeRangeValid) {
         throw new BadRequestError("Invalid age range format");

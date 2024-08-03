@@ -35,6 +35,7 @@ import {
     getAllSocialMedia,
 } from "../../services/metadata.service.js";
 import asyncHandler from "express-async-handler";
+import { InternalServerError } from "../../lib/errors.js";
 
 export const fetchAllMetadata = async (req: Request, res: Response) => {
     const {
@@ -193,9 +194,7 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error("Error fetching metadata:", error);
-        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-            error: "Failed to fetch metadata",
-        });
+        throw new InternalServerError("There was an error fetching metadata");
     }
 };
 

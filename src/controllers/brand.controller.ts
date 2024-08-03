@@ -469,3 +469,5 @@ export const deleteBrand = asyncHandler(async (req, res) => {
         message: "Brand deleted",
     });
 });
+
+export const getFilteredBrand = asyncHandler(async (req, res) => {});

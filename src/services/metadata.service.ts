@@ -1,4 +1,3 @@
-import e from "express";
 import { prisma } from "../db/index.js";
 
 export const getAllAgeRanges = async () => {
@@ -7,8 +6,8 @@ export const getAllAgeRanges = async () => {
     });
 
     return ageRanges.map((ageRange) => ({
-        id: ageRange.id,
-        range: ageRange.age_range,
+        value: ageRange.id,
+        label: ageRange.age_range,
     }));
 };
 
@@ -17,8 +16,8 @@ export const getAllGenders = async () => {
         select: { id: true, gender_is: true },
     });
     return genders.map((gender) => ({
-        id: gender.id,
-        gender: gender.gender_is,
+        value: gender.id,
+        label: gender.gender_is,
     }));
 };
 
@@ -27,8 +26,8 @@ export const getAllCities = async () => {
         select: { id: true, name: true },
     });
     return cities.map((city) => ({
-        id: city.id,
-        name: city.name,
+        value: city.id,
+        label: city.name,
     }));
 };
 
@@ -37,8 +36,8 @@ export const getAllStates = async () => {
         select: { id: true, state: true },
     });
     return states.map((state) => ({
-        id: state.id,
-        name: state.state,
+        value: state.id,
+        label: state.state,
     }));
 };
 
@@ -47,8 +46,8 @@ export const getAllActiveCampaigns = async () => {
         select: { id: true, name: true },
     });
     return activeCampaigns.map((campaign) => ({
-        id: campaign.id,
-        name: campaign.name,
+        value: campaign.id,
+        label: campaign.name,
     }));
 };
 
@@ -57,8 +56,8 @@ export const getAllAgencies = async () => {
         select: { id: true, name: true },
     });
     return agencies.map((agency) => ({
-        id: agency.id,
-        name: agency.name,
+        value: agency.id,
+        label: agency.name,
     }));
 };
 
@@ -67,8 +66,8 @@ export const getAllAssets = async () => {
         select: { id: true, asset: true },
     });
     return assets.map((asset) => ({
-        id: asset.id,
-        name: asset.asset,
+        value: asset.id,
+        label: asset.asset,
     }));
 };
 
@@ -77,8 +76,8 @@ export const getAllBroadcastPartners = async () => {
         select: { id: true, name: true },
     });
     return broadcastPartners.map((partner) => ({
-        id: partner.id,
-        name: partner.name,
+        value: partner.id,
+        label: partner.name,
     }));
 };
 
@@ -87,8 +86,8 @@ export const getAllCategories = async () => {
         select: { id: true, subcategory: true },
     });
     return categories.map((category) => ({
-        id: category.id,
-        name: category.subcategory,
+        value: category.id,
+        label: category.subcategory,
     }));
 };
 
@@ -97,8 +96,8 @@ export const getAllFormats = async () => {
         select: { id: true, format: true },
     });
     return formats.map((format) => ({
-        id: format.id,
-        format: format.format,
+        value: format.id,
+        label: format.format,
     }));
 };
 
@@ -107,8 +106,8 @@ export const getAllKeyMarkets = async () => {
         select: { id: true, zone: true },
     });
     return keyMarketsList.map((market) => ({
-        id: market.id,
-        zone: market.zone,
+        value: market.id,
+        label: market.zone,
     }));
 };
 
@@ -117,8 +116,8 @@ export const getAllLeagues = async () => {
         select: { id: true, property_name: true },
     });
     return leagues.map((league) => ({
-        id: league.id,
-        name: league.property_name,
+        value: league.id,
+        label: league.property_name,
     }));
 };
 
@@ -130,8 +129,8 @@ export const getAllLeagueOwners = async () => {
         },
     });
     return leagueOwners.map((owner) => ({
-        id: owner.id,
-        name: owner.dashapp_leagueowner.name,
+        value: owner.id,
+        label: owner.dashapp_leagueowner.name,
     }));
 };
 
@@ -140,8 +139,8 @@ export const getAllMarketingPlatforms = async () => {
         select: { id: true, platform: true },
     });
     return marketingPlatforms.map((platform) => ({
-        id: platform.id,
-        name: platform.platform,
+        value: platform.id,
+        label: platform.platform,
     }));
 };
 
@@ -150,8 +149,8 @@ export const getAllNCCS = async () => {
         select: { id: true, nccs_class: true },
     });
     return nccsList.map((nccs) => ({
-        id: nccs.id,
-        class: nccs.nccs_class,
+        value: nccs.id,
+        label: nccs.nccs_class,
     }));
 };
 
@@ -160,8 +159,8 @@ export const getAllOTTPartners = async () => {
         select: { id: true, name: true },
     });
     return ottPartners.map((partner) => ({
-        id: partner.id,
-        name: partner.name,
+        value: partner.id,
+        label: partner.name,
     }));
 };
 
@@ -170,8 +169,8 @@ export const getAllParentOrgs = async () => {
         select: { id: true, name: true },
     });
     return parentOrgs.map((org) => ({
-        id: org.id,
-        name: org.name,
+        value: org.id,
+        label: org.name,
     }));
 };
 
@@ -180,8 +179,8 @@ export const getAllPersonalityTraits = async () => {
         select: { id: true, name: true },
     });
     return personalityTraits.map((trait) => ({
-        id: trait.id,
-        name: trait.name,
+        value: trait.id,
+        label: trait.name,
     }));
 };
 
@@ -195,8 +194,8 @@ export const getAllSportsDealSummaryLevels = async () => {
         });
 
     return sportsDealSummaryLevels.map((level) => ({
-        id: level.id,
-        name: level.dashapp_level?.name,
+        value: level.id,
+        label: level.dashapp_level?.name,
     }));
 };
 
@@ -206,8 +205,8 @@ export const getAllSportsDealSummaryStatuses = async () => {
             select: { id: true, status: true },
         });
     return sportsDealSummaryStatuses.map((status) => ({
-        id: status.id,
-        status: status.status,
+        value: status.id,
+        label: status.status,
     }));
 };
 
@@ -217,8 +216,8 @@ export const getAllSportsDealSummaryTerritories = async () => {
             select: { id: true, name: true },
         });
     return sportsDealSummaryTerritories.map((territory) => ({
-        id: territory.id,
-        name: territory.name,
+        value: territory.id,
+        label: territory.name,
     }));
 };
 
@@ -233,8 +232,8 @@ export const getAllSportsDealSummaryTypes = async () => {
             },
         });
     return sportsDealSummaryTypes.map((type) => ({
-        id: type.id,
-        name: type.dashapp_marketingplatform.platform,
+        value: type.id,
+        label: type.dashapp_marketingplatform.platform,
     }));
 };
 
@@ -243,8 +242,8 @@ export const getAllTaglines = async () => {
         select: { id: true, name: true },
     });
     return taglines.map((tagline) => ({
-        id: tagline.id,
-        name: tagline.name,
+        value: tagline.id,
+        label: tagline.name,
     }));
 };
 
@@ -253,8 +252,8 @@ export const getAllTeamOwners = async () => {
         select: { id: true, name: true },
     });
     return teamOwners.map((owner) => ({
-        id: owner.id,
-        name: owner.name,
+        value: owner.id,
+        label: owner.name,
     }));
 };
 
@@ -292,8 +291,8 @@ export const getAllAssociationLevels = async () => {
     });
 
     return associationLevels.map((associationLevel) => ({
-        id: associationLevel.association_level?.id,
-        name: associationLevel.association_level?.name,
+        value: associationLevel.association_level?.id,
+        label: associationLevel.association_level?.name,
     }));
 };
 
@@ -306,8 +305,8 @@ export const getAllNationalities = async () => {
     });
 
     return nationalities.map((nationality) => ({
-        id: nationality.id,
-        nationality: nationality.name,
+        value: nationality.id,
+        label: nationality.name,
     }));
 };
 export const getAllSocialMedia = async () => {
@@ -317,7 +316,7 @@ export const getAllSocialMedia = async () => {
         });
 
     return socialMediaplatforms.map((platform) => ({
-        id: platform.id,
-        name: platform.name,
+        value: platform.id,
+        label: platform.name,
     }));
 };

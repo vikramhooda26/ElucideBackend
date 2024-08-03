@@ -28,7 +28,8 @@ export const createTeamSchema = z.object({
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
     nccsIds: z.string().array().optional(),
-    associationId: z.string().optional(),
+    associationLevelId: z.string().optional(),
+    costOfAssociation: z.string().optional(),
     metrics: z
         .object({
             viewership: z.string().optional(),
@@ -40,7 +41,9 @@ export const createTeamSchema = z.object({
         .optional(),
 });
 
-export const editTeamSchema = createTeamSchema.partial();
+export const editTeamSchema = createTeamSchema
+    .extend({ associationId: z.string().optional() })
+    .partial();
 
 export type TCreateTeamSchema = z.infer<typeof createTeamSchema>;
 export type TEditTeamSchema = z.infer<typeof editTeamSchema>;

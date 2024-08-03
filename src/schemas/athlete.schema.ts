@@ -26,5 +26,32 @@ export const createAthleteSchema = z.object({
 
 export const editAthleteSchema = createAthleteSchema.partial();
 
+export const filteredAthleteSchema = z.object({
+    athleteName: z.string().optional(),
+    associationLevelIds: z.string().array().optional(),
+    costOfAssociation: z
+        .object({
+            operationType: z.enum(["range", "gte", "lte", "equals"]),
+            cost: z.bigint(),
+        })
+        .optional(),
+    createdByIds: z.string().array().optional(),
+    modifiedByIds: z.string().array().optional(),
+    sportIds: z.string().array().optional(),
+    age: z.string().array().optional(),
+    ageRangeIds: z.string().array().optional(),
+    personalityTraitIds: z.string().array().optional(),
+    subpersonalityTraitIds: z.string().array().optional(),
+    genderIds: z.string().array().optional(),
+    nccsIds: z.string().array().optional(),
+    primaryMarketIds: z.string().array().optional(),
+    secondaryMarketIds: z.string().array().optional(),
+    tertiaryMarketIds: z.string().array().optional(),
+    nationalityIds: z.string().array().optional(),
+    primarySocialMediaIds: z.string().array().optional(),
+    secondarySocialMediaIds: z.string().array().optional(),
+});
+
 export type TCreateAthleteSchema = z.infer<typeof createAthleteSchema>;
 export type TEditAthleteSchema = z.infer<typeof editAthleteSchema>;
+export type TFilteredAthleteSchema = z.infer<typeof filteredAthleteSchema>;

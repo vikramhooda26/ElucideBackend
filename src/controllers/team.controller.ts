@@ -119,7 +119,8 @@ export const createTeam = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        associationId,
+        associationLevelId,
+        costOfAssociation,
         metrics,
     } = req.validatedData as TCreateTeamSchema;
 
@@ -234,13 +235,21 @@ export const createTeam = asyncHandler(async (req, res) => {
                     dashapp_states: { connect: { id: BigInt(tertiaryId) } },
                 })),
             },
-            association: {
-                connect: associationId
+            association:
+                associationLevelId || costOfAssociation
                     ? {
-                          id: BigInt(associationId),
+                          create: {
+                              association_level: associationLevelId
+                                  ? {
+                                        connect: {
+                                            id: BigInt(associationLevelId),
+                                        },
+                                    }
+                                  : undefined,
+                              cost: costOfAssociation ?? undefined,
+                          },
                       }
                     : undefined,
-            },
             dashapp_metric: {
                 create: metrics?.map((metric) => ({
                     viewership: metric.viewership,
@@ -301,8 +310,10 @@ export const editTeam = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        associationId,
+        associationLevelId,
         metrics,
+        associationId,
+        costOfAssociation,
     } = req.validatedData as TEditTeamSchema;
 
     await prisma.dashapp_team.update({
@@ -458,7 +469,17 @@ export const editTeam = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             association: associationId
-                ? { connect: { id: BigInt(associationId) } }
+                ? {
+                      deleteMany: {},
+                      create: {
+                          association_level: associationLevelId
+                              ? {
+                                    connect: { id: BigInt(associationLevelId) },
+                                }
+                              : undefined,
+                          cost: costOfAssociation ?? undefined,
+                      },
+                  }
                 : undefined,
             dashapp_metric: metrics
                 ? {
@@ -506,3 +527,5 @@ export const deleteTeam = asyncHandler(async (req, res) => {
         message: "Team deleted",
     });
 });
+
+export const getFilteredTeam = asyncHandler(async (req, res) => {});
