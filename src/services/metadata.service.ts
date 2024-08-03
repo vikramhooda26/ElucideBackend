@@ -267,7 +267,7 @@ export const getAllSports = async () => {
         select: { id: true, name: true },
     });
 
-    return sports.map((sport) => ({ id: sport.id, name: sport.name }));
+    return sports.map((sport) => ({ value: sport.id, label: sport.name }));
 };
 
 export const getAllTiers = async () => {
@@ -275,7 +275,7 @@ export const getAllTiers = async () => {
         select: { id: true, name: true },
     });
 
-    return tiers.map((tier) => ({ id: tier.id, name: tier.name }));
+    return tiers.map((tier) => ({ value: tier.id, label: tier.name }));
 };
 
 export const getAllAssociationLevels = async () => {
