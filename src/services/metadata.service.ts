@@ -279,20 +279,16 @@ export const getAllTiers = async () => {
 };
 
 export const getAllAssociationLevels = async () => {
-    const associationLevels = await prisma.association.findMany({
+    const associationLevels = await prisma.association_level.findMany({
         select: {
-            association_level: {
-                select: {
-                    id: true,
-                    name: true,
-                },
-            },
+            id: true,
+            name: true,
         },
     });
 
     return associationLevels.map((associationLevel) => ({
-        value: associationLevel.association_level?.id,
-        label: associationLevel.association_level?.name,
+        value: associationLevel?.id,
+        label: associationLevel?.name,
     }));
 };
 
