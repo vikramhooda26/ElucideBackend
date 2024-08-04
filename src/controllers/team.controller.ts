@@ -123,9 +123,14 @@ export const createTeam = asyncHandler(async (req, res) => {
         costOfAssociation,
         reachMetrics,
         viewershipMetrics,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TCreateTeamSchema;
 
-    await prisma.dashapp_team.create({
+    const team = await prisma.dashapp_team.create({
         data: {
             team_name: name ?? undefined,
             dashapp_sport: {
@@ -318,6 +323,26 @@ export const createTeam = asyncHandler(async (req, res) => {
         },
     });
 
+    if (contactName) {
+        await prisma.dashapp_teamcontact.create({
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_email: contactEmail,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+                dashapp_team: {
+                    connect: {
+                        id: team.id,
+                    },
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+    }
+
     res.status(STATUS_CODE.OK).json({
         message: "Team created",
     });
@@ -363,6 +388,12 @@ export const editTeam = asyncHandler(async (req, res) => {
         primaryMarketingPlatformIds,
         secondaryMarketingPlatformIds,
         stateId,
+        contactId,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TEditTeamSchema;
 
     await prisma.dashapp_team.update({
@@ -562,6 +593,19 @@ export const editTeam = asyncHandler(async (req, res) => {
         },
         select: { id: true },
     });
+
+    if (contactId) {
+        await prisma.dashapp_teamcontact.update({
+            where: { id: BigInt(contactId) },
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_email: contactEmail,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "Team details updated",

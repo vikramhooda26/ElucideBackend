@@ -45,10 +45,18 @@ export const createTeamSchema = z.object({
         })
         .array()
         .optional(),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
 });
 
 export const editTeamSchema = createTeamSchema
-    .extend({ associationId: z.string().optional() })
+    .extend({
+        associationId: z.string().optional(),
+        contactId: z.string().optional(),
+    })
     .partial();
 
 export type TCreateTeamSchema = z.infer<typeof createTeamSchema>;
