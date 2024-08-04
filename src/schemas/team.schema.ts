@@ -9,7 +9,7 @@ export const createTeamSchema = z.object({
     franchiseFee: z.number().optional(),
     cityId: z.string().optional(),
     stateId: z.string().optional(),
-    personalityTraitIds: z.string().array().optional(),
+    subPersonalityTraitIds: z.string().array().optional(),
     instagram: z.string().optional(),
     facebook: z.string().optional(),
     linkedin: z.string().optional(),

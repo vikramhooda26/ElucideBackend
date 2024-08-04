@@ -83,7 +83,7 @@ export const getBrandById = asyncHandler(async (req, res) => {
 
 export const createBrand = asyncHandler(async (req, res) => {
     const {
-        companyName,
+        name,
         parentOrgId,
         subCategoryIds,
         hqCityId,
@@ -96,12 +96,12 @@ export const createBrand = asyncHandler(async (req, res) => {
         twitter,
         website,
         youtube,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         strategyOverview,
         taglineIds,
         activeCampaignIds,
-        marketingPlatformPrimaryIds,
-        marketingPlatformSecondaryIds,
+        primaryMarketingPlatformIds,
+        secondaryMarketingPlatformIds,
         ageIds,
         genderIds,
         nccsIds,
@@ -112,7 +112,7 @@ export const createBrand = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_companydata.create({
         data: {
-            company_name: companyName,
+            company_name: name,
             dashapp_parentorg: {
                 connect: parentOrgId
                     ? {
@@ -155,13 +155,15 @@ export const createBrand = asyncHandler(async (req, res) => {
                     },
                 })),
             },
-            dashapp_companydata_personality_traits: {
-                create: personalityTraitIds?.map((traitId) => ({
-                    dashapp_subpersonality: {
-                        connect: { id: BigInt(traitId) },
-                    },
-                })),
-            },
+            dashapp_companydata_personality_traits: subPersonalityTraitIds
+                ? {
+                      create: subPersonalityTraitIds?.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata_taglines: {
                 create: taglineIds?.map((taglineId) => ({
                     dashapp_taglines: {
@@ -177,20 +179,22 @@ export const createBrand = asyncHandler(async (req, res) => {
                 })),
             },
             dashapp_companydata_marketing_platforms_primary: {
-                create: marketingPlatformPrimaryIds?.map(
-                    (marketingPlatformPrimaryId) => ({
+                create: primaryMarketingPlatformIds?.map(
+                    (primaryMarketingPlatformId) => ({
                         dashapp_marketingplatform: {
-                            connect: { id: BigInt(marketingPlatformPrimaryId) },
+                            connect: {
+                                id: BigInt(primaryMarketingPlatformId),
+                            },
                         },
                     }),
                 ),
             },
             dashapp_companydata_marketing_platforms_secondary: {
-                create: marketingPlatformSecondaryIds?.map(
-                    (marketingPlatformSecondaryId) => ({
+                create: secondaryMarketingPlatformIds?.map(
+                    (secondaryMarketingPlatformId) => ({
                         dashapp_marketingplatform: {
                             connect: {
-                                id: BigInt(marketingPlatformSecondaryId),
+                                id: BigInt(secondaryMarketingPlatformId),
                             },
                         },
                     }),
@@ -255,7 +259,7 @@ export const editBrand = asyncHandler(async (req, res) => {
     }
 
     const {
-        companyName,
+        name,
         parentOrgId,
         subCategoryIds,
         hqCityId,
@@ -268,12 +272,12 @@ export const editBrand = asyncHandler(async (req, res) => {
         twitter,
         website,
         youtube,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         strategyOverview,
         taglineIds,
         activeCampaignIds,
-        marketingPlatformPrimaryIds,
-        marketingPlatformSecondaryIds,
+        primaryMarketingPlatformIds,
+        secondaryMarketingPlatformIds,
         ageIds,
         genderIds,
         nccsIds,
@@ -285,7 +289,7 @@ export const editBrand = asyncHandler(async (req, res) => {
     await prisma.dashapp_companydata.update({
         where: { id: Number(brandId) },
         data: {
-            company_name: companyName,
+            company_name: name,
             dashapp_parentorg: parentOrgId
                 ? { connect: { id: BigInt(parentOrgId) } }
                 : undefined,
@@ -316,10 +320,10 @@ export const editBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_personality_traits: personalityTraitIds
+            dashapp_companydata_personality_traits: subPersonalityTraitIds
                 ? {
                       deleteMany: {},
-                      create: personalityTraitIds.map((traitId) => ({
+                      create: subPersonalityTraitIds.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },
@@ -347,15 +351,15 @@ export const editBrand = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             dashapp_companydata_marketing_platforms_primary:
-                marketingPlatformPrimaryIds
+                primaryMarketingPlatformIds
                     ? {
                           deleteMany: {},
-                          create: marketingPlatformPrimaryIds.map(
-                              (marketingPlatformPrimaryId) => ({
+                          create: primaryMarketingPlatformIds.map(
+                              (primaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformPrimaryId,
+                                              primaryMarketingPlatformId,
                                           ),
                                       },
                                   },
@@ -364,15 +368,15 @@ export const editBrand = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_companydata_marketing_platforms_secondary:
-                marketingPlatformSecondaryIds
+                secondaryMarketingPlatformIds
                     ? {
                           deleteMany: {},
-                          create: marketingPlatformSecondaryIds.map(
-                              (marketingPlatformSecondaryId) => ({
+                          create: secondaryMarketingPlatformIds.map(
+                              (secondaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformSecondaryId,
+                                              secondaryMarketingPlatformId,
                                           ),
                                       },
                                   },

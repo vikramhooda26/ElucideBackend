@@ -96,7 +96,7 @@ export const createTeam = asyncHandler(async (req, res) => {
         leagueId,
         yearOfInception,
         franchiseFee,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         instagram,
         facebook,
         linkedin,
@@ -151,9 +151,9 @@ export const createTeam = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             },
-            dashapp_team_personality_traits: personalityTraitIds
+            dashapp_team_personality_traits: subPersonalityTraitIds
                 ? {
-                      create: personalityTraitIds?.map((traitId) => ({
+                      create: subPersonalityTraitIds?.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },
@@ -336,7 +336,7 @@ export const editTeam = asyncHandler(async (req, res) => {
         ownerIds,
         yearOfInception,
         franchiseFee,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         instagram,
         facebook,
         linkedin,
@@ -390,10 +390,10 @@ export const editTeam = asyncHandler(async (req, res) => {
             dashapp_states: stateId
                 ? { connect: { id: BigInt(stateId) } }
                 : undefined,
-            dashapp_team_personality_traits: personalityTraitIds
+            dashapp_team_personality_traits: subPersonalityTraitIds
                 ? {
                       deleteMany: {},
-                      create: personalityTraitIds.map((traitId) => ({
+                      create: subPersonalityTraitIds.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },

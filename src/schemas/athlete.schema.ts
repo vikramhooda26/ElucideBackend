@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const createAthleteSchema = z.object({
-    athleteName: z.string().min(1, "Required"),
+    name: z.string().min(1, "Required"),
     associationId: z.string().optional(),
     userId: z.string().min(1, "Required"),
     sportId: z.string().min(1, "Required"),
@@ -27,7 +27,7 @@ export const createAthleteSchema = z.object({
 export const editAthleteSchema = createAthleteSchema.partial();
 
 export const filteredAthleteSchema = z.object({
-    athleteName: z.string().optional(),
+    name: z.string().optional(),
     associationLevelIds: z.string().array().optional(),
     costOfAssociation: z
         .object({

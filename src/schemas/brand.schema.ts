@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const createBrandSchema = z.object({
-    companyName: z.string(),
+    name: z.string(),
     parentOrgId: z.string().optional(),
     subCategoryIds: z.string().array().optional(),
     hqCityId: z.string().optional(),
@@ -14,7 +14,7 @@ export const createBrandSchema = z.object({
     twitter: z.string().optional(),
     youtube: z.string().optional(),
     website: z.string().optional(),
-    personalityTraitIds: z.string().array().optional(),
+    subPersonalityTraitIds: z.string().array().optional(),
     strategyOverview: z.string().optional(),
     taglineIds: z.string().array().optional(),
     activeCampaignIds: z.string().array().optional(),
@@ -22,8 +22,8 @@ export const createBrandSchema = z.object({
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
     nccsIds: z.string().array().optional(),
-    marketingPlatformPrimaryIds: z.string().array().optional(),
-    marketingPlatformSecondaryIds: z.string().array().optional(),
+    primaryMarketingPlatformIds: z.string().array().optional(),
+    secondaryMarketingPlatformIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
 });

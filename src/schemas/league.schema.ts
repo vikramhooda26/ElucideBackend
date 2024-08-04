@@ -1,15 +1,15 @@
 import z from "zod";
 
 export const createLeagueSchema = z.object({
-    propertyName: z.string().min(1, "Required"),
+    name: z.string().min(1, "Required"),
     sportId: z.string().optional(),
-    leagueOwnerIds: z.string().array().optional(),
-    personalityTraitIds: z.string().array().optional(),
+    ownerIds: z.string().array().optional(),
+    subPersonalityTraitIds: z.string().array().optional(),
     tierIds: z.string().array().optional(),
     taglineIds: z.string().array().optional(),
     activeCampaignIds: z.string().array().optional(),
-    marketingPlatformPrimaryIds: z.string().array().optional(),
-    marketingPlatformSecondaryIds: z.string().array().optional(),
+    primaryMarketingPlatformIds: z.string().array().optional(),
+    secondaryMarketingPlatformIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
     primaryMarketIds: z.string().array().optional(),

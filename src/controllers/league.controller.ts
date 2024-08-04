@@ -90,14 +90,14 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
 
 export const createLeague = asyncHandler(async (req, res) => {
     const {
-        propertyName,
+        name,
         sportId,
-        leagueOwnerIds,
+        ownerIds,
         yearOfInception,
         formatId,
         broadCastPartnerId,
         ottPartnerId,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         tierIds,
         instagram,
         facebook,
@@ -108,8 +108,8 @@ export const createLeague = asyncHandler(async (req, res) => {
         strategyOverview,
         taglineIds,
         activeCampaignIds,
-        marketingPlatformPrimaryIds,
-        marketingPlatformSecondaryIds,
+        primaryMarketingPlatformIds,
+        secondaryMarketingPlatformIds,
         ageIds,
         genderIds,
         primaryMarketIds,
@@ -124,15 +124,15 @@ export const createLeague = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_leagueinfo.create({
         data: {
-            property_name: propertyName ?? undefined,
+            property_name: name ?? undefined,
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
                   }
                 : undefined,
-            dashapp_leagueinfo_owner: leagueOwnerIds
+            dashapp_leagueinfo_owner: ownerIds
                 ? {
-                      create: leagueOwnerIds?.map((ownerId) => ({
+                      create: ownerIds?.map((ownerId) => ({
                           dashapp_leagueowner: {
                               connect: { id: BigInt(ownerId) },
                           },
@@ -159,9 +159,9 @@ export const createLeague = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             },
-            dashapp_leagueinfo_personality_traits: personalityTraitIds
+            dashapp_leagueinfo_personality_traits: subPersonalityTraitIds
                 ? {
-                      create: personalityTraitIds?.map((traitId) => ({
+                      create: subPersonalityTraitIds?.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },
@@ -203,14 +203,14 @@ export const createLeague = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             dashapp_leagueinfo_marketing_platforms_primary:
-                marketingPlatformPrimaryIds
+                primaryMarketingPlatformIds
                     ? {
-                          create: marketingPlatformPrimaryIds?.map(
-                              (marketingPlatformPrimaryId) => ({
+                          create: primaryMarketingPlatformIds?.map(
+                              (primaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformPrimaryId,
+                                              primaryMarketingPlatformId,
                                           ),
                                       },
                                   },
@@ -219,14 +219,14 @@ export const createLeague = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_leagueinfo_marketing_platforms_secondary:
-                marketingPlatformSecondaryIds
+                secondaryMarketingPlatformIds
                     ? {
-                          create: marketingPlatformSecondaryIds?.map(
-                              (marketingPlatformSecondaryId) => ({
+                          create: secondaryMarketingPlatformIds?.map(
+                              (secondaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformSecondaryId,
+                                              secondaryMarketingPlatformId,
                                           ),
                                       },
                                   },
@@ -339,14 +339,14 @@ export const editLeague = asyncHandler(async (req, res) => {
     }
 
     const {
-        propertyName,
+        name,
         sportId,
-        leagueOwnerIds,
+        ownerIds,
         yearOfInception,
         formatId,
         broadCastPartnerId,
         ottPartnerId,
-        personalityTraitIds,
+        subPersonalityTraitIds,
         tierIds,
         instagram,
         facebook,
@@ -357,8 +357,8 @@ export const editLeague = asyncHandler(async (req, res) => {
         strategyOverview,
         taglineIds,
         activeCampaignIds,
-        marketingPlatformPrimaryIds,
-        marketingPlatformSecondaryIds,
+        primaryMarketingPlatformIds,
+        secondaryMarketingPlatformIds,
         ageIds,
         genderIds,
         primaryMarketIds,
@@ -377,16 +377,16 @@ export const editLeague = asyncHandler(async (req, res) => {
             id: Number(leagueId),
         },
         data: {
-            property_name: propertyName,
+            property_name: name,
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
                   }
                 : undefined,
-            dashapp_leagueinfo_owner: leagueOwnerIds
+            dashapp_leagueinfo_owner: ownerIds
                 ? {
                       deleteMany: {},
-                      create: leagueOwnerIds.map((ownerId) => ({
+                      create: ownerIds.map((ownerId) => ({
                           dashapp_leagueowner: {
                               connect: { id: BigInt(ownerId) },
                           },
@@ -409,10 +409,10 @@ export const editLeague = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(ottPartnerId) },
                   }
                 : undefined,
-            dashapp_leagueinfo_personality_traits: personalityTraitIds
+            dashapp_leagueinfo_personality_traits: subPersonalityTraitIds
                 ? {
                       deleteMany: {},
-                      create: personalityTraitIds.map((traitId) => ({
+                      create: subPersonalityTraitIds.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },
@@ -455,15 +455,15 @@ export const editLeague = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             dashapp_leagueinfo_marketing_platforms_primary:
-                marketingPlatformPrimaryIds
+                primaryMarketingPlatformIds
                     ? {
                           deleteMany: {},
-                          create: marketingPlatformPrimaryIds.map(
-                              (marketingPlatformPrimaryId) => ({
+                          create: primaryMarketingPlatformIds.map(
+                              (primaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformPrimaryId,
+                                              primaryMarketingPlatformId,
                                           ),
                                       },
                                   },
@@ -472,15 +472,15 @@ export const editLeague = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_leagueinfo_marketing_platforms_secondary:
-                marketingPlatformSecondaryIds
+                secondaryMarketingPlatformIds
                     ? {
                           deleteMany: {},
-                          create: marketingPlatformSecondaryIds.map(
-                              (marketingPlatformSecondaryId) => ({
+                          create: secondaryMarketingPlatformIds.map(
+                              (secondaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
                                       connect: {
                                           id: BigInt(
-                                              marketingPlatformSecondaryId,
+                                              secondaryMarketingPlatformId,
                                           ),
                                       },
                                   },

@@ -115,7 +115,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
 
 export const createAthlete = asyncHandler(async (req, res) => {
     const {
-        athleteName,
+        name,
         age,
         genderId,
         nccsIds,
@@ -144,7 +144,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_athlete.create({
         data: {
-            athlete_name: athleteName,
+            athlete_name: name,
             association: associationId
                 ? { connect: { id: BigInt(associationId) } }
                 : undefined,
@@ -265,7 +265,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
     }
 
     const {
-        athleteName,
+        name,
         age,
         genderId,
         nccsIds,
@@ -291,7 +291,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
         data: {
-            athlete_name: athleteName,
+            athlete_name: name,
             age: Number(age),
             association: associationId
                 ? { connect: { id: BigInt(associationId) } }
