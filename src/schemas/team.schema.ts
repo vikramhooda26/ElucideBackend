@@ -2,6 +2,7 @@ import z from "zod";
 
 export const createTeamSchema = z.object({
     name: z.string(),
+    userId: z.string(),
     yearOfInception: z.string().optional(),
     sportId: z.string().optional(),
     leagueId: z.string().optional(),
@@ -52,12 +53,11 @@ export const createTeamSchema = z.object({
     contactLinkedin: z.string().optional(),
 });
 
-export const editTeamSchema = createTeamSchema
-    .extend({
-        associationId: z.string().optional(),
-        contactId: z.string().optional(),
-    })
-    .partial();
+export const editTeamSchema = createTeamSchema.partial().extend({
+    associationId: z.string().optional(),
+    contactId: z.string().optional(),
+    userId: z.string(),
+});
 
 export type TCreateTeamSchema = z.infer<typeof createTeamSchema>;
 export type TEditTeamSchema = z.infer<typeof editTeamSchema>;

@@ -27,9 +27,10 @@ export const createAthleteSchema = z.object({
     statusId: z.string().optional(),
 });
 
-export const editAthleteSchema = createAthleteSchema
-    .extend({ associationId: z.string().optional() })
-    .partial();
+export const editAthleteSchema = createAthleteSchema.partial().extend({
+    associationId: z.string().optional(),
+    userId: z.string(),
+});
 
 export const filteredAthleteSchema = z.object({
     name: z.string().optional(),

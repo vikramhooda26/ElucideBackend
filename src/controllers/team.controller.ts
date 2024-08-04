@@ -128,11 +128,18 @@ export const createTeam = asyncHandler(async (req, res) => {
         contactLinkedin,
         contactName,
         contactNumber,
+        userId,
     } = req.validatedData as TCreateTeamSchema;
 
     const team = await prisma.dashapp_team.create({
         data: {
-            team_name: name ?? undefined,
+            team_name: name,
+            created_by: {
+                connect: { id: BigInt(userId) },
+            },
+            modified_by: {
+                connect: { id: BigInt(userId) },
+            },
             dashapp_sport: {
                 connect: sportId ? { id: BigInt(sportId) } : undefined,
             },
@@ -394,12 +401,16 @@ export const editTeam = asyncHandler(async (req, res) => {
         contactLinkedin,
         contactName,
         contactNumber,
+        userId,
     } = req.validatedData as TEditTeamSchema;
 
     await prisma.dashapp_team.update({
         where: { id: Number(teamId) },
         data: {
             team_name: name,
+            modified_by: {
+                connect: { id: BigInt(userId) },
+            },
             dashapp_sport: sportId
                 ? { connect: { id: BigInt(sportId) } }
                 : undefined,
