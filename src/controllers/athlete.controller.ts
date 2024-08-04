@@ -50,7 +50,7 @@ export const getAthleteById = asyncHandler(async (req, res) => {
         select: athleteSelect,
     });
 
-    if (!athlete) {
+    if (!athlete?.id) {
         throw new NotFoundError("This athlete does not exists");
     }
 
@@ -95,8 +95,8 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         athletes.map((athlete) => ({
-            athleteId: athlete.id,
-            athleteName: athlete.athlete_name,
+            id: athlete.id,
+            name: athlete.athlete_name,
             nationality: athlete.nationality?.name,
             createdDate: athlete.created_date,
             modifiedDate: athlete.modified_date,
@@ -379,9 +379,10 @@ export const removeAthlete = asyncHandler(async (req, res) => {
 
     const athleteExists = await prisma.dashapp_athlete.findUnique({
         where: { id: BigInt(athleteId) },
+        select: { id: true },
     });
 
-    if (!athleteExists) {
+    if (!athleteExists?.id) {
         throw new NotFoundError("This athlete does not exists");
     }
 

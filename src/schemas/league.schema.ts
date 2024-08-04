@@ -27,19 +27,28 @@ export const createLeagueSchema = z.object({
     youtube: z.string().optional(),
     website: z.string().optional(),
     strategyOverview: z.string().optional(),
-    metrics: z
+    viewershipMetrics: z
         .object({
-            viewership: z.string().optional(),
-            reach: z.string().optional(),
-            year: z.string().optional(),
-            viewshipType: z.enum(["OTT", "BROADCAST"]).optional(),
+            viewership: z.string(),
+            year: z.string(),
+            viewershipType: z.enum(["OTT", "BROADCAST"]),
         })
         .array()
         .optional(),
-    associationId: z.string().optional(),
+    reachMetrics: z
+        .object({
+            reach: z.string(),
+            year: z.string(),
+        })
+        .array()
+        .optional(),
+    associationLevelId: z.string().optional(),
+    costOfAssociation: z.string().optional(),
 });
 
-export const editLeagueSchema = createLeagueSchema.partial();
+export const editLeagueSchema = createLeagueSchema
+    .extend({ associationId: z.string().optional() })
+    .partial();
 
 export type TCreateLeagueSchema = z.infer<typeof createLeagueSchema>;
 export type TEditLeagueSchema = z.infer<typeof editLeagueSchema>;

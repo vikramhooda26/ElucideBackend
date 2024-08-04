@@ -2,8 +2,8 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TLeagueDetails } from "../types/league.type.js";
 
 export class LeagueResponseDTO {
-    leagueId?: bigint;
-    leagueName?: string;
+    id?: bigint;
+    name?: string;
     sport?: string;
     leagueOwners?: string[];
     yearOfInception!: string | null;
@@ -63,17 +63,20 @@ export class LeagueResponseDTO {
         number: string | null;
         linkedin: string | null;
     }[];
-    metric?: {
-        reach: string | null;
+    viewershipMetrics?: {
         viewership: string | null;
         viewershipType: viewship_type | null;
+        year: string | null;
+    }[];
+    reachMetrics?: {
+        reach: string | null;
         year: string | null;
     }[];
 
     static toResponse(leagueDetails: TLeagueDetails): LeagueResponseDTO {
         const leagueDTO = new LeagueResponseDTO();
-        (leagueDTO.leagueId = leagueDetails.id),
-            (leagueDTO.leagueName = leagueDetails.property_name);
+        (leagueDTO.id = leagueDetails.id),
+            (leagueDTO.name = leagueDetails.property_name);
         leagueDTO.sport = leagueDetails.dashapp_sport?.name;
         leagueDTO.leagueOwners = leagueDetails.dashapp_leagueinfo_owner.map(
             (owner) => owner.dashapp_leagueowner.name,
@@ -186,15 +189,18 @@ export class LeagueResponseDTO {
                 }),
             )),
         );
-        leagueDTO.metric = leagueDetails.dashapp_metric.map((metric) => ({
+        leagueDTO.viewershipMetrics = leagueDetails.dashapp_viewership.map(
+            (metric) => ({
+                viewership: metric.viewership,
+                viewershipType: metric.viewship_type,
+                year: metric.year,
+            }),
+        );
+        leagueDTO.reachMetrics = leagueDetails.dashapp_reach.map((metric) => ({
             reach: metric.reach,
-            viewership: metric.viewership,
-            viewershipType: metric.viewship_type,
             year: metric.year,
         }));
 
         return leagueDTO;
     }
 }
-
-//

@@ -21,7 +21,7 @@ export const getLeagueById = asyncHandler(async (req, res) => {
         select: leagueSelect,
     });
 
-    if (!league) {
+    if (!league?.id) {
         throw new NotFoundError("This league does not exists");
     }
 
@@ -71,23 +71,17 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         leagues.map((league) => ({
-            leagueId: league.id,
-            leagueName: league.property_name,
+            id: league.id,
+            name: league.property_name,
             createdDate: league.created_date,
             modifiedDate: league.modified_date,
             createdBy: {
                 userId: league.created_by?.id,
                 email: league.created_by?.email,
-                firstName: league.created_by?.first_name,
-                lastName: league.created_by?.last_name,
-                username: league.created_by?.username,
             },
             modifiedBy: {
                 userId: league.modified_by?.id,
                 email: league.modified_by?.email,
-                firstName: league.modified_by?.first_name,
-                lastName: league.modified_by?.last_name,
-                username: league.modified_by?.username,
             },
             count: league._count,
         })),
@@ -122,24 +116,30 @@ export const createLeague = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         nccsIds,
-        metrics,
-        associationId,
+        reachMetrics,
+        viewershipMetrics,
+        associationLevelId,
+        costOfAssociation,
     } = req.validatedData as TCreateLeagueSchema;
 
     await prisma.dashapp_leagueinfo.create({
         data: {
-            property_name: propertyName,
+            property_name: propertyName ?? undefined,
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
                   }
                 : undefined,
-            dashapp_leagueinfo_owner: {
-                create: leagueOwnerIds?.map((ownerId) => ({
-                    dashapp_leagueowner: { connect: { id: BigInt(ownerId) } },
-                })),
-            },
-            year_of_inception: yearOfInception,
+            dashapp_leagueinfo_owner: leagueOwnerIds
+                ? {
+                      create: leagueOwnerIds?.map((ownerId) => ({
+                          dashapp_leagueowner: {
+                              connect: { id: BigInt(ownerId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            year_of_inception: yearOfInception ?? undefined,
             format: formatId
                 ? {
                       connect: { id: BigInt(formatId) },
@@ -159,112 +159,167 @@ export const createLeague = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             },
-            dashapp_leagueinfo_personality_traits: {
-                create: personalityTraitIds?.map((traitId) => ({
-                    dashapp_subpersonality: {
-                        connect: { id: BigInt(traitId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_tier: {
-                create: tierIds?.map((tierId) => ({
-                    dashapp_tier: {
-                        connect: { id: BigInt(tierId) },
-                    },
-                })),
-            },
-            instagram: instagram ?? "N/A",
-            facebook: facebook ?? "N/A",
-            linkedin: linkedin ?? "N/A",
-            twitter: twitter ?? "N/A",
-            youtube: youtube ?? "N/A",
-            website: website ?? "N/A",
-            strategy_overview: strategyOverview,
-            dashapp_leagueinfo_taglines: {
-                create: taglineIds?.map((taglineId) => ({
-                    dashapp_taglines: {
-                        connect: { id: BigInt(taglineId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_active_campaigns: {
-                create: activeCampaignIds?.map((activeCampaignId) => ({
-                    dashapp_activecampaigns: {
-                        connect: { id: BigInt(activeCampaignId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_marketing_platforms_primary: {
-                create: marketingPlatformPrimaryIds?.map(
-                    (marketingPlatformPrimaryId) => ({
-                        dashapp_marketingplatform: {
-                            connect: { id: BigInt(marketingPlatformPrimaryId) },
-                        },
-                    }),
-                ),
-            },
-            dashapp_leagueinfo_marketing_platforms_secondary: {
-                create: marketingPlatformSecondaryIds?.map(
-                    (marketingPlatformSecondaryId) => ({
-                        dashapp_marketingplatform: {
-                            connect: {
-                                id: BigInt(marketingPlatformSecondaryId),
-                            },
-                        },
-                    }),
-                ),
-            },
-            dashapp_leagueinfo_age: {
-                create: ageIds?.map((ageId) => ({
-                    dashapp_age: {
-                        connect: { id: BigInt(ageId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_gender: {
-                create: genderIds?.map((genderId) => ({
-                    dashapp_gender: {
-                        connect: { id: BigInt(genderId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_income: {
-                create: nccsIds?.map((nccsId) => ({
-                    dashapp_nccs: {
-                        connect: { id: BigInt(nccsId) },
-                    },
-                })),
-            },
-            dashapp_leagueinfo_key_markets_primary: {
-                create: primaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_leagueinfo_key_markets_secondary: {
-                create: secondaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_leagueinfo_key_markets_tertiary: {
-                create: tertiaryIds?.map((tertiaryId) => ({
-                    dashapp_states: { connect: { id: BigInt(tertiaryId) } },
-                })),
-            },
-            dashapp_metric: {
-                create: metrics?.map((metric) => ({
-                    viewership: metric.viewership,
-                    viewship_type: metric.viewshipType,
-                    reach: metric.reach,
-                    year: metric.year,
-                })),
-            },
-            association: {
-                connect: associationId
+            dashapp_leagueinfo_personality_traits: personalityTraitIds
+                ? {
+                      create: personalityTraitIds?.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_tier: tierIds
+                ? {
+                      create: tierIds?.map((tierId) => ({
+                          dashapp_tier: {
+                              connect: { id: BigInt(tierId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            instagram: instagram ?? undefined,
+            facebook: facebook ?? undefined,
+            linkedin: linkedin ?? undefined,
+            twitter: twitter ?? undefined,
+            youtube: youtube ?? undefined,
+            website: website ?? undefined,
+            strategy_overview: strategyOverview ?? undefined,
+            dashapp_leagueinfo_taglines: taglineIds
+                ? {
+                      create: taglineIds?.map((taglineId) => ({
+                          dashapp_taglines: {
+                              connect: { id: BigInt(taglineId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_active_campaigns: activeCampaignIds
+                ? {
+                      create: activeCampaignIds?.map((activeCampaignId) => ({
+                          dashapp_activecampaigns: {
+                              connect: { id: BigInt(activeCampaignId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_marketing_platforms_primary:
+                marketingPlatformPrimaryIds
                     ? {
-                          id: BigInt(associationId),
+                          create: marketingPlatformPrimaryIds?.map(
+                              (marketingPlatformPrimaryId) => ({
+                                  dashapp_marketingplatform: {
+                                      connect: {
+                                          id: BigInt(
+                                              marketingPlatformPrimaryId,
+                                          ),
+                                      },
+                                  },
+                              }),
+                          ),
                       }
                     : undefined,
-            },
+            dashapp_leagueinfo_marketing_platforms_secondary:
+                marketingPlatformSecondaryIds
+                    ? {
+                          create: marketingPlatformSecondaryIds?.map(
+                              (marketingPlatformSecondaryId) => ({
+                                  dashapp_marketingplatform: {
+                                      connect: {
+                                          id: BigInt(
+                                              marketingPlatformSecondaryId,
+                                          ),
+                                      },
+                                  },
+                              }),
+                          ),
+                      }
+                    : undefined,
+            dashapp_leagueinfo_age: ageIds
+                ? {
+                      create: ageIds?.map((ageId) => ({
+                          dashapp_age: {
+                              connect: { id: BigInt(ageId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_gender: genderIds
+                ? {
+                      create: genderIds?.map((genderId) => ({
+                          dashapp_gender: {
+                              connect: { id: BigInt(genderId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_income: nccsIds
+                ? {
+                      create: nccsIds?.map((nccsId) => ({
+                          dashapp_nccs: {
+                              connect: { id: BigInt(nccsId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_key_markets_primary: primaryMarketIds
+                ? {
+                      create: primaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_key_markets_secondary: secondaryMarketIds
+                ? {
+                      create: secondaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_key_markets_tertiary: tertiaryIds
+                ? {
+                      create: tertiaryIds?.map((tertiaryId) => ({
+                          dashapp_states: {
+                              connect: { id: BigInt(tertiaryId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_viewership: viewershipMetrics
+                ? {
+                      create: viewershipMetrics.map((metric) => ({
+                          viewership: metric.viewership,
+                          viewship_type: metric.viewershipType,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_reach: reachMetrics
+                ? {
+                      create: reachMetrics.map((metric) => ({
+                          reach: metric.reach,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            association:
+                associationLevelId || costOfAssociation
+                    ? {
+                          create: {
+                              association_level: associationLevelId
+                                  ? {
+                                        connect: {
+                                            id: BigInt(associationLevelId),
+                                        },
+                                    }
+                                  : undefined,
+                              cost: costOfAssociation ?? undefined,
+                          },
+                      }
+                    : undefined,
         },
         select: {
             id: true,
@@ -310,8 +365,11 @@ export const editLeague = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         nccsIds,
-        metrics,
         associationId,
+        reachMetrics,
+        viewershipMetrics,
+        associationLevelId,
+        costOfAssociation,
     } = req.validatedData as TEditLeagueSchema;
 
     await prisma.dashapp_leagueinfo.update({
@@ -484,12 +542,24 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_metric: metrics
+            dashapp_viewership: viewershipMetrics
                 ? {
-                      deleteMany: {},
-                      create: metrics.map((metric) => ({
+                      deleteMany: viewershipMetrics.map((metric) => ({
+                          year: metric.year,
+                      })),
+                      create: viewershipMetrics.map((metric) => ({
                           viewership: metric.viewership,
-                          viewship_type: metric.viewshipType,
+                          viewship_type: metric.viewershipType,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_reach: reachMetrics
+                ? {
+                      deleteMany: reachMetrics.map((metric) => ({
+                          year: metric.year,
+                      })),
+                      create: reachMetrics.map((metric) => ({
                           reach: metric.reach,
                           year: metric.year,
                       })),
@@ -497,7 +567,15 @@ export const editLeague = asyncHandler(async (req, res) => {
                 : undefined,
             association: associationId
                 ? {
-                      connect: { id: BigInt(associationId) },
+                      deleteMany: {},
+                      create: {
+                          association_level: associationLevelId
+                              ? {
+                                    connect: { id: BigInt(associationLevelId) },
+                                }
+                              : undefined,
+                          cost: costOfAssociation ?? undefined,
+                      },
                   }
                 : undefined,
         },
@@ -516,6 +594,15 @@ export const deleteLeague = asyncHandler(async (req, res) => {
 
     if (!leagueId) {
         throw new BadRequestError("League ID not found");
+    }
+
+    const leagueExists = await prisma.dashapp_leagueinfo.findUnique({
+        where: { id: BigInt(leagueId) },
+        select: { id: true },
+    });
+
+    if (!leagueExists?.id) {
+        throw new NotFoundError("This league does not exists");
     }
 
     await prisma.dashapp_leagueinfo.delete({ where: { id: BigInt(leagueId) } });

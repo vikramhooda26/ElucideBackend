@@ -2,9 +2,9 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TTeamDetails } from "../types/team.type.js";
 
 export class TeamResponseDTO {
-    teamId?: bigint;
-    teamName?: string;
-    teamOwners?: string[];
+    id?: bigint;
+    name?: string;
+    owners?: string[];
     sport?: string;
     league?: string;
     yearOfInception!: string | null;
@@ -65,18 +65,20 @@ export class TeamResponseDTO {
         number: string | null;
         linkedin: string | null;
     }[];
-    metrics?: {
-        reach: string | null;
+    viewershipMetrics?: {
         viewership: string | null;
         viewershipType: viewship_type | null;
+        year: string | null;
+    }[];
+    reachMetrics?: {
+        reach: string | null;
         year: string | null;
     }[];
 
     static toResponse(teamDetails: TTeamDetails): TeamResponseDTO {
         const teamDTO = new TeamResponseDTO();
-        (teamDTO.teamId = teamDetails.id),
-            (teamDTO.teamName = teamDetails.team_name);
-        teamDTO.teamOwners = teamDetails.dashapp_team_owner.map(
+        (teamDTO.id = teamDetails.id), (teamDTO.name = teamDetails.team_name);
+        teamDTO.owners = teamDetails.dashapp_team_owner.map(
             (owner) => owner.dashapp_teamowner.name,
         );
         teamDTO.sport = teamDetails.dashapp_sport?.name;
@@ -188,10 +190,15 @@ export class TeamResponseDTO {
                 }),
             )),
         );
-        teamDTO.metrics = teamDetails.dashapp_metric.map((metric) => ({
+        teamDTO.viewershipMetrics = teamDetails.dashapp_viewership.map(
+            (metric) => ({
+                viewership: metric.viewership,
+                viewershipType: metric.viewship_type,
+                year: metric.year,
+            }),
+        );
+        teamDTO.reachMetrics = teamDetails.dashapp_reach.map((metric) => ({
             reach: metric.reach,
-            viewership: metric.viewership,
-            viewershipType: metric.viewship_type,
             year: metric.year,
         }));
 
