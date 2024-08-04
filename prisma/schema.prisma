@@ -121,8 +121,6 @@ model auth_user {
     dashapp_mainpersonality_dashapp_mainpersonality_modified_by_idToauth_user       dashapp_mainpersonality[]      @relation("dashapp_mainpersonality_modified_by_idToauth_user")
     dashapp_marketingplatform_dashapp_marketingplatform_created_by_idToauth_user    dashapp_marketingplatform[]    @relation("dashapp_marketingplatform_created_by_idToauth_user")
     dashapp_marketingplatform_dashapp_marketingplatform_modified_by_idToauth_user   dashapp_marketingplatform[]    @relation("dashapp_marketingplatform_modified_by_idToauth_user")
-    dashapp_metric_dashapp_metric_created_by_idToauth_user                          dashapp_metric[]               @relation("dashapp_metric_created_by_idToauth_user")
-    dashapp_metric_dashapp_metric_modified_by_idToauth_user                         dashapp_metric[]               @relation("dashapp_metric_modified_by_idToauth_user")
     dashapp_ottpartner_dashapp_ottpartner_created_by_idToauth_user                  dashapp_ottpartner[]           @relation("dashapp_ottpartner_created_by_idToauth_user")
     dashapp_ottpartner_dashapp_ottpartner_modified_by_idToauth_user                 dashapp_ottpartner[]           @relation("dashapp_ottpartner_modified_by_idToauth_user")
     dashapp_parentorg_dashapp_parentorg_created_by_idToauth_user                    dashapp_parentorg[]            @relation("dashapp_parentorg_created_by_idToauth_user")
@@ -163,6 +161,10 @@ model auth_user {
     dashapp_countries_modified_by                                                   dashapp_countries[]            @relation("modified_by")
     dashapp_socialmedia_platform_created_by                                         dashapp_socialmedia_platform[] @relation("created_by")
     dashapp_socialmedia_platform_modified_by                                        dashapp_socialmedia_platform[] @relation("modified_by")
+    dashapp_reach_created_by                                                        dashapp_reach[]                @relation("created_by")
+    dashapp_reach_modified_by                                                       dashapp_reach[]                @relation("modified_by")
+    dashapp_viewership_created_by                                                   dashapp_viewership[]           @relation("created_by")
+    dashapp_viewership_modified_by                                                  dashapp_viewership[]           @relation("modified_by")
 }
 
 model dashapp_activation {
@@ -961,9 +963,10 @@ model dashapp_leagueinfo {
     dashapp_leagueinfo_personality_traits            dashapp_leagueinfo_personality_traits[]
     dashapp_leagueinfo_taglines                      dashapp_leagueinfo_taglines[]
     dashapp_leagueinfo_tier                          dashapp_leagueinfo_tier[]
-    dashapp_metric                                   dashapp_metric[]
     dashapp_sportsdealsummary                        dashapp_sportsdealsummary[]
     dashapp_team                                     dashapp_team[]
+    dashapp_reach                                    dashapp_reach[]
+    dashapp_viewership                               dashapp_viewership[]
 
     @@index([brodcast_partner_id], map: "dashapp_leagueinfo_brodcast_partner_id_40f27555")
     @@index([modified_by_id], map: "dashapp_leagueinfo_modified_by_id_d356e033")
@@ -1188,21 +1191,36 @@ model dashapp_marketingplatform {
     @@index([modified_by_id], map: "dashapp_marketingplatform_modified_by_id_6236b8b5")
 }
 
-model dashapp_metric {
+model dashapp_reach {
     id                 BigInt              @id @default(autoincrement())
     created_date       DateTime?           @default(now())
     modified_date      DateTime?
     created_by_id      BigInt?
     modified_by_id     BigInt?
-    viewship_type      viewship_type?
-    viewership         String?
-    reach              String?
-    year               String?
+    reach              String
+    year               String
     leagueinfo_id      BigInt?
     team_id            BigInt?
-    created_by         auth_user?          @relation("dashapp_metric_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    created_by         auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
-    modified_by        auth_user?          @relation("dashapp_metric_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by        auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team       dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
+}
+
+model dashapp_viewership {
+    id                 BigInt              @id @default(autoincrement())
+    created_date       DateTime?           @default(now())
+    modified_date      DateTime?
+    created_by_id      BigInt?
+    modified_by_id     BigInt?
+    viewship_type      viewship_type
+    viewership         String
+    year               String
+    leagueinfo_id      BigInt?
+    team_id            BigInt?
+    created_by         auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
+    modified_by        auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team       dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
 }
 
@@ -1420,7 +1438,6 @@ model dashapp_team {
     hq_state_id                                BigInt?
     association                                association[]
     dashapp_activation                         dashapp_activation[]
-    dashapp_metric                             dashapp_metric[]
     dashapp_sportsdealsummary                  dashapp_sportsdealsummary[]
     created_by                                 auth_user?                                   @relation("dashapp_team_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
     dashapp_hqcity                             dashapp_hqcity?                              @relation(fields: [hq_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1443,6 +1460,8 @@ model dashapp_team {
     dashapp_team_tier                          dashapp_team_tier[]
     dashapp_teamcontact                        dashapp_teamcontact[]
     dashapp_teamendorsements                   dashapp_teamendorsements[]
+    dashapp_reach                              dashapp_reach[]
+    dashapp_viewership                         dashapp_viewership[]
 
     @@index([hq_city_id], map: "dashapp_team_hq_city_id_fa8703dd")
     @@index([league_id], map: "dashapp_team_league_id_30ad02cd")

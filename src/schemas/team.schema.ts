@@ -30,12 +30,18 @@ export const createTeamSchema = z.object({
     nccsIds: z.string().array().optional(),
     associationLevelId: z.string().optional(),
     costOfAssociation: z.string().optional(),
-    metrics: z
+    viewershipMetrics: z
         .object({
-            viewership: z.string().optional(),
-            reach: z.string().optional(),
-            year: z.string().optional(),
-            viewshipType: z.enum(["OTT", "BROADCAST"]).optional(),
+            viewership: z.string(),
+            year: z.string(),
+            viewershipType: z.enum(["OTT", "BROADCAST"]),
+        })
+        .array()
+        .optional(),
+    reactMetrics: z
+        .object({
+            reach: z.string(),
+            year: z.string(),
         })
         .array()
         .optional(),
