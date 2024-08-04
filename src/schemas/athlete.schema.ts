@@ -2,9 +2,10 @@ import z from "zod";
 
 export const createAthleteSchema = z.object({
     name: z.string().min(1, "Required"),
-    associationId: z.string().optional(),
+    associationLevelId: z.string().optional(),
+    costOfAssociation: z.number().optional(),
     userId: z.string().min(1, "Required"),
-    sportId: z.string().min(1, "Required"),
+    sportId: z.string().optional(),
     agencyId: z.string().optional(),
     age: z.string().optional(),
     facebook: z.string().optional(),
@@ -19,12 +20,16 @@ export const createAthleteSchema = z.object({
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
+    stateId: z.string().optional(),
     nationalityId: z.string().optional(),
     primarySocialMediaPlatformIds: z.string().array().optional(),
     secondarySocialMediaPlatformIds: z.string().array().optional(),
+    statusId: z.string().optional(),
 });
 
-export const editAthleteSchema = createAthleteSchema.partial();
+export const editAthleteSchema = createAthleteSchema
+    .extend({ associationId: z.string().optional() })
+    .partial();
 
 export const filteredAthleteSchema = z.object({
     name: z.string().optional(),
@@ -38,7 +43,7 @@ export const filteredAthleteSchema = z.object({
     createdByIds: z.string().array().optional(),
     modifiedByIds: z.string().array().optional(),
     sportIds: z.string().array().optional(),
-    age: z.string().array().optional(),
+    age: z.string().optional(),
     ageRangeIds: z.string().array().optional(),
     personalityTraitIds: z.string().array().optional(),
     subpersonalityTraitIds: z.string().array().optional(),

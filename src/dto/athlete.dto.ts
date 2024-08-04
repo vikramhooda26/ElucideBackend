@@ -13,16 +13,14 @@ export class AthleteResponseDTO {
     website?: string | null;
     twitter?: string | null;
     facebook?: string | null;
-    keyMarketPrimary?: string[];
-    keyMarketSecondary?: string[];
-    keyMarketTertiary?: string[];
-    socialMediaPrimary?: (string | undefined)[];
-    socialMediaSecondary?: (string | undefined)[];
+    primaryKeyMarket?: string[];
+    secondaryKeyMarket?: string[];
+    tertiary?: string[];
+    primarySocialMedia?: (string | undefined)[];
+    secondarySocialMedia?: (string | undefined)[];
     tier?: (string | undefined)[];
-    personalityTraits?: {
-        subPersonality: string;
-        mainPersonality: string;
-    }[];
+    subPersonalityTraits?: string[];
+    mainPersonalityTraits?: string[];
     age?: number | null;
     association?: {
         associationLevel: { name: string | null } | null;
@@ -59,8 +57,8 @@ export class AthleteResponseDTO {
     }[];
     gender?: string[];
     nccs?: string[];
-    keyPlatformPrimary?: string;
-    keyPlatformSecondary?: string;
+    primaryMarketingPlatform?: string;
+    secondaryMarketingPlatform?: string;
     status?: string;
     state?: string;
 
@@ -77,35 +75,38 @@ export class AthleteResponseDTO {
         athleteDTO.website = athleteDetails.website;
         athleteDTO.twitter = athleteDetails.twitter;
         athleteDTO.facebook = athleteDetails.facebook;
-        athleteDTO.socialMediaPrimary =
+        athleteDTO.primarySocialMedia =
             athleteDetails.dashapp_athlete_socialmedia_platform_primary.map(
                 (platform) => platform.dashapp_socialmedia_platform?.name,
             );
-        athleteDTO.socialMediaSecondary =
+        athleteDTO.secondarySocialMedia =
             athleteDetails.dashapp_athlete_socialmedia_platform_secondary.map(
                 (platform) => platform.dashapp_socialmedia_platform?.name,
             );
-        athleteDTO.keyMarketPrimary =
+        athleteDTO.primaryKeyMarket =
             athleteDetails.dashapp_athlete_key_markets_primary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        athleteDTO.keyMarketSecondary =
+        athleteDTO.secondaryKeyMarket =
             athleteDetails.dashapp_athlete_key_markets_secondary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        athleteDTO.keyMarketTertiary =
+        athleteDTO.tertiary =
             athleteDetails.dashapp_athlete_key_markets_tertiary.map(
                 (state) => state.dashapp_states.state,
             );
         athleteDTO.tier = athleteDetails.dashapp_athlete_tier.map(
             (tier) => tier.dashapp_tier?.name,
         );
-        athleteDTO.personalityTraits =
-            athleteDetails.dashapp_athlete_personality_traits.map((trait) => ({
-                subPersonality: trait.dashapp_subpersonality.name,
-                mainPersonality:
+        athleteDTO.subPersonalityTraits =
+            athleteDetails.dashapp_athlete_personality_traits.map(
+                (trait) => trait.dashapp_subpersonality.name,
+            );
+        athleteDTO.mainPersonalityTraits =
+            athleteDetails.dashapp_athlete_personality_traits.map(
+                (trait) =>
                     trait.dashapp_subpersonality.dashapp_mainpersonality.name,
-            }));
+            );
         athleteDTO.age = athleteDetails.age;
         athleteDTO.association = athleteDetails.association.map((asso) => ({
             associationLevel: asso.association_level,
@@ -159,9 +160,9 @@ export class AthleteResponseDTO {
         athleteDTO.nccs = athleteDetails.dashapp_athlete_target_income.map(
             (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
-        athleteDTO.keyPlatformPrimary =
+        athleteDTO.primaryMarketingPlatform =
             athleteDetails.dashapp_athlete_keyplatform_primary?.platform;
-        athleteDTO.keyPlatformSecondary =
+        athleteDTO.secondaryMarketingPlatform =
             athleteDetails.dashapp_athlete_keyplatform_secondary?.platform;
         athleteDTO.status = athleteDetails.dashapp_athlete_status?.status;
         athleteDTO.state = athleteDetails.dashapp_states?.state;
