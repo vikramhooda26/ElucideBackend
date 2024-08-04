@@ -29,7 +29,7 @@ export const createTeamSchema = z.object({
     tertiaryIds: z.string().array().optional(),
     nccsIds: z.string().array().optional(),
     associationLevelId: z.string().optional(),
-    costOfAssociation: z.string().optional(),
+    costOfAssociation: z.number().optional(),
     viewershipMetrics: z
         .object({
             viewership: z.string(),
