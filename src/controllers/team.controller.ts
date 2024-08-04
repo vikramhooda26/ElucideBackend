@@ -121,7 +121,8 @@ export const createTeam = asyncHandler(async (req, res) => {
         tertiaryIds,
         associationLevelId,
         costOfAssociation,
-        metrics,
+        reactMetrics,
+        viewershipMetrics,
     } = req.validatedData as TCreateTeamSchema;
 
     await prisma.dashapp_team.create({
@@ -250,14 +251,23 @@ export const createTeam = asyncHandler(async (req, res) => {
                           },
                       }
                     : undefined,
-            dashapp_metric: {
-                create: metrics?.map((metric) => ({
-                    viewership: metric.viewership,
-                    viewship_type: metric.viewshipType,
-                    reach: metric.reach,
-                    year: metric.year,
-                })),
-            },
+            dashapp_reach: reactMetrics
+                ? {
+                      create: reactMetrics.map((metric) => ({
+                          reach: metric.reach,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_viewership: viewershipMetrics
+                ? {
+                      create: viewershipMetrics.map((metric) => ({
+                          viewership: metric.viewership,
+                          viewship_type: metric.viewershipType,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
             instagram,
             facebook,
             linkedin,
@@ -311,9 +321,10 @@ export const editTeam = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         associationLevelId,
-        metrics,
         associationId,
         costOfAssociation,
+        reactMetrics,
+        viewershipMetrics,
     } = req.validatedData as TEditTeamSchema;
 
     await prisma.dashapp_team.update({
@@ -481,13 +492,19 @@ export const editTeam = asyncHandler(async (req, res) => {
                       },
                   }
                 : undefined,
-            dashapp_metric: metrics
+            dashapp_reach: reactMetrics
                 ? {
-                      deleteMany: {},
-                      create: metrics.map((metric) => ({
-                          viewership: metric.viewership,
-                          viewship_type: metric.viewshipType,
+                      create: reactMetrics.map((metric) => ({
                           reach: metric.reach,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_viewership: viewershipMetrics
+                ? {
+                      create: viewershipMetrics.map((metric) => ({
+                          viewership: metric.viewership,
+                          viewship_type: metric.viewershipType,
                           year: metric.year,
                       })),
                   }

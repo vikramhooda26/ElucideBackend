@@ -244,12 +244,17 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
             contact_linkedin: true,
         },
     },
-    dashapp_metric: {
+    dashapp_viewership: {
         select: {
             viewership: true,
             viewship_type: true,
             year: true,
+        },
+    },
+    dashapp_reach: {
+        select: {
             reach: true,
+            year: true,
         },
     },
 });
