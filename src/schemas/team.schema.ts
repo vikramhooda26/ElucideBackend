@@ -38,7 +38,7 @@ export const createTeamSchema = z.object({
         })
         .array()
         .optional(),
-    reactMetrics: z
+    reachMetrics: z
         .object({
             reach: z.string(),
             year: z.string(),
