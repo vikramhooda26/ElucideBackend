@@ -328,3 +328,30 @@ export const getAllStatus = async () => {
         label: status.status,
     }));
 };
+
+export const getAllBrands = async () => {
+    const brand = await prisma.dashapp_companydata.findMany({
+        select: { id: true, company_name: true },
+    });
+
+    return brand.map((v) => ({
+        value: v.id,
+        label: v.company_name,
+    }));
+};
+
+export const getAllTeams = async () => {
+    const team = await prisma.dashapp_team.findMany({
+        select: { id: true, team_name: true },
+    });
+
+    return team.map((v) => ({ value: v.id, label: v.team_name }));
+};
+
+export const getAllAthletes = async () => {
+    const athlete = await prisma.dashapp_athlete.findMany({
+        select: { id: true, athlete_name: true },
+    });
+
+    return athlete.map((v) => ({ value: v.id, label: v.athlete_name }));
+};

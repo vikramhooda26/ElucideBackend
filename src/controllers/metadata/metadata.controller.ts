@@ -34,6 +34,9 @@ import {
     getAllNationalities,
     getAllSocialMedia,
     getAllStatus,
+    getAllBrands,
+    getAllTeams,
+    getAllAthletes,
 } from "../../services/metadata.service.js";
 import asyncHandler from "express-async-handler";
 import { InternalServerError } from "../../lib/errors.js";
@@ -71,6 +74,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         nationality,
         socialMedia,
         athleteStatus,
+        brands,
+        teams,
+        athletes,
     } = req.validatedData as TGetAllMetadataSchema;
 
     try {
@@ -106,6 +112,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             nationalities,
             socialMediaplatforms,
             status,
+            brand,
+            team,
+            athlete,
         ] = await Promise.all([
             age ? getAllAgeRanges() : Promise.resolve(undefined),
             gender ? getAllGenders() : Promise.resolve(undefined),
@@ -156,6 +165,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             nationality ? getAllNationalities() : Promise.resolve(undefined),
             socialMedia ? getAllSocialMedia() : Promise.resolve(undefined),
             athleteStatus ? getAllStatus() : Promise.resolve(undefined),
+            brands ? getAllBrands() : Promise.resolve(undefined),
+            teams ? getAllTeams() : Promise.resolve(undefined),
+            athletes ? getAllAthletes() : Promise.resolve(undefined),
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {
@@ -196,6 +208,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             nationality: nationalities,
             socialMedia: socialMediaplatforms,
             athleteStatus: status,
+            brand: brands,
+            team: teams,
+            athlete: athletes,
         });
     } catch (error) {
         console.error("Error fetching metadata:", error);

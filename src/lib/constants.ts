@@ -70,4 +70,7 @@ export const METADATA_KEYS = {
     NATIONALITY: "nationality",
     SOCIAL_MEDIA: "socialMedia",
     ATHLETE_STATUS: "athleteStatus",
+    BRAND: "brand",
+    TEAM: "team",
+    ATHLETE: "athlete",
 } as const;
