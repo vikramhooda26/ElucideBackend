@@ -2,15 +2,15 @@ import { Prisma } from "@prisma/client";
 import { TBrandDetails } from "../types/brand.type.js";
 
 export class BrandResponseDTO {
-    brandId?: bigint;
-    companyName?: string;
+    id?: string;
+    name?: string;
     parentOrg?: string;
     subcategory?: {
         subcategory: string | undefined;
         category: string | undefined;
     }[];
-    hqCity?: string;
-    hqState?: string;
+    city?: string;
+    state?: string;
     agency?: string;
     tier?: (string | undefined)[];
     instagram!: string | null;
@@ -23,18 +23,16 @@ export class BrandResponseDTO {
     taglines?: string[];
     endorsements?: string[];
     activeCampaigns?: string[];
-    primaryMarketingPlatforms?: string[];
-    secondaryMarketingPlatforms?: string[];
+    primaryMarketingPlatform?: string[];
+    secondaryMarketingPlatform?: string[];
     age?: (string | undefined)[];
     gender?: (string | undefined)[];
     nccs?: (string | undefined)[];
-    keyMarketPrimary?: string[];
-    keyMarketSecondary?: string[];
-    keyMarketTertiary?: string[];
-    personalityTraits?: {
-        subPersonality?: string;
-        mainPersonality?: string;
-    }[];
+    primaryKeyMarket?: string[];
+    secondaryKeyMarket?: string[];
+    tertiary?: string[];
+    subPersonalityTraits?: string[];
+    mainPersonalityTraits?: string[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
         assets: string[];
@@ -61,6 +59,7 @@ export class BrandResponseDTO {
         asset: string[];
     }[];
     contactPersons?: {
+        id: string;
         name: string;
         designation: string | null;
         email: string | null;
@@ -70,8 +69,8 @@ export class BrandResponseDTO {
 
     static toResponse(brandDetails: TBrandDetails): BrandResponseDTO {
         const brandDTO = new BrandResponseDTO();
-        (brandDTO.brandId = brandDetails.id),
-            (brandDTO.companyName = brandDetails.company_name);
+        (brandDTO.id = brandDetails.id.toString()),
+            (brandDTO.name = brandDetails.company_name);
         brandDTO.parentOrg = brandDetails.dashapp_parentorg?.name;
         brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
             (subcategory) => ({
@@ -80,8 +79,8 @@ export class BrandResponseDTO {
                     subcategory.dashapp_subcategory?.dashapp_category.category,
             }),
         );
-        brandDTO.hqCity = brandDetails.dashapp_hqcity?.name;
-        brandDTO.hqState = brandDetails.dashapp_states?.state;
+        brandDTO.city = brandDetails.dashapp_hqcity?.name;
+        brandDTO.state = brandDetails.dashapp_states?.state;
         brandDTO.agency = brandDetails.dashapp_agency?.name;
         brandDTO.tier = brandDetails.dashapp_companydata_tier.map(
             (tier) => tier.dashapp_tier?.name,
@@ -103,11 +102,11 @@ export class BrandResponseDTO {
             brandDetails.dashapp_companydata_active_campaigns.map(
                 (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,
             );
-        brandDTO.primaryMarketingPlatforms =
+        brandDTO.primaryMarketingPlatform =
             brandDetails.dashapp_companydata_marketing_platforms_primary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
-        brandDTO.secondaryMarketingPlatforms =
+        brandDTO.secondaryMarketingPlatform =
             brandDetails.dashapp_companydata_marketing_platforms_secondary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
@@ -120,26 +119,26 @@ export class BrandResponseDTO {
         brandDTO.nccs = brandDetails.dashapp_companydata_income.map(
             (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
-        brandDTO.keyMarketPrimary =
+        brandDTO.primaryKeyMarket =
             brandDetails.dashapp_companydata_key_markets_primary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        brandDTO.keyMarketSecondary =
+        brandDTO.secondaryKeyMarket =
             brandDetails.dashapp_companydata_key_markets_secondary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        brandDTO.keyMarketTertiary =
+        brandDTO.tertiary =
             brandDetails.dashapp_companydata_key_markets_tertiary.map(
                 (state) => state.dashapp_states.state,
             );
-        brandDTO.personalityTraits =
+        brandDTO.subPersonalityTraits =
             brandDetails.dashapp_companydata_personality_traits.map(
-                (trait) => ({
-                    subPersonality: trait.dashapp_subpersonality.name,
-                    mainPersonality:
-                        trait.dashapp_subpersonality.dashapp_mainpersonality
-                            .name,
-                }),
+                (trait) => trait.dashapp_subpersonality.name,
+            );
+        brandDTO.mainPersonalityTraits =
+            brandDetails.dashapp_companydata_personality_traits.map(
+                (trait) =>
+                    trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             );
         brandDTO.sportsDealSummary = brandDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
@@ -186,6 +185,7 @@ export class BrandResponseDTO {
         );
         brandDTO.contactPersons = brandDetails.dashapp_brandcontact.map(
             (contact) => ({
+                id: contact.id.toString(),
                 name: contact.contact_name,
                 designation: contact.contact_designation,
                 email: contact.contact_email,

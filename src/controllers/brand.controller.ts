@@ -72,7 +72,7 @@ export const getBrandById = asyncHandler(async (req, res) => {
         select: brandSelect,
     });
 
-    if (!brand) {
+    if (!brand?.id) {
         throw new NotFoundError("This brand does not exists");
     }
 
@@ -86,8 +86,8 @@ export const createBrand = asyncHandler(async (req, res) => {
         name,
         parentOrgId,
         subCategoryIds,
-        hqCityId,
-        hqStateId,
+        cityId,
+        stateId,
         agencyId,
         tierIds,
         facebook,
@@ -108,53 +108,65 @@ export const createBrand = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
+        userId,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TCreateBrandSchema;
 
-    await prisma.dashapp_companydata.create({
+    const brand = await prisma.dashapp_companydata.create({
         data: {
             company_name: name,
-            dashapp_parentorg: {
-                connect: parentOrgId
-                    ? {
+            created_by: { connect: { id: BigInt(userId) } },
+            modified_by: { connect: { id: BigInt(userId) } },
+            dashapp_parentorg: parentOrgId
+                ? {
+                      connect: {
                           id: BigInt(parentOrgId),
-                      }
-                    : undefined,
-            },
-            dashapp_companydata_subcategory: {
-                create: subCategoryIds?.map((subCategoryId) => ({
-                    dashapp_subcategory: {
-                        connect: { id: BigInt(subCategoryId) },
-                    },
-                })),
-            },
-            dashapp_hqcity: {
-                connect: hqCityId
-                    ? {
-                          id: BigInt(hqCityId),
-                      }
-                    : undefined,
-            },
-            dashapp_states: {
-                connect: hqStateId
-                    ? {
-                          id: BigInt(hqStateId),
-                      }
-                    : undefined,
-            },
-            dashapp_agency: {
-                connect: agencyId
-                    ? {
+                      },
+                  }
+                : undefined,
+            dashapp_companydata_subcategory: subCategoryIds
+                ? {
+                      create: subCategoryIds?.map((subCategoryId) => ({
+                          dashapp_subcategory: {
+                              connect: { id: BigInt(subCategoryId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_hqcity: cityId
+                ? {
+                      connect: {
+                          id: BigInt(cityId),
+                      },
+                  }
+                : undefined,
+            dashapp_states: stateId
+                ? {
+                      connect: {
+                          id: BigInt(stateId),
+                      },
+                  }
+                : undefined,
+            dashapp_agency: agencyId
+                ? {
+                      connect: {
                           id: BigInt(agencyId),
-                      }
-                    : undefined,
-            },
-            dashapp_companydata_tier: {
-                create: tierIds?.map((tierId) => ({
-                    dashapp_tier: {
-                        connect: { id: BigInt(tierId) },
-                    },
-                })),
-            },
+                      },
+                  }
+                : undefined,
+            dashapp_companydata_tier: tierIds
+                ? {
+                      create: tierIds?.map((tierId) => ({
+                          dashapp_tier: {
+                              connect: { id: BigInt(tierId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata_personality_traits: subPersonalityTraitIds
                 ? {
                       create: subPersonalityTraitIds?.map((traitId) => ({
@@ -164,78 +176,110 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_taglines: {
-                create: taglineIds?.map((taglineId) => ({
-                    dashapp_taglines: {
-                        connect: { id: BigInt(taglineId) },
-                    },
-                })),
-            },
-            dashapp_companydata_active_campaigns: {
-                create: activeCampaignIds?.map((activeCampaignId) => ({
-                    dashapp_activecampaigns: {
-                        connect: { id: BigInt(activeCampaignId) },
-                    },
-                })),
-            },
-            dashapp_companydata_marketing_platforms_primary: {
-                create: primaryMarketingPlatformIds?.map(
-                    (primaryMarketingPlatformId) => ({
-                        dashapp_marketingplatform: {
-                            connect: {
-                                id: BigInt(primaryMarketingPlatformId),
-                            },
-                        },
-                    }),
-                ),
-            },
-            dashapp_companydata_marketing_platforms_secondary: {
-                create: secondaryMarketingPlatformIds?.map(
-                    (secondaryMarketingPlatformId) => ({
-                        dashapp_marketingplatform: {
-                            connect: {
-                                id: BigInt(secondaryMarketingPlatformId),
-                            },
-                        },
-                    }),
-                ),
-            },
-            dashapp_companydata_age: {
-                create: ageIds?.map((ageId) => ({
-                    dashapp_age: {
-                        connect: { id: BigInt(ageId) },
-                    },
-                })),
-            },
-            dashapp_companydata_gender: {
-                create: genderIds?.map((genderId) => ({
-                    dashapp_gender: {
-                        connect: { id: BigInt(genderId) },
-                    },
-                })),
-            },
-            dashapp_companydata_income: {
-                create: nccsIds?.map((nccsId) => ({
-                    dashapp_nccs: {
-                        connect: { id: BigInt(nccsId) },
-                    },
-                })),
-            },
-            dashapp_companydata_key_markets_primary: {
-                create: primaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_companydata_key_markets_secondary: {
-                create: secondaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_companydata_key_markets_tertiary: {
-                create: tertiaryIds?.map((tertiaryId) => ({
-                    dashapp_states: { connect: { id: BigInt(tertiaryId) } },
-                })),
-            },
+            dashapp_companydata_taglines: taglineIds
+                ? {
+                      create: taglineIds?.map((taglineId) => ({
+                          dashapp_taglines: {
+                              connect: { id: BigInt(taglineId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_active_campaigns: activeCampaignIds
+                ? {
+                      create: activeCampaignIds?.map((activeCampaignId) => ({
+                          dashapp_activecampaigns: {
+                              connect: { id: BigInt(activeCampaignId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_marketing_platforms_primary:
+                primaryMarketingPlatformIds
+                    ? {
+                          create: primaryMarketingPlatformIds?.map(
+                              (primaryMarketingPlatformId) => ({
+                                  dashapp_marketingplatform: {
+                                      connect: {
+                                          id: BigInt(
+                                              primaryMarketingPlatformId,
+                                          ),
+                                      },
+                                  },
+                              }),
+                          ),
+                      }
+                    : undefined,
+            dashapp_companydata_marketing_platforms_secondary:
+                secondaryMarketingPlatformIds
+                    ? {
+                          create: secondaryMarketingPlatformIds?.map(
+                              (secondaryMarketingPlatformId) => ({
+                                  dashapp_marketingplatform: {
+                                      connect: {
+                                          id: BigInt(
+                                              secondaryMarketingPlatformId,
+                                          ),
+                                      },
+                                  },
+                              }),
+                          ),
+                      }
+                    : undefined,
+            dashapp_companydata_age: ageIds
+                ? {
+                      create: ageIds?.map((ageId) => ({
+                          dashapp_age: {
+                              connect: { id: BigInt(ageId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_gender: genderIds
+                ? {
+                      create: genderIds?.map((genderId) => ({
+                          dashapp_gender: {
+                              connect: { id: BigInt(genderId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_income: nccsIds
+                ? {
+                      create: nccsIds?.map((nccsId) => ({
+                          dashapp_nccs: {
+                              connect: { id: BigInt(nccsId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_key_markets_primary: primaryMarketIds
+                ? {
+                      create: primaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_key_markets_secondary: secondaryMarketIds
+                ? {
+                      create: secondaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_key_markets_tertiary: tertiaryIds
+                ? {
+                      create: tertiaryIds?.map((tertiaryId) => ({
+                          dashapp_states: {
+                              connect: { id: BigInt(tertiaryId) },
+                          },
+                      })),
+                  }
+                : undefined,
             strategy_overview: strategyOverview,
             instagram,
             facebook,
@@ -244,7 +288,23 @@ export const createBrand = asyncHandler(async (req, res) => {
             youtube,
             website,
         },
+        select: {
+            id: true,
+        },
     });
+
+    if (contactName) {
+        await prisma.dashapp_brandcontact.create({
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_email: contactEmail,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+                dashapp_companydata: { connect: { id: BigInt(brand.id) } },
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "Brand created",
@@ -262,8 +322,8 @@ export const editBrand = asyncHandler(async (req, res) => {
         name,
         parentOrgId,
         subCategoryIds,
-        hqCityId,
-        hqStateId,
+        cityId,
+        stateId,
         agencyId,
         tierIds,
         facebook,
@@ -284,6 +344,13 @@ export const editBrand = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
+        userId,
+        contactDesignation,
+        contactEmail,
+        contactId,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TEditBrandSchema;
 
     await prisma.dashapp_companydata.update({
@@ -293,6 +360,7 @@ export const editBrand = asyncHandler(async (req, res) => {
             dashapp_parentorg: parentOrgId
                 ? { connect: { id: BigInt(parentOrgId) } }
                 : undefined,
+            modified_by: { connect: { id: BigInt(userId) } },
             dashapp_companydata_subcategory: subCategoryIds
                 ? {
                       deleteMany: {},
@@ -303,11 +371,11 @@ export const editBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_hqcity: hqCityId
-                ? { connect: { id: BigInt(hqCityId) } }
+            dashapp_hqcity: cityId
+                ? { connect: { id: BigInt(cityId) } }
                 : undefined,
-            dashapp_states: hqStateId
-                ? { connect: { id: BigInt(hqStateId) } }
+            dashapp_states: stateId
+                ? { connect: { id: BigInt(stateId) } }
                 : undefined,
             dashapp_agency: agencyId
                 ? { connect: { id: BigInt(agencyId) } }
@@ -446,7 +514,21 @@ export const editBrand = asyncHandler(async (req, res) => {
             youtube,
             website,
         },
+        select: { id: true },
     });
+
+    if (contactId) {
+        await prisma.dashapp_brandcontact.update({
+            where: { id: BigInt(contactId) },
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_linkedin: contactLinkedin,
+                contact_email: contactEmail,
+                contact_no: contactNumber,
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "Brand details updated",
@@ -465,7 +547,7 @@ export const deleteBrand = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!deletedBrand) {
+    if (!deletedBrand?.id) {
         throw new NotFoundError("This brand does not exists");
     }
 

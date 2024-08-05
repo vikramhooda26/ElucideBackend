@@ -2,10 +2,11 @@ import z from "zod";
 
 export const createBrandSchema = z.object({
     name: z.string(),
+    userId: z.string(),
     parentOrgId: z.string().optional(),
     subCategoryIds: z.string().array().optional(),
-    hqCityId: z.string().optional(),
-    hqStateId: z.string().optional(),
+    cityId: z.string().optional(),
+    stateId: z.string().optional(),
     agencyId: z.string().optional(),
     tierIds: z.string().array().optional(),
     instagram: z.string().optional(),
@@ -26,9 +27,16 @@ export const createBrandSchema = z.object({
     secondaryMarketingPlatformIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
 });
 
-export const editBrandSchema = createBrandSchema.partial();
+export const editBrandSchema = createBrandSchema
+    .partial()
+    .extend({ userId: z.string(), contactId: z.string().optional() });
 
 export type TCreateBrandSchema = z.infer<typeof createBrandSchema>;
 export type TEditBrandSchema = z.infer<typeof editBrandSchema>;

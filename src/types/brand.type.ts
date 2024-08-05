@@ -233,6 +233,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         dashapp_brandcontact: {
             select: {
+                id: true,
                 contact_name: true,
                 contact_designation: true,
                 contact_email: true,
