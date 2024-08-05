@@ -25,10 +25,16 @@ export const createAthleteSchema = z.object({
     primarySocialMediaPlatformIds: z.string().array().optional(),
     secondarySocialMediaPlatformIds: z.string().array().optional(),
     statusId: z.string().optional(),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
 });
 
 export const editAthleteSchema = createAthleteSchema.partial().extend({
     associationId: z.string().optional(),
+    contactId: z.string().optional(),
     userId: z.string(),
 });
 

@@ -10,6 +10,7 @@ import {
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
+import { convertStringToInt } from "../lib/helpers.js";
 
 const findAgeRange = async (age: number): Promise<string | undefined> => {
     const ageRanges = await prisma.dashapp_age.findMany({
@@ -139,13 +140,18 @@ export const createAthlete = asyncHandler(async (req, res) => {
         costOfAssociation,
         statusId,
         stateId,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TCreateAthleteSchema;
 
     const ageRange = age ? await findAgeRange(Number(age)) : undefined;
 
     console.log("\n\nageRange:", ageRange);
 
-    await prisma.dashapp_athlete.create({
+    const athlete = await prisma.dashapp_athlete.create({
         data: {
             athlete_name: name,
             created_by: { connect: { id: BigInt(userId) } },
@@ -156,15 +162,21 @@ export const createAthlete = asyncHandler(async (req, res) => {
             linkedin: linkedin,
             youtube: youtube,
             website: website,
-            dashapp_agency: {
-                connect: agencyId ? { id: BigInt(agencyId) } : undefined,
-            },
-            dashapp_states: {
-                connect: stateId ? { id: BigInt(stateId) } : undefined,
-            },
-            dashapp_athlete_status: {
-                connect: statusId ? { id: BigInt(statusId) } : undefined,
-            },
+            dashapp_agency: agencyId
+                ? {
+                      connect: { id: BigInt(agencyId) },
+                  }
+                : undefined,
+            dashapp_states: stateId
+                ? {
+                      connect: { id: BigInt(stateId) },
+                  }
+                : undefined,
+            dashapp_athlete_status: statusId
+                ? {
+                      connect: { id: BigInt(statusId) },
+                  }
+                : undefined,
             association:
                 associationLevelId || costOfAssociation
                     ? {
@@ -204,9 +216,11 @@ export const createAthlete = asyncHandler(async (req, res) => {
                           ),
                       }
                     : undefined,
-            dashapp_sport: {
-                connect: sportId ? { id: BigInt(sportId) } : undefined,
-            },
+            dashapp_sport: sportId
+                ? {
+                      connect: { id: BigInt(sportId) },
+                  }
+                : undefined,
             nationality: nationalityId
                 ? { connect: { id: BigInt(nationalityId) } }
                 : undefined,
@@ -219,50 +233,79 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       }))
                     : undefined,
             },
-            age: Number(age),
-            dashapp_athlete_target_age: {
-                create: ageRange
-                    ? {
+            age: age ? convertStringToInt(age) : undefined,
+            dashapp_athlete_target_age: ageRange
+                ? {
+                      create: {
                           dashapp_age: {
                               connect: { age_range: ageRange },
                           },
-                      }
-                    : undefined,
-            },
-            dashapp_athlete_target_gender: {
-                create: genderId
-                    ? {
+                      },
+                  }
+                : undefined,
+            dashapp_athlete_target_gender: genderId
+                ? {
+                      create: {
                           dashapp_gender: { connect: { id: BigInt(genderId) } },
-                      }
-                    : undefined,
-            },
-            dashapp_athlete_target_income: {
-                create: nccsIds
-                    ? nccsIds.map((nccsId) => ({
+                      },
+                  }
+                : undefined,
+            dashapp_athlete_target_income: nccsIds
+                ? {
+                      create: nccsIds.map((nccsId) => ({
                           dashapp_nccs: { connect: { id: BigInt(nccsId) } },
-                      }))
-                    : undefined,
-            },
-            dashapp_athlete_key_markets_primary: {
-                create: primaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_athlete_key_markets_secondary: {
-                create: secondaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_athlete_key_markets_tertiary: {
-                create: tertiaryIds?.map((tertiaryId) => ({
-                    dashapp_states: { connect: { id: BigInt(tertiaryId) } },
-                })),
-            },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_primary: primaryMarketIds
+                ? {
+                      create: primaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_secondary: secondaryMarketIds
+                ? {
+                      create: secondaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_tertiary: tertiaryIds
+                ? {
+                      create: tertiaryIds?.map((tertiaryId) => ({
+                          dashapp_states: {
+                              connect: { id: BigInt(tertiaryId) },
+                          },
+                      })),
+                  }
+                : undefined,
         },
         select: {
             id: true,
         },
     });
+
+    if (contactName) {
+        await prisma.dashapp_athletecontact.create({
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_email: contactEmail,
+                contact_no: contactNumber,
+                contact_linkedin: contactLinkedin,
+                dashapp_athlete: {
+                    connect: {
+                        id: athlete.id,
+                    },
+                },
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "Athlete created",
@@ -311,6 +354,12 @@ export const editAthlete = asyncHandler(async (req, res) => {
         secondarySocialMediaPlatformIds,
         statusId,
         stateId,
+        contactId,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TEditAthleteSchema;
 
     const ageRange = age ? await findAgeRange(Number(age)) : undefined;
@@ -435,6 +484,19 @@ export const editAthlete = asyncHandler(async (req, res) => {
             },
         },
     });
+
+    if (contactId) {
+        await prisma.dashapp_athletecontact.update({
+            where: { id: BigInt(contactId) },
+            data: {
+                contact_name: contactName,
+                contact_designation: contactDesignation,
+                contact_email: contactEmail,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "Athlete details updated",
