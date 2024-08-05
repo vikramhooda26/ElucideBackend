@@ -131,6 +131,7 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     },
     dashapp_athletecontact: {
         select: {
+            id: true,
             contact_name: true,
             contact_email: true,
             contact_linkedin: true,

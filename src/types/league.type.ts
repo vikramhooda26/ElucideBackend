@@ -235,6 +235,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_leaguecontact: {
             select: {
+                id: true,
                 contact_name: true,
                 contact_designation: true,
                 contact_email: true,
@@ -253,6 +254,20 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 reach: true,
                 year: true,
+            },
+        },
+        dashapp_leagueinfo_gender: {
+            select: {
+                dashapp_gender: {
+                    select: {
+                        gender_is: true,
+                    },
+                },
+            },
+        },
+        dashapp_team: {
+            select: {
+                team_name: true,
             },
         },
     },

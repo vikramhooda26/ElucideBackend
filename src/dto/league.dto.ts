@@ -2,10 +2,10 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TLeagueDetails } from "../types/league.type.js";
 
 export class LeagueResponseDTO {
-    id?: bigint;
+    id?: string;
     name?: string;
     sport?: string;
-    leagueOwners?: string[];
+    owners?: string[];
     yearOfInception!: string | null;
     broadcastPartner?: string;
     ottPartner?: string;
@@ -26,10 +26,10 @@ export class LeagueResponseDTO {
     associationLevel!: (string | null | undefined)[];
     associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
-    personalityTraits?: {
-        subPersonalityTriats: string;
-        mainPersonalityTrait: string;
-    }[];
+    subPersonalityTriats!: string[];
+    mainPersonalityTraits!: string[];
+    team?: string[];
+    gender?: string[];
     endorsements?: string[];
     format?: string;
     age?: (string | undefined)[];
@@ -57,6 +57,7 @@ export class LeagueResponseDTO {
         partner?: string;
     }[];
     contactPersons?: {
+        id: string;
         name: string;
         designation: string | null;
         email: string | null;
@@ -75,10 +76,10 @@ export class LeagueResponseDTO {
 
     static toResponse(leagueDetails: TLeagueDetails): LeagueResponseDTO {
         const leagueDTO = new LeagueResponseDTO();
-        (leagueDTO.id = leagueDetails.id),
+        (leagueDTO.id = leagueDetails.id.toString()),
             (leagueDTO.name = leagueDetails.property_name);
         leagueDTO.sport = leagueDetails.dashapp_sport?.name;
-        leagueDTO.leagueOwners = leagueDetails.dashapp_leagueinfo_owner.map(
+        leagueDTO.owners = leagueDetails.dashapp_leagueinfo_owner.map(
             (owner) => owner.dashapp_leagueowner.name,
         );
         leagueDTO.yearOfInception = leagueDetails.year_of_inception;
@@ -94,6 +95,12 @@ export class LeagueResponseDTO {
         leagueDTO.strategyOverview = leagueDetails.strategy_overview;
         leagueDTO.taglines = leagueDetails.dashapp_leagueinfo_taglines.map(
             (tagline) => tagline.dashapp_taglines.name,
+        );
+        leagueDTO.gender = leagueDetails.dashapp_leagueinfo_gender.map(
+            (gender) => gender.dashapp_gender.gender_is,
+        );
+        leagueDTO.team = leagueDetails.dashapp_team.map(
+            (team) => team.team_name,
         );
         leagueDTO.format = leagueDetails.format?.format;
         leagueDTO.activeCampaigns =
@@ -129,14 +136,14 @@ export class LeagueResponseDTO {
         leagueDTO.tiers = leagueDetails.dashapp_leagueinfo_tier.map(
             (tier) => tier.dashapp_tier?.name,
         );
-        leagueDTO.personalityTraits =
+        leagueDTO.subPersonalityTriats =
             leagueDetails.dashapp_leagueinfo_personality_traits.map(
-                (trait) => ({
-                    subPersonalityTriats: trait.dashapp_subpersonality.name,
-                    mainPersonalityTrait:
-                        trait.dashapp_subpersonality.dashapp_mainpersonality
-                            .name,
-                }),
+                (trait) => trait.dashapp_subpersonality.name,
+            );
+        leagueDTO.mainPersonalityTraits =
+            leagueDetails.dashapp_leagueinfo_personality_traits.map(
+                (trait) =>
+                    trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             );
         leagueDTO.endorsements = leagueDetails.dashapp_leagueendorsements.map(
             (endorse) => endorse.name,
@@ -181,6 +188,7 @@ export class LeagueResponseDTO {
             }),
             (leagueDTO.contactPersons = leagueDetails.dashapp_leaguecontact.map(
                 (contact) => ({
+                    id: contact.id.toString(),
                     designation: contact.contact_designation,
                     email: contact.contact_email,
                     linkedin: contact.contact_linkedin,

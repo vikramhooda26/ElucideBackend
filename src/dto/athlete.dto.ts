@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { TAthleteDetails } from "../types/athlete.type.js";
 
 export class AthleteResponseDTO {
-    id?: bigint;
+    id?: string;
     name?: string;
     nationality?: string;
     sport?: string;
@@ -49,6 +49,7 @@ export class AthleteResponseDTO {
         partner?: string;
     }[];
     contactPersons?: {
+        id: string;
         name: string;
         email?: string | null;
         linkedin?: string | null;
@@ -64,7 +65,7 @@ export class AthleteResponseDTO {
 
     static toResponse(athleteDetails: TAthleteDetails): AthleteResponseDTO {
         const athleteDTO = new AthleteResponseDTO();
-        athleteDTO.id = athleteDetails.id;
+        athleteDTO.id = athleteDetails.id.toString();
         athleteDTO.name = athleteDetails.athlete_name;
         athleteDTO.nationality = athleteDetails.nationality?.name;
         athleteDTO.sport = athleteDetails.dashapp_sport?.name;
@@ -147,6 +148,7 @@ export class AthleteResponseDTO {
             }));
         athleteDTO.contactPersons = athleteDetails.dashapp_athletecontact.map(
             (contact) => ({
+                id: contact.id.toString(),
                 name: contact.contact_name,
                 email: contact.contact_email,
                 linkedin: contact.contact_linkedin,

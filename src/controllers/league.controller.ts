@@ -43,19 +43,13 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
             created_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
             modified_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
             _count: true,
@@ -65,7 +59,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
 
-    if (!leagues) {
+    if (leagues.length < 1) {
         throw new NotFoundError("League data does not exists");
     }
 
@@ -120,11 +114,19 @@ export const createLeague = asyncHandler(async (req, res) => {
         viewershipMetrics,
         associationLevelId,
         costOfAssociation,
+        userId,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TCreateLeagueSchema;
 
-    await prisma.dashapp_leagueinfo.create({
+    const league = await prisma.dashapp_leagueinfo.create({
         data: {
-            property_name: name ?? undefined,
+            property_name: name,
+            created_by: { connect: { id: BigInt(userId) } },
+            modified_by: { connect: { id: BigInt(userId) } },
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
@@ -139,26 +141,26 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            year_of_inception: yearOfInception ?? undefined,
+            year_of_inception: yearOfInception,
             format: formatId
                 ? {
                       connect: { id: BigInt(formatId) },
                   }
                 : undefined,
-            dashapp_broadcastpartner: {
-                connect: broadCastPartnerId
-                    ? {
+            dashapp_broadcastpartner: broadCastPartnerId
+                ? {
+                      connect: {
                           id: BigInt(broadCastPartnerId),
-                      }
-                    : undefined,
-            },
-            dashapp_ottpartner: {
-                connect: ottPartnerId
-                    ? {
+                      },
+                  }
+                : undefined,
+            dashapp_ottpartner: ottPartnerId
+                ? {
+                      connect: {
                           id: BigInt(ottPartnerId),
-                      }
-                    : undefined,
-            },
+                      },
+                  }
+                : undefined,
             dashapp_leagueinfo_personality_traits: subPersonalityTraitIds
                 ? {
                       create: subPersonalityTraitIds?.map((traitId) => ({
@@ -177,13 +179,13 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            instagram: instagram ?? undefined,
-            facebook: facebook ?? undefined,
-            linkedin: linkedin ?? undefined,
-            twitter: twitter ?? undefined,
-            youtube: youtube ?? undefined,
-            website: website ?? undefined,
-            strategy_overview: strategyOverview ?? undefined,
+            instagram: instagram,
+            facebook: facebook,
+            linkedin: linkedin,
+            twitter: twitter,
+            youtube: youtube,
+            website: website,
+            strategy_overview: strategyOverview,
             dashapp_leagueinfo_taglines: taglineIds
                 ? {
                       create: taglineIds?.map((taglineId) => ({
@@ -326,6 +328,19 @@ export const createLeague = asyncHandler(async (req, res) => {
         },
     });
 
+    if (contactName) {
+        await prisma.dashapp_leaguecontact.create({
+            data: {
+                contact_name: contactName,
+                contact_email: contactEmail,
+                contact_designation: contactDesignation,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+                dashapp_leagueinfo: { connect: { id: BigInt(league.id) } },
+            },
+        });
+    }
+
     res.status(STATUS_CODE.OK).json({
         message: "League created",
     });
@@ -370,6 +385,13 @@ export const editLeague = asyncHandler(async (req, res) => {
         viewershipMetrics,
         associationLevelId,
         costOfAssociation,
+        userId,
+        contactDesignation,
+        contactEmail,
+        contactId,
+        contactLinkedin,
+        contactName,
+        contactNumber,
     } = req.validatedData as TEditLeagueSchema;
 
     await prisma.dashapp_leagueinfo.update({
@@ -378,6 +400,7 @@ export const editLeague = asyncHandler(async (req, res) => {
         },
         data: {
             property_name: name,
+            modified_by: { connect: { id: BigInt(userId) } },
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
@@ -583,6 +606,19 @@ export const editLeague = asyncHandler(async (req, res) => {
             id: true,
         },
     });
+
+    if (contactId) {
+        await prisma.dashapp_leaguecontact.update({
+            where: { id: BigInt(contactId) },
+            data: {
+                contact_name: contactName,
+                contact_email: contactEmail,
+                contact_designation: contactDesignation,
+                contact_linkedin: contactLinkedin,
+                contact_no: contactNumber,
+            },
+        });
+    }
 
     res.status(STATUS_CODE.OK).json({
         message: "League details updated",

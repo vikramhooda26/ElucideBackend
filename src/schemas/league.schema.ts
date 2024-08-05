@@ -44,11 +44,19 @@ export const createLeagueSchema = z.object({
         .optional(),
     associationLevelId: z.string().optional(),
     costOfAssociation: z.string().optional(),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
+    userId: z.string(),
 });
 
-export const editLeagueSchema = createLeagueSchema
-    .extend({ associationId: z.string().optional() })
-    .partial();
+export const editLeagueSchema = createLeagueSchema.partial().extend({
+    associationId: z.string().optional(),
+    contactId: z.string().optional(),
+    userId: z.string(),
+});
 
 export type TCreateLeagueSchema = z.infer<typeof createLeagueSchema>;
 export type TEditLeagueSchema = z.infer<typeof editLeagueSchema>;
