@@ -185,17 +185,16 @@ export const getAllPersonalityTraits = async () => {
 };
 
 export const getAllSportsDealSummaryLevels = async () => {
-    const sportsDealSummaryLevels =
-        await prisma.dashapp_sportsdealsummary.findMany({
-            select: {
-                id: true,
-                dashapp_level: { select: { name: true } },
-            },
-        });
+    const sportsDealSummaryLevels = await prisma.dashapp_level.findMany({
+        select: {
+            id: true,
+            name: true,
+        },
+    });
 
     return sportsDealSummaryLevels.map((level) => ({
         value: level.id,
-        label: level.dashapp_level?.name,
+        label: level.name,
     }));
 };
 
@@ -223,17 +222,15 @@ export const getAllSportsDealSummaryTerritories = async () => {
 
 export const getAllSportsDealSummaryTypes = async () => {
     const sportsDealSummaryTypes =
-        await prisma.dashapp_activation_type.findMany({
+        await prisma.dashapp_marketingplatform.findMany({
             select: {
                 id: true,
-                dashapp_marketingplatform: {
-                    select: { platform: true },
-                },
+                platform: true,
             },
         });
     return sportsDealSummaryTypes.map((type) => ({
         value: type.id,
-        label: type.dashapp_marketingplatform.platform,
+        label: type.platform,
     }));
 };
 
