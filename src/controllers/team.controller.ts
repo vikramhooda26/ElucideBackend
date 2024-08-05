@@ -151,18 +151,20 @@ export const createTeam = asyncHandler(async (req, res) => {
                     id: BigInt(ownerId),
                 })),
             },
-            year_of_inception: yearOfInception ?? undefined,
-            franchise_fee: franchiseFee ?? undefined,
-            dashapp_hqcity: {
-                connect: cityId ? { id: BigInt(cityId) } : undefined,
-            },
-            dashapp_states: {
-                connect: stateId
-                    ? {
+            year_of_inception: yearOfInception,
+            franchise_fee: franchiseFee,
+            dashapp_hqcity: cityId
+                ? {
+                      connect: { id: BigInt(cityId) },
+                  }
+                : undefined,
+            dashapp_states: stateId
+                ? {
+                      connect: {
                           id: BigInt(stateId),
-                      }
-                    : undefined,
-            },
+                      },
+                  }
+                : undefined,
             dashapp_team_personality_traits: subPersonalityTraitIds
                 ? {
                       create: subPersonalityTraitIds?.map((traitId) => ({
@@ -181,7 +183,7 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview ?? undefined,
+            strategy_overview: strategyOverview,
             dashapp_team_taglines: taglineIds
                 ? {
                       create: taglineIds?.map((taglineId) => ({

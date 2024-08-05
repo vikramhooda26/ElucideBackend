@@ -237,6 +237,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     },
     dashapp_teamcontact: {
         select: {
+            id: true,
             contact_name: true,
             contact_designation: true,
             contact_email: true,

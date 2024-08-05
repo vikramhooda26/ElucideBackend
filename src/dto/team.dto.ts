@@ -2,7 +2,7 @@ import { Prisma, viewship_type } from "@prisma/client";
 import { TTeamDetails } from "../types/team.type.js";
 
 export class TeamResponseDTO {
-    id?: bigint;
+    id?: string;
     name?: string;
     owners?: string[];
     sport?: string;
@@ -32,10 +32,8 @@ export class TeamResponseDTO {
     associationLevel!: (string | null | undefined)[];
     associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
-    personalityTraits?: {
-        subPersonalityTraits: string;
-        mainPersonalityTrait: string;
-    }[];
+    subPersonalityTraits!: string[];
+    mainPersonalityTraits!: string[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
         assets: string[];
@@ -59,6 +57,7 @@ export class TeamResponseDTO {
         partner?: string;
     }[];
     contactPersons?: {
+        id: string;
         name: string;
         designation: string | null;
         email: string | null;
@@ -77,7 +76,8 @@ export class TeamResponseDTO {
 
     static toResponse(teamDetails: TTeamDetails): TeamResponseDTO {
         const teamDTO = new TeamResponseDTO();
-        (teamDTO.id = teamDetails.id), (teamDTO.name = teamDetails.team_name);
+        (teamDTO.id = teamDetails.id.toString()),
+            (teamDTO.name = teamDetails.team_name);
         teamDTO.owners = teamDetails.dashapp_team_owner.map(
             (owner) => owner.dashapp_teamowner.name,
         );
@@ -141,12 +141,15 @@ export class TeamResponseDTO {
         teamDTO.tiers = teamDetails.dashapp_team_tier.map(
             (tier) => tier.dashapp_tier?.name,
         );
-        teamDTO.personalityTraits =
-            teamDetails.dashapp_team_personality_traits.map((trait) => ({
-                subPersonalityTraits: trait.dashapp_subpersonality.name,
-                mainPersonalityTrait:
+        teamDTO.subPersonalityTraits =
+            teamDetails.dashapp_team_personality_traits.map(
+                (trait) => trait.dashapp_subpersonality.name,
+            );
+        teamDTO.mainPersonalityTraits =
+            teamDetails.dashapp_team_personality_traits.map(
+                (trait) =>
                     trait.dashapp_subpersonality.dashapp_mainpersonality.name,
-            }));
+            );
         teamDTO.sportsDealSummary = teamDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value,
@@ -182,6 +185,7 @@ export class TeamResponseDTO {
             }),
             (teamDTO.contactPersons = teamDetails.dashapp_teamcontact.map(
                 (contact) => ({
+                    id: contact.id.toString(),
                     designation: contact.contact_designation,
                     email: contact.contact_email,
                     linkedin: contact.contact_linkedin,
