@@ -74,9 +74,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
         nationality,
         socialMedia,
         athleteStatus,
-        brands,
-        teams,
-        athletes,
+        brand,
+        team,
+        athlete,
     } = req.validatedData as TGetAllMetadataSchema;
 
     try {
@@ -112,9 +112,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             nationalities,
             socialMediaplatforms,
             status,
-            brand,
-            team,
-            athlete,
+            brands,
+            teams,
+            athletes,
         ] = await Promise.all([
             age ? getAllAgeRanges() : Promise.resolve(undefined),
             gender ? getAllGenders() : Promise.resolve(undefined),
@@ -165,9 +165,9 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             nationality ? getAllNationalities() : Promise.resolve(undefined),
             socialMedia ? getAllSocialMedia() : Promise.resolve(undefined),
             athleteStatus ? getAllStatus() : Promise.resolve(undefined),
-            brands ? getAllBrands() : Promise.resolve(undefined),
-            teams ? getAllTeams() : Promise.resolve(undefined),
-            athletes ? getAllAthletes() : Promise.resolve(undefined),
+            brand ? getAllBrands() : Promise.resolve(undefined),
+            team ? getAllTeams() : Promise.resolve(undefined),
+            athlete ? getAllAthletes() : Promise.resolve(undefined),
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {

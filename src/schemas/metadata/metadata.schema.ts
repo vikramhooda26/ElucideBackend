@@ -32,9 +32,9 @@ export const getAllMetadataSchema = z.object({
     nationality: z.boolean().optional(),
     socialMedia: z.boolean().optional(),
     athleteStatus: z.boolean().optional(),
-    brands: z.boolean().optional(),
-    athletes: z.boolean().optional(),
-    teams: z.boolean().optional(),
+    brand: z.boolean().optional(),
+    athlete: z.boolean().optional(),
+    team: z.boolean().optional(),
 });
 
 export type TGetAllMetadataSchema = z.infer<typeof getAllMetadataSchema>;
