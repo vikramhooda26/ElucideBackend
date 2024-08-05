@@ -305,6 +305,7 @@ export const getAllNationalities = async () => {
         label: nationality.name,
     }));
 };
+
 export const getAllSocialMedia = async () => {
     const socialMediaplatforms =
         await prisma.dashapp_socialmedia_platform.findMany({
@@ -314,5 +315,16 @@ export const getAllSocialMedia = async () => {
     return socialMediaplatforms.map((platform) => ({
         value: platform.id,
         label: platform.name,
+    }));
+};
+
+export const getAllStatus = async () => {
+    const status = await prisma.dashapp_athlete_status.findMany({
+        select: { id: true, status: true },
+    });
+
+    return status.map((status) => ({
+        value: status.id,
+        label: status.status,
     }));
 };

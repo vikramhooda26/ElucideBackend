@@ -31,6 +31,7 @@ export const getAllMetadataSchema = z.object({
     associationLevel: z.boolean().optional(),
     nationality: z.boolean().optional(),
     socialMedia: z.boolean().optional(),
+    athleteStatus: z.boolean().optional(),
 });
 
 export type TGetAllMetadataSchema = z.infer<typeof getAllMetadataSchema>;
