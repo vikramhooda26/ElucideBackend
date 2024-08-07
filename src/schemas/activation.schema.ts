@@ -2,7 +2,7 @@ import z from "zod";
 
 export const createActivationSchema = z.object({
     userId: z.string(),
-    activationName: z.string(),
+    name: z.string(),
     leagueId: z.string().optional(),
     teamId: z.string().optional(),
     athleteId: z.string().optional(),

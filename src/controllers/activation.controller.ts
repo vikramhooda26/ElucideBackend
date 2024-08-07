@@ -72,7 +72,7 @@ export const getActivationById = asyncHandler(async (req, res) => {
         select: activationSelect,
     });
 
-    if (!activation) {
+    if (!activation?.id) {
         throw new NotFoundError("This activation summary does not exists");
     }
 
@@ -84,7 +84,7 @@ export const getActivationById = asyncHandler(async (req, res) => {
 
 export const createActivation = asyncHandler(async (req, res) => {
     const {
-        activationName,
+        name,
         userId,
         assetIds,
         marketIds,
@@ -98,7 +98,7 @@ export const createActivation = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_activation.create({
         data: {
-            name: activationName,
+            name: name,
             created_by: { connect: { id: BigInt(userId) } },
             modified_by: { connect: { id: BigInt(userId) } },
             dashapp_activation_assets: assetIds
@@ -164,7 +164,7 @@ export const editActivation = asyncHandler(async (req, res) => {
     }
 
     const {
-        activationName,
+        name,
         assetIds,
         athleteId,
         brandId,
@@ -179,7 +179,7 @@ export const editActivation = asyncHandler(async (req, res) => {
     await prisma.dashapp_activation.update({
         where: { id: BigInt(activationId) },
         data: {
-            name: activationName,
+            name: name,
             created_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,

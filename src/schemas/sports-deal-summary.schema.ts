@@ -1,14 +1,14 @@
 import z from "zod";
 
 export const createSportsDealSummarySchema = z.object({
-    typeId: z.string(),
-    statusId: z.string().optional(),
+    type: z.string(),
+    status: z.string().optional(),
     levelId: z.string().optional(),
     commencementYear: z.string().optional(),
     expirationDate: z.string().optional(),
     duration: z.string().optional(),
-    annualValue: z.bigint().optional(),
-    totalValue: z.bigint().optional(),
+    annualValue: z.string().optional(),
+    totalValue: z.string().optional(),
     territoryId: z.string().optional(),
     mediaLink: z.string().optional(),
     assetIds: z.string().array().optional(),

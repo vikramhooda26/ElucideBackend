@@ -8,6 +8,7 @@ import {
     TEditSportsDealSummarySchema,
 } from "../schemas/sports-deal-summary.schema.js";
 import { sportsDealSummarySelect } from "../types/sports-deal-summary.type.js";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -84,7 +85,7 @@ export const getSportsDealSummaryById = asyncHandler(async (req, res) => {
         },
     );
 
-    if (!sportsDealSummary) {
+    if (!sportsDealSummary?.id) {
         throw new NotFoundError("This sports deal summary does not exists");
     }
 
@@ -103,10 +104,10 @@ export const createSportsDealSummary = asyncHandler(async (req, res) => {
         expirationDate,
         levelId,
         mediaLink,
-        statusId,
+        status,
         territoryId,
         totalValue,
-        typeId,
+        type,
         brandId,
         athleteId,
         leagueId,
@@ -149,12 +150,12 @@ export const createSportsDealSummary = asyncHandler(async (req, res) => {
             dashapp_athlete: athleteId
                 ? { connect: { id: BigInt(athleteId) } }
                 : undefined,
-            annual_value: annualValue ? String(annualValue) : undefined,
-            total_value: totalValue ? String(totalValue) : undefined,
+            annual_value: annualValue ? new Decimal(annualValue) : undefined,
+            total_value: totalValue ? new Decimal(totalValue) : undefined,
             commencement_date: commencementYear ?? undefined,
             expiration_date: expirationDate ?? undefined,
-            type: typeId ?? undefined,
-            status: statusId ?? undefined,
+            type: type ?? undefined,
+            status: status ?? undefined,
             duration: duration ?? undefined,
             media_link: mediaLink ?? undefined,
         },
@@ -178,7 +179,7 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!sportsDealSummaryExits) {
+    if (!sportsDealSummaryExits?.id) {
         throw new NotFoundError("This sports deal summary does not exists");
     }
 
@@ -193,11 +194,11 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
         leagueId,
         levelId,
         mediaLink,
-        statusId,
+        status,
         teamId,
         territoryId,
         totalValue,
-        typeId,
+        type,
         userId,
     } = req.validatedData as TEditSportsDealSummarySchema;
 
@@ -238,12 +239,12 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
             dashapp_athlete: athleteId
                 ? { connect: { id: BigInt(athleteId) } }
                 : undefined,
-            annual_value: annualValue ? String(annualValue) : undefined,
-            total_value: totalValue ? String(totalValue) : undefined,
+            annual_value: annualValue ? new Decimal(annualValue) : undefined,
+            total_value: totalValue ? new Decimal(totalValue) : undefined,
             commencement_date: commencementYear ?? undefined,
             expiration_date: expirationDate ?? undefined,
-            type: typeId ?? undefined,
-            status: statusId ?? undefined,
+            type: type ?? undefined,
+            status: status ?? undefined,
             duration: duration ?? undefined,
             media_link: mediaLink ?? undefined,
         },
@@ -267,7 +268,7 @@ export const deleteSportsDealSummary = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!sportsDealSummaryExists) {
+    if (!sportsDealSummaryExists?.id) {
         throw new NotFoundError("This sports deal summary does not exists");
     }
 
