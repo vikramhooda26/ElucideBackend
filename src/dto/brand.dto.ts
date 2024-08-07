@@ -5,10 +5,8 @@ export class BrandResponseDTO {
     id?: string;
     name?: string;
     parentOrg?: string;
-    subcategory?: {
-        subcategory: string | undefined;
-        category: string | undefined;
-    }[];
+    subcategory!: (string | undefined)[];
+    maincategory!: (string | undefined)[];
     city?: string;
     state?: string;
     agency?: string;
@@ -34,7 +32,7 @@ export class BrandResponseDTO {
     subPersonalityTraits?: string[];
     mainPersonalityTraits?: string[];
     sportsDealSummary?: {
-        annualValue: Prisma.Decimal | null;
+        annualValue?: string;
         assets: string[];
         athleteName?: string;
         leagueName?: string;
@@ -44,14 +42,17 @@ export class BrandResponseDTO {
         expirationDate: string | null;
         level: string | undefined;
         mediaLink: string | null;
-        partner?: string;
+        brandName?: string;
         status: string | null;
         territory?: string;
-        totalValue: Prisma.Decimal | null;
+        totalValue?: string;
         type: string;
     }[];
     activationSummary?: {
-        partner?: string;
+        brandName?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
         name: string | null;
         type: string[];
         market: string[];
@@ -73,12 +74,13 @@ export class BrandResponseDTO {
             (brandDTO.name = brandDetails.company_name);
         brandDTO.parentOrg = brandDetails.dashapp_parentorg?.name;
         brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
-            (subcategory) => ({
-                subcategory: subcategory.dashapp_subcategory?.subcategory,
-                category:
-                    subcategory.dashapp_subcategory?.dashapp_category.category,
-            }),
+            (subcategory) => subcategory.dashapp_subcategory?.subcategory,
         );
+        brandDTO.maincategory =
+            brandDetails.dashapp_companydata_subcategory.map(
+                (subcategory) =>
+                    subcategory.dashapp_subcategory?.dashapp_category.category,
+            );
         brandDTO.city = brandDetails.dashapp_hqcity?.name;
         brandDTO.state = brandDetails.dashapp_states?.state;
         brandDTO.agency = brandDetails.dashapp_agency?.name;
@@ -142,7 +144,7 @@ export class BrandResponseDTO {
             );
         brandDTO.sportsDealSummary = brandDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
-                annualValue: deal.annual_value,
+                annualValue: deal.annual_value?.toString(),
                 assets: deal.dashapp_sportsdeal_assets.map(
                     (asset) => asset.dashapp_assets.asset,
                 ),
@@ -154,22 +156,19 @@ export class BrandResponseDTO {
                 expirationDate: deal.expiration_date,
                 level: deal.dashapp_level?.name,
                 mediaLink: deal.media_link,
-                partner:
-                    deal.dashapp_athlete?.athlete_name ||
-                    deal.dashapp_leagueinfo?.property_name ||
-                    deal.dashapp_team?.team_name,
+                brandName: deal.dashapp_companydata?.company_name,
                 status: deal.status,
                 territory: deal.dashapp_territory?.name,
-                totalValue: deal.total_value,
+                totalValue: deal.total_value?.toString(),
                 type: deal.type,
             }),
         );
         brandDTO.activationSummary = brandDetails.dashapp_activation.map(
             (activation) => ({
-                partner:
-                    activation.dashapp_athlete?.athlete_name ||
-                    activation.dashapp_leagueinfo?.property_name ||
-                    activation.dashapp_team?.team_name,
+                brandName: activation.dashapp_companydata?.company_name,
+                athleteName: activation.dashapp_athlete?.athlete_name,
+                leagueName: activation.dashapp_leagueinfo?.property_name,
+                teamName: activation.dashapp_team?.team_name,
                 name: activation.name,
                 type: activation.dashapp_activation_type.map(
                     (type) => type.dashapp_marketingplatform.platform,

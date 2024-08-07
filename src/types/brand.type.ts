@@ -170,6 +170,11 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                         name: true,
                     },
                 },
+                dashapp_companydata: {
+                    select: {
+                        company_name: true,
+                    },
+                },
                 commencement_date: true,
                 expiration_date: true,
                 duration: true,
@@ -219,6 +224,11 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                                 state: true,
                             },
                         },
+                    },
+                },
+                dashapp_companydata: {
+                    select: {
+                        company_name: true,
                     },
                 },
                 Year: true,

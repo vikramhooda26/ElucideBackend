@@ -18,11 +18,11 @@ export class LeagueResponseDTO {
     strategyOverview!: string | null;
     taglines?: string[];
     activeCampaigns?: string[];
-    keyMarketPrimary?: string[];
-    keyMarketSecondary?: string[];
-    keyMarketTertiary?: string[];
-    primaryMarketingPlatforms?: string[];
-    secondaryMarketingPlatforms?: string[];
+    primaryKeyMarket?: string[];
+    secondaryKeyMarket?: string[];
+    tertiary?: string[];
+    primaryMarketingPlatform?: string[];
+    secondaryMarketingPlatform?: string[];
     associationLevel!: (string | null | undefined)[];
     associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
@@ -42,7 +42,10 @@ export class LeagueResponseDTO {
         expirationDate: string | null;
         level: string | undefined;
         mediaLink: string | null;
-        partner?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
+        brandName?: string;
         status: string | null;
         territory?: string;
         totalValue: Prisma.Decimal | null;
@@ -54,7 +57,10 @@ export class LeagueResponseDTO {
         name: string | null;
         type: string[];
         year: string | null;
-        partner?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
+        brandName?: string;
     }[];
     contactPersons?: {
         id: string;
@@ -107,23 +113,23 @@ export class LeagueResponseDTO {
             leagueDetails.dashapp_leagueinfo_active_campaigns.map(
                 (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,
             );
-        leagueDTO.keyMarketPrimary =
+        leagueDTO.primaryKeyMarket =
             leagueDetails.dashapp_leagueinfo_key_markets_primary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        leagueDTO.keyMarketSecondary =
+        leagueDTO.secondaryKeyMarket =
             leagueDetails.dashapp_leagueinfo_key_markets_secondary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        leagueDTO.keyMarketTertiary =
+        leagueDTO.tertiary =
             leagueDetails.dashapp_leagueinfo_key_markets_tertiary.map(
                 (state) => state.dashapp_states.state,
             );
-        leagueDTO.primaryMarketingPlatforms =
+        leagueDTO.primaryMarketingPlatform =
             leagueDetails.dashapp_leagueinfo_marketing_platforms_primary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
-        leagueDTO.secondaryMarketingPlatforms =
+        leagueDTO.secondaryMarketingPlatform =
             leagueDetails.dashapp_leagueinfo_marketing_platforms_secondary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
@@ -165,7 +171,10 @@ export class LeagueResponseDTO {
                 expirationDate: deal.expiration_date,
                 level: deal.dashapp_level?.name,
                 mediaLink: deal.media_link,
-                partner: deal.dashapp_companydata?.company_name,
+                brandName: deal.dashapp_companydata?.company_name,
+                athleteName: deal.dashapp_athlete?.athlete_name,
+                leagueName: deal.dashapp_leagueinfo?.property_name,
+                teamName: deal.dashapp_team?.team_name,
                 status: deal.status,
                 territory: deal.dashapp_territory?.name,
                 totalValue: deal.total_value,
@@ -183,7 +192,10 @@ export class LeagueResponseDTO {
                 type: activation.dashapp_activation_type.map(
                     (type) => type.dashapp_marketingplatform.platform,
                 ),
-                partner: activation.dashapp_companydata?.company_name,
+                brandName: activation.dashapp_companydata?.company_name,
+                athleteName: activation.dashapp_athlete?.athlete_name,
+                leagueName: activation.dashapp_leagueinfo?.property_name,
+                teamName: activation.dashapp_team?.team_name,
                 year: activation.Year,
             }),
             (leagueDTO.contactPersons = leagueDetails.dashapp_leaguecontact.map(

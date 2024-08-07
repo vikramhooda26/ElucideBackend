@@ -9,8 +9,8 @@ export class TeamResponseDTO {
     league?: string;
     yearOfInception!: string | null;
     franchiseFee!: Prisma.Decimal | null;
-    hqCity?: string;
-    hqState?: string;
+    city?: string;
+    state?: string;
     instagram!: string | null;
     facebook!: string | null;
     twitter!: string | null;
@@ -21,14 +21,14 @@ export class TeamResponseDTO {
     taglines?: string[];
     endorsements?: string[];
     activeCampaigns?: string[];
-    primaryMarketingPlatforms?: string[];
-    secondaryMarketingPlatforms?: string[];
+    primaryMarketingPlatform?: string[];
+    secondaryMarketingPlatform?: string[];
     age?: (string | undefined)[];
     gender?: (string | undefined)[];
     nccs?: (string | undefined)[];
-    keyMarketPrimary?: string[];
-    keyMarketSecondary?: string[];
-    keyMarketTertiary?: string[];
+    primaryKeyMarket?: string[];
+    secondaryKeyMarket?: string[];
+    tertiary?: string[];
     associationLevel!: (string | null | undefined)[];
     associationCost?: (Prisma.Decimal | null)[];
     tiers!: (string | undefined)[];
@@ -42,7 +42,10 @@ export class TeamResponseDTO {
         expirationDate: string | null;
         level: string | undefined;
         mediaLink: string | null;
-        partner?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
+        brandName?: string;
         status: string | null;
         territory?: string;
         totalValue: Prisma.Decimal | null;
@@ -54,7 +57,10 @@ export class TeamResponseDTO {
         name: string | null;
         type: string[];
         year: string | null;
-        partner?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
+        brandName?: string;
     }[];
     contactPersons?: {
         id: string;
@@ -85,8 +91,8 @@ export class TeamResponseDTO {
         teamDTO.league = teamDetails.dashapp_leagueinfo?.property_name;
         teamDTO.yearOfInception = teamDetails.year_of_inception;
         teamDTO.franchiseFee = teamDetails.franchise_fee;
-        teamDTO.hqCity = teamDetails.dashapp_hqcity?.name;
-        teamDTO.hqState = teamDetails.dashapp_states?.state;
+        teamDTO.city = teamDetails.dashapp_hqcity?.name;
+        teamDTO.state = teamDetails.dashapp_states?.state;
         teamDTO.instagram = teamDetails.instagram;
         teamDTO.facebook = teamDetails.facebook;
         teamDTO.twitter = teamDetails.twitter;
@@ -103,11 +109,11 @@ export class TeamResponseDTO {
         teamDTO.activeCampaigns = teamDetails.dashapp_team_active_campaigns.map(
             (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,
         );
-        teamDTO.primaryMarketingPlatforms =
+        teamDTO.primaryMarketingPlatform =
             teamDetails.dashapp_team_marketing_platforms_primary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
-        teamDTO.secondaryMarketingPlatforms =
+        teamDTO.secondaryMarketingPlatform =
             teamDetails.dashapp_team_marketing_platforms_secondary.map(
                 (platform) => platform.dashapp_marketingplatform.platform,
             );
@@ -120,18 +126,17 @@ export class TeamResponseDTO {
         teamDTO.nccs = teamDetails.dashapp_team_income.map(
             (nccs) => nccs.dashapp_nccs?.nccs_class,
         );
-        teamDTO.keyMarketPrimary =
+        teamDTO.primaryKeyMarket =
             teamDetails.dashapp_team_key_markets_primary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        teamDTO.keyMarketSecondary =
+        teamDTO.secondaryKeyMarket =
             teamDetails.dashapp_team_key_markets_secondary.map(
                 (market) => market.dashapp_keymarket.zone,
             );
-        teamDTO.keyMarketTertiary =
-            teamDetails.dashapp_team_key_markets_tertiary.map(
-                (state) => state.dashapp_states.state,
-            );
+        teamDTO.tertiary = teamDetails.dashapp_team_key_markets_tertiary.map(
+            (state) => state.dashapp_states.state,
+        );
         teamDTO.associationLevel = teamDetails.association.map(
             (asso) => asso.association_level?.name,
         );
@@ -161,7 +166,10 @@ export class TeamResponseDTO {
                 expirationDate: deal.expiration_date,
                 level: deal.dashapp_level?.name,
                 mediaLink: deal.media_link,
-                partner: deal.dashapp_companydata?.company_name,
+                brandName: deal.dashapp_companydata?.company_name,
+                leagueName: deal.dashapp_leagueinfo?.property_name,
+                teamName: deal.dashapp_team?.team_name,
+                athleteName: deal.dashapp_athlete?.athlete_name,
                 status: deal.status,
                 territory: deal.dashapp_territory?.name,
                 totalValue: deal.total_value,
@@ -176,7 +184,10 @@ export class TeamResponseDTO {
                 market: activation.dashapp_activation_market.map(
                     (market) => market.dashapp_states.state,
                 ),
-                partner: activation.dashapp_companydata?.company_name,
+                brandName: activation.dashapp_companydata?.company_name,
+                leagueName: activation.dashapp_leagueinfo?.property_name,
+                teamName: activation.dashapp_team?.team_name,
+                athleteName: activation.dashapp_athlete?.athlete_name,
                 name: activation.name,
                 type: activation.dashapp_activation_type.map(
                     (type) => type.dashapp_marketingplatform.platform,

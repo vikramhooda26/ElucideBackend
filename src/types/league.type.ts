@@ -174,6 +174,13 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                         },
                     },
                 },
+                dashapp_leagueinfo: {
+                    select: {
+                        property_name: true,
+                    },
+                },
+                dashapp_athlete: { select: { athlete_name: true } },
+                dashapp_team: { select: { team_name: true } },
                 dashapp_companydata: {
                     select: {
                         company_name: true,
@@ -230,6 +237,13 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                         company_name: true,
                     },
                 },
+                dashapp_leagueinfo: {
+                    select: {
+                        property_name: true,
+                    },
+                },
+                dashapp_athlete: { select: { athlete_name: true } },
+                dashapp_team: { select: { team_name: true } },
                 Year: true,
             },
         },

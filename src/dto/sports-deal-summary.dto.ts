@@ -11,8 +11,8 @@ export class SportsDealSummaryResponseDTO {
     commencementDate?: string | null;
     expirationDate?: string | null;
     duration?: string | null;
-    annualValue?: Prisma.Decimal | null;
-    totalValue?: Prisma.Decimal | null;
+    annualValue?: string;
+    totalValue?: string;
     territory?: string;
     mediaLink?: string | null;
     assets?: string[];
@@ -37,9 +37,10 @@ export class SportsDealSummaryResponseDTO {
         sportsDealSummaryDTO.expirationDate =
             sportsDealSummaryDetails.expiration_date;
         sportsDealSummaryDTO.duration = sportsDealSummaryDetails.duration;
-        sportsDealSummaryDTO.totalValue = sportsDealSummaryDetails.total_value;
+        sportsDealSummaryDTO.totalValue =
+            sportsDealSummaryDetails.total_value?.toString();
         sportsDealSummaryDTO.annualValue =
-            sportsDealSummaryDetails.annual_value;
+            sportsDealSummaryDetails.annual_value?.toString();
         sportsDealSummaryDTO.territory =
             sportsDealSummaryDetails.dashapp_territory?.name;
         sportsDealSummaryDTO.mediaLink = sportsDealSummaryDetails.media_link;
