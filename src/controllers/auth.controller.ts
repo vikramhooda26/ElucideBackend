@@ -58,6 +58,16 @@ export const registerHandler = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, username, password, role } =
         req.validatedData as TUserRegistration;
 
+    const userExists = await prisma.auth_user.findUnique({
+        where: { username },
+        select: { id: true },
+    });
+
+    if (userExists?.id) {
+        res.status(409).json({message: "Username already exists"});
+        return;
+    }
+
     const hashedPassword = await hashPassword(password);
 
     await prisma.auth_user.create({
