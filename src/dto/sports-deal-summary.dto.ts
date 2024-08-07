@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { TSportsDealSummaryDetails } from "../types/sports-deal-summary.type.js";
 
 export class SportsDealSummaryResponseDTO {
-    sportsDealSummaryId?: bigint;
+    id?: string;
     brandName?: string;
     partnerName?: string;
     type?: string;
@@ -21,7 +21,7 @@ export class SportsDealSummaryResponseDTO {
         sportsDealSummaryDetails: TSportsDealSummaryDetails,
     ): SportsDealSummaryResponseDTO {
         const sportsDealSummaryDTO = new SportsDealSummaryResponseDTO();
-        sportsDealSummaryDTO.sportsDealSummaryId = sportsDealSummaryDetails.id;
+        sportsDealSummaryDTO.id = sportsDealSummaryDetails.id.toString();
         sportsDealSummaryDTO.brandName =
             sportsDealSummaryDetails.dashapp_companydata?.company_name;
         sportsDealSummaryDTO.partnerName =

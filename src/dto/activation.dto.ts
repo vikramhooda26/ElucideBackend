@@ -1,20 +1,22 @@
 import { TActivationDetails } from "../types/activation.type.js";
 
 export class ActivationResponseDTO {
-    activationId?: bigint;
-    activationName?: string | null;
+    id?: string;
+    name?: string | null;
     type?: string[];
     asset?: string[];
     year?: string | null;
-    partner?: string;
-    brand?: string;
+    teamName?: string;
+    athleteName?: string;
+    leagueName?: string;
+    brandName?: string;
 
     static toResponse(
         activationDetails: TActivationDetails,
     ): ActivationResponseDTO {
         const activationDTO = new ActivationResponseDTO();
-        activationDTO.activationId = activationDetails.id;
-        activationDTO.activationName = activationDetails.name;
+        activationDTO.id = activationDetails.id.toString();
+        activationDTO.name = activationDetails.name;
         activationDTO.type = activationDetails.dashapp_activation_type.map(
             (type) => type.dashapp_marketingplatform.platform,
         );
@@ -22,11 +24,12 @@ export class ActivationResponseDTO {
             (asset) => asset.dashapp_assets.asset,
         );
         activationDTO.year = activationDetails.Year;
-        activationDTO.partner =
-            activationDetails.dashapp_athlete?.athlete_name ||
-            activationDetails.dashapp_leagueinfo?.property_name ||
-            activationDetails.dashapp_team?.team_name;
-        activationDTO.brand =
+        activationDTO.athleteName =
+            activationDetails.dashapp_athlete?.athlete_name;
+        activationDTO.teamName = activationDetails.dashapp_team?.team_name;
+        activationDTO.leagueName =
+            activationDetails.dashapp_leagueinfo?.property_name;
+        activationDTO.brandName =
             activationDetails.dashapp_companydata?.company_name;
 
         return activationDTO;

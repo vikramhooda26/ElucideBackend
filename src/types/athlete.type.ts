@@ -106,9 +106,10 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             dashapp_activation_market: {
                 select: { dashapp_states: { select: { state: true } } },
             },
-            dashapp_companydata: {
-                select: { company_name: true },
-            },
+            dashapp_companydata: { select: { company_name: true } },
+            dashapp_athlete: { select: { athlete_name: true } },
+            dashapp_leagueinfo: { select: { property_name: true } },
+            dashapp_team: { select: { team_name: true } },
         },
     },
     dashapp_sportsdealsummary: {
@@ -127,6 +128,9 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             status: true,
             type: true,
             dashapp_companydata: { select: { company_name: true } },
+            dashapp_athlete: { select: { athlete_name: true } },
+            dashapp_leagueinfo: { select: { property_name: true } },
+            dashapp_team: { select: { team_name: true } },
         },
     },
     dashapp_athletecontact: {

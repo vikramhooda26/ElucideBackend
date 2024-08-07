@@ -32,7 +32,10 @@ export class AthleteResponseDTO {
         type?: string[];
         assets?: string[];
         market?: string[];
-        partner?: string;
+        brandName?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
     }[];
     sportsDealsummary?: {
         annualValue?: Prisma.Decimal | null;
@@ -46,7 +49,10 @@ export class AthleteResponseDTO {
         level?: string | null;
         status?: string | null;
         type?: string | null;
-        partner?: string;
+        brandName?: string;
+        athleteName?: string;
+        leagueName?: string;
+        teamName?: string;
     }[];
     contactPersons?: {
         id: string;
@@ -126,7 +132,10 @@ export class AthleteResponseDTO {
                 market: activation.dashapp_activation_market.map(
                     (market) => market.dashapp_states.state,
                 ),
-                partner: activation.dashapp_companydata?.company_name,
+                brandName: activation.dashapp_companydata?.company_name,
+                athleteName: activation.dashapp_athlete?.athlete_name,
+                teamName: activation.dashapp_team?.team_name,
+                leagueName: activation.dashapp_leagueinfo?.property_name,
             }),
         );
         athleteDTO.sportsDealsummary =
@@ -144,7 +153,10 @@ export class AthleteResponseDTO {
                 level: deal.dashapp_level?.name,
                 status: deal.status,
                 type: deal.type,
-                partner: deal.dashapp_companydata?.company_name,
+                brandName: deal.dashapp_companydata?.company_name,
+                athleteName: deal.dashapp_athlete?.athlete_name,
+                teamName: deal.dashapp_team?.team_name,
+                leagueName: deal.dashapp_leagueinfo?.property_name,
             }));
         athleteDTO.contactPersons = athleteDetails.dashapp_athletecontact.map(
             (contact) => ({

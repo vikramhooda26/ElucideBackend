@@ -43,8 +43,8 @@ export const getAllActivations = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         activations.map((activation) => ({
-            activationId: activation.id,
-            activationName: activation.name,
+            id: activation.id,
+            name: activation.name,
             createdDate: activation.created_date,
             modifiedDate: activation.modified_date,
             createdBy: {
@@ -101,29 +101,31 @@ export const createActivation = asyncHandler(async (req, res) => {
             name: activationName,
             created_by: { connect: { id: BigInt(userId) } },
             modified_by: { connect: { id: BigInt(userId) } },
-            dashapp_activation_assets: {
-                create: assetIds?.map((assetId) => ({
-                    dashapp_assets: {
-                        connect: { id: BigInt(assetId) },
-                    },
-                })),
-            },
-            dashapp_activation_market: {
-                create: marketIds
-                    ? marketIds.map((marketId) => ({
+            dashapp_activation_assets: assetIds
+                ? {
+                      create: assetIds?.map((assetId) => ({
+                          dashapp_assets: {
+                              connect: { id: BigInt(assetId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_activation_market: marketIds
+                ? {
+                      create: marketIds.map((marketId) => ({
                           dashapp_states: { connect: { id: BigInt(marketId) } },
-                      }))
-                    : undefined,
-            },
-            dashapp_activation_type: {
-                create: typeIds
-                    ? typeIds.map((typeId) => ({
+                      })),
+                  }
+                : undefined,
+            dashapp_activation_type: typeIds
+                ? {
+                      create: typeIds.map((typeId) => ({
                           dashapp_marketingplatform: {
                               connect: { id: BigInt(typeId) },
                           },
-                      }))
-                    : undefined,
-            },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata: brandId
                 ? { connect: { id: BigInt(brandId) } }
                 : undefined,
@@ -157,7 +159,7 @@ export const editActivation = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!activationExits) {
+    if (!activationExits?.id) {
         throw new NotFoundError("This activation summary does not exists");
     }
 
@@ -177,38 +179,38 @@ export const editActivation = asyncHandler(async (req, res) => {
     await prisma.dashapp_activation.update({
         where: { id: BigInt(activationId) },
         data: {
-            name: activationName ?? undefined,
+            name: activationName,
             created_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,
-            dashapp_activation_assets: {
-                create: assetIds
-                    ? assetIds?.map((assetId) => ({
+            dashapp_activation_assets: assetIds
+                ? {
+                      create: assetIds?.map((assetId) => ({
                           dashapp_assets: {
                               connect: { id: BigInt(assetId) },
                           },
-                      }))
-                    : undefined,
-            },
-            dashapp_activation_market: {
-                create: marketIds
-                    ? marketIds.map((marketId) => ({
+                      })),
+                  }
+                : undefined,
+            dashapp_activation_market: marketIds
+                ? {
+                      create: marketIds.map((marketId) => ({
                           dashapp_states: { connect: { id: BigInt(marketId) } },
-                      }))
-                    : undefined,
-            },
-            dashapp_activation_type: {
-                create: typeIds
-                    ? typeIds.map((typeId) => ({
+                      })),
+                  }
+                : undefined,
+            dashapp_activation_type: typeIds
+                ? {
+                      create: typeIds.map((typeId) => ({
                           dashapp_marketingplatform: {
                               connect: { id: BigInt(typeId) },
                           },
-                      }))
-                    : undefined,
-            },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata: brandId
                 ? { connect: { id: BigInt(brandId) } }
                 : undefined,
@@ -221,7 +223,7 @@ export const editActivation = asyncHandler(async (req, res) => {
             dashapp_athlete: athleteId
                 ? { connect: { id: BigInt(athleteId) } }
                 : undefined,
-            Year: year ?? undefined,
+            Year: year,
         },
     });
 
@@ -242,7 +244,7 @@ export const deleteActivation = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!activationExists) {
+    if (!activationExists?.id) {
         throw new NotFoundError("This activation does not exists");
     }
 
