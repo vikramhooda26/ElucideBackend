@@ -74,7 +74,7 @@ export const getOttPartnerById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!ottpartner) {
+    if (!ottpartner?.id) {
         throw new NotFoundError("This ott partner does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editOttPartner = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!ottpartnerExits) {
+    if (!ottpartnerExits?.id) {
         throw new NotFoundError("This ott partner does not exists");
     }
 
@@ -153,7 +153,7 @@ export const deleteOttPartner = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!ottpartnerExists) {
+    if (!ottpartnerExists?.id) {
         throw new NotFoundError("This ott partner does not exists");
     }
 

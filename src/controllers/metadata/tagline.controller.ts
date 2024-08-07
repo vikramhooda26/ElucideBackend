@@ -74,7 +74,7 @@ export const getTaglineById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!tagline) {
+    if (!tagline?.id) {
         throw new NotFoundError("This tagline does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editTagline = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!taglineExits) {
+    if (!taglineExits?.id) {
         throw new NotFoundError("This tagline does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteTagline = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!taglineExists) {
+    if (!taglineExists?.id) {
         throw new NotFoundError("This tagline does not exists");
     }
 

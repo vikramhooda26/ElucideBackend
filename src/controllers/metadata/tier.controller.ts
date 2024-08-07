@@ -74,7 +74,7 @@ export const getTierById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!tier) {
+    if (!tier?.id) {
         throw new NotFoundError("This tier does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editTier = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!tierExits) {
+    if (!tierExits?.id) {
         throw new NotFoundError("This tier does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteTier = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!tierExists) {
+    if (!tierExists?.id) {
         throw new NotFoundError("This tier does not exists");
     }
 

@@ -115,7 +115,7 @@ export const editAthleteStatus = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!statusExits) {
+    if (!statusExits?.id) {
         throw new NotFoundError("This status does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteAthleteStatus = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!statusExists) {
+    if (!statusExists?.id) {
         throw new NotFoundError("This status does not exists");
     }
 

@@ -74,7 +74,7 @@ export const getSubpersonalityById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!subpersonality) {
+    if (!subpersonality?.id) {
         throw new NotFoundError("This sub personality does not exists");
     }
 
@@ -119,7 +119,7 @@ export const editSubpersonality = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!subpersonalityExits) {
+    if (!subpersonalityExits?.id) {
         throw new NotFoundError("This sub personality does not exists");
     }
 
@@ -163,7 +163,7 @@ export const deleteSubpersonality = asyncHandler(async (req, res) => {
         },
     );
 
-    if (!subpersonalityExists) {
+    if (!subpersonalityExists?.id) {
         throw new NotFoundError("This sub personality does not exists");
     }
 

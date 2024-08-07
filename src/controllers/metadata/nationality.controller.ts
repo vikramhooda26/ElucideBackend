@@ -74,7 +74,7 @@ export const getNationalityById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!nationality) {
+    if (!nationality?.id) {
         throw new NotFoundError("This nationality does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editNationality = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!nationalityExits) {
+    if (!nationalityExits?.id) {
         throw new NotFoundError("This nationality does not exists");
     }
 
@@ -152,7 +152,7 @@ export const deleteNationality = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!nationalityExists) {
+    if (!nationalityExists?.id) {
         throw new NotFoundError("This nationality does not exists");
     }
 

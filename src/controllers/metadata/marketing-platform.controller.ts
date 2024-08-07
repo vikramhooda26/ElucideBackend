@@ -76,7 +76,7 @@ export const getMarkingPlatformById = asyncHandler(async (req, res) => {
         },
     );
 
-    if (!marketingPlatform) {
+    if (!marketingPlatform?.id) {
         throw new NotFoundError("This marketing platform does not exists");
     }
 
@@ -119,7 +119,7 @@ export const editMarkingPlatform = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!marketingPlatformExits) {
+    if (!marketingPlatformExits?.id) {
         throw new NotFoundError("This Marketing platform does not exists");
     }
 
@@ -157,7 +157,7 @@ export const deleteMarkingPlatform = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!marketingPlatformExists) {
+    if (!marketingPlatformExists?.id) {
         throw new NotFoundError("This marketing platform does not exists");
     }
 

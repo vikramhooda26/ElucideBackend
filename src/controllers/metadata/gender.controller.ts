@@ -74,7 +74,7 @@ export const getGenderById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!gender) {
+    if (!gender?.id) {
         throw new NotFoundError("This gender does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editGender = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!genderExists) {
+    if (!genderExists?.id) {
         throw new NotFoundError("This gender does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteGender = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!genderExists) {
+    if (!genderExists?.id) {
         throw new NotFoundError("This gender does not exists");
     }
 

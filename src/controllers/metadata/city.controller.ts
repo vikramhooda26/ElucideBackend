@@ -74,7 +74,7 @@ export const getCityById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!city) {
+    if (!city?.id) {
         throw new NotFoundError("This city does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editCity = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!cityExists) {
+    if (!cityExists?.id) {
         throw new NotFoundError("This city does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteCity = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!cityExists) {
+    if (!cityExists?.id) {
         throw new NotFoundError("This city does not exists");
     }
 

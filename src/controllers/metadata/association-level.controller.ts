@@ -74,7 +74,7 @@ export const getAssociationLevelById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!associationLevel) {
+    if (!associationLevel?.id) {
         throw new NotFoundError("This association level does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editAssociationLevel = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!associationLevelExits) {
+    if (!associationLevelExits?.id) {
         throw new NotFoundError("This association level does not exists");
     }
 
@@ -153,7 +153,7 @@ export const deleteAssociationLevel = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!associationLevelExists) {
+    if (!associationLevelExists?.id) {
         throw new NotFoundError("This association level does not exists");
     }
 

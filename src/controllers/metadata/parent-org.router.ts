@@ -74,7 +74,7 @@ export const getParentOrgById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!parentOrg) {
+    if (!parentOrg?.id) {
         throw new NotFoundError("This parent Organization does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editParentOrg = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!parentOrgExits) {
+    if (!parentOrgExits?.id) {
         throw new NotFoundError("This parent organization does not exists");
     }
 
@@ -152,7 +152,7 @@ export const deleteParentOrg = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!parentOrgExists) {
+    if (!parentOrgExists?.id) {
         throw new NotFoundError("This parent organization does not exists");
     }
 

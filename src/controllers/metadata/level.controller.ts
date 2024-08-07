@@ -74,7 +74,7 @@ export const getLevelById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!level) {
+    if (!level?.id) {
         throw new NotFoundError("This level does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editLevel = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!levelExists) {
+    if (!levelExists?.id) {
         throw new NotFoundError("This level does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteLevel = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!levelExists) {
+    if (!levelExists?.id) {
         throw new NotFoundError("This level does not exists");
     }
 

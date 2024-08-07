@@ -74,7 +74,7 @@ export const getSportById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!sport) {
+    if (!sport?.id) {
         throw new NotFoundError("This sport does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editSport = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!sportExits) {
+    if (!sportExits?.id) {
         throw new NotFoundError("This sport does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteSport = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!sportExists) {
+    if (!sportExists?.id) {
         throw new NotFoundError("This sport does not exists");
     }
 

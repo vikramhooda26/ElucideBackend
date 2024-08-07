@@ -74,7 +74,7 @@ export const getKeyMarketById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!keyMarket) {
+    if (!keyMarket?.id) {
         throw new NotFoundError("This key market does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editKeyMarket = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!keyMarketExits) {
+    if (!keyMarketExits?.id) {
         throw new NotFoundError("This key market does not exists");
     }
 
@@ -152,7 +152,7 @@ export const deleteKeyMarket = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!keyMarketExists) {
+    if (!keyMarketExists?.id) {
         throw new NotFoundError("This key market does not exists");
     }
 

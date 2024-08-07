@@ -74,7 +74,7 @@ export const getAgencyById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!agency) {
+    if (!agency?.id) {
         throw new NotFoundError("This agency does not exists");
     }
 
@@ -110,12 +110,12 @@ export const editAgency = asyncHandler(async (req, res) => {
         throw new BadRequestError("Agency ID not found");
     }
 
-    const agency = await prisma.dashapp_agency.findUnique({
+    const agencyExists = await prisma.dashapp_agency.findUnique({
         where: { id: BigInt(agencyId) },
         select: { id: true },
     });
 
-    if (!agency) {
+    if (!agencyExists?.id) {
         throw new NotFoundError("This agency does not exists");
     }
 
@@ -148,12 +148,12 @@ export const deleteAgency = asyncHandler(async (req, res) => {
         throw new BadRequestError("Agency ID not found");
     }
 
-    const agency = await prisma.dashapp_agency.findUnique({
+    const agencyExists = await prisma.dashapp_agency.findUnique({
         where: { id: BigInt(agencyId) },
         select: { id: true },
     });
 
-    if (!agency) {
+    if (!agencyExists?.id) {
         throw new NotFoundError("This agency does not exists");
     }
 

@@ -74,7 +74,7 @@ export const getNccsById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!nccs) {
+    if (!nccs?.id) {
         throw new NotFoundError("This nccs does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editNccs = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!nccsExits) {
+    if (!nccsExits?.id) {
         throw new NotFoundError("This nccs does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteNccs = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!nccsExists) {
+    if (!nccsExists?.id) {
         throw new NotFoundError("This nccs does not exists");
     }
 

@@ -74,7 +74,7 @@ export const getCategoryById = expressAsyncHandler(async (req, res) => {
         },
     });
 
-    if (!category) {
+    if (!category?.id) {
         throw new NotFoundError("This category does not exists");
     }
 
@@ -113,7 +113,7 @@ export const editCategory = expressAsyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!categoryExists) {
+    if (!categoryExists?.id) {
         throw new NotFoundError("This category does not exists");
     }
 
@@ -147,7 +147,7 @@ export const deleteCategory = expressAsyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!categoryExists) {
+    if (!categoryExists?.id) {
         throw new NotFoundError("This category does not exists");
     }
 

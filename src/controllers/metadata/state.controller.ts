@@ -74,7 +74,7 @@ export const getStateById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!state) {
+    if (!state?.id) {
         throw new NotFoundError("This state does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editState = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!stateExists) {
+    if (!stateExists?.id) {
         throw new NotFoundError("This state does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteState = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!stateExists) {
+    if (!stateExists?.id) {
         throw new NotFoundError("This state does not exists");
     }
 

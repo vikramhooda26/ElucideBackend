@@ -76,7 +76,7 @@ export const getActiveCampaignById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!activeCampaign) {
+    if (!activeCampaign?.id) {
         throw new NotFoundError("This campaign does not exists");
     }
 
@@ -118,9 +118,12 @@ export const editActiveCampaign = asyncHandler(async (req, res) => {
             where: {
                 id: BigInt(activeCampaignId),
             },
+            select: {
+                id: true,
+            },
         });
 
-    if (!activeCampaignExists) {
+    if (!activeCampaignExists?.id) {
         throw new NotFoundError("This campaign does not exists");
     }
 
@@ -155,7 +158,7 @@ export const deleteActiveCampaign = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!activeCampaign) {
+    if (!activeCampaign?.id) {
         throw new NotFoundError("This Active Campaign does not exists");
     }
 

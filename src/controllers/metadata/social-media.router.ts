@@ -74,7 +74,7 @@ export const getSocialMediaById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!socialMedia) {
+    if (!socialMedia?.id) {
         throw new NotFoundError("This social media does not exists");
     }
 
@@ -117,7 +117,7 @@ export const editSocialMedia = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!socialMediaExits) {
+    if (!socialMediaExits?.id) {
         throw new NotFoundError("This social media does not exists");
     }
 
@@ -154,7 +154,7 @@ export const deleteSocialMedia = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!socialMediaExists) {
+    if (!socialMediaExists?.id) {
         throw new NotFoundError("This social media does not exists");
     }
 

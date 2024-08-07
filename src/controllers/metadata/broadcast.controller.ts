@@ -74,7 +74,7 @@ export const getBroadcastPartnerById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!broadcastPartner) {
+    if (!broadcastPartner?.id) {
         throw new NotFoundError("This broadcast partner does not exists");
     }
 
@@ -117,7 +117,7 @@ export const editBroadcastPartner = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!broadcastPartnerExists) {
+    if (!broadcastPartnerExists?.id) {
         throw new NotFoundError("This broadcast partner does not exists");
     }
 
@@ -155,7 +155,7 @@ export const deleteBroadcastPartner = asyncHandler(async (req, res) => {
             select: { id: true },
         });
 
-    if (!broadcastPartnerExists) {
+    if (!broadcastPartnerExists?.id) {
         throw new NotFoundError("This broadcast partner does not exists");
     }
 

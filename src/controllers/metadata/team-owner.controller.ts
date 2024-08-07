@@ -74,7 +74,7 @@ export const getTeamOwnerById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!teamOwner) {
+    if (!teamOwner?.id) {
         throw new NotFoundError("This team owner does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editTeamOwner = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!teamOwnerExits) {
+    if (!teamOwnerExits?.id) {
         throw new NotFoundError("This team owner does not exists");
     }
 
@@ -152,7 +152,7 @@ export const deleteTeamOwner = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!teamOwnerExists) {
+    if (!teamOwnerExists?.id) {
         throw new NotFoundError("This team owner does not exists");
     }
 

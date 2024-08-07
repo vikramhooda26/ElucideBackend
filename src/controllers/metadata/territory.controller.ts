@@ -74,7 +74,7 @@ export const getTerritoryById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!territory) {
+    if (!territory?.id) {
         throw new NotFoundError("This territory does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editTerritory = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!territoryExits) {
+    if (!territoryExits?.id) {
         throw new NotFoundError("This territory does not exists");
     }
 
@@ -152,7 +152,7 @@ export const deleteTerritory = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!territoryExists) {
+    if (!territoryExists?.id) {
         throw new NotFoundError("This territory does not exists");
     }
 

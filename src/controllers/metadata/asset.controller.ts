@@ -74,7 +74,7 @@ export const getAssetById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!asset) {
+    if (!asset?.id) {
         throw new NotFoundError("This asset does not exists");
     }
 
@@ -115,7 +115,7 @@ export const editAsset = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!assetExits) {
+    if (!assetExits?.id) {
         throw new NotFoundError("This asset does not exists");
     }
 
@@ -151,7 +151,7 @@ export const deleteAsset = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!assetExists) {
+    if (!assetExists?.id) {
         throw new NotFoundError("This asset does not exists");
     }
 

@@ -74,7 +74,7 @@ export const getsubcategoryById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!subcategory) {
+    if (!subcategory?.id) {
         throw new NotFoundError("This subcategory does not exists");
     }
 
@@ -117,7 +117,7 @@ export const editSubcategory = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!subcategoryExists) {
+    if (!subcategoryExists?.id) {
         throw new NotFoundError("This subcategory does not exists");
     }
 
@@ -154,7 +154,7 @@ export const deleteSubcategory = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!subcategoryExists) {
+    if (!subcategoryExists?.id) {
         throw new NotFoundError("This subcategory does not exists");
     }
 

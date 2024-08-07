@@ -75,7 +75,7 @@ export const getAgeRangeById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!ageRange) {
+    if (!ageRange?.id) {
         throw new NotFoundError("This age range does not exists");
     }
 
@@ -122,7 +122,7 @@ export const editAgeRange = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!ageRangeExists) {
+    if (!ageRangeExists?.id) {
         throw new NotFoundError("This age range does not exists");
     }
 
@@ -164,7 +164,7 @@ export const deleteAgeRange = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!ageRangeExists) {
+    if (!ageRangeExists?.id) {
         throw new NotFoundError("This age range does not exists");
     }
 

@@ -74,7 +74,7 @@ export const getPersonalityById = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!personality) {
+    if (!personality?.id) {
         throw new NotFoundError("This personality does not exists");
     }
 
@@ -116,7 +116,7 @@ export const editPersonality = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!personalityExists) {
+    if (!personalityExists?.id) {
         throw new NotFoundError("This personality does not exists");
     }
 
@@ -153,7 +153,7 @@ export const deletePersonality = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if (!personalityExists) {
+    if (!personalityExists?.id) {
         throw new NotFoundError("This personality does not exists");
     }
 
