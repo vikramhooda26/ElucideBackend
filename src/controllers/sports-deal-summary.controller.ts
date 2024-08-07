@@ -50,12 +50,12 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         sportsDealSummaries.map((sportsDealSummary) => ({
-            sportsDealSummary: sportsDealSummary.id,
+            sportsDealSummaryId: sportsDealSummary.id,
             type: sportsDealSummary.type,
-            brand: sportsDealSummary.dashapp_companydata?.company_name,
-            team: sportsDealSummary.dashapp_team?.team_name,
-            league: sportsDealSummary.dashapp_leagueinfo?.property_name,
-            athlete: sportsDealSummary.dashapp_athlete?.athlete_name,
+            brandName: sportsDealSummary.dashapp_companydata?.company_name,
+            teamName: sportsDealSummary.dashapp_team?.team_name,
+            leagueName: sportsDealSummary.dashapp_leagueinfo?.property_name,
+            athleteName: sportsDealSummary.dashapp_athlete?.athlete_name,
             createdDate: sportsDealSummary.created_date,
             modifiedDate: sportsDealSummary.modified_date,
             createdBy: {
