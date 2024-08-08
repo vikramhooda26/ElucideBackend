@@ -363,3 +363,14 @@ export const getAllMaincategories = async () => {
         label: category.category,
     }));
 };
+
+export const getAllMainPersonalities = async () => {
+    const mainpersonalities = await prisma.dashapp_mainpersonality.findMany({
+        select: { id: true, name: true },
+    });
+
+    return mainpersonalities.map((personality) => ({
+        value: personality.id,
+        label: personality.name,
+    }));
+};

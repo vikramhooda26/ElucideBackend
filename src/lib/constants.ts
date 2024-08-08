@@ -74,4 +74,5 @@ export const METADATA_KEYS = {
     BRAND: "brand",
     TEAM: "team",
     ATHLETE: "athlete",
+    MAIN_PERSONALITY: "mainpersonality",
 } as const;
