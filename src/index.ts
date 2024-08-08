@@ -86,7 +86,7 @@ app.use("/api/admin/key-market", keyMarketRouter);
 app.use("/api/admin/league-owner", leagueOwnerRouter);
 app.use("/api/admin/level", levelRouter);
 app.use("/api/admin/personality", personalityRouter);
-app.use("/api/admin/subpersonality", subpersonalityRouter);
+app.use("/api/admin/sub-personality", subpersonalityRouter);
 app.use("/api/admin/marketing-platform", marketingPlatformRouter);
 app.use("/api/admin/ott-partner", ottPartnerRouter);
 app.use("/api/admin/parent-org", parentOrgRouter);
