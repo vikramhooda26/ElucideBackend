@@ -352,3 +352,14 @@ export const getAllAthletes = async () => {
 
     return athlete.map((v) => ({ value: v.id, label: v.athlete_name }));
 };
+
+export const getAllMaincategories = async () => {
+    const maincategories = await prisma.dashapp_category.findMany({
+        select: { id: true, category: true },
+    });
+
+    return maincategories.map((category) => ({
+        value: category.id,
+        label: category.category,
+    }));
+};

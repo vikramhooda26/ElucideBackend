@@ -45,6 +45,7 @@ export const METADATA_KEYS = {
     ASSET: "asset",
     BROADCAST_PARTNER: "broadcastPartner",
     CATEGORY: "category",
+    MAIN_CATEGORY: "maincategory",
     CITY: "city",
     FORMAT: "format",
     GENDER: "gender",

@@ -64,7 +64,7 @@ export const registerHandler = asyncHandler(async (req, res) => {
     });
 
     if (userExists?.id) {
-        res.status(409).json({message: "Username already exists"});
+        res.status(409).json({ message: "Username already exists" });
         return;
     }
 

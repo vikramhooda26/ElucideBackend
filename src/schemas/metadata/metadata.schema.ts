@@ -8,6 +8,7 @@ export const getAllMetadataSchema = z.object({
     state: z.boolean().optional(),
     city: z.boolean().optional(),
     category: z.boolean().optional(),
+    maincategory: z.boolean().optional(),
     parentOrg: z.boolean().optional(),
     agency: z.boolean().optional(),
     tagline: z.boolean().optional(),

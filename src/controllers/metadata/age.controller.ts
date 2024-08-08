@@ -99,12 +99,12 @@ export const createAgeRange = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    if(ageRangeExists?.id) {
+    if (ageRangeExists?.id) {
         res.status(409).json({
             message: "This age range already exists",
         });
         return;
-    };
+    }
 
     await prisma.dashapp_age.create({
         data: {
