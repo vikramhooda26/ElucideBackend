@@ -94,6 +94,18 @@ export const createAgeRange = asyncHandler(async (req, res) => {
         throw new BadRequestError("Invalid age range format");
     }
 
+    const ageRangeExists = await prisma.dashapp_age.findUnique({
+        where: { age_range: ageRange },
+        select: { id: true },
+    });
+
+    if(ageRangeExists?.id) {
+        res.status(409).json({
+            message: "This age range already exists",
+        });
+        return;
+    };
+
     await prisma.dashapp_age.create({
         data: {
             age_range: ageRange,
