@@ -145,6 +145,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         contactLinkedin,
         contactName,
         contactNumber,
+        tierIds,
     } = req.validatedData as TCreateAthleteSchema;
 
     const ageRange = age ? await findAgeRange(Number(age)) : undefined;
@@ -162,6 +163,13 @@ export const createAthlete = asyncHandler(async (req, res) => {
             linkedin: linkedin,
             youtube: youtube,
             website: website,
+            dashapp_athlete_tier: tierIds
+                ? {
+                      create: tierIds.map((tierId) => ({
+                          dashapp_tier: { connect: { id: BigInt(tierId) } },
+                      })),
+                  }
+                : undefined,
             dashapp_agency: agencyId
                 ? {
                       connect: { id: BigInt(agencyId) },
