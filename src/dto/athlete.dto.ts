@@ -22,10 +22,8 @@ export class AthleteResponseDTO {
     subPersonalityTraits?: string[];
     mainPersonalityTraits?: string[];
     age?: number | null;
-    association?: {
-        associationLevel: { name: string | null } | null;
-        costOfAssociation: Prisma.Decimal | null;
-    };
+    associationLevel?: string | null;
+    costOfAssociation?: Prisma.Decimal | null;
     activations?: {
         year?: string | null;
         name?: string | null;
@@ -115,10 +113,9 @@ export class AthleteResponseDTO {
                     trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             );
         athleteDTO.age = athleteDetails.age;
-        athleteDTO.association = athleteDetails.association.map((asso) => ({
-            associationLevel: asso.association_level,
-            costOfAssociation: asso.cost,
-        }));
+        athleteDTO.associationLevel =
+            athleteDetails.association?.association_level?.name;
+        athleteDTO.costOfAssociation = athleteDetails.association?.cost;
         athleteDTO.activations = athleteDetails.dashapp_activation.map(
             (activation) => ({
                 year: activation.Year,

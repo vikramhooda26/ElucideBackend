@@ -379,7 +379,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
             age: Number(age),
             association: associationId
                 ? {
-                      deleteMany: {},
+                      delete: { id: BigInt(associationId) },
                       create: {
                           association_level: associationLevelId
                               ? {
