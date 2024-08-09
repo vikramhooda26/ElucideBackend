@@ -118,7 +118,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
     const {
         name,
         age,
-        genderId,
+        genderIds,
         nccsIds,
         userId,
         facebook,
@@ -251,11 +251,11 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       },
                   }
                 : undefined,
-            dashapp_athlete_target_gender: genderId
+            dashapp_athlete_target_gender: genderIds
                 ? {
-                      create: {
+                      create: genderIds.map((genderId) => ({
                           dashapp_gender: { connect: { id: BigInt(genderId) } },
-                      },
+                      })),
                   }
                 : undefined,
             dashapp_athlete_target_income: nccsIds
@@ -339,7 +339,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
     const {
         name,
         age,
-        genderId,
+        genderIds,
         nccsIds,
         associationId,
         userId,
@@ -442,54 +442,72 @@ export const editAthlete = asyncHandler(async (req, res) => {
             nationality: nationalityId
                 ? { connect: { id: BigInt(nationalityId) } }
                 : undefined,
-            dashapp_athlete_personality_traits: {
-                deleteMany: {},
-                create: subPersonalityTraitIds?.map((traitId) => ({
-                    dashapp_subpersonality: {
-                        connect: { id: BigInt(traitId) },
-                    },
-                })),
-            },
-            dashapp_athlete_target_age: {
-                deleteMany: {},
-                create: ageRange
-                    ? { dashapp_age: { connect: { age_range: ageRange } } }
-                    : undefined,
-            },
-            dashapp_athlete_target_gender: {
-                deleteMany: {},
-                create: genderId
-                    ? {
-                          dashapp_gender: { connect: { id: BigInt(genderId) } },
-                      }
-                    : undefined,
-            },
-            dashapp_athlete_target_income: {
-                deleteMany: {},
-                create: nccsIds
-                    ? nccsIds.map((nccsId) => ({
+            dashapp_athlete_personality_traits: subPersonalityTraitIds
+                ? {
+                      deleteMany: {},
+                      create: subPersonalityTraitIds?.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_target_age: ageRange
+                ? {
+                      deleteMany: {},
+                      create: {
+                          dashapp_age: { connect: { age_range: ageRange } },
+                      },
+                  }
+                : undefined,
+            dashapp_athlete_target_gender: genderIds
+                ? {
+                      deleteMany: {},
+                      create: genderIds.map((genderId) => ({
+                          dashapp_gender: {
+                              connect: { id: BigInt(genderId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_target_income: nccsIds
+                ? {
+                      deleteMany: {},
+                      create: nccsIds.map((nccsId) => ({
                           dashapp_nccs: { connect: { id: BigInt(nccsId) } },
-                      }))
-                    : undefined,
-            },
-            dashapp_athlete_key_markets_primary: {
-                deleteMany: {},
-                create: primaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_athlete_key_markets_secondary: {
-                deleteMany: {},
-                create: secondaryMarketIds?.map((marketId) => ({
-                    dashapp_keymarket: { connect: { id: BigInt(marketId) } },
-                })),
-            },
-            dashapp_athlete_key_markets_tertiary: {
-                deleteMany: {},
-                create: tertiaryIds?.map((tertiaryId) => ({
-                    dashapp_states: { connect: { id: BigInt(tertiaryId) } },
-                })),
-            },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_primary: primaryMarketIds
+                ? {
+                      deleteMany: {},
+                      create: primaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_secondary: secondaryMarketIds
+                ? {
+                      deleteMany: {},
+                      create: secondaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_key_markets_tertiary: tertiaryIds
+                ? {
+                      deleteMany: {},
+                      create: tertiaryIds?.map((tertiaryId) => ({
+                          dashapp_states: {
+                              connect: { id: BigInt(tertiaryId) },
+                          },
+                      })),
+                  }
+                : undefined,
         },
     });
 
