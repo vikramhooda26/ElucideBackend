@@ -39,28 +39,6 @@ const findAgeRange = async (age: number): Promise<string | undefined> => {
     return matchedAgeRange;
 };
 
-export const getAthleteById = asyncHandler(async (req, res) => {
-    const athleteId = req.params.id;
-
-    if (!athleteId) {
-        throw new BadRequestError("Athlete ID not found");
-    }
-
-    const athlete = await prisma.dashapp_athlete.findUnique({
-        where: { id: BigInt(athleteId) },
-        select: athleteSelect,
-    });
-
-    if (!athlete?.id) {
-        throw new NotFoundError("This athlete does not exists");
-    }
-
-    const athleteResponse: AthleteResponseDTO =
-        AthleteResponseDTO.toResponse(athlete);
-
-    res.status(STATUS_CODE.OK).json(athleteResponse);
-});
-
 export const getAllAthletes = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
@@ -112,6 +90,28 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
             count: athlete._count,
         })),
     );
+});
+
+export const getAthleteById = asyncHandler(async (req, res) => {
+    const athleteId = req.params.id;
+
+    if (!athleteId) {
+        throw new BadRequestError("Athlete ID not found");
+    }
+
+    const athlete = await prisma.dashapp_athlete.findUnique({
+        where: { id: BigInt(athleteId) },
+        select: athleteSelect,
+    });
+
+    if (!athlete?.id) {
+        throw new NotFoundError("This athlete does not exists");
+    }
+
+    const athleteResponse: AthleteResponseDTO =
+        AthleteResponseDTO.toResponse(athlete);
+
+    res.status(STATUS_CODE.OK).json(athleteResponse);
 });
 
 export const createAthlete = asyncHandler(async (req, res) => {

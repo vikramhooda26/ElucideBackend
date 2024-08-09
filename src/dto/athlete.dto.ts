@@ -25,7 +25,7 @@ export class AthleteResponseDTO {
     association?: {
         associationLevel: { name: string | null } | null;
         costOfAssociation: Prisma.Decimal | null;
-    }[];
+    };
     activations?: {
         year?: string | null;
         name?: string | null;

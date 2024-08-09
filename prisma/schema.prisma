@@ -8,22 +8,24 @@ datasource db {
 }
 
 model association {
-    id                   BigInt              @id @default(autoincrement())
-    cost                 Decimal?            @db.Decimal()
+    id                   BigInt               @id @default(autoincrement())
+    cost                 Decimal?             @db.Decimal()
     association_level_id BigInt?
-    created_date         DateTime?           @default(now())
-    modified_date        DateTime            @updatedAt
+    created_date         DateTime?            @default(now())
+    modified_date        DateTime             @updatedAt
     created_by_id        BigInt?
     modified_by_id       BigInt?
-    team_id              BigInt?
-    leagueInfo_id        BigInt?
-    athlete_id           BigInt?
-    association_level    association_level?  @relation(fields: [association_level_id], references: [id])
-    dashapp_athlete      dashapp_athlete?    @relation(fields: [athlete_id], references: [id])
-    created_by           auth_user?          @relation("association_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo   dashapp_leagueinfo? @relation(fields: [leagueInfo_id], references: [id])
-    modified_by          auth_user?          @relation("association_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team         dashapp_team?       @relation(fields: [team_id], references: [id])
+    team_id              BigInt?              @unique
+    leagueInfo_id        BigInt?              @unique
+    athlete_id           BigInt?              @unique
+    brand_id             BigInt?              @unique
+    dashapp_companydata  dashapp_companydata? @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+    association_level    association_level?   @relation(fields: [association_level_id], references: [id])
+    dashapp_athlete      dashapp_athlete?     @relation(fields: [athlete_id], references: [id], onDelete: Cascade)
+    created_by           auth_user?           @relation("association_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo   dashapp_leagueinfo?  @relation(fields: [leagueInfo_id], references: [id], onDelete: Cascade)
+    modified_by          auth_user?           @relation("association_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team         dashapp_team?        @relation(fields: [team_id], references: [id], onDelete: Cascade)
 
     @@index([athlete_id, cost])
     @@index([leagueInfo_id], map: "association_league_info_id_idx")
@@ -362,7 +364,7 @@ model dashapp_athlete {
     keyplatform_secondary_id                       BigInt?
     created_by_id                                  BigInt?
     nationality                                    dashapp_countries?                               @relation(fields: [nationality_id], references: [id], onDelete: SetNull)
-    association                                    association[]
+    association                                    association?
     dashapp_activation                             dashapp_activation[]
     dashapp_agency                                 dashapp_agency?                                  @relation(fields: [agency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     created_by                                     auth_user?                                       @relation("dashapp_athlete_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
@@ -624,6 +626,7 @@ model dashapp_companydata {
     dashapp_companydata_taglines                      dashapp_companydata_taglines[]
     dashapp_companydata_tier                          dashapp_companydata_tier[]
     dashapp_sportsdealsummary                         dashapp_sportsdealsummary[]
+    association                                       association?
 
     @@index([agency_id], map: "dashapp_companydata_agency_id_095c43b0")
     @@index([hq_city_id], map: "dashapp_companydata_hq_city_id_f599445d")
@@ -940,7 +943,7 @@ model dashapp_leagueinfo {
     youtube                                          String?                                            @db.VarChar(512)
     created_by_id                                    BigInt?
     league_id                                        BigInt?
-    association                                      association[]
+    association                                      association?
     dashapp_activation                               dashapp_activation[]
     dashapp_leaguecontact                            dashapp_leaguecontact[]
     dashapp_leagueendorsements                       dashapp_leagueendorsements[]
@@ -1436,7 +1439,7 @@ model dashapp_team {
     youtube                                    String?                                      @db.VarChar(512)
     created_by_id                              BigInt?
     hq_state_id                                BigInt?
-    association                                association[]
+    association                                association?
     dashapp_activation                         dashapp_activation[]
     dashapp_sportsdealsummary                  dashapp_sportsdealsummary[]
     created_by                                 auth_user?                                   @relation("dashapp_team_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
