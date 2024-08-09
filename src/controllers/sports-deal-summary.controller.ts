@@ -11,10 +11,41 @@ import { sportsDealSummarySelect } from "../types/sports-deal-summary.type.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
+    const { take, skip, searchString, stakeholder } = req.query;
+
+    const searchQuery: any = {
+        OR: [],
+    };
+
+    if (stakeholder === "BRAND") {
+        searchQuery.OR.push({
+            dashapp_companydata: {
+                company_name: { contains: searchString, mode: "insensitive" },
+            },
+        });
+    } else if (stakeholder === "ATHLETE") {
+        searchQuery.OR.push({
+            dashapp_athlete: {
+                athlete_name: { contains: searchString, mode: "insensitive" },
+            },
+        });
+    } else if (stakeholder === "TEAM") {
+        searchQuery.OR.push({
+            dashapp_team: {
+                team_name: { contains: searchString, mode: "insensitive" },
+            },
+        });
+    } else if (stakeholder === "LEAGUE") {
+        searchQuery.OR.push({
+            dashapp_leagueinfo: {
+                property_name: { contains: searchString, mode: "insensitive" },
+            },
+        });
+    }
 
     const sportsDealSummaries = await prisma.dashapp_sportsdealsummary.findMany(
         {
+            where: searchQuery.OR.length ? searchQuery : undefined,
             select: {
                 id: true,
                 dashapp_companydata: { select: { company_name: true } },
