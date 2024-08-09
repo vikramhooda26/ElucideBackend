@@ -80,7 +80,7 @@ export const getAgeRangeById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        ageRangeId: ageRange.id,
+        id: ageRange.id,
         ageRange: ageRange.age_range,
     });
 });

@@ -42,7 +42,7 @@ export const getAllParentOrgs = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         parentOrgs.map((parentOrg) => ({
-            parentOrgId: parentOrg.id,
+            id: parentOrg.id,
             parentOrgName: parentOrg.name,
             createdDate: parentOrg.created_date,
             modifiedDate: parentOrg.modified_date,
@@ -79,7 +79,7 @@ export const getParentOrgById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        parentOrgId: parentOrg.id,
+        id: parentOrg.id,
         parentOrgName: parentOrg.name,
     });
 });

@@ -42,7 +42,7 @@ export const getAllAssociationLevels = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         associationLevels.map((associationLevel) => ({
-            associationLevelId: associationLevel.id,
+            id: associationLevel.id,
             associationLevelName: associationLevel.name,
             createdDate: associationLevel.created_date,
             modifiedDate: associationLevel.modified_date,
@@ -79,7 +79,7 @@ export const getAssociationLevelById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        associationLevelId: associationLevel.id,
+        id: associationLevel.id,
         associationLevelName: associationLevel.name,
     });
 });

@@ -42,7 +42,7 @@ export const getAllGenders = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         genders.map((gender) => ({
-            genderId: gender.id,
+            id: gender.id,
             genderName: gender.gender_is,
             createdDate: gender.created_date,
             modifiedDate: gender.modified_date,
@@ -79,7 +79,7 @@ export const getGenderById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        genderId: gender.id,
+        id: gender.id,
         genderName: gender.gender_is,
     });
 });

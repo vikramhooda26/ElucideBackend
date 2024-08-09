@@ -42,7 +42,7 @@ export const getAllTeamOwners = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         teamOwners.map((teamOwner) => ({
-            teamOwnerId: teamOwner.id,
+            id: teamOwner.id,
             teamOwnerName: teamOwner.name,
             createdDate: teamOwner.created_date,
             modifiedDate: teamOwner.modified_date,
@@ -79,7 +79,7 @@ export const getTeamOwnerById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        teamOwnerId: teamOwner.id,
+        id: teamOwner.id,
         teamOwnerName: teamOwner.name,
     });
 });

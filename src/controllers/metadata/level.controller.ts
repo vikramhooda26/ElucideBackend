@@ -42,7 +42,7 @@ export const getAllLevels = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         levels.map((level) => ({
-            levelId: level.id,
+            id: level.id,
             levelName: level.name,
             createdDate: level.created_date,
             modifiedDate: level.modified_date,
@@ -79,7 +79,7 @@ export const getLevelById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        levelId: level.id,
+        id: level.id,
         levelName: level.name,
     });
 });

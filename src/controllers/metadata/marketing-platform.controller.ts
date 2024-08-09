@@ -42,7 +42,7 @@ export const getAllMarkingPlatforms = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         marketingPlatforms.map((marketingPlatform) => ({
-            marketingPlatformId: marketingPlatform.id,
+            id: marketingPlatform.id,
             marketingPlatformName: marketingPlatform.platform,
             createdDate: marketingPlatform.created_date,
             modifiedDate: marketingPlatform.modified_date,
@@ -81,7 +81,7 @@ export const getMarkingPlatformById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        marketingPlatformId: marketingPlatform.id,
+        id: marketingPlatform.id,
         marketingPlatformName: marketingPlatform.platform,
     });
 });

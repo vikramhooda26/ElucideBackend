@@ -42,7 +42,7 @@ export const getAllSubcategories = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         subcategories.map((subcategory) => ({
-            subcategoryId: subcategory.id,
+            id: subcategory.id,
             subcategoryName: subcategory.subcategory,
             createdDate: subcategory.created_date,
             modifiedDate: subcategory.modified_date,
@@ -71,6 +71,9 @@ export const getsubcategoryById = asyncHandler(async (req, res) => {
         select: {
             id: true,
             subcategory: true,
+            dashapp_category: {
+                select: { id: true, category: true },
+            },
         },
     });
 
@@ -79,8 +82,12 @@ export const getsubcategoryById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        subcategoryId: subcategory.id,
+        id: subcategory.id,
         subcategoryName: subcategory.subcategory,
+        category: {
+            id: subcategory.dashapp_category.id,
+            name: subcategory.dashapp_category.category,
+        },
     });
 });
 

@@ -42,7 +42,7 @@ export const getAllBroadcastPartners = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         broadcastPartners.map((broadcastPartner) => ({
-            broadcastPartnerId: broadcastPartner.id,
+            id: broadcastPartner.id,
             broadcastPartnerName: broadcastPartner.name,
             createdDate: broadcastPartner.created_date,
             modifiedDate: broadcastPartner.modified_date,
@@ -79,7 +79,7 @@ export const getBroadcastPartnerById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        broadcastPartnerId: broadcastPartner.id,
+        id: broadcastPartner.id,
         broadcastPartnerName: broadcastPartner.name,
     });
 });

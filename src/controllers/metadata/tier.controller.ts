@@ -42,7 +42,7 @@ export const getAllTiers = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         tiers.map((tier) => ({
-            tierId: tier.id,
+            id: tier.id,
             tierName: tier.name,
             createdDate: tier.created_date,
             modifiedDate: tier.modified_date,
@@ -79,7 +79,7 @@ export const getTierById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        tierId: tier.id,
+        id: tier.id,
         tierName: tier.name,
     });
 });

@@ -42,7 +42,7 @@ export const getAllAssets = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         assets.map((asset) => ({
-            assetId: asset.id,
+            id: asset.id,
             assetName: asset.asset,
             createdDate: asset.created_date,
             modifiedDate: asset.modified_date,
@@ -79,7 +79,7 @@ export const getAssetById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        assetId: asset.id,
+        id: asset.id,
         assetName: asset.asset,
     });
 });

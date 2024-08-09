@@ -42,7 +42,7 @@ export const getAllTaglines = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         taglines.map((tagline) => ({
-            taglineId: tagline.id,
+            id: tagline.id,
             taglineName: tagline.name,
             createdDate: tagline.created_date,
             modifiedDate: tagline.modified_date,
@@ -79,7 +79,7 @@ export const getTaglineById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        taglineId: tagline.id,
+        id: tagline.id,
         taglineName: tagline.name,
     });
 });

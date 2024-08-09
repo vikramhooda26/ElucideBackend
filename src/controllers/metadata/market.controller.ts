@@ -42,7 +42,7 @@ export const getAllkeyMarket = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         keyMarkets.map((keyMarket) => ({
-            keyMarketId: keyMarket.id,
+            id: keyMarket.id,
             keyMarketName: keyMarket.zone,
             createdDate: keyMarket.created_date,
             modifiedDate: keyMarket.modified_date,
@@ -79,7 +79,7 @@ export const getKeyMarketById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        keyMarketId: keyMarket.id,
+        id: keyMarket.id,
         keyMarketName: keyMarket.zone,
     });
 });

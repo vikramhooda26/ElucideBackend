@@ -42,7 +42,7 @@ export const getAllPersonalities = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         personalities.map((personality) => ({
-            personalityId: personality.id,
+            id: personality.id,
             personalityName: personality.name,
             createdDate: personality.created_date,
             modifiedDate: personality.modified_date,
@@ -71,6 +71,9 @@ export const getPersonalityById = asyncHandler(async (req, res) => {
         select: {
             id: true,
             name: true,
+            dashapp_subpersonality: {
+                select: { id: true, name: true },
+            },
         },
     });
 
@@ -79,8 +82,14 @@ export const getPersonalityById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        personalityId: personality.id,
+        id: personality.id,
         personalityName: personality.name,
+        subpersonalities: personality.dashapp_subpersonality.map(
+            (subpersonality) => ({
+                id: subpersonality.id,
+                name: subpersonality.name,
+            }),
+        ),
     });
 });
 

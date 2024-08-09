@@ -42,7 +42,7 @@ export const getAllAgencies = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         agencies.map((agency) => ({
-            agencyId: agency.id,
+            id: agency.id,
             agencyName: agency.name,
             createdDate: agency.created_date,
             modifiedDate: agency.modified_date,
@@ -79,7 +79,7 @@ export const getAgencyById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        agencyId: agency.id,
+        id: agency.id,
         agencyName: agency.name,
     });
 });

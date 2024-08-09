@@ -42,7 +42,7 @@ export const getAllLeagueOwners = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         leagueOwners.map((leagueOwner) => ({
-            leagueOwnerId: leagueOwner.id,
+            id: leagueOwner.id,
             leagueOwnerName: leagueOwner.name,
             createdDate: leagueOwner.created_date,
             modifiedDate: leagueOwner.modified_date,
@@ -79,7 +79,7 @@ export const getLeagueOwnerById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        leagueOwnerId: leagueOwner.id,
+        id: leagueOwner.id,
         leagueOwnerName: leagueOwner.name,
     });
 });

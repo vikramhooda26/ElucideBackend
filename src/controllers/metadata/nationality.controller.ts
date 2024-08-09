@@ -42,7 +42,7 @@ export const getAllNationalities = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         nationalities.map((nationality) => ({
-            nationalityId: nationality.id,
+            id: nationality.id,
             nationalityName: nationality.name,
             createdDate: nationality.created_date,
             modifiedDate: nationality.modified_date,
@@ -79,7 +79,7 @@ export const getNationalityById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        nationalityId: nationality.id,
+        id: nationality.id,
         nationalityName: nationality.name,
     });
 });

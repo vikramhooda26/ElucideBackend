@@ -42,7 +42,7 @@ export const getAllSports = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         sports.map((sport) => ({
-            sportId: sport.id,
+            id: sport.id,
             sportName: sport.name,
             createdDate: sport.created_date,
             modifiedDate: sport.modified_date,
@@ -79,7 +79,7 @@ export const getSportById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        sportId: sport.id,
+        id: sport.id,
         sportName: sport.name,
     });
 });

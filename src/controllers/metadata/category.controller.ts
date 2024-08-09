@@ -42,7 +42,7 @@ export const getAllCategories = expressAsyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         categories.map((category) => ({
-            categoryId: category.id,
+            id: category.id,
             categoryName: category.category,
             createdDate: category.created_date,
             modifiedDate: category.modified_date,
@@ -71,6 +71,12 @@ export const getCategoryById = expressAsyncHandler(async (req, res) => {
         select: {
             id: true,
             category: true,
+            dashapp_subcategory: {
+                select: {
+                    id: true,
+                    subcategory: true,
+                },
+            },
         },
     });
 
@@ -79,8 +85,12 @@ export const getCategoryById = expressAsyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        categoryId: category.id,
+        id: category.id,
         categoryName: category.category,
+        subcategories: category.dashapp_subcategory.map((subcategory) => ({
+            id: subcategory.id,
+            name: subcategory.subcategory,
+        })),
     });
 });
 

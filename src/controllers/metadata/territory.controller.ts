@@ -42,7 +42,7 @@ export const getAllTerritoryies = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         territories.map((territory) => ({
-            territoryId: territory.id,
+            id: territory.id,
             territoryName: territory.name,
             createdDate: territory.created_date,
             modifiedDate: territory.modified_date,
@@ -79,7 +79,7 @@ export const getTerritoryById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        territoryId: territory.id,
+        id: territory.id,
         territoryName: territory.name,
     });
 });

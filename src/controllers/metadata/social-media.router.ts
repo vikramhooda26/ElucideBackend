@@ -42,7 +42,7 @@ export const getAllSocialMedias = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         socialMedia.map((socialMedia) => ({
-            socialMediaId: socialMedia.id,
+            id: socialMedia.id,
             socialMediaName: socialMedia.name,
             createdDate: socialMedia.created_date,
             modifiedDate: socialMedia.modified_date,
@@ -79,7 +79,7 @@ export const getSocialMediaById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        socialMediaId: socialMedia.id,
+        id: socialMedia.id,
         socialMediaName: socialMedia.name,
     });
 });

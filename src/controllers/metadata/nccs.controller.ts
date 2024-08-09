@@ -42,7 +42,7 @@ export const getAllNccs = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         nccs.map((nccs) => ({
-            nccsId: nccs.id,
+            id: nccs.id,
             nccsName: nccs.nccs_class,
             createdDate: nccs.created_date,
             modifiedDate: nccs.modified_date,
@@ -79,7 +79,7 @@ export const getNccsById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        nccsId: nccs.id,
+        id: nccs.id,
         nccsName: nccs.nccs_class,
     });
 });

@@ -42,7 +42,7 @@ export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         activeCampaign.map((campaign) => ({
-            activeCampaignId: campaign.id,
+            id: campaign.id,
             activeCampaignName: campaign.name,
             createdDate: campaign.created_date,
             modifiedDate: campaign.modified_date,
@@ -81,7 +81,7 @@ export const getActiveCampaignById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        activeCampaignId: activeCampaign.id,
+        id: activeCampaign.id,
         activeCampaignName: activeCampaign.name,
     });
 });

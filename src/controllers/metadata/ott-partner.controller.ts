@@ -42,7 +42,7 @@ export const getAllOttPartners = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         ottpartners.map((ottpartner) => ({
-            ottpartnerId: ottpartner.id,
+            id: ottpartner.id,
             ottpartnerName: ottpartner.name,
             createdDate: ottpartner.created_date,
             modifiedDate: ottpartner.modified_date,
@@ -79,7 +79,7 @@ export const getOttPartnerById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        ottpartnerId: ottpartner.id,
+        id: ottpartner.id,
         ottpartnerName: ottpartner.name,
     });
 });

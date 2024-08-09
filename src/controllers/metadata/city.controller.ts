@@ -42,7 +42,7 @@ export const getAllCities = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         cities.map((city) => ({
-            cityId: city.id,
+            id: city.id,
             cityName: city.name,
             createdDate: city.created_date,
             modifiedDate: city.modified_date,
@@ -79,7 +79,7 @@ export const getCityById = asyncHandler(async (req, res) => {
     }
 
     res.status(STATUS_CODE.OK).json({
-        cityId: city.id,
+        id: city.id,
         cityName: city.name,
     });
 });

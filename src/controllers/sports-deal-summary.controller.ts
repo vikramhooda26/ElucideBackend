@@ -50,7 +50,7 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json(
         sportsDealSummaries.map((sportsDealSummary) => ({
-            sportsDealSummaryId: sportsDealSummary.id,
+            id: sportsDealSummary.id,
             type: sportsDealSummary.type,
             brandName: sportsDealSummary.dashapp_companydata?.company_name,
             teamName: sportsDealSummary.dashapp_team?.team_name,

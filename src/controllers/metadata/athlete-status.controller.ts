@@ -43,7 +43,7 @@ export const getAllAthleteStatus = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(
         athleteStatus.map((status) => ({
             id: status.id,
-            name: status.status,
+            athleteStatusName: status.status,
             createdDate: status.created_date,
             modifiedDate: status.modified_date,
             createdBy: {
@@ -80,7 +80,7 @@ export const getAthleteStatusById = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json({
         id: status.id,
-        name: status.status,
+        athleteStatusName: status.status,
     });
 });
 
