@@ -196,7 +196,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                                         },
                                     }
                                   : undefined,
-                              cost: costOfAssociation ?? undefined,
+                              cost: costOfAssociation || undefined,
                           },
                       }
                     : undefined,
