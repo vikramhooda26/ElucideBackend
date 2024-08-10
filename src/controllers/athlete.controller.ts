@@ -163,7 +163,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
             linkedin: linkedin,
             youtube: youtube,
             website: website,
-            dashapp_athlete_tier: tierIds
+            dashapp_athlete_tier: tierIds?.length
                 ? {
                       create: tierIds.map((tierId) => ({
                           dashapp_tier: { connect: { id: BigInt(tierId) } },
@@ -201,7 +201,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_athlete_socialmedia_platform_primary:
-                primarySocialMediaPlatformIds
+                primarySocialMediaPlatformIds?.length
                     ? {
                           create: primarySocialMediaPlatformIds.map(
                               (platformId) => ({
@@ -213,7 +213,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_athlete_socialmedia_platform_secondary:
-                secondarySocialMediaPlatformIds
+                secondarySocialMediaPlatformIds?.length
                     ? {
                           create: secondarySocialMediaPlatformIds.map(
                               (platformId) => ({
@@ -232,15 +232,15 @@ export const createAthlete = asyncHandler(async (req, res) => {
             nationality: nationalityId
                 ? { connect: { id: BigInt(nationalityId) } }
                 : undefined,
-            dashapp_athlete_personality_traits: {
-                create: subPersonalityTraitIds
-                    ? subPersonalityTraitIds.map((traitId) => ({
+            dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
+                ? {
+                      create: subPersonalityTraitIds.map((traitId) => ({
                           dashapp_subpersonality: {
                               connect: { id: BigInt(traitId) },
                           },
-                      }))
-                    : undefined,
-            },
+                      })),
+                  }
+                : undefined,
             age: age ? convertStringToInt(age) : undefined,
             dashapp_athlete_target_age: ageRange
                 ? {
@@ -251,21 +251,21 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       },
                   }
                 : undefined,
-            dashapp_athlete_target_gender: genderIds
+            dashapp_athlete_target_gender: genderIds?.length
                 ? {
                       create: genderIds.map((genderId) => ({
                           dashapp_gender: { connect: { id: BigInt(genderId) } },
                       })),
                   }
                 : undefined,
-            dashapp_athlete_target_income: nccsIds
+            dashapp_athlete_target_income: nccsIds?.length
                 ? {
                       create: nccsIds.map((nccsId) => ({
                           dashapp_nccs: { connect: { id: BigInt(nccsId) } },
                       })),
                   }
                 : undefined,
-            dashapp_athlete_key_markets_primary: primaryMarketIds
+            dashapp_athlete_key_markets_primary: primaryMarketIds?.length
                 ? {
                       create: primaryMarketIds?.map((marketId) => ({
                           dashapp_keymarket: {
@@ -274,7 +274,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_athlete_key_markets_secondary: secondaryMarketIds
+            dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
                 ? {
                       create: secondaryMarketIds?.map((marketId) => ({
                           dashapp_keymarket: {
@@ -283,7 +283,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_athlete_key_markets_tertiary: tertiaryIds
+            dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
                 ? {
                       create: tertiaryIds?.map((tertiaryId) => ({
                           dashapp_states: {
