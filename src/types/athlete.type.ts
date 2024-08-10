@@ -75,6 +75,7 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     },
     association: {
         select: {
+            id: true,
             association_level: {
                 select: {
                     name: true,

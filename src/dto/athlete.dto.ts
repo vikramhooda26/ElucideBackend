@@ -24,6 +24,7 @@ export class AthleteResponseDTO {
     age?: number | null;
     associationLevel?: string | null;
     costOfAssociation?: Prisma.Decimal | null;
+    associationId?: string;
     activations?: {
         year?: string | null;
         name?: string | null;
@@ -116,6 +117,7 @@ export class AthleteResponseDTO {
         athleteDTO.associationLevel =
             athleteDetails.association?.association_level?.name;
         athleteDTO.costOfAssociation = athleteDetails.association?.cost;
+        athleteDTO.associationId = athleteDetails.association?.id.toString();
         athleteDTO.activations = athleteDetails.dashapp_activation.map(
             (activation) => ({
                 year: activation.Year,
