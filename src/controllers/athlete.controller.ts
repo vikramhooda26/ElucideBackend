@@ -10,12 +10,11 @@ import {
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
-import { convertStringToInt } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
 import { differenceInYears, parseISO } from "date-fns";
 
-const findAgeRange = async (dob: Date): Promise<string | undefined> => {
-    const dobDate = parseISO(dob.toString());
+const findAgeRange = async (dob: string): Promise<string | undefined> => {
+    const dobDate = parseISO(dob);
 
     const age = differenceInYears(new Date(), dobDate);
 
@@ -247,7 +246,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            age: age ? convertStringToInt(age) : undefined,
+            age: age || undefined,
             dashapp_athlete_target_age: ageRange
                 ? {
                       create: {
@@ -377,7 +376,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         contactNumber,
     } = req.validatedData as TEditAthleteSchema;
 
-    const ageRange = age ? await findAgeRange(Number(age)) : undefined;
+    const ageRange = age ? await findAgeRange(age) : undefined;
 
     printLogs("age:", age);
 
@@ -389,20 +388,27 @@ export const editAthlete = asyncHandler(async (req, res) => {
         where: { id: BigInt(athleteId) },
         data: {
             athlete_name: name,
-            age: Number(age),
-            association: associationId
-                ? {
-                      delete: { id: BigInt(associationId) },
-                      create: {
-                          association_level: associationLevelId
-                              ? {
-                                    connect: { id: BigInt(associationLevelId) },
-                                }
-                              : undefined,
-                          cost: costOfAssociation || undefined,
-                      },
-                  }
-                : undefined,
+            age: age || undefined,
+            association: {
+                upsert: {
+                    create: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: { id: BigInt(associationLevelId) },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                    update: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: { id: BigInt(associationLevelId) },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                },
+            },
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,

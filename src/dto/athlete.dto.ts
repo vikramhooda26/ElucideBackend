@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { TAthleteDetails } from "../types/athlete.type.js";
+import { parseISO } from "date-fns";
+import { printLogs } from "../lib/log.js";
 
 export class AthleteResponseDTO {
     id?: string;
@@ -21,7 +23,7 @@ export class AthleteResponseDTO {
     tier?: (string | undefined)[];
     subPersonalityTraits?: string[];
     mainPersonalityTraits?: string[];
-    age?: number | null;
+    age?: Date | null;
     associationLevel?: string | null;
     costOfAssociation?: Prisma.Decimal | null;
     associationId?: string;
@@ -113,10 +115,16 @@ export class AthleteResponseDTO {
                 (trait) =>
                     trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             );
-        athleteDTO.age = athleteDetails.age;
+        athleteDTO.age = athleteDetails?.age
+            ? parseISO(athleteDetails?.age)
+            : undefined;
         athleteDTO.associationLevel =
             athleteDetails.association?.association_level?.name;
         athleteDTO.costOfAssociation = athleteDetails.association?.cost;
+        printLogs(
+            "Association ID in DTO layer athelet",
+            athleteDetails.association?.id.toString(),
+        );
         athleteDTO.associationId = athleteDetails.association?.id.toString();
         athleteDTO.activations = athleteDetails.dashapp_activation.map(
             (activation) => ({
