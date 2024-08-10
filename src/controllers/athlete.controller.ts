@@ -11,8 +11,14 @@ import {
 import { athleteSelect } from "../types/athlete.type.js";
 import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 import { convertStringToInt } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
+import { differenceInYears, parseISO } from "date-fns";
 
-const findAgeRange = async (age: number): Promise<string | undefined> => {
+const findAgeRange = async (dob: Date): Promise<string | undefined> => {
+    const dobDate = parseISO(dob.toString());
+
+    const age = differenceInYears(new Date(), dobDate);
+
     const ageRanges = await prisma.dashapp_age.findMany({
         select: { age_range: true },
     });
@@ -148,9 +154,9 @@ export const createAthlete = asyncHandler(async (req, res) => {
         tierIds,
     } = req.validatedData as TCreateAthleteSchema;
 
-    const ageRange = age ? await findAgeRange(Number(age)) : undefined;
+    const ageRange = age ? await findAgeRange(age) : undefined;
 
-    console.log("\n\nageRange:", ageRange);
+    printLogs("\n\nageRange:", ageRange);
 
     const athlete = await prisma.dashapp_athlete.create({
         data: {
@@ -373,6 +379,12 @@ export const editAthlete = asyncHandler(async (req, res) => {
 
     const ageRange = age ? await findAgeRange(Number(age)) : undefined;
 
+    printLogs("age:", age);
+
+    printLogs("Age range:", ageRange);
+    printLogs("cost of association:", costOfAssociation);
+    printLogs("association ID:", associationId);
+
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
         data: {
@@ -387,7 +399,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
                                     connect: { id: BigInt(associationLevelId) },
                                 }
                               : undefined,
-                          cost: costOfAssociation,
+                          cost: costOfAssociation || undefined,
                       },
                   }
                 : undefined,

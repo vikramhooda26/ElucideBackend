@@ -358,7 +358,7 @@ model dashapp_athlete {
     sport_id                                       BigInt?
     youtube                                        String?                                          @db.VarChar(512)
     status_id                                      BigInt?
-    age                                            Int?
+    age                                            String?
     state_id                                       BigInt?
     keyplatform_primary_id                         BigInt?
     keyplatform_secondary_id                       BigInt?
