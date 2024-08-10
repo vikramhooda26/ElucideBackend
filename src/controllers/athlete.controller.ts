@@ -362,6 +362,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         secondarySocialMediaPlatformIds,
         statusId,
         stateId,
+        tierIds,
         contactId,
         contactDesignation,
         contactEmail,
@@ -386,7 +387,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
                                     connect: { id: BigInt(associationLevelId) },
                                 }
                               : undefined,
-                          cost: costOfAssociation ?? undefined,
+                          cost: costOfAssociation,
                       },
                   }
                 : undefined,
@@ -396,6 +397,14 @@ export const editAthlete = asyncHandler(async (req, res) => {
             dashapp_states: stateId
                 ? {
                       connect: { id: BigInt(stateId) },
+                  }
+                : undefined,
+            dashapp_athlete_tier: tierIds
+                ? {
+                      deleteMany: {},
+                      create: tierIds.map((tierId) => ({
+                          dashapp_tier: { connect: { id: BigInt(tierId) } },
+                      })),
                   }
                 : undefined,
             facebook: facebook,
