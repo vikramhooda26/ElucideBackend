@@ -393,21 +393,26 @@ export const editAthlete = asyncHandler(async (req, res) => {
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,
-            dashapp_states: {
-                connect: stateId ? { id: BigInt(stateId) } : undefined,
-            },
-            facebook: facebook ?? undefined,
-            instagram: instagram ?? undefined,
-            twitter: twitter ?? undefined,
-            linkedin: linkedin ?? undefined,
-            youtube: youtube ?? undefined,
-            website: website ?? undefined,
-            dashapp_athlete_status: {
-                connect: statusId ? { id: BigInt(statusId) } : undefined,
-            },
+            dashapp_states: stateId
+                ? {
+                      connect: { id: BigInt(stateId) },
+                  }
+                : undefined,
+            facebook: facebook,
+            instagram: instagram,
+            twitter: twitter,
+            linkedin: linkedin,
+            youtube: youtube,
+            website: website,
+            dashapp_athlete_status: statusId
+                ? {
+                      connect: { id: BigInt(statusId) },
+                  }
+                : undefined,
             dashapp_athlete_socialmedia_platform_primary:
                 primarySocialMediaPlatformIds
                     ? {
+                          deleteMany: {},
                           create: primarySocialMediaPlatformIds.map(
                               (primarySocialMediaId) => ({
                                   dashapp_socialmedia_platform: {
@@ -422,6 +427,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
             dashapp_athlete_socialmedia_platform_secondary:
                 secondarySocialMediaPlatformIds
                     ? {
+                          deleteMany: {},
                           create: secondarySocialMediaPlatformIds.map(
                               (secondarySocialMediaId) => ({
                                   dashapp_socialmedia_platform: {
