@@ -328,11 +328,11 @@ export class AthleteResponseDTO {
         athleteDTO.contactPersons = athleteDetails.dashapp_athletecontact.map(
             (contact) => ({
                 id: contact.id.toString(),
-                name: contact.contact_name,
-                email: contact.contact_email,
-                linkedin: contact.contact_linkedin,
-                number: contact.contact_no,
-                designation: contact.contact_designation,
+                contactName: contact.contact_name,
+                contactEmail: contact.contact_email,
+                contactLinkedin: contact.contact_linkedin,
+                contactNumber: contact.contact_no,
+                contactDesignation: contact.contact_designation,
             }),
         );
         athleteDTO.gender = athleteDetails.dashapp_athlete_target_gender.map(
