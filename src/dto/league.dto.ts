@@ -180,14 +180,14 @@ export class LeagueResponseDTO {
     }[];
     viewershipMetrics?: {
         id?: string;
-        viewership: string | null;
-        viewershipType: viewship_type | null;
-        year: string | null;
+        viewership?: string;
+        viewershipType?: viewship_type;
+        year?: string;
     }[];
     reachMetrics?: {
         id?: string;
-        reach: string | null;
-        year: string | null;
+        reach?: string | null;
+        year?: string | null;
     }[];
 
     static toResponse(leagueDetails: TLeagueDetails): LeagueResponseDTO {
@@ -405,19 +405,20 @@ export class LeagueResponseDTO {
                 }),
             )),
         );
-        leagueDTO.viewershipMetrics = leagueDetails.dashapp_viewership.map(
+        leagueDTO.viewershipMetrics =
+            leagueDetails.dashapp_viewership_league.map((metric) => ({
+                id: metric.id.toString(),
+                viewership: metric.dashapp_viewership?.viewership,
+                viewershipType: metric.dashapp_viewership?.viewship_type,
+                year: metric.dashapp_viewership?.year,
+            }));
+        leagueDTO.reachMetrics = leagueDetails.dashapp_reach_league.map(
             (metric) => ({
                 id: metric.id.toString(),
-                viewership: metric.viewership,
-                viewershipType: metric.viewship_type,
-                year: metric.year,
+                reach: metric.dashapp_reach?.reach,
+                year: metric.dashapp_reach?.year,
             }),
         );
-        leagueDTO.reachMetrics = leagueDetails.dashapp_reach.map((metric) => ({
-            id: metric.id.toString(),
-            reach: metric.reach,
-            year: metric.year,
-        }));
         leagueDTO.associationId = leagueDetails.association?.id.toString();
 
         return leagueDTO;
