@@ -43,7 +43,7 @@ export const editAthleteSchema = createAthleteSchema.partial().extend({
     userId: z.string(),
     contactPerson: z
         .object({
-            contactId: z.string(),
+            contactId: z.string().optional(),
             contactName: z.string(),
             contactDesignation: z.string().optional(),
             contactEmail: z.string().optional(),

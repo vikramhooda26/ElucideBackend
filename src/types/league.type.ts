@@ -10,6 +10,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         property_name: true,
         dashapp_sport: {
             select: {
+                id: true,
                 name: true,
             },
         },
@@ -17,6 +18,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_leagueowner: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -25,16 +27,19 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         year_of_inception: true,
         dashapp_broadcastpartner: {
             select: {
+                id: true,
                 name: true,
             },
         },
         dashapp_ottpartner: {
             select: {
+                id: true,
                 name: true,
             },
         },
         format: {
             select: {
+                id: true,
                 format: true,
             },
         },
@@ -49,6 +54,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_taglines: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -58,6 +64,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_activecampaigns: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -67,6 +74,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_keymarket: {
                     select: {
+                        id: true,
                         zone: true,
                     },
                 },
@@ -76,6 +84,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_keymarket: {
                     select: {
+                        id: true,
                         zone: true,
                     },
                 },
@@ -85,6 +94,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_states: {
                     select: {
+                        id: true,
                         state: true,
                     },
                 },
@@ -94,6 +104,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_marketingplatform: {
                     select: {
+                        id: true,
                         platform: true,
                     },
                 },
@@ -103,6 +114,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_marketingplatform: {
                     select: {
+                        id: true,
                         platform: true,
                     },
                 },
@@ -110,9 +122,10 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         association: {
             select: {
+                id: true,
                 cost: true,
                 association_level: {
-                    select: { name: true },
+                    select: { id: true, name: true },
                 },
             },
         },
@@ -120,6 +133,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_tier: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -129,9 +143,11 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_subpersonality: {
                     select: {
+                        id: true,
                         name: true,
                         dashapp_mainpersonality: {
                             select: {
+                                id: true,
                                 name: true,
                             },
                         },
@@ -141,6 +157,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_leagueendorsements: {
             select: {
+                id: true,
                 name: true,
                 active: true,
             },
@@ -149,6 +166,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_age: {
                     select: {
+                        id: true,
                         age_range: true,
                     },
                 },
@@ -158,6 +176,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_nccs: {
                     select: {
+                        id: true,
                         nccs_class: true,
                     },
                 },
@@ -169,6 +188,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                     select: {
                         dashapp_assets: {
                             select: {
+                                id: true,
                                 asset: true,
                             },
                         },
@@ -176,13 +196,15 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 },
                 dashapp_leagueinfo: {
                     select: {
+                        id: true,
                         property_name: true,
                     },
                 },
-                dashapp_athlete: { select: { athlete_name: true } },
-                dashapp_team: { select: { team_name: true } },
+                dashapp_athlete: { select: { id: true, athlete_name: true } },
+                dashapp_team: { select: { id: true, team_name: true } },
                 dashapp_companydata: {
                     select: {
+                        id: true,
                         company_name: true,
                     },
                 },
@@ -191,6 +213,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 type: true,
                 dashapp_level: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -198,17 +221,19 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 duration: true,
                 annual_value: true,
                 total_value: true,
-                dashapp_territory: { select: { name: true } },
+                dashapp_territory: { select: { id: true, name: true } },
                 media_link: true,
             },
         },
         dashapp_activation: {
             select: {
+                id: true,
                 name: true,
                 dashapp_activation_type: {
                     select: {
                         dashapp_marketingplatform: {
                             select: {
+                                id: true,
                                 platform: true,
                             },
                         },
@@ -218,6 +243,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                     select: {
                         dashapp_assets: {
                             select: {
+                                id: true,
                                 asset: true,
                             },
                         },
@@ -227,6 +253,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                     select: {
                         dashapp_states: {
                             select: {
+                                id: true,
                                 state: true,
                             },
                         },
@@ -234,16 +261,18 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 },
                 dashapp_companydata: {
                     select: {
+                        id: true,
                         company_name: true,
                     },
                 },
                 dashapp_leagueinfo: {
                     select: {
+                        id: true,
                         property_name: true,
                     },
                 },
-                dashapp_athlete: { select: { athlete_name: true } },
-                dashapp_team: { select: { team_name: true } },
+                dashapp_athlete: { select: { id: true, athlete_name: true } },
+                dashapp_team: { select: { id: true, team_name: true } },
                 Year: true,
             },
         },
@@ -259,6 +288,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_viewership: {
             select: {
+                id: true,
                 viewership: true,
                 viewship_type: true,
                 year: true,
@@ -266,6 +296,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_reach: {
             select: {
+                id: true,
                 reach: true,
                 year: true,
             },
@@ -274,6 +305,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             select: {
                 dashapp_gender: {
                     select: {
+                        id: true,
                         gender_is: true,
                     },
                 },
@@ -281,6 +313,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
         },
         dashapp_team: {
             select: {
+                id: true,
                 team_name: true,
             },
         },

@@ -378,6 +378,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
             age: age || undefined,
             association: {
                 upsert: {
+                    where: { id: BigInt(associationId || "") },
                     create: {
                         association_level: associationLevelId
                             ? {
@@ -538,7 +539,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
                     {
                         id: {
                             notIn: contactPerson.map((details) =>
-                                BigInt(details.contactId),
+                                BigInt(details.contactId || ""),
                             ),
                         },
                     },
@@ -551,7 +552,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
 
         for (const details of contactPerson) {
             await prisma.dashapp_athletecontact.upsert({
-                where: { id: BigInt(details.contactId) },
+                where: { id: BigInt(details.contactId || "") },
                 create: {
                     contact_name: details.contactName,
                     contact_designation:

@@ -29,6 +29,7 @@ export const createLeagueSchema = z.object({
     strategyOverview: z.string().optional(),
     viewershipMetrics: z
         .object({
+            id: z.string().optional(),
             viewership: z.string(),
             year: z.string(),
             viewershipType: z.enum(["OTT", "BROADCAST"]),
@@ -37,6 +38,7 @@ export const createLeagueSchema = z.object({
         .optional(),
     reachMetrics: z
         .object({
+            id: z.string().optional(),
             reach: z.string(),
             year: z.string(),
         })
@@ -44,17 +46,32 @@ export const createLeagueSchema = z.object({
         .optional(),
     associationLevelId: z.string().optional(),
     costOfAssociation: z.string().optional(),
-    contactName: z.string().optional(),
-    contactDesignation: z.string().optional(),
-    contactEmail: z.string().optional(),
-    contactNumber: z.string().optional(),
-    contactLinkedin: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
     userId: z.string(),
 });
 
 export const editLeagueSchema = createLeagueSchema.partial().extend({
     associationId: z.string().optional(),
-    contactId: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactId: z.string().optional(),
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
     userId: z.string(),
 });
 

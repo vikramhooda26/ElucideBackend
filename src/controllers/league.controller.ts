@@ -115,11 +115,7 @@ export const createLeague = asyncHandler(async (req, res) => {
         associationLevelId,
         costOfAssociation,
         userId,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
     } = req.validatedData as TCreateLeagueSchema;
 
     const league = await prisma.dashapp_leagueinfo.create({
@@ -328,16 +324,16 @@ export const createLeague = asyncHandler(async (req, res) => {
         },
     });
 
-    if (contactName) {
-        await prisma.dashapp_leaguecontact.create({
-            data: {
-                contact_name: contactName,
-                contact_email: contactEmail,
-                contact_designation: contactDesignation,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
-                dashapp_leagueinfo: { connect: { id: BigInt(league.id) } },
-            },
+    if (contactPerson?.length) {
+        await prisma.dashapp_leaguecontact.createMany({
+            data: contactPerson.map((details) => ({
+                contact_name: details.contactName,
+                contact_designation: details.contactDesignation || undefined,
+                contact_email: details.contactEmail || undefined,
+                contact_no: details.contactNumber || undefined,
+                contact_linkedin: details.contactLinkedin || undefined,
+                league_id: league.id,
+            })),
         });
     }
 
@@ -386,12 +382,7 @@ export const editLeague = asyncHandler(async (req, res) => {
         associationLevelId,
         costOfAssociation,
         userId,
-        contactDesignation,
-        contactEmail,
-        contactId,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
     } = req.validatedData as TEditLeagueSchema;
 
     await prisma.dashapp_leagueinfo.update({
@@ -588,35 +579,80 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            association: associationId
-                ? {
-                      deleteMany: {},
-                      create: {
-                          association_level: associationLevelId
-                              ? {
-                                    connect: { id: BigInt(associationLevelId) },
-                                }
-                              : undefined,
-                          cost: costOfAssociation ?? undefined,
-                      },
-                  }
-                : undefined,
+            association: {
+                upsert: {
+                    where: { id: BigInt(associationId || "") },
+                    create: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: { id: BigInt(associationLevelId) },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                    update: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: { id: BigInt(associationLevelId) },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                },
+            },
         },
         select: {
             id: true,
         },
     });
 
-    if (contactId) {
-        await prisma.dashapp_leaguecontact.update({
-            where: { id: BigInt(contactId) },
-            data: {
-                contact_name: contactName,
-                contact_email: contactEmail,
-                contact_designation: contactDesignation,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
+    if (contactPerson?.length) {
+        await prisma.dashapp_leaguecontact.deleteMany({
+            where: {
+                AND: [
+                    {
+                        id: {
+                            notIn: contactPerson.map((details) =>
+                                BigInt(details.contactId || ""),
+                            ),
+                        },
+                    },
+                    {
+                        league_id: BigInt(leagueId),
+                    },
+                ],
             },
+        });
+
+        for (const details of contactPerson) {
+            await prisma.dashapp_leaguecontact.upsert({
+                where: { id: BigInt(details.contactId || "") },
+                create: {
+                    contact_name: details.contactName,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                    dashapp_leagueinfo: {
+                        connect: {
+                            id: BigInt(leagueId),
+                        },
+                    },
+                },
+                update: {
+                    contact_name: details.contactName || undefined,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                },
+            });
+        }
+    } else {
+        await prisma.dashapp_leaguecontact.deleteMany({
+            where: { league_id: BigInt(leagueId) },
         });
     }
 

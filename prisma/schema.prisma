@@ -968,8 +968,8 @@ model dashapp_leagueinfo {
     dashapp_leagueinfo_tier                          dashapp_leagueinfo_tier[]
     dashapp_sportsdealsummary                        dashapp_sportsdealsummary[]
     dashapp_team                                     dashapp_team[]
-    dashapp_reach                                    dashapp_reach[]
-    dashapp_viewership                               dashapp_viewership[]
+    dashapp_viewership_league                        dashapp_viewership_league[]
+    dashapp_reach_league                             dashapp_reach_league[]
 
     @@index([brodcast_partner_id], map: "dashapp_leagueinfo_brodcast_partner_id_40f27555")
     @@index([modified_by_id], map: "dashapp_leagueinfo_modified_by_id_d356e033")
@@ -1195,36 +1195,80 @@ model dashapp_marketingplatform {
 }
 
 model dashapp_reach {
+    id                   BigInt                 @id @default(autoincrement())
+    created_date         DateTime?              @default(now())
+    modified_date        DateTime               @updatedAt
+    created_by_id        BigInt?
+    modified_by_id       BigInt?
+    reach                String
+    year                 String
+    created_by           auth_user?             @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by          auth_user?             @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_reach_team   dashapp_reach_team[]
+    dashapp_reach_league dashapp_reach_league[]
+}
+
+model dashapp_reach_team {
+    id            BigInt         @id @default(autoincrement())
+    team_id       BigInt?
+    dashapp_team  dashapp_team?  @relation(fields: [team_id], references: [id], onDelete: Cascade)
+    reach_id      BigInt?
+    dashapp_reach dashapp_reach? @relation(fields: [reach_id], references: [id], onDelete: Cascade)
+
+    @@unique([team_id, reach_id])
+    @@index([team_id])
+    @@index([reach_id])
+}
+
+model dashapp_reach_league {
     id                 BigInt              @id @default(autoincrement())
-    created_date       DateTime?           @default(now())
-    modified_date      DateTime            @updatedAt
-    created_by_id      BigInt?
-    modified_by_id     BigInt?
-    reach              String
-    year               String
-    leagueinfo_id      BigInt?
-    team_id            BigInt?
-    created_by         auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
-    modified_by        auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team       dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
+    league_id          BigInt?
+    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [league_id], references: [id], onDelete: Cascade)
+    reach_id           BigInt?
+    dashapp_reach      dashapp_reach?      @relation(fields: [reach_id], references: [id], onDelete: Cascade)
+
+    @@unique([league_id, reach_id])
+    @@index([league_id])
+    @@index([reach_id])
 }
 
 model dashapp_viewership {
+    id                        BigInt                      @id @default(autoincrement())
+    created_date              DateTime?                   @default(now())
+    modified_date             DateTime                    @updatedAt
+    created_by_id             BigInt?
+    modified_by_id            BigInt?
+    viewship_type             viewship_type
+    viewership                String
+    year                      String
+    created_by                auth_user?                  @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by               auth_user?                  @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_viewership_team   dashapp_viewership_team[]
+    dashapp_viewership_league dashapp_viewership_league[]
+}
+
+model dashapp_viewership_team {
     id                 BigInt              @id @default(autoincrement())
-    created_date       DateTime?           @default(now())
-    modified_date      DateTime            @updatedAt
-    created_by_id      BigInt?
-    modified_by_id     BigInt?
-    viewship_type      viewship_type
-    viewership         String
-    year               String
-    leagueinfo_id      BigInt?
     team_id            BigInt?
-    created_by         auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
-    modified_by        auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team       dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
+    viewership_id      BigInt?
+    dashapp_viewership dashapp_viewership? @relation(fields: [viewership_id], references: [id], onDelete: Cascade)
+
+    @@unique([team_id, viewership_id])
+    @@index([team_id])
+    @@index([viewership_id])
+}
+
+model dashapp_viewership_league {
+    id                 BigInt              @id @default(autoincrement())
+    league_id          BigInt?
+    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [league_id], references: [id], onDelete: Cascade)
+    viewership_id      BigInt?
+    dashapp_viewership dashapp_viewership? @relation(fields: [viewership_id], references: [id], onDelete: Cascade)
+
+    @@unique([league_id, viewership_id])
+    @@index([league_id])
+    @@index([viewership_id])
 }
 
 model dashapp_ottpartner {
@@ -1463,8 +1507,8 @@ model dashapp_team {
     dashapp_team_tier                          dashapp_team_tier[]
     dashapp_teamcontact                        dashapp_teamcontact[]
     dashapp_teamendorsements                   dashapp_teamendorsements[]
-    dashapp_reach                              dashapp_reach[]
-    dashapp_viewership                         dashapp_viewership[]
+    dashapp_viewership_team                    dashapp_viewership_team[]
+    dashapp_reach_team                         dashapp_reach_team[]
 
     @@index([hq_city_id], map: "dashapp_team_hq_city_id_fa8703dd")
     @@index([league_id], map: "dashapp_team_league_id_30ad02cd")
