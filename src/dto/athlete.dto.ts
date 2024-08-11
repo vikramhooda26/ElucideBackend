@@ -137,11 +137,11 @@ export class AthleteResponseDTO {
     }[];
     contactPersons?: {
         id: string;
-        name: string;
-        email?: string | null;
-        linkedin?: string | null;
-        number?: string | null;
-        designation?: string | null;
+        contactName: string;
+        contactEmail?: string | null;
+        contactLinkedin?: string | null;
+        contactNumber?: string | null;
+        contactDesignation?: string | null;
     }[];
     gender?: {
         id?: string;
