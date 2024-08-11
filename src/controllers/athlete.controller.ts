@@ -145,11 +145,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         costOfAssociation,
         statusId,
         stateId,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
         tierIds,
     } = req.validatedData as TCreateAthleteSchema;
 
@@ -303,20 +299,16 @@ export const createAthlete = asyncHandler(async (req, res) => {
         },
     });
 
-    if (contactName) {
-        await prisma.dashapp_athletecontact.create({
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_email: contactEmail,
-                contact_no: contactNumber,
-                contact_linkedin: contactLinkedin,
-                dashapp_athlete: {
-                    connect: {
-                        id: athlete.id,
-                    },
-                },
-            },
+    if (contactPerson?.length) {
+        await prisma.dashapp_athletecontact.createMany({
+            data: contactPerson.map((details) => ({
+                contact_name: details.contactName,
+                contact_designation: details.contactDesignation || undefined,
+                contact_email: details.contactEmail || undefined,
+                contact_no: details.contactNumber || undefined,
+                contact_linkedin: details.contactLinkedin || undefined,
+                athlete_id: athlete.id,
+            })),
         });
     }
 
@@ -369,11 +361,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         stateId,
         tierIds,
         contactId,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
     } = req.validatedData as TEditAthleteSchema;
 
     const ageRange = age ? await findAgeRange(age) : undefined;
@@ -544,16 +532,16 @@ export const editAthlete = asyncHandler(async (req, res) => {
         },
     });
 
-    if (contactId) {
-        await prisma.dashapp_athletecontact.update({
+    if (contactId && contactPerson?.length) {
+        await prisma.dashapp_athletecontact.updateMany({
             where: { id: BigInt(contactId) },
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_email: contactEmail,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
-            },
+            data: contactPerson.map((details) => ({
+                contact_name: details.contactName || undefined,
+                contact_designation: details.contactDesignation || undefined,
+                contact_email: details.contactEmail || undefined,
+                contact_no: details.contactNumber || undefined,
+                contact_linkedin: details.contactLinkedin || undefined,
+            })),
         });
     }
 

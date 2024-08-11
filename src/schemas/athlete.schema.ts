@@ -26,11 +26,16 @@ export const createAthleteSchema = z.object({
     primarySocialMediaPlatformIds: z.string().array().optional(),
     secondarySocialMediaPlatformIds: z.string().array().optional(),
     statusId: z.string().optional(),
-    contactName: z.string().optional(),
-    contactDesignation: z.string().optional(),
-    contactEmail: z.string().optional(),
-    contactNumber: z.string().optional(),
-    contactLinkedin: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
 });
 
 export const editAthleteSchema = createAthleteSchema.partial().extend({
