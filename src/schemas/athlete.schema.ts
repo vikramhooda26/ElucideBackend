@@ -40,8 +40,18 @@ export const createAthleteSchema = z.object({
 
 export const editAthleteSchema = createAthleteSchema.partial().extend({
     associationId: z.string().optional(),
-    contactId: z.string().optional(),
     userId: z.string(),
+    contactPerson: z
+        .object({
+            contactId: z.string(),
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
 });
 
 export const filteredAthleteSchema = z.object({

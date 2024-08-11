@@ -360,7 +360,6 @@ export const editAthlete = asyncHandler(async (req, res) => {
         statusId,
         stateId,
         tierIds,
-        contactId,
         contactPerson,
     } = req.validatedData as TEditAthleteSchema;
 
@@ -532,16 +531,53 @@ export const editAthlete = asyncHandler(async (req, res) => {
         },
     });
 
-    if (contactId && contactPerson?.length) {
-        await prisma.dashapp_athletecontact.updateMany({
-            where: { id: BigInt(contactId) },
-            data: contactPerson.map((details) => ({
-                contact_name: details.contactName || undefined,
-                contact_designation: details.contactDesignation || undefined,
-                contact_email: details.contactEmail || undefined,
-                contact_no: details.contactNumber || undefined,
-                contact_linkedin: details.contactLinkedin || undefined,
-            })),
+    if (contactPerson?.length) {
+        await prisma.dashapp_athletecontact.deleteMany({
+            where: {
+                AND: [
+                    {
+                        id: {
+                            notIn: contactPerson.map((details) =>
+                                BigInt(details.contactId),
+                            ),
+                        },
+                    },
+                    {
+                        athlete_id: BigInt(athleteId),
+                    },
+                ],
+            },
+        });
+
+        for (const details of contactPerson) {
+            await prisma.dashapp_athletecontact.upsert({
+                where: { id: BigInt(details.contactId) },
+                create: {
+                    contact_name: details.contactName,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                    dashapp_athlete: {
+                        connect: {
+                            id: BigInt(athleteId),
+                        },
+                    },
+                },
+                update: {
+                    contact_name: details.contactName || undefined,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                },
+            });
+        }
+    } else {
+        await prisma.dashapp_athletecontact.deleteMany({
+            where: { athlete_id: BigInt(athleteId) },
         });
     }
 

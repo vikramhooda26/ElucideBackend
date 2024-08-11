@@ -136,7 +136,7 @@ export class AthleteResponseDTO {
         };
     }[];
     contactPersons?: {
-        id: string;
+        contactId: string;
         contactName: string;
         contactEmail?: string | null;
         contactLinkedin?: string | null;
@@ -327,7 +327,7 @@ export class AthleteResponseDTO {
             }));
         athleteDTO.contactPersons = athleteDetails.dashapp_athletecontact.map(
             (contact) => ({
-                id: contact.id.toString(),
+                contactId: contact.id.toString(),
                 contactName: contact.contact_name,
                 contactEmail: contact.contact_email,
                 contactLinkedin: contact.contact_linkedin,
