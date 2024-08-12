@@ -5,6 +5,7 @@ import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
+import { printLogs } from "../lib/log.js";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -405,6 +406,8 @@ export const editTeam = asyncHandler(async (req, res) => {
         userId,
     } = req.validatedData as TEditTeamSchema;
 
+    printLogs("associationId", associationId);
+
     await prisma.dashapp_team.update({
         where: { id: BigInt(teamId) },
         data: {
@@ -572,19 +575,17 @@ export const editTeam = asyncHandler(async (req, res) => {
                 : undefined,
             association: {
                 delete:
-                    !associationLevelId && !costOfAssociation && associationId
+                    !associationLevelId && !costOfAssociation
                         ? {
-                              id: BigInt(associationId),
+                              team_id: BigInt(teamId),
                           }
                         : undefined,
                 upsert: {
-                    where: { id: BigInt(associationId || "") },
+                    where: { team_id: BigInt(teamId) },
                     create: {
                         association_level: associationLevelId
                             ? {
-                                  connect: {
-                                      id: BigInt(associationLevelId),
-                                  },
+                                  connect: { id: BigInt(associationLevelId) },
                               }
                             : undefined,
                         cost: costOfAssociation || undefined,
@@ -592,9 +593,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                     update: {
                         association_level: associationLevelId
                             ? {
-                                  connect: {
-                                      id: BigInt(associationLevelId),
-                                  },
+                                  connect: { id: BigInt(associationLevelId) },
                               }
                             : undefined,
                         cost: costOfAssociation || undefined,
@@ -623,6 +622,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                     ? viewershipMetrics.map((viewership) => ({
                           where: {
                               id: BigInt(viewership.id || ""),
+                              team_id: BigInt(teamId),
                           },
                           create: {
                               viewership: viewership.viewership,
@@ -659,6 +659,7 @@ export const editTeam = asyncHandler(async (req, res) => {
                     ? reachMetrics.map((reachMetric) => ({
                           where: {
                               id: BigInt(reachMetric.id || ""),
+                              team_id: BigInt(teamId),
                           },
                           create: {
                               reach: reachMetric.reach,
@@ -688,11 +689,13 @@ export const editTeam = asyncHandler(async (req, res) => {
                     {
                         id: {
                             notIn: contactPerson.map((details) =>
-                                BigInt(details.contactId),
+                                BigInt(details.contactId || ""),
                             ),
                         },
                     },
-                    { team_id: BigInt(teamId) },
+                    {
+                        team_id: BigInt(teamId),
+                    },
                 ],
             },
         });

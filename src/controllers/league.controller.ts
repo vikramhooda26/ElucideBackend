@@ -639,13 +639,13 @@ export const editLeague = asyncHandler(async (req, res) => {
             },
             association: {
                 delete:
-                    !associationLevelId && !costOfAssociation && associationId
+                    !associationLevelId && !costOfAssociation
                         ? {
-                              id: BigInt(associationId),
+                              leagueInfo_id: BigInt(leagueId),
                           }
                         : undefined,
                 upsert: {
-                    where: { id: BigInt(associationId || "") },
+                    where: { leagueInfo_id: BigInt(leagueId) },
                     create: {
                         association_level: associationLevelId
                             ? {
