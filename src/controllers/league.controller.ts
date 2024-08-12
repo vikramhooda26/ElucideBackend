@@ -1,13 +1,13 @@
 import asyncHandler from "express-async-handler";
-import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { prisma } from "../db/index.js";
+import { LeagueResponseDTO } from "../dto/league.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
+import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import {
     TCreateLeagueSchema,
     TEditLeagueSchema,
 } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
-import { LeagueResponseDTO } from "../dto/league.dto.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -175,13 +175,13 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            instagram: instagram,
-            facebook: facebook,
-            linkedin: linkedin,
-            twitter: twitter,
-            youtube: youtube,
-            website: website,
-            strategy_overview: strategyOverview,
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
+            strategy_overview: strategyOverview || undefined,
             dashapp_leagueinfo_taglines: taglineIds
                 ? {
                       create: taglineIds?.map((taglineId) => ({
@@ -349,6 +349,15 @@ export const editLeague = asyncHandler(async (req, res) => {
         throw new BadRequestError("League ID not found");
     }
 
+    const leagueExists = await prisma.dashapp_leagueinfo.findUnique({
+        where: { id: BigInt(leagueId) },
+        select: { id: true },
+    });
+
+    if (!leagueExists?.id) {
+        throw new NotFoundError("This league does not exists");
+    }
+
     const {
         name,
         sportId,
@@ -387,10 +396,10 @@ export const editLeague = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_leagueinfo.update({
         where: {
-            id: Number(leagueId),
+            id: BigInt(leagueId),
         },
         data: {
-            property_name: name,
+            property_name: name || undefined,
             modified_by: { connect: { id: BigInt(userId) } },
             dashapp_sport: sportId
                 ? {
@@ -407,7 +416,7 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            year_of_inception: yearOfInception,
+            year_of_inception: yearOfInception || undefined,
             format: formatId
                 ? {
                       connect: { id: BigInt(formatId) },
@@ -441,13 +450,13 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
-            strategy_overview: strategyOverview,
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
+            strategy_overview: strategyOverview || undefined,
             dashapp_leagueinfo_taglines: taglineIds
                 ? {
                       deleteMany: {},
@@ -556,30 +565,85 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_viewership: viewershipMetrics
-                ? {
-                      deleteMany: viewershipMetrics.map((metric) => ({
-                          year: metric.year,
-                      })),
-                      create: viewershipMetrics.map((metric) => ({
-                          viewership: metric.viewership,
-                          viewship_type: metric.viewershipType,
-                          year: metric.year,
-                      })),
-                  }
-                : undefined,
-            dashapp_reach: reachMetrics
-                ? {
-                      deleteMany: reachMetrics.map((metric) => ({
-                          year: metric.year,
-                      })),
-                      create: reachMetrics.map((metric) => ({
-                          reach: metric.reach,
-                          year: metric.year,
-                      })),
-                  }
-                : undefined,
+            dashapp_viewership: {
+                deleteMany: viewershipMetrics?.length
+                    ? {
+                          AND: [
+                              {
+                                  id: {
+                                      notIn: viewershipMetrics.map(
+                                          (viewership) =>
+                                              BigInt(viewership.id || ""),
+                                      ),
+                                  },
+                              },
+                              {
+                                  leagueinfo_id: BigInt(leagueId),
+                              },
+                          ],
+                      }
+                    : { leagueinfo_id: BigInt(leagueId) },
+                upsert: viewershipMetrics
+                    ? viewershipMetrics.map((viewership) => ({
+                          where: {
+                              id: BigInt(viewership.id || ""),
+                              leagueinfo_id: BigInt(leagueId),
+                          },
+                          create: {
+                              viewership: viewership.viewership,
+                              viewship_type: viewership.viewershipType,
+                              year: viewership.year,
+                          },
+                          update: {
+                              viewership: viewership.viewership || undefined,
+                              viewship_type:
+                                  viewership.viewershipType || undefined,
+                              year: viewership.year || undefined,
+                          },
+                      }))
+                    : undefined,
+            },
+            dashapp_reach: {
+                deleteMany: reachMetrics?.length
+                    ? {
+                          AND: [
+                              {
+                                  id: {
+                                      notIn: reachMetrics.map((reachMetric) =>
+                                          BigInt(reachMetric.id || ""),
+                                      ),
+                                  },
+                              },
+                              {
+                                  leagueinfo_id: BigInt(leagueId),
+                              },
+                          ],
+                      }
+                    : { leagueinfo_id: BigInt(leagueId) },
+                upsert: reachMetrics?.length
+                    ? reachMetrics.map((reachMetric) => ({
+                          where: {
+                              id: BigInt(reachMetric.id || ""),
+                              leagueinfo_id: BigInt(leagueId),
+                          },
+                          create: {
+                              reach: reachMetric.reach,
+                              year: reachMetric.year,
+                          },
+                          update: {
+                              reach: reachMetric.reach || undefined,
+                              year: reachMetric.year || undefined,
+                          },
+                      }))
+                    : undefined,
+            },
             association: {
+                delete:
+                    !associationLevelId && !costOfAssociation && associationId
+                        ? {
+                              id: BigInt(associationId),
+                          }
+                        : undefined,
                 upsert: {
                     where: { id: BigInt(associationId || "") },
                     create: {

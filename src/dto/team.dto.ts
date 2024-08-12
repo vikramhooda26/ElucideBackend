@@ -4,78 +4,183 @@ import { TTeamDetails } from "../types/team.type.js";
 export class TeamResponseDTO {
     id?: string;
     name?: string;
-    owners?: string[];
-    sport?: string;
-    league?: string;
-    yearOfInception!: string | null;
-    franchiseFee!: Prisma.Decimal | null;
-    city?: string;
-    state?: string;
-    instagram!: string | null;
-    facebook!: string | null;
-    twitter!: string | null;
-    linkedin!: string | null;
-    youtube!: string | null;
-    website!: string | null;
-    strategyOverview!: string | null;
-    taglines?: string[];
-    endorsements?: string[];
-    activeCampaigns?: string[];
-    primaryMarketingPlatform?: string[];
-    secondaryMarketingPlatform?: string[];
-    age?: (string | undefined)[];
-    gender?: (string | undefined)[];
-    nccs?: (string | undefined)[];
-    primaryKeyMarket?: string[];
-    secondaryKeyMarket?: string[];
-    tertiary?: string[];
-    associationLevel!: (string | null | undefined)[];
-    associationCost?: (Prisma.Decimal | null)[];
-    tiers!: (string | undefined)[];
-    subPersonalityTraits!: string[];
-    mainPersonalityTraits!: string[];
+    owners?: {
+        id?: string;
+        name?: string;
+    }[];
+    sport?: {
+        id?: string;
+        name?: string;
+    };
+    league?: {
+        id?: string;
+        name?: string;
+    };
+    yearOfInception?: string | null;
+    franchiseFee?: Prisma.Decimal | null;
+    city?: {
+        id?: string;
+        name?: string;
+    };
+    state?: {
+        id?: string;
+        name?: string;
+    };
+    instagram?: string | null;
+    facebook?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+    youtube?: string | null;
+    website?: string | null;
+    strategyOverview?: string | null;
+    taglines?: {
+        id?: string;
+        name?: string;
+    }[];
+    endorsements?: {
+        id?: string;
+        name?: string;
+    }[];
+    activeCampaigns?: {
+        id?: string;
+        name?: string;
+    }[];
+    primaryMarketingPlatform?: {
+        id?: string;
+        name?: string;
+    }[];
+    secondaryMarketingPlatform?: {
+        id?: string;
+        name?: string;
+    }[];
+    age?: {
+        id?: string;
+        name?: string;
+    }[];
+    gender?: {
+        id?: string;
+        name?: string;
+    }[];
+    nccs?: {
+        id?: string;
+        name?: string;
+    }[];
+    primaryKeyMarket?: {
+        id?: string;
+        name?: string;
+    }[];
+    secondaryKeyMarket?: {
+        id?: string;
+        name?: string;
+    }[];
+    tertiary?: {
+        id?: string;
+        name?: string;
+    }[];
+    associationLevel?: {
+        id?: string;
+        name?: string | null;
+    };
+    costOfAssociation?: Prisma.Decimal | null;
+    associationId?: string;
+    tiers?: {
+        id?: string;
+        name?: string;
+    }[];
+    subPersonalityTraits?: {
+        id?: string;
+        name?: string;
+    }[];
+    mainPersonalityTraits?: {
+        id?: string;
+        name?: string;
+    }[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
-        assets: string[];
+        assets: {
+            id?: string;
+            name?: string;
+        }[];
         commencementDate: string | null;
         duration: string | null;
         expirationDate: string | null;
-        level: string | undefined;
+        level: {
+            id?: string;
+            name?: string;
+        };
         mediaLink: string | null;
-        athleteName?: string;
-        leagueName?: string;
-        teamName?: string;
-        brandName?: string;
+        athleteName?: {
+            id?: string;
+            name?: string;
+        };
+        leagueName?: {
+            id?: string;
+            name?: string;
+        };
+        teamName?: {
+            id?: string;
+            name?: string;
+        };
+        brandName?: {
+            id?: string;
+            name?: string;
+        };
         status: string | null;
-        territory?: string;
+        territory?: {
+            id?: string;
+            name?: string;
+        };
         totalValue: Prisma.Decimal | null;
         type: string;
     }[];
     activationSummary?: {
-        asset: string[];
-        market: string[];
+        asset: {
+            id?: string;
+            name?: string;
+        }[];
+        market: {
+            id?: string;
+            name?: string;
+        }[];
         name: string | null;
-        type: string[];
+        type: {
+            id?: string;
+            name?: string;
+        }[];
         year: string | null;
-        athleteName?: string;
-        leagueName?: string;
-        teamName?: string;
-        brandName?: string;
+        athleteName?: {
+            id?: string;
+            name?: string;
+        };
+        leagueName?: {
+            id?: string;
+            name?: string;
+        };
+        teamName?: {
+            id?: string;
+            name?: string;
+        };
+        brandName?: {
+            id?: string;
+            name?: string;
+        };
     }[];
     contactPersons?: {
-        id: string;
-        name: string;
-        designation: string | null;
-        email: string | null;
-        number: string | null;
-        linkedin: string | null;
+        contactId: string;
+        contactName: string;
+        contactDesignation: string | null;
+        contactEmail: string | null;
+        contactNumber: string | null;
+        contactLinkedin: string | null;
     }[];
     viewershipMetrics?: {
+        id?: string;
         viewership: string | null;
         viewershipType: viewship_type | null;
         year: string | null;
     }[];
     reachMetrics?: {
+        id?: string;
         reach: string | null;
         year: string | null;
     }[];
@@ -84,15 +189,28 @@ export class TeamResponseDTO {
         const teamDTO = new TeamResponseDTO();
         (teamDTO.id = teamDetails.id.toString()),
             (teamDTO.name = teamDetails.team_name);
-        teamDTO.owners = teamDetails.dashapp_team_owner.map(
-            (owner) => owner.dashapp_teamowner.name,
-        );
-        teamDTO.sport = teamDetails.dashapp_sport?.name;
-        teamDTO.league = teamDetails.dashapp_leagueinfo?.property_name;
-        teamDTO.yearOfInception = teamDetails.year_of_inception;
-        teamDTO.franchiseFee = teamDetails.franchise_fee;
-        teamDTO.city = teamDetails.dashapp_hqcity?.name;
-        teamDTO.state = teamDetails.dashapp_states?.state;
+        teamDTO.owners = teamDetails.dashapp_team_owner.map((owner) => ({
+            id: owner.dashapp_teamowner.id.toString(),
+            name: owner.dashapp_teamowner.name,
+        }));
+        teamDTO.sport = {
+            id: teamDetails.dashapp_sport?.id.toString(),
+            name: teamDetails.dashapp_sport?.name,
+        };
+        teamDTO.league = {
+            id: teamDetails.dashapp_leagueinfo?.id.toString(),
+            name: teamDetails.dashapp_leagueinfo?.property_name,
+        };
+        (teamDTO.yearOfInception = teamDetails.year_of_inception),
+            (teamDTO.franchiseFee = teamDetails.franchise_fee);
+        teamDTO.city = {
+            id: teamDetails.dashapp_hqcity?.id.toString(),
+            name: teamDetails.dashapp_hqcity?.name,
+        };
+        teamDTO.state = {
+            id: teamDetails.dashapp_states?.id.toString(),
+            name: teamDetails.dashapp_states?.state,
+        };
         teamDTO.instagram = teamDetails.instagram;
         teamDTO.facebook = teamDetails.facebook;
         teamDTO.twitter = teamDetails.twitter;
@@ -100,119 +218,178 @@ export class TeamResponseDTO {
         teamDTO.youtube = teamDetails.youtube;
         teamDTO.website = teamDetails.website;
         teamDTO.strategyOverview = teamDetails.strategy_overview;
-        teamDTO.taglines = teamDetails.dashapp_team_taglines.map(
-            (tagline) => tagline.dashapp_taglines.name,
-        );
+        teamDTO.taglines = teamDetails.dashapp_team_taglines.map((tagline) => ({
+            id: tagline.dashapp_taglines.id.toString(),
+            name: tagline.dashapp_taglines.name,
+        }));
+        teamDTO.associationId = teamDetails.association?.id.toString();
         teamDTO.endorsements = teamDetails.dashapp_teamendorsements.map(
-            (endorse) => endorse.name,
+            (endorse) => ({
+                id: endorse.id.toString(),
+                name: endorse.name,
+            }),
         );
         teamDTO.activeCampaigns = teamDetails.dashapp_team_active_campaigns.map(
-            (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,
+            (activeCampaign) => ({
+                id: activeCampaign.dashapp_activecampaigns.id.toString(),
+                name: activeCampaign.dashapp_activecampaigns.name,
+            }),
         );
         teamDTO.primaryMarketingPlatform =
             teamDetails.dashapp_team_marketing_platforms_primary.map(
-                (platform) => platform.dashapp_marketingplatform.platform,
+                (platform) => ({
+                    id: platform.dashapp_marketingplatform.id.toString(),
+                    name: platform.dashapp_marketingplatform.platform,
+                }),
             );
         teamDTO.secondaryMarketingPlatform =
             teamDetails.dashapp_team_marketing_platforms_secondary.map(
-                (platform) => platform.dashapp_marketingplatform.platform,
+                (platform) => ({
+                    id: platform.dashapp_marketingplatform.id.toString(),
+                    name: platform.dashapp_marketingplatform.platform,
+                }),
             );
-        teamDTO.age = teamDetails.dashapp_team_age.map(
-            (age) => age.dashapp_age?.age_range,
-        );
-        teamDTO.gender = teamDetails.dashapp_team_gender.map(
-            (gender) => gender.dashapp_gender?.gender_is,
-        );
-        teamDTO.nccs = teamDetails.dashapp_team_income.map(
-            (nccs) => nccs.dashapp_nccs?.nccs_class,
-        );
+        teamDTO.age = teamDetails.dashapp_team_age.map((age) => ({
+            id: age.dashapp_age?.id.toString(),
+            name: age.dashapp_age?.age_range,
+        }));
+        teamDTO.gender = teamDetails.dashapp_team_gender.map((gender) => ({
+            id: gender.dashapp_gender?.id.toString(),
+            name: gender.dashapp_gender?.gender_is,
+        }));
+        teamDTO.nccs = teamDetails.dashapp_team_income.map((nccs) => ({
+            id: nccs.dashapp_nccs?.id.toString(),
+            name: nccs.dashapp_nccs?.nccs_class,
+        }));
         teamDTO.primaryKeyMarket =
-            teamDetails.dashapp_team_key_markets_primary.map(
-                (market) => market.dashapp_keymarket.zone,
-            );
+            teamDetails.dashapp_team_key_markets_primary.map((market) => ({
+                id: market.dashapp_keymarket.id.toString(),
+                name: market.dashapp_keymarket.zone,
+            }));
         teamDTO.secondaryKeyMarket =
-            teamDetails.dashapp_team_key_markets_secondary.map(
-                (market) => market.dashapp_keymarket.zone,
-            );
+            teamDetails.dashapp_team_key_markets_secondary.map((market) => ({
+                id: market.dashapp_keymarket.id.toString(),
+                name: market.dashapp_keymarket.zone,
+            }));
         teamDTO.tertiary = teamDetails.dashapp_team_key_markets_tertiary.map(
-            (state) => state.dashapp_states.state,
+            (state) => ({
+                id: state.dashapp_states.id.toString(),
+                name: state.dashapp_states.state,
+            }),
         );
-        teamDTO.associationLevel = teamDetails.association.map(
-            (asso) => asso.association_level?.name,
-        );
-        teamDTO.associationCost = teamDetails.association.map(
-            (asso) => asso.cost,
-        );
-        teamDTO.tiers = teamDetails.dashapp_team_tier.map(
-            (tier) => tier.dashapp_tier?.name,
-        );
+        (teamDTO.associationLevel = {
+            id: teamDetails.association?.association_level?.id.toString(),
+            name: teamDetails.association?.association_level?.name,
+        }),
+            (teamDTO.costOfAssociation = teamDetails.association?.cost);
+        teamDTO.tiers = teamDetails.dashapp_team_tier.map((tier) => ({
+            id: tier.dashapp_tier?.id.toString(),
+            name: tier.dashapp_tier?.name,
+        }));
         teamDTO.subPersonalityTraits =
-            teamDetails.dashapp_team_personality_traits.map(
-                (trait) => trait.dashapp_subpersonality.name,
-            );
+            teamDetails.dashapp_team_personality_traits.map((trait) => ({
+                id: trait.dashapp_subpersonality.id.toString(),
+                name: trait.dashapp_subpersonality.name,
+            }));
         teamDTO.mainPersonalityTraits =
-            teamDetails.dashapp_team_personality_traits.map(
-                (trait) =>
-                    trait.dashapp_subpersonality.dashapp_mainpersonality.name,
-            );
+            teamDetails.dashapp_team_personality_traits.map((trait) => ({
+                id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
+                name: trait.dashapp_subpersonality.dashapp_mainpersonality.name,
+            }));
         teamDTO.sportsDealSummary = teamDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value,
-                assets: deal.dashapp_sportsdeal_assets.map(
-                    (assest) => assest.dashapp_assets.asset,
-                ),
+                assets: deal.dashapp_sportsdeal_assets.map((assest) => ({
+                    id: assest.dashapp_assets.id.toString(),
+                    name: assest.dashapp_assets.asset,
+                })),
                 commencementDate: deal.commencement_date,
                 duration: deal.duration,
                 expirationDate: deal.expiration_date,
-                level: deal.dashapp_level?.name,
+                level: {
+                    id: deal.dashapp_level?.id.toString(),
+                    name: deal.dashapp_level?.name,
+                },
                 mediaLink: deal.media_link,
-                brandName: deal.dashapp_companydata?.company_name,
-                leagueName: deal.dashapp_leagueinfo?.property_name,
-                teamName: deal.dashapp_team?.team_name,
-                athleteName: deal.dashapp_athlete?.athlete_name,
+                brandName: {
+                    id: deal.dashapp_companydata?.id.toString(),
+                    name: deal.dashapp_companydata?.company_name,
+                },
+                athleteName: {
+                    id: deal.dashapp_athlete?.id.toString(),
+                    name: deal.dashapp_athlete?.athlete_name,
+                },
+                leagueName: {
+                    id: deal.dashapp_leagueinfo?.id.toString(),
+                    name: deal.dashapp_leagueinfo?.property_name,
+                },
+                teamName: {
+                    id: deal.dashapp_team?.id.toString(),
+                    name: deal.dashapp_team?.team_name,
+                },
                 status: deal.status,
-                territory: deal.dashapp_territory?.name,
+                territory: {
+                    id: deal.dashapp_territory?.id.toString(),
+                    name: deal.dashapp_territory?.name,
+                },
                 totalValue: deal.total_value,
                 type: deal.type,
             }),
         );
         teamDTO.activationSummary = teamDetails.dashapp_activation.map(
             (activation) => ({
-                asset: activation.dashapp_activation_assets.map(
-                    (asset) => asset.dashapp_assets.asset,
-                ),
-                market: activation.dashapp_activation_market.map(
-                    (market) => market.dashapp_states.state,
-                ),
-                brandName: activation.dashapp_companydata?.company_name,
-                leagueName: activation.dashapp_leagueinfo?.property_name,
-                teamName: activation.dashapp_team?.team_name,
-                athleteName: activation.dashapp_athlete?.athlete_name,
+                asset: activation.dashapp_activation_assets.map((asset) => ({
+                    id: asset.dashapp_assets.id.toString(),
+                    name: asset.dashapp_assets.asset,
+                })),
+                market: activation.dashapp_activation_market.map((market) => ({
+                    id: market.dashapp_states.id.toString(),
+                    name: market.dashapp_states.state,
+                })),
+                brandName: {
+                    id: activation.dashapp_companydata?.id.toString(),
+                    name: activation.dashapp_companydata?.company_name,
+                },
+                athleteName: {
+                    id: activation.dashapp_athlete?.id.toString(),
+                    name: activation.dashapp_athlete?.athlete_name,
+                },
+                leagueName: {
+                    id: activation.dashapp_leagueinfo?.id.toString(),
+                    name: activation.dashapp_leagueinfo?.property_name,
+                },
+                teamName: {
+                    id: activation.dashapp_team?.id.toString(),
+                    name: activation.dashapp_team?.team_name,
+                },
                 name: activation.name,
-                type: activation.dashapp_activation_type.map(
-                    (type) => type.dashapp_marketingplatform.platform,
-                ),
+                type: activation.dashapp_activation_type.map((type) => ({
+                    id: type.dashapp_marketingplatform.id.toString(),
+                    name: type.dashapp_marketingplatform.platform,
+                })),
                 year: activation.Year,
             }),
             (teamDTO.contactPersons = teamDetails.dashapp_teamcontact.map(
                 (contact) => ({
-                    id: contact.id.toString(),
-                    designation: contact.contact_designation,
-                    email: contact.contact_email,
-                    linkedin: contact.contact_linkedin,
-                    name: contact.contact_name,
-                    number: contact.contact_no,
+                    contactId: contact.id.toString(),
+                    contactDesignation: contact.contact_designation,
+                    contactEmail: contact.contact_email,
+                    contactLinkedin: contact.contact_linkedin,
+                    contactName: contact.contact_name,
+                    contactNumber: contact.contact_no,
                 }),
             )),
         );
         teamDTO.viewershipMetrics = teamDetails.dashapp_viewership.map(
             (metric) => ({
+                id: metric.id.toString(),
                 viewership: metric.viewership,
                 viewershipType: metric.viewship_type,
                 year: metric.year,
             }),
         );
         teamDTO.reachMetrics = teamDetails.dashapp_reach.map((metric) => ({
+            id: metric.id.toString(),
             reach: metric.reach,
             year: metric.year,
         }));

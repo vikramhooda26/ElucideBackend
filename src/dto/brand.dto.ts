@@ -1,92 +1,210 @@
-import { Prisma } from "@prisma/client";
 import { TBrandDetails } from "../types/brand.type.js";
 
 export class BrandResponseDTO {
     id?: string;
     name?: string;
-    parentOrg?: string;
-    subcategory!: (string | undefined)[];
-    maincategory!: (string | undefined)[];
-    city?: string;
-    state?: string;
-    agency?: string;
-    tier?: (string | undefined)[];
-    instagram!: string | null;
-    facebook!: string | null;
-    twitter!: string | null;
-    linkedin!: string | null;
-    youtube!: string | null;
-    website!: string | null;
-    strategyOverview!: string | null;
-    taglines?: string[];
-    endorsements?: string[];
-    activeCampaigns?: string[];
-    primaryMarketingPlatform?: string[];
-    secondaryMarketingPlatform?: string[];
-    age?: (string | undefined)[];
-    gender?: (string | undefined)[];
-    nccs?: (string | undefined)[];
-    primaryKeyMarket?: string[];
-    secondaryKeyMarket?: string[];
-    tertiary?: string[];
-    subPersonalityTraits?: string[];
-    mainPersonalityTraits?: string[];
+    parentOrg?: {
+        id?: string;
+        name?: string;
+    };
+    subcategory?: {
+        id?: string;
+        name?: string;
+    }[];
+    maincategory?: {
+        id?: string;
+        name?: string;
+    }[];
+    city?: {
+        id?: string;
+        name?: string;
+    };
+    state?: {
+        id?: string;
+        name?: string;
+    };
+    agency?: {
+        id?: string;
+        name?: string;
+    };
+    tier?: {
+        id?: string;
+        name?: string;
+    }[];
+    instagram?: string | null;
+    facebook?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+    youtube?: string | null;
+    website?: string | null;
+    strategyOverview?: string | null;
+    taglines?: {
+        id?: string;
+        name?: string;
+    }[];
+    endorsements?: {
+        id?: string;
+        name?: string;
+    }[];
+    activeCampaigns?: {
+        id?: string;
+        name?: string;
+    }[];
+    primaryMarketingPlatform?: {
+        id?: string;
+        name?: string;
+    }[];
+    secondaryMarketingPlatform?: {
+        id?: string;
+        name?: string;
+    }[];
+    age?: {
+        id?: string;
+        name?: string;
+    }[];
+    gender?: {
+        id?: string;
+        name?: string;
+    }[];
+    nccs?: {
+        id?: string;
+        name?: string;
+    }[];
+    primaryKeyMarket?: {
+        id?: string;
+        name?: string;
+    }[];
+    secondaryKeyMarket?: {
+        id?: string;
+        name?: string;
+    }[];
+    tertiary?: {
+        id?: string;
+        name?: string;
+    }[];
+    subPersonalityTraits?: {
+        id?: string;
+        name?: string;
+    }[];
+    mainPersonalityTraits?: {
+        id?: string;
+        name?: string;
+    }[];
     sportsDealSummary?: {
         annualValue?: string;
-        assets: string[];
-        athleteName?: string;
-        leagueName?: string;
-        teamName?: string;
+        assets: {
+            id?: string;
+            name?: string;
+        }[];
+        athleteName?: {
+            id?: string;
+            name?: string;
+        };
+        leagueName?: {
+            id?: string;
+            name?: string;
+        };
+        teamName?: {
+            id?: string;
+            name?: string;
+        };
         commencementDate: string | null;
         duration: string | null;
         expirationDate: string | null;
-        level: string | undefined;
+        level: {
+            id?: string;
+            name?: string;
+        };
         mediaLink: string | null;
-        brandName?: string;
+        brandName?: {
+            id?: string;
+            name?: string;
+        };
         status: string | null;
-        territory?: string;
+        territory?: {
+            id?: string;
+            name?: string;
+        };
         totalValue?: string;
         type: string;
     }[];
     activationSummary?: {
-        brandName?: string;
-        athleteName?: string;
-        leagueName?: string;
-        teamName?: string;
+        brandName?: {
+            id?: string;
+            name?: string;
+        };
+        athleteName?: {
+            id?: string;
+            name?: string;
+        };
+        leagueName?: {
+            id?: string;
+            name?: string;
+        };
+        teamName?: {
+            id?: string;
+            name?: string;
+        };
         name: string | null;
-        type: string[];
-        market: string[];
+        type: {
+            id?: string;
+            name?: string;
+        }[];
+        market: {
+            id?: string;
+            name?: string;
+        }[];
         year: string | null;
-        asset: string[];
+        asset: {
+            id?: string;
+            name?: string;
+        }[];
     }[];
     contactPersons?: {
-        id: string;
-        name: string;
-        designation: string | null;
-        email: string | null;
-        number: string | null;
-        linkedin: string | null;
+        contactId: string;
+        contactName: string;
+        contactDesignation: string | null;
+        contactEmail: string | null;
+        contactNumber: string | null;
+        contactLinkedin: string | null;
     }[];
 
     static toResponse(brandDetails: TBrandDetails): BrandResponseDTO {
         const brandDTO = new BrandResponseDTO();
         (brandDTO.id = brandDetails.id.toString()),
             (brandDTO.name = brandDetails.company_name);
-        brandDTO.parentOrg = brandDetails.dashapp_parentorg?.name;
+        brandDTO.parentOrg = {
+            id: brandDetails.dashapp_parentorg?.id.toString(),
+            name: brandDetails.dashapp_parentorg?.name,
+        };
         brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
-            (subcategory) => subcategory.dashapp_subcategory?.subcategory,
+            (subcategory) => ({
+                id: subcategory.dashapp_subcategory?.id.toString(),
+                name: subcategory.dashapp_subcategory?.subcategory,
+            }),
         );
         brandDTO.maincategory =
-            brandDetails.dashapp_companydata_subcategory.map(
-                (subcategory) =>
-                    subcategory.dashapp_subcategory?.dashapp_category.category,
-            );
-        brandDTO.city = brandDetails.dashapp_hqcity?.name;
-        brandDTO.state = brandDetails.dashapp_states?.state;
-        brandDTO.agency = brandDetails.dashapp_agency?.name;
-        brandDTO.tier = brandDetails.dashapp_companydata_tier.map(
-            (tier) => tier.dashapp_tier?.name,
-        );
+            brandDetails.dashapp_companydata_subcategory.map((subcategory) => ({
+                id: subcategory.dashapp_subcategory?.dashapp_category.id.toString(),
+                name: subcategory.dashapp_subcategory?.dashapp_category
+                    .category,
+            }));
+        brandDTO.city = {
+            id: brandDetails.dashapp_hqcity?.id.toString(),
+            name: brandDetails.dashapp_hqcity?.name,
+        };
+        brandDTO.state = {
+            id: brandDetails.dashapp_states?.id.toString(),
+            name: brandDetails.dashapp_states?.state,
+        };
+        brandDTO.agency = {
+            id: brandDetails.dashapp_agency?.id.toString(),
+            name: brandDetails.dashapp_agency?.name,
+        };
+        brandDTO.tier = brandDetails.dashapp_companydata_tier.map((tier) => ({
+            id: tier.dashapp_tier?.id.toString(),
+            name: tier.dashapp_tier?.name,
+        }));
         brandDTO.instagram = brandDetails.instagram;
         brandDTO.facebook = brandDetails.facebook;
         brandDTO.twitter = brandDetails.twitter;
@@ -95,101 +213,170 @@ export class BrandResponseDTO {
         brandDTO.website = brandDetails.website;
         brandDTO.strategyOverview = brandDetails.strategy_overview;
         brandDTO.taglines = brandDetails.dashapp_companydata_taglines.map(
-            (tagline) => tagline.dashapp_taglines.name,
+            (tagline) => ({
+                id: tagline.dashapp_taglines.id.toString(),
+                name: tagline.dashapp_taglines.name,
+            }),
         );
         brandDTO.endorsements = brandDetails.dashapp_brandendorsements.map(
-            (endorse) => endorse.name,
+            (endorse) => ({
+                id: endorse.id.toString(),
+                name: endorse.name,
+            }),
         );
         brandDTO.activeCampaigns =
             brandDetails.dashapp_companydata_active_campaigns.map(
-                (activeCampaign) => activeCampaign.dashapp_activecampaigns.name,
+                (activeCampaign) => ({
+                    id: activeCampaign.dashapp_activecampaigns.id.toString(),
+                    name: activeCampaign.dashapp_activecampaigns.name,
+                }),
             );
         brandDTO.primaryMarketingPlatform =
             brandDetails.dashapp_companydata_marketing_platforms_primary.map(
-                (platform) => platform.dashapp_marketingplatform.platform,
+                (platform) => ({
+                    id: platform.dashapp_marketingplatform.id.toString(),
+                    name: platform.dashapp_marketingplatform.platform,
+                }),
             );
         brandDTO.secondaryMarketingPlatform =
             brandDetails.dashapp_companydata_marketing_platforms_secondary.map(
-                (platform) => platform.dashapp_marketingplatform.platform,
+                (platform) => ({
+                    id: platform.dashapp_marketingplatform.id.toString(),
+                    name: platform.dashapp_marketingplatform.platform,
+                }),
             );
-        brandDTO.age = brandDetails.dashapp_companydata_age.map(
-            (age) => age.dashapp_age?.age_range,
-        );
+        brandDTO.age = brandDetails.dashapp_companydata_age.map((age) => ({
+            id: age.dashapp_age?.id.toString(),
+            name: age.dashapp_age?.age_range,
+        }));
         brandDTO.gender = brandDetails.dashapp_companydata_gender.map(
-            (gender) => gender.dashapp_gender?.gender_is,
+            (gender) => ({
+                id: gender.dashapp_gender?.id.toString(),
+                name: gender.dashapp_gender?.gender_is,
+            }),
         );
-        brandDTO.nccs = brandDetails.dashapp_companydata_income.map(
-            (nccs) => nccs.dashapp_nccs?.nccs_class,
-        );
+        brandDTO.nccs = brandDetails.dashapp_companydata_income.map((nccs) => ({
+            id: nccs.dashapp_nccs?.id.toString(),
+            name: nccs.dashapp_nccs?.nccs_class,
+        }));
         brandDTO.primaryKeyMarket =
             brandDetails.dashapp_companydata_key_markets_primary.map(
-                (market) => market.dashapp_keymarket.zone,
+                (market) => ({
+                    id: market.dashapp_keymarket.id.toString(),
+                    name: market.dashapp_keymarket.zone,
+                }),
             );
         brandDTO.secondaryKeyMarket =
             brandDetails.dashapp_companydata_key_markets_secondary.map(
-                (market) => market.dashapp_keymarket.zone,
+                (market) => ({
+                    id: market.dashapp_keymarket.id.toString(),
+                    name: market.dashapp_keymarket.zone,
+                }),
             );
         brandDTO.tertiary =
             brandDetails.dashapp_companydata_key_markets_tertiary.map(
-                (state) => state.dashapp_states.state,
+                (state) => ({
+                    id: state.dashapp_states.id.toString(),
+                    name: state.dashapp_states.state,
+                }),
             );
         brandDTO.subPersonalityTraits =
             brandDetails.dashapp_companydata_personality_traits.map(
-                (trait) => trait.dashapp_subpersonality.name,
+                (trait) => ({
+                    id: trait.dashapp_subpersonality.id.toString(),
+                    name: trait.dashapp_subpersonality.name,
+                }),
             );
         brandDTO.mainPersonalityTraits =
             brandDetails.dashapp_companydata_personality_traits.map(
-                (trait) =>
-                    trait.dashapp_subpersonality.dashapp_mainpersonality.name,
+                (trait) => ({
+                    id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
+                    name: trait.dashapp_subpersonality.dashapp_mainpersonality
+                        .name,
+                }),
             );
         brandDTO.sportsDealSummary = brandDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value?.toString(),
-                assets: deal.dashapp_sportsdeal_assets.map(
-                    (asset) => asset.dashapp_assets.asset,
-                ),
-                athleteName: deal.dashapp_athlete?.athlete_name,
-                leagueName: deal.dashapp_leagueinfo?.property_name,
-                teamName: deal.dashapp_team?.team_name,
+                assets: deal.dashapp_sportsdeal_assets.map((asset) => ({
+                    id: asset.dashapp_assets.id.toString(),
+                    name: asset.dashapp_assets.asset,
+                })),
+                brandName: {
+                    id: deal.dashapp_companydata?.id.toString(),
+                    name: deal.dashapp_companydata?.company_name,
+                },
+                athleteName: {
+                    id: deal.dashapp_athlete?.id.toString(),
+                    name: deal.dashapp_athlete?.athlete_name,
+                },
+                leagueName: {
+                    id: deal.dashapp_leagueinfo?.id.toString(),
+                    name: deal.dashapp_leagueinfo?.property_name,
+                },
+                teamName: {
+                    id: deal.dashapp_team?.id.toString(),
+                    name: deal.dashapp_team?.team_name,
+                },
                 commencementDate: deal.commencement_date,
                 duration: deal.duration,
                 expirationDate: deal.expiration_date,
-                level: deal.dashapp_level?.name,
+                level: {
+                    id: deal.dashapp_level?.id.toString(),
+                    name: deal.dashapp_level?.name,
+                },
                 mediaLink: deal.media_link,
-                brandName: deal.dashapp_companydata?.company_name,
                 status: deal.status,
-                territory: deal.dashapp_territory?.name,
+                territory: {
+                    id: deal.dashapp_territory?.id.toString(),
+                    name: deal.dashapp_territory?.name,
+                },
                 totalValue: deal.total_value?.toString(),
                 type: deal.type,
             }),
         );
         brandDTO.activationSummary = brandDetails.dashapp_activation.map(
             (activation) => ({
-                brandName: activation.dashapp_companydata?.company_name,
-                athleteName: activation.dashapp_athlete?.athlete_name,
-                leagueName: activation.dashapp_leagueinfo?.property_name,
-                teamName: activation.dashapp_team?.team_name,
+                asset: activation.dashapp_activation_assets.map((asset) => ({
+                    id: asset.dashapp_assets.id.toString(),
+                    name: asset.dashapp_assets.asset,
+                })),
+                market: activation.dashapp_activation_market.map((market) => ({
+                    id: market.dashapp_states.id.toString(),
+                    name: market.dashapp_states.state,
+                })),
+                brandName: {
+                    id: activation.dashapp_companydata?.id.toString(),
+                    name: activation.dashapp_companydata?.company_name,
+                },
+                athleteName: {
+                    id: activation.dashapp_athlete?.id.toString(),
+                    name: activation.dashapp_athlete?.athlete_name,
+                },
+                leagueName: {
+                    id: activation.dashapp_leagueinfo?.id.toString(),
+                    name: activation.dashapp_leagueinfo?.property_name,
+                },
+                teamName: {
+                    id: activation.dashapp_team?.id.toString(),
+                    name: activation.dashapp_team?.team_name,
+                },
                 name: activation.name,
-                type: activation.dashapp_activation_type.map(
-                    (type) => type.dashapp_marketingplatform.platform,
-                ),
-                market: activation.dashapp_activation_market.map(
-                    (market) => market.dashapp_states.state,
-                ),
+                type: activation.dashapp_activation_type.map((type) => ({
+                    id: type.dashapp_marketingplatform.id.toString(),
+                    name: type.dashapp_marketingplatform.platform,
+                })),
                 year: activation.Year,
-                asset: activation.dashapp_activation_assets.map(
-                    (asset) => asset.dashapp_assets.asset,
-                ),
             }),
         );
         brandDTO.contactPersons = brandDetails.dashapp_brandcontact.map(
             (contact) => ({
-                id: contact.id.toString(),
-                name: contact.contact_name,
-                designation: contact.contact_designation,
-                email: contact.contact_email,
-                number: contact.contact_no,
-                linkedin: contact.contact_linkedin,
+                contactId: contact.id.toString(),
+                contactDesignation: contact.contact_designation,
+                contactEmail: contact.contact_email,
+                contactLinkedin: contact.contact_linkedin,
+                contactName: contact.contact_name,
+                contactNumber: contact.contact_no,
             }),
         );
 

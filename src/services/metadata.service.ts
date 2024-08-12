@@ -122,15 +122,15 @@ export const getAllLeagues = async () => {
 };
 
 export const getAllLeagueOwners = async () => {
-    const leagueOwners = await prisma.dashapp_leagueinfo_owner.findMany({
+    const leagueOwners = await prisma.dashapp_leagueowner.findMany({
         select: {
             id: true,
-            dashapp_leagueowner: { select: { name: true } },
+            name: true,
         },
     });
     return leagueOwners.map((owner) => ({
         value: owner.id,
-        label: owner.dashapp_leagueowner.name,
+        label: owner.name,
     }));
 };
 

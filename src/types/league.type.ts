@@ -286,29 +286,19 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 contact_linkedin: true,
             },
         },
-        dashapp_viewership_league: {
+        dashapp_viewership: {
             select: {
                 id: true,
-                dashapp_viewership: {
-                    select: {
-                        id: true,
-                        viewership: true,
-                        viewship_type: true,
-                        year: true,
-                    },
-                },
+                viewership: true,
+                viewship_type: true,
+                year: true,
             },
         },
-        dashapp_reach_league: {
+        dashapp_reach: {
             select: {
                 id: true,
-                dashapp_reach: {
-                    select: {
-                        id: true,
-                        reach: true,
-                        year: true,
-                    },
-                },
+                reach: true,
+                year: true,
             },
         },
         dashapp_leagueinfo_gender: {

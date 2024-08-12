@@ -405,20 +405,19 @@ export class LeagueResponseDTO {
                 }),
             )),
         );
-        leagueDTO.viewershipMetrics =
-            leagueDetails.dashapp_viewership_league.map((metric) => ({
-                id: metric.id.toString(),
-                viewership: metric.dashapp_viewership?.viewership,
-                viewershipType: metric.dashapp_viewership?.viewship_type,
-                year: metric.dashapp_viewership?.year,
-            }));
-        leagueDTO.reachMetrics = leagueDetails.dashapp_reach_league.map(
+        leagueDTO.viewershipMetrics = leagueDetails.dashapp_viewership.map(
             (metric) => ({
                 id: metric.id.toString(),
-                reach: metric.dashapp_reach?.reach,
-                year: metric.dashapp_reach?.year,
+                viewership: metric?.viewership,
+                viewershipType: metric?.viewship_type,
+                year: metric?.year,
             }),
         );
+        leagueDTO.reachMetrics = leagueDetails.dashapp_reach.map((metric) => ({
+            id: metric.id.toString(),
+            reach: metric?.reach,
+            year: metric?.year,
+        }));
         leagueDTO.associationId = leagueDetails.association?.id.toString();
 
         return leagueDTO;

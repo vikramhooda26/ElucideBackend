@@ -1,10 +1,10 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
-import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { TeamResponseDTO } from "../dto/team.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
+import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
-import { TeamResponseDTO } from "../dto/team.dto.js";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -123,11 +123,7 @@ export const createTeam = asyncHandler(async (req, res) => {
         costOfAssociation,
         reachMetrics,
         viewershipMetrics,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
         userId,
     } = req.validatedData as TCreateTeamSchema;
 
@@ -140,19 +136,25 @@ export const createTeam = asyncHandler(async (req, res) => {
             modified_by: {
                 connect: { id: BigInt(userId) },
             },
-            dashapp_sport: {
-                connect: sportId ? { id: BigInt(sportId) } : undefined,
-            },
-            dashapp_leagueinfo: {
-                connect: leagueId ? { id: BigInt(leagueId) } : undefined,
-            },
-            dashapp_team_owner: {
-                connect: ownerIds?.map((ownerId) => ({
-                    id: BigInt(ownerId),
-                })),
-            },
-            year_of_inception: yearOfInception,
-            franchise_fee: franchiseFee,
+            dashapp_sport: sportId
+                ? {
+                      connect: { id: BigInt(sportId) },
+                  }
+                : undefined,
+            dashapp_leagueinfo: leagueId
+                ? {
+                      connect: { id: BigInt(leagueId) },
+                  }
+                : undefined,
+            dashapp_team_owner: ownerIds
+                ? {
+                      connect: ownerIds?.map((ownerId) => ({
+                          id: BigInt(ownerId),
+                      })),
+                  }
+                : undefined,
+            year_of_inception: yearOfInception || undefined,
+            franchise_fee: franchiseFee || undefined,
             dashapp_hqcity: cityId
                 ? {
                       connect: { id: BigInt(cityId) },
@@ -183,7 +185,7 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview,
+            strategy_overview: strategyOverview || undefined,
             dashapp_team_taglines: taglineIds
                 ? {
                       create: taglineIds?.map((taglineId) => ({
@@ -303,14 +305,6 @@ export const createTeam = asyncHandler(async (req, res) => {
                           },
                       }
                     : undefined,
-            dashapp_reach: reachMetrics
-                ? {
-                      create: reachMetrics.map((metric) => ({
-                          reach: metric.reach,
-                          year: metric.year,
-                      })),
-                  }
-                : undefined,
             dashapp_viewership: viewershipMetrics
                 ? {
                       create: viewershipMetrics.map((metric) => ({
@@ -320,35 +314,36 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
+            dashapp_reach: reachMetrics
+                ? {
+                      create: reachMetrics.map((metric) => ({
+                          reach: metric.reach,
+                          year: metric.year,
+                      })),
+                  }
+                : undefined,
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
         },
         select: {
             id: true,
         },
     });
 
-    if (contactName) {
-        await prisma.dashapp_teamcontact.create({
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_email: contactEmail,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
-                dashapp_team: {
-                    connect: {
-                        id: team.id,
-                    },
-                },
-            },
-            select: {
-                id: true,
-            },
+    if (contactPerson?.length) {
+        await prisma.dashapp_teamcontact.createMany({
+            data: contactPerson.map((details) => ({
+                contact_name: details.contactName,
+                contact_designation: details.contactDesignation || undefined,
+                contact_email: details.contactEmail || undefined,
+                contact_no: details.contactNumber || undefined,
+                contact_linkedin: details.contactLinkedin || undefined,
+                team_id: team.id,
+            })),
         });
     }
 
@@ -362,6 +357,15 @@ export const editTeam = asyncHandler(async (req, res) => {
 
     if (!teamId) {
         throw new BadRequestError("Team ID not found");
+    }
+
+    const teamExists = await prisma.dashapp_team.findUnique({
+        where: { id: BigInt(teamId) },
+        select: { id: true },
+    });
+
+    if (!teamExists?.id) {
+        throw new NotFoundError("This team does not exists");
     }
 
     const {
@@ -397,19 +401,14 @@ export const editTeam = asyncHandler(async (req, res) => {
         primaryMarketingPlatformIds,
         secondaryMarketingPlatformIds,
         stateId,
-        contactId,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
         userId,
     } = req.validatedData as TEditTeamSchema;
 
     await prisma.dashapp_team.update({
-        where: { id: Number(teamId) },
+        where: { id: BigInt(teamId) },
         data: {
-            team_name: name,
+            team_name: name || undefined,
             modified_by: {
                 connect: { id: BigInt(userId) },
             },
@@ -426,8 +425,8 @@ export const editTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            year_of_inception: yearOfInception,
-            franchise_fee: franchiseFee,
+            year_of_inception: yearOfInception || undefined,
+            franchise_fee: franchiseFee || undefined,
             dashapp_hqcity: cityId
                 ? { connect: { id: BigInt(cityId) } }
                 : undefined,
@@ -448,11 +447,13 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: tierIds.map((tierId) => ({
-                          dashapp_tier: { connect: { id: BigInt(tierId) } },
+                          dashapp_tier: {
+                              connect: { id: BigInt(tierId) },
+                          },
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview,
+            strategy_overview: strategyOverview || undefined,
             dashapp_team_taglines: taglineIds
                 ? {
                       deleteMany: {},
@@ -468,7 +469,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                       deleteMany: {},
                       create: activeCampaignIds.map((activeCampaignId) => ({
                           dashapp_activecampaigns: {
-                              connect: { id: BigInt(activeCampaignId) },
+                              connect: {
+                                  id: BigInt(activeCampaignId),
+                              },
                           },
                       })),
                   }
@@ -511,7 +514,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: ageIds.map((ageId) => ({
-                          dashapp_age: { connect: { id: BigInt(ageId) } },
+                          dashapp_age: {
+                              connect: { id: BigInt(ageId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -519,7 +524,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: genderIds.map((genderId) => ({
-                          dashapp_gender: { connect: { id: BigInt(genderId) } },
+                          dashapp_gender: {
+                              connect: { id: BigInt(genderId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -527,7 +534,9 @@ export const editTeam = asyncHandler(async (req, res) => {
                 ? {
                       deleteMany: {},
                       create: nccsIds.map((nccsId) => ({
-                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
+                          dashapp_nccs: {
+                              connect: { id: BigInt(nccsId) },
+                          },
                       })),
                   }
                 : undefined,
@@ -561,62 +570,162 @@ export const editTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            association: associationId
-                ? {
-                      deleteMany: {},
-                      create: {
-                          association_level: associationLevelId
-                              ? {
-                                    connect: { id: BigInt(associationLevelId) },
-                                }
-                              : undefined,
-                          cost: costOfAssociation ?? undefined,
-                      },
-                  }
-                : undefined,
-            dashapp_reach: reachMetrics
-                ? {
-                      deleteMany: reachMetrics.map((metric) => ({
-                          year: metric.year,
-                      })),
-                      create: reachMetrics.map((metric) => ({
-                          reach: metric.reach,
-                          year: metric.year,
-                      })),
-                  }
-                : undefined,
-            dashapp_viewership: viewershipMetrics
-                ? {
-                      deleteMany: viewershipMetrics.map((metric) => ({
-                          year: metric.year,
-                      })),
-                      create: viewershipMetrics.map((metric) => ({
-                          viewership: metric.viewership,
-                          viewship_type: metric.viewershipType,
-                          year: metric.year,
-                      })),
-                  }
-                : undefined,
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
+            association: {
+                delete:
+                    !associationLevelId && !costOfAssociation && associationId
+                        ? {
+                              id: BigInt(associationId),
+                          }
+                        : undefined,
+                upsert: {
+                    where: { id: BigInt(associationId || "") },
+                    create: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: {
+                                      id: BigInt(associationLevelId),
+                                  },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                    update: {
+                        association_level: associationLevelId
+                            ? {
+                                  connect: {
+                                      id: BigInt(associationLevelId),
+                                  },
+                              }
+                            : undefined,
+                        cost: costOfAssociation || undefined,
+                    },
+                },
+            },
+            dashapp_viewership: {
+                deleteMany: viewershipMetrics?.length
+                    ? {
+                          AND: [
+                              {
+                                  id: {
+                                      notIn: viewershipMetrics.map(
+                                          (viewership) =>
+                                              BigInt(viewership.id || ""),
+                                      ),
+                                  },
+                              },
+                              {
+                                  team_id: BigInt(teamId),
+                              },
+                          ],
+                      }
+                    : { team_id: BigInt(teamId) },
+                upsert: viewershipMetrics
+                    ? viewershipMetrics.map((viewership) => ({
+                          where: {
+                              id: BigInt(viewership.id || ""),
+                          },
+                          create: {
+                              viewership: viewership.viewership,
+                              viewship_type: viewership.viewershipType,
+                              year: viewership.year,
+                          },
+                          update: {
+                              viewership: viewership.viewership || undefined,
+                              viewship_type:
+                                  viewership.viewershipType || undefined,
+                              year: viewership.year || undefined,
+                          },
+                      }))
+                    : undefined,
+            },
+            dashapp_reach: {
+                deleteMany: reachMetrics?.length
+                    ? {
+                          AND: [
+                              {
+                                  id: {
+                                      notIn: reachMetrics.map((reachMetric) =>
+                                          BigInt(reachMetric.id || ""),
+                                      ),
+                                  },
+                              },
+                              {
+                                  team_id: BigInt(teamId),
+                              },
+                          ],
+                      }
+                    : { team_id: BigInt(teamId) },
+                upsert: reachMetrics?.length
+                    ? reachMetrics.map((reachMetric) => ({
+                          where: {
+                              id: BigInt(reachMetric.id || ""),
+                          },
+                          create: {
+                              reach: reachMetric.reach,
+                              year: reachMetric.year,
+                          },
+                          update: {
+                              reach: reachMetric.reach || undefined,
+                              year: reachMetric.year || undefined,
+                          },
+                      }))
+                    : undefined,
+            },
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
         },
         select: { id: true },
     });
 
-    if (contactId) {
-        await prisma.dashapp_teamcontact.update({
-            where: { id: BigInt(contactId) },
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_email: contactEmail,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
+    if (contactPerson?.length) {
+        await prisma.dashapp_teamcontact.deleteMany({
+            where: {
+                AND: [
+                    {
+                        id: {
+                            notIn: contactPerson.map((details) =>
+                                BigInt(details.contactId),
+                            ),
+                        },
+                    },
+                    { team_id: BigInt(teamId) },
+                ],
             },
+        });
+
+        for (const details of contactPerson) {
+            await prisma.dashapp_teamcontact.upsert({
+                where: { id: BigInt(details.contactId || "") },
+                create: {
+                    contact_name: details.contactName,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                    dashapp_team: {
+                        connect: {
+                            id: BigInt(teamId),
+                        },
+                    },
+                },
+                update: {
+                    contact_name: details.contactName || undefined,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                },
+            });
+        }
+    } else {
+        await prisma.dashapp_teamcontact.deleteMany({
+            where: { team_id: BigInt(teamId) },
         });
     }
 

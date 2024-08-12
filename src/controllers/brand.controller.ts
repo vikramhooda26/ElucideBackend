@@ -109,11 +109,7 @@ export const createBrand = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         userId,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
     } = req.validatedData as TCreateBrandSchema;
 
     const brand = await prisma.dashapp_companydata.create({
@@ -280,29 +276,29 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview,
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
+            strategy_overview: strategyOverview || undefined,
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
         },
         select: {
             id: true,
         },
     });
 
-    if (contactName) {
-        await prisma.dashapp_brandcontact.create({
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_email: contactEmail,
-                contact_linkedin: contactLinkedin,
-                contact_no: contactNumber,
-                dashapp_companydata: { connect: { id: BigInt(brand.id) } },
-            },
+    if (contactPerson?.length) {
+        await prisma.dashapp_brandcontact.createMany({
+            data: contactPerson.map((details) => ({
+                contact_name: details.contactName,
+                contact_designation: details.contactDesignation || undefined,
+                contact_email: details.contactEmail || undefined,
+                contact_no: details.contactNumber || undefined,
+                contact_linkedin: details.contactLinkedin || undefined,
+                brand_id: brand.id,
+            })),
         });
     }
 
@@ -316,6 +312,15 @@ export const editBrand = asyncHandler(async (req, res) => {
 
     if (!brandId) {
         throw new BadRequestError("Brand ID not found");
+    }
+
+    const brandExists = await prisma.dashapp_companydata.findUnique({
+        where: { id: BigInt(brandId) },
+        select: { id: true },
+    });
+
+    if (!brandExists?.id) {
+        throw new NotFoundError("This brand does not exists");
     }
 
     const {
@@ -345,18 +350,13 @@ export const editBrand = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         userId,
-        contactDesignation,
-        contactEmail,
-        contactId,
-        contactLinkedin,
-        contactName,
-        contactNumber,
+        contactPerson,
     } = req.validatedData as TEditBrandSchema;
 
     await prisma.dashapp_companydata.update({
-        where: { id: Number(brandId) },
+        where: { id: BigInt(brandId) },
         data: {
-            company_name: name,
+            company_name: name || undefined,
             dashapp_parentorg: parentOrgId
                 ? { connect: { id: BigInt(parentOrgId) } }
                 : undefined,
@@ -506,27 +506,58 @@ export const editBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview,
-            instagram,
-            facebook,
-            linkedin,
-            twitter,
-            youtube,
-            website,
+            strategy_overview: strategyOverview || undefined,
+            instagram: instagram || undefined,
+            facebook: facebook || undefined,
+            linkedin: linkedin || undefined,
+            twitter: twitter || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
         },
         select: { id: true },
     });
 
-    if (contactId) {
-        await prisma.dashapp_brandcontact.update({
-            where: { id: BigInt(contactId) },
-            data: {
-                contact_name: contactName,
-                contact_designation: contactDesignation,
-                contact_linkedin: contactLinkedin,
-                contact_email: contactEmail,
-                contact_no: contactNumber,
+    if (contactPerson?.length) {
+        await prisma.dashapp_brandcontact.deleteMany({
+            where: {
+                id: {
+                    notIn: contactPerson.map((details) =>
+                        BigInt(details.contactId || ""),
+                    ),
+                },
+                brand_id: BigInt(brandId),
             },
+        });
+
+        for (const details of contactPerson) {
+            await prisma.dashapp_brandcontact.upsert({
+                where: { id: BigInt(details.contactId || "") },
+                create: {
+                    contact_name: details.contactName,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                    dashapp_companydata: {
+                        connect: {
+                            id: BigInt(brandId),
+                        },
+                    },
+                },
+                update: {
+                    contact_name: details.contactName || undefined,
+                    contact_designation:
+                        details.contactDesignation || undefined,
+                    contact_email: details.contactEmail || undefined,
+                    contact_no: details.contactNumber || undefined,
+                    contact_linkedin: details.contactLinkedin || undefined,
+                },
+            });
+        }
+    } else {
+        await prisma.dashapp_brandcontact.deleteMany({
+            where: { brand_id: BigInt(brandId) },
         });
     }
 
@@ -542,14 +573,19 @@ export const deleteBrand = asyncHandler(async (req, res) => {
         throw new BadRequestError("Brand ID not found");
     }
 
-    const deletedBrand = await prisma.dashapp_companydata.delete({
+    const brandExists = await prisma.dashapp_companydata.findUnique({
         where: { id: BigInt(brandId) },
         select: { id: true },
     });
 
-    if (!deletedBrand?.id) {
+    if (!brandExists?.id) {
         throw new NotFoundError("This brand does not exists");
     }
+
+    await prisma.dashapp_companydata.delete({
+        where: { id: BigInt(brandId) },
+        select: { id: true },
+    });
 
     res.status(STATUS_CODE.OK).json({
         message: "Brand deleted",

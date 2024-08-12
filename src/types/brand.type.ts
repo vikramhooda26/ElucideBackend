@@ -6,6 +6,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         company_name: true,
         dashapp_parentorg: {
             select: {
+                id: true,
                 name: true,
             },
         },
@@ -13,24 +14,42 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_subcategory: {
                     select: {
+                        id: true,
                         subcategory: true,
-                        dashapp_category: { select: { category: true } },
+                        dashapp_category: {
+                            select: { id: true, category: true },
+                        },
                     },
                 },
             },
         },
+        association: {
+            select: {
+                id: true,
+                association_level: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+                cost: true,
+            },
+        },
         dashapp_hqcity: {
             select: {
+                id: true,
                 name: true,
             },
         },
         dashapp_states: {
             select: {
+                id: true,
                 state: true,
             },
         },
         dashapp_agency: {
             select: {
+                id: true,
                 name: true,
             },
         },
@@ -38,6 +57,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_tier: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -53,9 +73,11 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_subpersonality: {
                     select: {
+                        id: true,
                         name: true,
                         dashapp_mainpersonality: {
                             select: {
+                                id: true,
                                 name: true,
                             },
                         },
@@ -65,15 +87,18 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         strategy_overview: true,
         dashapp_companydata_taglines: {
-            select: { dashapp_taglines: { select: { name: true } } },
+            select: { dashapp_taglines: { select: { id: true, name: true } } },
         },
         dashapp_companydata_active_campaigns: {
-            select: { dashapp_activecampaigns: { select: { name: true } } },
+            select: {
+                dashapp_activecampaigns: { select: { id: true, name: true } },
+            },
         },
         dashapp_companydata_marketing_platforms_primary: {
             select: {
                 dashapp_marketingplatform: {
                     select: {
+                        id: true,
                         platform: true,
                     },
                 },
@@ -83,6 +108,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_marketingplatform: {
                     select: {
+                        id: true,
                         platform: true,
                     },
                 },
@@ -92,6 +118,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_age: {
                     select: {
+                        id: true,
                         age_range: true,
                     },
                 },
@@ -100,7 +127,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         dashapp_companydata_gender: {
             select: {
                 dashapp_gender: {
-                    select: { gender_is: true },
+                    select: { id: true, gender_is: true },
                 },
             },
         },
@@ -108,6 +135,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_nccs: {
                     select: {
+                        id: true,
                         nccs_class: true,
                     },
                 },
@@ -117,6 +145,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_keymarket: {
                     select: {
+                        id: true,
                         zone: true,
                     },
                 },
@@ -126,6 +155,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_keymarket: {
                     select: {
+                        id: true,
                         zone: true,
                     },
                 },
@@ -135,6 +165,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 dashapp_states: {
                     select: {
+                        id: true,
                         state: true,
                     },
                 },
@@ -142,24 +173,29 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         dashapp_brandendorsements: {
             select: {
+                id: true,
                 name: true,
             },
         },
         dashapp_sportsdealsummary: {
             select: {
+                id: true,
                 annual_value: true,
                 dashapp_athlete: {
                     select: {
+                        id: true,
                         athlete_name: true,
                     },
                 },
                 dashapp_leagueinfo: {
                     select: {
+                        id: true,
                         property_name: true,
                     },
                 },
                 dashapp_team: {
                     select: {
+                        id: true,
                         team_name: true,
                     },
                 },
@@ -167,11 +203,13 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 status: true,
                 dashapp_level: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
                 dashapp_companydata: {
                     select: {
+                        id: true,
                         company_name: true,
                     },
                 },
@@ -179,12 +217,13 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 expiration_date: true,
                 duration: true,
                 total_value: true,
-                dashapp_territory: { select: { name: true } },
+                dashapp_territory: { select: { id: true, name: true } },
                 media_link: true,
                 dashapp_sportsdeal_assets: {
                     select: {
                         dashapp_assets: {
                             select: {
+                                id: true,
                                 asset: true,
                             },
                         },
@@ -194,16 +233,19 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         dashapp_activation: {
             select: {
+                id: true,
                 dashapp_team: {
-                    select: { team_name: true },
+                    select: { id: true, team_name: true },
                 },
                 dashapp_athlete: {
                     select: {
+                        id: true,
                         athlete_name: true,
                     },
                 },
                 dashapp_leagueinfo: {
                     select: {
+                        id: true,
                         property_name: true,
                     },
                 },
@@ -212,6 +254,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                     select: {
                         dashapp_marketingplatform: {
                             select: {
+                                id: true,
                                 platform: true,
                             },
                         },
@@ -221,6 +264,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                     select: {
                         dashapp_states: {
                             select: {
+                                id: true,
                                 state: true,
                             },
                         },
@@ -228,6 +272,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 },
                 dashapp_companydata: {
                     select: {
+                        id: true,
                         company_name: true,
                     },
                 },
@@ -235,7 +280,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
                 dashapp_activation_assets: {
                     select: {
                         dashapp_assets: {
-                            select: { asset: true },
+                            select: { id: true, asset: true },
                         },
                     },
                 },

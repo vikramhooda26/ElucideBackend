@@ -27,16 +27,32 @@ export const createBrandSchema = z.object({
     secondaryMarketingPlatformIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
-    contactName: z.string().optional(),
-    contactDesignation: z.string().optional(),
-    contactEmail: z.string().optional(),
-    contactNumber: z.string().optional(),
-    contactLinkedin: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
 });
 
-export const editBrandSchema = createBrandSchema
-    .partial()
-    .extend({ userId: z.string(), contactId: z.string().optional() });
+export const editBrandSchema = createBrandSchema.partial().extend({
+    userId: z.string(),
+    contactPerson: z
+        .object({
+            contactId: z.string().optional(),
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
+});
 
 export type TCreateBrandSchema = z.infer<typeof createBrandSchema>;
 export type TEditBrandSchema = z.infer<typeof editBrandSchema>;

@@ -33,6 +33,7 @@ export const createTeamSchema = z.object({
     costOfAssociation: z.number().optional(),
     viewershipMetrics: z
         .object({
+            id: z.string().optional(),
             viewership: z.string(),
             year: z.string(),
             viewershipType: z.enum(["OTT", "BROADCAST"]),
@@ -41,21 +42,37 @@ export const createTeamSchema = z.object({
         .optional(),
     reachMetrics: z
         .object({
+            id: z.string().optional(),
             reach: z.string(),
             year: z.string(),
         })
         .array()
         .optional(),
-    contactName: z.string().optional(),
-    contactDesignation: z.string().optional(),
-    contactEmail: z.string().optional(),
-    contactNumber: z.string().optional(),
-    contactLinkedin: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
 });
 
 export const editTeamSchema = createTeamSchema.partial().extend({
     associationId: z.string().optional(),
-    contactId: z.string().optional(),
+    contactPerson: z
+        .object({
+            contactId: z.string(),
+            contactName: z.string(),
+            contactDesignation: z.string().optional(),
+            contactEmail: z.string().optional(),
+            contactNumber: z.string().optional(),
+            contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
     userId: z.string(),
 });
 

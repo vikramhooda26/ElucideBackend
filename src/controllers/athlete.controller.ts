@@ -377,6 +377,12 @@ export const editAthlete = asyncHandler(async (req, res) => {
             athlete_name: name,
             age: age || undefined,
             association: {
+                delete:
+                    !associationLevelId && !costOfAssociation && associationId
+                        ? {
+                              id: BigInt(associationId),
+                          }
+                        : undefined,
                 upsert: {
                     where: { id: BigInt(associationId || "") },
                     create: {
