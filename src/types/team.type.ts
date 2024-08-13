@@ -158,6 +158,16 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
                     name: true,
                 },
             },
+            dashapp_brand_association: {
+                select: {
+                    brand: {
+                        select: {
+                            id: true,
+                            company_name: true,
+                        },
+                    },
+                },
+            },
             cost: true,
         },
     },

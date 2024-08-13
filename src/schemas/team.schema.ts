@@ -29,8 +29,14 @@ export const createTeamSchema = z.object({
     secondaryMarketIds: z.string().array().optional(),
     tertiaryIds: z.string().array().optional(),
     nccsIds: z.string().array().optional(),
-    associationLevelId: z.string().optional(),
-    costOfAssociation: z.number().optional(),
+    association: z
+        .object({
+            associationLevelId: z.string(),
+            costOfAssociation: z.number().optional(),
+            brandIds: z.string().array().optional(),
+        })
+        .array()
+        .optional(),
     viewershipMetrics: z
         .object({
             id: z.string().optional(),
@@ -61,7 +67,15 @@ export const createTeamSchema = z.object({
 });
 
 export const editTeamSchema = createTeamSchema.partial().extend({
-    associationId: z.string().optional(),
+    association: z
+        .object({
+            associationId: z.string(),
+            associationLevelId: z.string(),
+            costOfAssociation: z.number().optional(),
+            brandIds: z.string().array().optional(),
+        })
+        .array()
+        .optional(),
     contactPerson: z
         .object({
             contactId: z.string(),

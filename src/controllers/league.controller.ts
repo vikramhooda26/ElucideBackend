@@ -112,8 +112,7 @@ export const createLeague = asyncHandler(async (req, res) => {
         nccsIds,
         reachMetrics,
         viewershipMetrics,
-        associationLevelId,
-        costOfAssociation,
+        association,
         userId,
         contactPerson,
     } = req.validatedData as TCreateLeagueSchema;
@@ -303,21 +302,18 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            association:
-                associationLevelId || costOfAssociation
-                    ? {
-                          create: {
-                              association_level: associationLevelId
-                                  ? {
-                                        connect: {
-                                            id: BigInt(associationLevelId),
-                                        },
-                                    }
-                                  : undefined,
-                              cost: costOfAssociation ?? undefined,
+            association: association?.length
+                ? {
+                      create: association.map((value) => ({
+                          association_level: {
+                              connect: {
+                                  id: BigInt(value.associationLevelId),
+                              },
                           },
-                      }
-                    : undefined,
+                          cost: value.costOfAssociation || undefined,
+                      })),
+                  }
+                : undefined,
         },
         select: {
             id: true,
@@ -385,11 +381,9 @@ export const editLeague = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         nccsIds,
-        associationId,
         reachMetrics,
         viewershipMetrics,
-        associationLevelId,
-        costOfAssociation,
+        association,
         userId,
         contactPerson,
     } = req.validatedData as TEditLeagueSchema;
@@ -638,31 +632,36 @@ export const editLeague = asyncHandler(async (req, res) => {
                     : undefined,
             },
             association: {
-                delete:
-                    !associationLevelId && !costOfAssociation
-                        ? {
-                              leagueInfo_id: BigInt(leagueId),
-                          }
-                        : undefined,
-                upsert: {
-                    where: { leagueInfo_id: BigInt(leagueId) },
-                    create: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                    update: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                },
+                deleteMany: association?.length
+                    ? {
+                          id: {
+                              notIn: association.map((value) =>
+                                  BigInt(value.associationId),
+                              ),
+                          },
+                      }
+                    : undefined,
+                upsert: association?.length
+                    ? association.map((value) => ({
+                          where: { id: BigInt(value.associationId) },
+                          update: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              cost: value.costOfAssociation || undefined,
+                          },
+                          create: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              cost: value.costOfAssociation || undefined,
+                          },
+                      }))
+                    : undefined,
             },
         },
         select: {

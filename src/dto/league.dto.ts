@@ -28,7 +28,6 @@ export class LeagueResponseDTO {
     website!: string | null;
     twitter!: string | null;
     strategyOverview!: string | null;
-    associationId?: string;
     taglines?: {
         id?: string;
         name?: string;
@@ -57,11 +56,14 @@ export class LeagueResponseDTO {
         id?: string;
         name?: string;
     }[];
-    associationLevel!: {
-        id?: string;
-        name?: string | null;
-    };
-    costOfAssociation?: Prisma.Decimal | null;
+    association?: {
+        associationId?: string;
+        associationLevel?: {
+            id?: string;
+            name?: string | null;
+        };
+        costOfAssociation?: Prisma.Decimal | null;
+    }[];
     tiers?: {
         id?: string;
         name?: string;
@@ -282,15 +284,16 @@ export class LeagueResponseDTO {
                     name: platform.dashapp_marketingplatform.platform,
                 }),
             );
-        leagueDTO.associationLevel = {
-            id: leagueDetails.association?.association_level?.id.toString(),
-            name: leagueDetails.association?.association_level?.name,
-        };
-        leagueDTO.costOfAssociation = leagueDetails.association?.cost;
-        leagueDTO.tiers = leagueDetails.dashapp_leagueinfo_tier.map((tier) => ({
-            id: tier.dashapp_tier?.id.toString(),
-            name: tier.dashapp_tier?.name,
-        }));
+        leagueDTO.association = leagueDetails.association.map(
+            (association) => ({
+                associationId: association.id.toString(),
+                associationLevel: {
+                    id: association.association_level?.id.toString(),
+                    name: association.association_level?.name,
+                },
+                costOfAssociation: association.cost,
+            }),
+        );
         leagueDTO.subPersonalityTriats =
             leagueDetails.dashapp_leagueinfo_personality_traits.map(
                 (trait) => ({
@@ -418,7 +421,6 @@ export class LeagueResponseDTO {
             reach: metric?.reach,
             year: metric?.year,
         }));
-        leagueDTO.associationId = leagueDetails.association?.id.toString();
 
         return leagueDTO;
     }

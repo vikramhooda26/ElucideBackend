@@ -2,8 +2,13 @@ import z from "zod";
 
 export const createAthleteSchema = z.object({
     name: z.string().min(1, "Required"),
-    associationLevelId: z.string().optional(),
-    costOfAssociation: z.number().optional(),
+    association: z
+        .object({
+            associationLevelId: z.string(),
+            costOfAssociation: z.number().optional(),
+        })
+        .array()
+        .optional(),
     userId: z.string().min(1, "Required"),
     sportId: z.string().optional(),
     agencyId: z.string().optional(),
@@ -39,7 +44,14 @@ export const createAthleteSchema = z.object({
 });
 
 export const editAthleteSchema = createAthleteSchema.partial().extend({
-    associationId: z.string().optional(),
+    association: z
+        .object({
+            associationId: z.string(),
+            associationLevelId: z.string(),
+            costOfAssociation: z.number().optional(),
+        })
+        .array()
+        .optional(),
     userId: z.string(),
     contactPerson: z
         .object({

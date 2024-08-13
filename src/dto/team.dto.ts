@@ -77,12 +77,18 @@ export class TeamResponseDTO {
         id?: string;
         name?: string;
     }[];
-    associationLevel?: {
-        id?: string;
-        name?: string | null;
-    };
-    costOfAssociation?: Prisma.Decimal | null;
-    associationId?: string;
+    association?: {
+        associationId?: string;
+        associationLevel?: {
+            id?: string;
+            name?: string | null;
+        };
+        brand?: {
+            id?: string;
+            name?: string | null;
+        }[];
+        costOfAssociation?: Prisma.Decimal | null;
+    }[];
     tiers?: {
         id?: string;
         name?: string;
@@ -222,7 +228,6 @@ export class TeamResponseDTO {
             id: tagline.dashapp_taglines.id.toString(),
             name: tagline.dashapp_taglines.name,
         }));
-        teamDTO.associationId = teamDetails.association?.id.toString();
         teamDTO.endorsements = teamDetails.dashapp_teamendorsements.map(
             (endorse) => ({
                 id: endorse.id.toString(),
@@ -277,11 +282,18 @@ export class TeamResponseDTO {
                 name: state.dashapp_states.state,
             }),
         );
-        (teamDTO.associationLevel = {
-            id: teamDetails.association?.association_level?.id.toString(),
-            name: teamDetails.association?.association_level?.name,
-        }),
-            (teamDTO.costOfAssociation = teamDetails.association?.cost);
+        teamDTO.association = teamDetails.association.map((association) => ({
+            associationId: association.id.toString(),
+            associationLevel: {
+                id: association.association_level?.id.toString(),
+                name: association.association_level?.name,
+            },
+            costOfAssociation: association.cost,
+            brand: association.dashapp_brand_association.map((brand) => ({
+                id: brand.brand?.id.toString(),
+                name: brand.brand?.company_name,
+            })),
+        }));
         teamDTO.tiers = teamDetails.dashapp_team_tier.map((tier) => ({
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,

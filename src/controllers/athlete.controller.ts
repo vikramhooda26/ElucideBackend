@@ -141,8 +141,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         tertiaryIds,
         primarySocialMediaPlatformIds,
         secondarySocialMediaPlatformIds,
-        associationLevelId,
-        costOfAssociation,
+        association,
         statusId,
         stateId,
         contactPerson,
@@ -186,21 +185,18 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(statusId) },
                   }
                 : undefined,
-            association:
-                associationLevelId || costOfAssociation
-                    ? {
-                          create: {
-                              association_level: associationLevelId
-                                  ? {
-                                        connect: {
-                                            id: BigInt(associationLevelId),
-                                        },
-                                    }
-                                  : undefined,
-                              cost: costOfAssociation || undefined,
+            association: association?.length
+                ? {
+                      create: association.map((value) => ({
+                          association_level: {
+                              connect: {
+                                  id: BigInt(value.associationLevelId),
+                              },
                           },
-                      }
-                    : undefined,
+                          cost: value.costOfAssociation || undefined,
+                      })),
+                  }
+                : undefined,
             dashapp_athlete_socialmedia_platform_primary:
                 primarySocialMediaPlatformIds?.length
                     ? {
@@ -338,7 +334,6 @@ export const editAthlete = asyncHandler(async (req, res) => {
         age,
         genderIds,
         nccsIds,
-        associationId,
         userId,
         facebook,
         instagram,
@@ -353,8 +348,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        associationLevelId,
-        costOfAssociation,
+        association,
         primarySocialMediaPlatformIds,
         secondarySocialMediaPlatformIds,
         statusId,
@@ -368,8 +362,6 @@ export const editAthlete = asyncHandler(async (req, res) => {
     printLogs("age:", age);
 
     printLogs("Age range:", ageRange);
-    printLogs("cost of association:", costOfAssociation);
-    printLogs("association ID:", associationId);
 
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
@@ -377,31 +369,36 @@ export const editAthlete = asyncHandler(async (req, res) => {
             athlete_name: name,
             age: age || undefined,
             association: {
-                delete:
-                    !associationLevelId && !costOfAssociation && associationId
-                        ? {
-                              id: BigInt(associationId),
-                          }
-                        : undefined,
-                upsert: {
-                    where: { id: BigInt(associationId || "") },
-                    create: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                    update: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                },
+                deleteMany: association?.length
+                    ? {
+                          id: {
+                              notIn: association.map((value) =>
+                                  BigInt(value.associationId),
+                              ),
+                          },
+                      }
+                    : undefined,
+                upsert: association?.length
+                    ? association.map((value) => ({
+                          where: { id: BigInt(value.associationId) },
+                          update: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              cost: value.costOfAssociation || undefined,
+                          },
+                          create: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              cost: value.costOfAssociation || undefined,
+                          },
+                      }))
+                    : undefined,
             },
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }

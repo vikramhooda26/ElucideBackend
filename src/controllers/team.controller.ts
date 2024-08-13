@@ -5,7 +5,6 @@ import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
-import { printLogs } from "../lib/log.js";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -120,8 +119,7 @@ export const createTeam = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        associationLevelId,
-        costOfAssociation,
+        association,
         reachMetrics,
         viewershipMetrics,
         contactPerson,
@@ -291,21 +289,29 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            association:
-                associationLevelId || costOfAssociation
-                    ? {
-                          create: {
-                              association_level: associationLevelId
-                                  ? {
-                                        connect: {
-                                            id: BigInt(associationLevelId),
-                                        },
-                                    }
-                                  : undefined,
-                              cost: costOfAssociation ?? undefined,
+            association: association?.length
+                ? {
+                      create: association.map((value) => ({
+                          association_level: {
+                              connect: {
+                                  id: BigInt(value.associationLevelId),
+                              },
                           },
-                      }
-                    : undefined,
+                          dashapp_brand_association: value.brandIds?.length
+                              ? {
+                                    create: value.brandIds.map((brandId) => ({
+                                        brand: {
+                                            connect: {
+                                                id: BigInt(brandId),
+                                            },
+                                        },
+                                    })),
+                                }
+                              : undefined,
+                          cost: value.costOfAssociation || undefined,
+                      })),
+                  }
+                : undefined,
             dashapp_viewership: viewershipMetrics
                 ? {
                       create: viewershipMetrics.map((metric) => ({
@@ -392,9 +398,7 @@ export const editTeam = asyncHandler(async (req, res) => {
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
-        associationLevelId,
-        associationId,
-        costOfAssociation,
+        association,
         reachMetrics,
         viewershipMetrics,
         cityId,
@@ -405,8 +409,6 @@ export const editTeam = asyncHandler(async (req, res) => {
         contactPerson,
         userId,
     } = req.validatedData as TEditTeamSchema;
-
-    printLogs("associationId", associationId);
 
     await prisma.dashapp_team.update({
         where: { id: BigInt(teamId) },
@@ -574,31 +576,63 @@ export const editTeam = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             association: {
-                delete:
-                    !associationLevelId && !costOfAssociation
-                        ? {
-                              team_id: BigInt(teamId),
-                          }
-                        : undefined,
-                upsert: {
-                    where: { team_id: BigInt(teamId) },
-                    create: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                    update: {
-                        association_level: associationLevelId
-                            ? {
-                                  connect: { id: BigInt(associationLevelId) },
-                              }
-                            : undefined,
-                        cost: costOfAssociation || undefined,
-                    },
-                },
+                deleteMany: association?.length
+                    ? {
+                          id: {
+                              notIn: association.map((value) =>
+                                  BigInt(value.associationId),
+                              ),
+                          },
+                      }
+                    : undefined,
+                upsert: association?.length
+                    ? association.map((value) => ({
+                          where: { id: BigInt(value.associationId) },
+                          update: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              dashapp_brand_association: value.brandIds?.length
+                                  ? {
+                                        deleteMany: {},
+                                        create: value.brandIds.map(
+                                            (brandId) => ({
+                                                brand: {
+                                                    connect: {
+                                                        id: BigInt(brandId),
+                                                    },
+                                                },
+                                            }),
+                                        ),
+                                    }
+                                  : undefined,
+                              cost: value.costOfAssociation || undefined,
+                          },
+                          create: {
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
+                              },
+                              dashapp_brand_association: value.brandIds?.length
+                                  ? {
+                                        create: value.brandIds.map(
+                                            (brandId) => ({
+                                                brand: {
+                                                    connect: {
+                                                        id: BigInt(brandId),
+                                                    },
+                                                },
+                                            }),
+                                        ),
+                                    }
+                                  : undefined,
+                              cost: value.costOfAssociation || undefined,
+                          },
+                      }))
+                    : undefined,
             },
             dashapp_viewership: {
                 deleteMany: viewershipMetrics?.length

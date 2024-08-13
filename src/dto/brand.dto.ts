@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { TBrandDetails } from "../types/brand.type.js";
 
 export class BrandResponseDTO {
@@ -30,6 +31,17 @@ export class BrandResponseDTO {
     tier?: {
         id?: string;
         name?: string;
+    }[];
+    association?: {
+        associationLevelId?: {
+            id?: string;
+            name?: string | null;
+        };
+        costOfAssociation?: Prisma.Decimal | null;
+        team: {
+            id?: string;
+            name?: string;
+        };
     }[];
     instagram?: string | null;
     facebook?: string | null;
@@ -216,6 +228,19 @@ export class BrandResponseDTO {
             (tagline) => ({
                 id: tagline.dashapp_taglines.id.toString(),
                 name: tagline.dashapp_taglines.name,
+            }),
+        );
+        brandDTO.association = brandDetails.dashapp_brand_association.map(
+            (association) => ({
+                associationLevelId: {
+                    id: association.association?.association_level?.id.toString(),
+                    name: association.association?.association_level?.name,
+                },
+                costOfAssociation: association.association?.cost,
+                team: {
+                    id: association.association?.dashapp_team?.id.toString(),
+                    name: association.association?.dashapp_team?.team_name,
+                },
             }),
         );
         brandDTO.endorsements = brandDetails.dashapp_brandendorsements.map(

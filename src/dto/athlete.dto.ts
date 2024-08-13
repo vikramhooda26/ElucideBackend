@@ -57,12 +57,14 @@ export class AthleteResponseDTO {
         name?: string;
     }[];
     age?: Date | null;
-    associationLevel?: {
-        id?: string;
-        name?: string | null;
-    };
-    costOfAssociation?: Prisma.Decimal | null;
-    associationId?: string;
+    association?: {
+        associationId?: string;
+        associationLevel?: {
+            id?: string;
+            name?: string | null;
+        };
+        costOfAssociation?: Prisma.Decimal | null;
+    }[];
     activations?: {
         id?: string;
         year?: string | null;
@@ -242,16 +244,16 @@ export class AthleteResponseDTO {
         athleteDTO.age = athleteDetails?.age
             ? parseISO(athleteDetails?.age)
             : undefined;
-        athleteDTO.associationLevel = {
-            id: athleteDetails.association?.association_level?.id.toString(),
-            name: athleteDetails.association?.association_level?.name,
-        };
-        athleteDTO.costOfAssociation = athleteDetails.association?.cost;
-        printLogs(
-            "Association ID in DTO layer athelet",
-            athleteDetails.association?.id.toString(),
+        athleteDTO.association = athleteDetails.association.map(
+            (association) => ({
+                associationId: association.id.toString(),
+                associationLevel: {
+                    id: association.association_level?.id.toString(),
+                    name: association.association_level?.name,
+                },
+                costOfAssociation: association.cost,
+            }),
         );
-        athleteDTO.associationId = athleteDetails.association?.id.toString();
         athleteDTO.activations = athleteDetails.dashapp_activation.map(
             (activation) => ({
                 year: activation.Year,
