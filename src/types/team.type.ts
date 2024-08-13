@@ -149,7 +149,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
             },
         },
     },
-    association: {
+    dashapp_team_association: {
         select: {
             id: true,
             association_level: {

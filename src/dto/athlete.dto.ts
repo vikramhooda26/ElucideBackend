@@ -244,7 +244,7 @@ export class AthleteResponseDTO {
         athleteDTO.age = athleteDetails?.age
             ? parseISO(athleteDetails?.age)
             : undefined;
-        athleteDTO.association = athleteDetails.association.map(
+        athleteDTO.association = athleteDetails.dashapp_athlete_association.map(
             (association) => ({
                 associationId: association.id.toString(),
                 associationLevel: {

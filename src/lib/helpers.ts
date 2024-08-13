@@ -68,3 +68,8 @@ export const getRange = (range: string) => {
 
     return parts;
 };
+
+export const areElementsDistinct = (arr: any[]) => {
+    let set = new Set(arr);
+    return set.size === arr.length;
+};

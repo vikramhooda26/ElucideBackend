@@ -8,6 +8,7 @@ import {
     TEditLeagueSchema,
 } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
+import { areElementsDistinct } from "../lib/helpers.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -116,6 +117,16 @@ export const createLeague = asyncHandler(async (req, res) => {
         userId,
         contactPerson,
     } = req.validatedData as TCreateLeagueSchema;
+
+    if (association?.length) {
+        const isDistinct = areElementsDistinct(
+            association?.map((association) => association.associationLevelId),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Association Level must be unique");
+        }
+    }
 
     const league = await prisma.dashapp_leagueinfo.create({
         data: {
@@ -302,14 +313,16 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            association: association?.length
+            dashapp_leagueinfo_association: association?.length
                 ? {
                       create: association.map((value) => ({
-                          association_level: {
-                              connect: {
-                                  id: BigInt(value.associationLevelId),
-                              },
-                          },
+                          association_level: value.associationLevelId
+                              ? {
+                                    connect: {
+                                        id: BigInt(value.associationLevelId),
+                                    },
+                                }
+                              : undefined,
                           cost: value.costOfAssociation || undefined,
                       })),
                   }
@@ -387,6 +400,16 @@ export const editLeague = asyncHandler(async (req, res) => {
         userId,
         contactPerson,
     } = req.validatedData as TEditLeagueSchema;
+
+    if (association?.length) {
+        const isDistinct = areElementsDistinct(
+            association?.map((association) => association.associationLevelId),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Association Level must be unique");
+        }
+    }
 
     await prisma.dashapp_leagueinfo.update({
         where: {
@@ -631,35 +654,18 @@ export const editLeague = asyncHandler(async (req, res) => {
                       }))
                     : undefined,
             },
-            association: {
-                deleteMany: association?.length
-                    ? {
-                          id: {
-                              notIn: association.map((value) =>
-                                  BigInt(value.associationId),
-                              ),
-                          },
-                      }
-                    : undefined,
-                upsert: association?.length
-                    ? association.map((value) => ({
-                          where: { id: BigInt(value.associationId) },
-                          update: {
-                              association_level: {
-                                  connect: {
-                                      id: BigInt(value.associationLevelId),
-                                  },
-                              },
-                              cost: value.costOfAssociation || undefined,
-                          },
-                          create: {
-                              association_level: {
-                                  connect: {
-                                      id: BigInt(value.associationLevelId),
-                                  },
-                              },
-                              cost: value.costOfAssociation || undefined,
-                          },
+            dashapp_leagueinfo_association: {
+                deleteMany: {},
+                create: association?.length
+                    ? association.map((asso) => ({
+                          association_level: asso.associationLevelId
+                              ? {
+                                    connect: {
+                                        id: BigInt(asso.associationLevelId),
+                                    },
+                                }
+                              : undefined,
+                          cost: asso.costOfAssociation || undefined,
                       }))
                     : undefined,
             },

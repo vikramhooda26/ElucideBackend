@@ -12,6 +12,7 @@ import { athleteSelect } from "../types/athlete.type.js";
 import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 import { printLogs } from "../lib/log.js";
 import { differenceInYears, parseISO } from "date-fns";
+import { areElementsDistinct } from "../lib/helpers.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -152,6 +153,16 @@ export const createAthlete = asyncHandler(async (req, res) => {
 
     printLogs("\n\nageRange:", ageRange);
 
+    if (association?.length) {
+        const isDistinct = areElementsDistinct(
+            association?.map((association) => association.associationLevelId),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Association Level must be unique");
+        }
+    }
+
     const athlete = await prisma.dashapp_athlete.create({
         data: {
             athlete_name: name,
@@ -185,14 +196,16 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(statusId) },
                   }
                 : undefined,
-            association: association?.length
+            dashapp_athlete_association: association?.length
                 ? {
                       create: association.map((value) => ({
-                          association_level: {
-                              connect: {
-                                  id: BigInt(value.associationLevelId),
-                              },
-                          },
+                          association_level: value.associationLevelId
+                              ? {
+                                    connect: {
+                                        id: BigInt(value.associationLevelId),
+                                    },
+                                }
+                              : undefined,
                           cost: value.costOfAssociation || undefined,
                       })),
                   }
@@ -357,6 +370,16 @@ export const editAthlete = asyncHandler(async (req, res) => {
         contactPerson,
     } = req.validatedData as TEditAthleteSchema;
 
+    if (association?.length) {
+        const isDistinct = areElementsDistinct(
+            association?.map((association) => association.associationLevelId),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Association Level must be unique");
+        }
+    }
+
     const ageRange = age ? await findAgeRange(age) : undefined;
 
     printLogs("age:", age);
@@ -366,37 +389,20 @@ export const editAthlete = asyncHandler(async (req, res) => {
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
         data: {
-            athlete_name: name,
+            athlete_name: name || undefined,
             age: age || undefined,
-            association: {
-                deleteMany: association?.length
-                    ? {
-                          id: {
-                              notIn: association.map((value) =>
-                                  BigInt(value.associationId),
-                              ),
-                          },
-                      }
-                    : undefined,
-                upsert: association?.length
-                    ? association.map((value) => ({
-                          where: { id: BigInt(value.associationId) },
-                          update: {
-                              association_level: {
-                                  connect: {
-                                      id: BigInt(value.associationLevelId),
-                                  },
-                              },
-                              cost: value.costOfAssociation || undefined,
-                          },
-                          create: {
-                              association_level: {
-                                  connect: {
-                                      id: BigInt(value.associationLevelId),
-                                  },
-                              },
-                              cost: value.costOfAssociation || undefined,
-                          },
+            dashapp_athlete_association: {
+                deleteMany: {},
+                create: association?.length
+                    ? association.map((asso) => ({
+                          association_level: asso.associationLevelId
+                              ? {
+                                    connect: {
+                                        id: BigInt(asso.associationLevelId),
+                                    },
+                                }
+                              : undefined,
+                          cost: asso.costOfAssociation || undefined,
                       }))
                     : undefined,
             },
@@ -416,12 +422,12 @@ export const editAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            facebook: facebook,
-            instagram: instagram,
-            twitter: twitter,
-            linkedin: linkedin,
-            youtube: youtube,
-            website: website,
+            facebook: facebook || undefined,
+            instagram: instagram || undefined,
+            twitter: twitter || undefined,
+            linkedin: linkedin || undefined,
+            youtube: youtube || undefined,
+            website: website || undefined,
             dashapp_athlete_status: statusId
                 ? {
                       connect: { id: BigInt(statusId) },

@@ -284,16 +284,15 @@ export class LeagueResponseDTO {
                     name: platform.dashapp_marketingplatform.platform,
                 }),
             );
-        leagueDTO.association = leagueDetails.association.map(
-            (association) => ({
+        leagueDTO.association =
+            leagueDetails.dashapp_leagueinfo_association.map((association) => ({
                 associationId: association.id.toString(),
                 associationLevel: {
                     id: association.association_level?.id.toString(),
                     name: association.association_level?.name,
                 },
                 costOfAssociation: association.cost,
-            }),
-        );
+            }));
         leagueDTO.subPersonalityTriats =
             leagueDetails.dashapp_leagueinfo_personality_traits.map(
                 (trait) => ({

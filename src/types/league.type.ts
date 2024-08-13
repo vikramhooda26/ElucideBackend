@@ -120,7 +120,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 },
             },
         },
-        association: {
+        dashapp_leagueinfo_association: {
             select: {
                 id: true,
                 cost: true,

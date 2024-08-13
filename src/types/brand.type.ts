@@ -25,7 +25,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         },
         dashapp_brand_association: {
             select: {
-                association: {
+                dashapp_team_association: {
                     select: {
                         id: true,
                         association_level: {

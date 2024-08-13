@@ -282,18 +282,20 @@ export class TeamResponseDTO {
                 name: state.dashapp_states.state,
             }),
         );
-        teamDTO.association = teamDetails.association.map((association) => ({
-            associationId: association.id.toString(),
-            associationLevel: {
-                id: association.association_level?.id.toString(),
-                name: association.association_level?.name,
-            },
-            costOfAssociation: association.cost,
-            brand: association.dashapp_brand_association.map((brand) => ({
-                id: brand.brand?.id.toString(),
-                name: brand.brand?.company_name,
-            })),
-        }));
+        teamDTO.association = teamDetails.dashapp_team_association.map(
+            (association) => ({
+                associationId: association.id.toString(),
+                associationLevel: {
+                    id: association.association_level?.id.toString(),
+                    name: association.association_level?.name,
+                },
+                costOfAssociation: association.cost,
+                brand: association.dashapp_brand_association.map((brand) => ({
+                    id: brand.brand?.id.toString(),
+                    name: brand.brand?.company_name,
+                })),
+            }),
+        );
         teamDTO.tiers = teamDetails.dashapp_team_tier.map((tier) => ({
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,

@@ -233,13 +233,15 @@ export class BrandResponseDTO {
         brandDTO.association = brandDetails.dashapp_brand_association.map(
             (association) => ({
                 associationLevelId: {
-                    id: association.association?.association_level?.id.toString(),
-                    name: association.association?.association_level?.name,
+                    id: association.dashapp_team_association?.association_level?.id.toString(),
+                    name: association.dashapp_team_association
+                        ?.association_level?.name,
                 },
-                costOfAssociation: association.association?.cost,
+                costOfAssociation: association.dashapp_team_association?.cost,
                 team: {
-                    id: association.association?.dashapp_team?.id.toString(),
-                    name: association.association?.dashapp_team?.team_name,
+                    id: association.dashapp_team_association?.dashapp_team?.id.toString(),
+                    name: association.dashapp_team_association?.dashapp_team
+                        ?.team_name,
                 },
             }),
         );
