@@ -7,52 +7,84 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model association {
+model dashapp_team_association {
     id                        BigInt                      @id @default(autoincrement())
     cost                      Decimal?                    @db.Decimal()
-    association_level_id      BigInt?
+    association_level_id      BigInt?                     @unique
     created_date              DateTime?                   @default(now())
     modified_date             DateTime                    @updatedAt
     created_by_id             BigInt?
     modified_by_id            BigInt?
     team_id                   BigInt?
-    leagueInfo_id             BigInt?
-    athlete_id                BigInt?
-    association_level         association_level?          @relation(fields: [association_level_id], references: [id])
-    dashapp_athlete           dashapp_athlete?            @relation(fields: [athlete_id], references: [id], onDelete: Cascade)
-    created_by                auth_user?                  @relation("association_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo        dashapp_leagueinfo?         @relation(fields: [leagueInfo_id], references: [id], onDelete: Cascade)
-    modified_by               auth_user?                  @relation("association_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    association_level         association_level?          @relation(fields: [association_level_id], references: [id], onDelete: Cascade)
+    created_by                auth_user?                  @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by               auth_user?                  @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_team              dashapp_team?               @relation(fields: [team_id], references: [id], onDelete: Cascade)
     dashapp_brand_association dashapp_brand_association[]
 
-    @@index([association_level_id], map: "association_level_id_index")
-    @@index([team_id], map: "team_id_index")
-    @@index([leagueInfo_id], map: "association_league_info_id_idx")
-    @@index([athlete_id], map: "athlete_id_index")
+    @@index([association_level_id])
+    @@index([team_id])
+}
+
+model dashapp_leagueinfo_association {
+    id                   BigInt              @id @default(autoincrement())
+    cost                 Decimal?            @db.Decimal()
+    association_level_id BigInt?             @unique
+    created_date         DateTime?           @default(now())
+    modified_date        DateTime            @updatedAt
+    created_by_id        BigInt?
+    modified_by_id       BigInt?
+    leagueInfo_id        BigInt?
+    association_level    association_level?  @relation(fields: [association_level_id], references: [id], onDelete: Cascade)
+    created_by           auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by          auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo   dashapp_leagueinfo? @relation(fields: [leagueInfo_id], references: [id], onDelete: Cascade)
+
+    @@index([association_level_id])
+    @@index([leagueInfo_id])
+}
+
+model dashapp_athlete_association {
+    id                   BigInt             @id @default(autoincrement())
+    cost                 Decimal?           @db.Decimal()
+    association_level_id BigInt?            @unique
+    created_date         DateTime?          @default(now())
+    modified_date        DateTime           @updatedAt
+    created_by_id        BigInt?
+    modified_by_id       BigInt?
+    athlete_id           BigInt?
+    association_level    association_level? @relation(fields: [association_level_id], references: [id], onDelete: Cascade)
+    created_by           auth_user?         @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by          auth_user?         @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_athlete      dashapp_athlete?   @relation(fields: [athlete_id], references: [id], onDelete: Cascade)
+
+    @@index([association_level_id])
+    @@index([athlete_id])
 }
 
 model association_level {
-    id             BigInt        @id @default(autoincrement())
-    name           String?       @db.VarChar(512)
-    created_date   DateTime?     @default(now())
-    modified_date  DateTime      @updatedAt
-    created_by_id  BigInt?
-    modified_by_id BigInt?
-    association    association[]
-    created_by     auth_user?    @relation("association_level_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    modified_by    auth_user?    @relation("association_level_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id                             BigInt                          @id @default(autoincrement())
+    name                           String?                         @unique @db.VarChar(512)
+    created_date                   DateTime?                       @default(now())
+    modified_date                  DateTime                        @updatedAt
+    created_by_id                  BigInt?
+    modified_by_id                 BigInt?
+    created_by                     auth_user?                      @relation("association_level_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by                    auth_user?                      @relation("association_level_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_association       dashapp_team_association?
+    dashapp_leagueinfo_association dashapp_leagueinfo_association?
+    dashapp_athlete_association    dashapp_athlete_association?
 }
 
 model dashapp_brand_association {
-    id             BigInt               @id @default(autoincrement())
-    brand_id       BigInt?
-    association_id BigInt?
-    brand          dashapp_companydata? @relation(fields: [brand_id], references: [id], onDelete: Cascade)
-    association    association?         @relation(fields: [association_id], references: [id], onDelete: Cascade)
+    id                          BigInt                    @id @default(autoincrement())
+    brand_id                    BigInt?
+    dashapp_team_association_id BigInt?
+    brand                       dashapp_companydata?      @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+    dashapp_team_association    dashapp_team_association? @relation(fields: [dashapp_team_association_id], references: [id], onDelete: Cascade)
 
     @@index([brand_id])
-    @@index([association_id])
+    @@index([dashapp_team_association_id])
 }
 
 model dashapp_format {
@@ -68,115 +100,119 @@ model dashapp_format {
 }
 
 model auth_user {
-    id                                                                              BigInt                         @id @default(autoincrement())
-    password                                                                        String                         @db.VarChar(128)
-    last_login                                                                      DateTime?                      @db.Timestamp(6)
-    username                                                                        String                         @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
-    last_name                                                                       String                         @db.VarChar(150)
-    email                                                                           String                         @db.VarChar(254)
-    date_joined                                                                     DateTime                       @db.Timestamp(6)
-    first_name                                                                      String                         @db.VarChar(150)
-    role                                                                            role                           @default(USER)
-    association_association_created_by_idToauth_user                                association[]                  @relation("association_created_by_idToauth_user")
-    association_association_modified_by_idToauth_user                               association[]                  @relation("association_modified_by_idToauth_user")
-    association_level_association_level_created_by_idToauth_user                    association_level[]            @relation("association_level_created_by_idToauth_user")
-    association_level_association_level_modified_by_idToauth_user                   association_level[]            @relation("association_level_modified_by_idToauth_user")
-    dashapp_activation_dashapp_activation_created_by_idToauth_user                  dashapp_activation[]           @relation("dashapp_activation_created_by_idToauth_user")
-    dashapp_activation_dashapp_activation_modified_by_idToauth_user                 dashapp_activation[]           @relation("dashapp_activation_modified_by_idToauth_user")
-    dashapp_activecampaigns_dashapp_activecampaigns_created_by_idToauth_user        dashapp_activecampaigns[]      @relation("dashapp_activecampaigns_created_by_idToauth_user")
-    dashapp_activecampaigns_dashapp_activecampaigns_modified_by_idToauth_user       dashapp_activecampaigns[]      @relation("dashapp_activecampaigns_modified_by_idToauth_user")
-    dashapp_age_dashapp_age_created_by_idToauth_user                                dashapp_age[]                  @relation("dashapp_age_created_by_idToauth_user")
-    dashapp_age_dashapp_age_modified_by_idToauth_user                               dashapp_age[]                  @relation("dashapp_age_modified_by_idToauth_user")
-    dashapp_agency_dashapp_agency_created_by_idToauth_user                          dashapp_agency[]               @relation("dashapp_agency_created_by_idToauth_user")
-    dashapp_agency_dashapp_agency_modified_by_idToauth_user                         dashapp_agency[]               @relation("dashapp_agency_modified_by_idToauth_user")
-    dashapp_assets_dashapp_assets_created_by_idToauth_user                          dashapp_assets[]               @relation("dashapp_assets_created_by_idToauth_user")
-    dashapp_assets_dashapp_assets_modified_by_idToauth_user                         dashapp_assets[]               @relation("dashapp_assets_modified_by_idToauth_user")
-    dashapp_athlete_dashapp_athlete_created_by_idToauth_user                        dashapp_athlete[]              @relation("dashapp_athlete_created_by_idToauth_user")
-    dashapp_athlete_dashapp_athlete_modified_by_idToauth_user                       dashapp_athlete[]              @relation("dashapp_athlete_modified_by_idToauth_user")
-    dashapp_athlete_status_dashapp_athlete_status_created_by_idToauth_user          dashapp_athlete_status[]       @relation("dashapp_athlete_status_created_by_idToauth_user")
-    dashapp_athlete_status_dashapp_athlete_status_modified_by_idToauth_user         dashapp_athlete_status[]       @relation("dashapp_athlete_status_modified_by_idToauth_user")
-    dashapp_athletecontact_dashapp_athletecontact_created_by_idToauth_user          dashapp_athletecontact[]       @relation("dashapp_athletecontact_created_by_idToauth_user")
-    dashapp_athletecontact_dashapp_athletecontact_modified_by_idToauth_user         dashapp_athletecontact[]       @relation("dashapp_athletecontact_modified_by_idToauth_user")
-    dashapp_brandcontact_dashapp_brandcontact_created_by_idToauth_user              dashapp_brandcontact[]         @relation("dashapp_brandcontact_created_by_idToauth_user")
-    dashapp_brandcontact_dashapp_brandcontact_modified_by_idToauth_user             dashapp_brandcontact[]         @relation("dashapp_brandcontact_modified_by_idToauth_user")
-    dashapp_brandendorsements_dashapp_brandendorsements_created_by_idToauth_user    dashapp_brandendorsements[]    @relation("dashapp_brandendorsements_created_by_idToauth_user")
-    dashapp_brandendorsements_dashapp_brandendorsements_modified_by_idToauth_user   dashapp_brandendorsements[]    @relation("dashapp_brandendorsements_modified_by_idToauth_user")
-    dashapp_broadcastpartner_dashapp_broadcastpartner_created_by_idToauth_user      dashapp_broadcastpartner[]     @relation("dashapp_broadcastpartner_created_by_idToauth_user")
-    dashapp_broadcastpartner_dashapp_broadcastpartner_modified_by_idToauth_user     dashapp_broadcastpartner[]     @relation("dashapp_broadcastpartner_modified_by_idToauth_user")
-    dashapp_category_dashapp_category_created_by_idToauth_user                      dashapp_category[]             @relation("dashapp_category_created_by_idToauth_user")
-    dashapp_category_dashapp_category_modified_by_idToauth_user                     dashapp_category[]             @relation("dashapp_category_modified_by_idToauth_user")
-    dashapp_companydata_dashapp_companydata_created_by_idToauth_user                dashapp_companydata[]          @relation("dashapp_companydata_created_by_idToauth_user")
-    dashapp_companydata_dashapp_companydata_modified_by_idToauth_user               dashapp_companydata[]          @relation("dashapp_companydata_modified_by_idToauth_user")
-    dashapp_gender_dashapp_gender_created_by_idToauth_user                          dashapp_gender[]               @relation("dashapp_gender_created_by_idToauth_user")
-    dashapp_gender_dashapp_gender_modified_by_idToauth_user                         dashapp_gender[]               @relation("dashapp_gender_modified_by_idToauth_user")
-    dashapp_hqcity_dashapp_hqcity_created_by_idToauth_user                          dashapp_hqcity[]               @relation("dashapp_hqcity_created_by_idToauth_user")
-    dashapp_hqcity_dashapp_hqcity_modified_by_idToauth_user                         dashapp_hqcity[]               @relation("dashapp_hqcity_modified_by_idToauth_user")
-    dashapp_income_dashapp_income_created_by_idToauth_user                          dashapp_nccs[]                 @relation("dashapp_income_created_by_idToauth_user")
-    dashapp_income_dashapp_income_modified_by_idToauth_user                         dashapp_nccs[]                 @relation("dashapp_income_modified_by_idToauth_user")
-    dashapp_keymarket_dashapp_keymarket_created_by_idToauth_user                    dashapp_keymarket[]            @relation("dashapp_keymarket_created_by_idToauth_user")
-    dashapp_keymarket_dashapp_keymarket_modified_by_idToauth_user                   dashapp_keymarket[]            @relation("dashapp_keymarket_modified_by_idToauth_user")
-    dashapp_keyplatform_dashapp_keyplatform_created_by_idToauth_user                dashapp_keyplatform[]          @relation("dashapp_keyplatform_created_by_idToauth_user")
-    dashapp_keyplatform_dashapp_keyplatform_modified_by_idToauth_user               dashapp_keyplatform[]          @relation("dashapp_keyplatform_modified_by_idToauth_user")
-    dashapp_league_dashapp_league_created_by_idToauth_user                          dashapp_league[]               @relation("dashapp_league_created_by_idToauth_user")
-    dashapp_league_dashapp_league_modified_by_idToauth_user                         dashapp_league[]               @relation("dashapp_league_modified_by_idToauth_user")
-    dashapp_leaguecontact_dashapp_leaguecontact_created_by_idToauth_user            dashapp_leaguecontact[]        @relation("dashapp_leaguecontact_created_by_idToauth_user")
-    dashapp_leaguecontact_dashapp_leaguecontact_modified_by_idToauth_user           dashapp_leaguecontact[]        @relation("dashapp_leaguecontact_modified_by_idToauth_user")
-    dashapp_leagueendorsements_dashapp_leagueendorsements_created_by_idToauth_user  dashapp_leagueendorsements[]   @relation("dashapp_leagueendorsements_created_by_idToauth_user")
-    dashapp_leagueendorsements_dashapp_leagueendorsements_modified_by_idToauth_user dashapp_leagueendorsements[]   @relation("dashapp_leagueendorsements_modified_by_idToauth_user")
-    dashapp_leagueinfo_dashapp_leagueinfo_created_by_idToauth_user                  dashapp_leagueinfo[]           @relation("dashapp_leagueinfo_created_by_idToauth_user")
-    dashapp_leagueinfo_dashapp_leagueinfo_modified_by_idToauth_user                 dashapp_leagueinfo[]           @relation("dashapp_leagueinfo_modified_by_idToauth_user")
-    dashapp_leagueowner_dashapp_leagueowner_created_by_idToauth_user                dashapp_leagueowner[]          @relation("dashapp_leagueowner_created_by_idToauth_user")
-    dashapp_leagueowner_dashapp_leagueowner_modified_by_idToauth_user               dashapp_leagueowner[]          @relation("dashapp_leagueowner_modified_by_idToauth_user")
-    dashapp_level_dashapp_level_created_by_idToauth_user                            dashapp_level[]                @relation("dashapp_level_created_by_idToauth_user")
-    dashapp_level_dashapp_level_modified_by_idToauth_user                           dashapp_level[]                @relation("dashapp_level_modified_by_idToauth_user")
-    dashapp_mainpersonality_dashapp_mainpersonality_created_by_idToauth_user        dashapp_mainpersonality[]      @relation("dashapp_mainpersonality_created_by_idToauth_user")
-    dashapp_mainpersonality_dashapp_mainpersonality_modified_by_idToauth_user       dashapp_mainpersonality[]      @relation("dashapp_mainpersonality_modified_by_idToauth_user")
-    dashapp_marketingplatform_dashapp_marketingplatform_created_by_idToauth_user    dashapp_marketingplatform[]    @relation("dashapp_marketingplatform_created_by_idToauth_user")
-    dashapp_marketingplatform_dashapp_marketingplatform_modified_by_idToauth_user   dashapp_marketingplatform[]    @relation("dashapp_marketingplatform_modified_by_idToauth_user")
-    dashapp_ottpartner_dashapp_ottpartner_created_by_idToauth_user                  dashapp_ottpartner[]           @relation("dashapp_ottpartner_created_by_idToauth_user")
-    dashapp_ottpartner_dashapp_ottpartner_modified_by_idToauth_user                 dashapp_ottpartner[]           @relation("dashapp_ottpartner_modified_by_idToauth_user")
-    dashapp_parentorg_dashapp_parentorg_created_by_idToauth_user                    dashapp_parentorg[]            @relation("dashapp_parentorg_created_by_idToauth_user")
-    dashapp_parentorg_dashapp_parentorg_modified_by_idToauth_user                   dashapp_parentorg[]            @relation("dashapp_parentorg_modified_by_idToauth_user")
-    dashapp_partner_dashapp_partner_created_by_idToauth_user                        dashapp_partner[]              @relation("dashapp_partner_created_by_idToauth_user")
-    dashapp_partner_dashapp_partner_modified_by_idToauth_user                       dashapp_partner[]              @relation("dashapp_partner_modified_by_idToauth_user")
-    dashapp_property_dashapp_property_created_by_idToauth_user                      dashapp_property[]             @relation("dashapp_property_created_by_idToauth_user")
-    dashapp_property_dashapp_property_modified_by_idToauth_user                     dashapp_property[]             @relation("dashapp_property_modified_by_idToauth_user")
-    dashapp_sport_dashapp_sport_created_by_idToauth_user                            dashapp_sport[]                @relation("dashapp_sport_created_by_idToauth_user")
-    dashapp_sport_dashapp_sport_modified_by_idToauth_user                           dashapp_sport[]                @relation("dashapp_sport_modified_by_idToauth_user")
-    dashapp_sportsdealsummary_dashapp_sportsdealsummary_created_by_idToauth_user    dashapp_sportsdealsummary[]    @relation("dashapp_sportsdealsummary_created_by_idToauth_user")
-    dashapp_sportsdealsummary_dashapp_sportsdealsummary_modified_by_idToauth_user   dashapp_sportsdealsummary[]    @relation("dashapp_sportsdealsummary_modified_by_idToauth_user")
-    dashapp_states_dashapp_states_created_by_idToauth_user                          dashapp_states[]               @relation("dashapp_states_created_by_idToauth_user")
-    dashapp_states_dashapp_states_modified_by_idToauth_user                         dashapp_states[]               @relation("dashapp_states_modified_by_idToauth_user")
-    dashapp_subcategory_dashapp_subcategory_created_by_idToauth_user                dashapp_subcategory[]          @relation("dashapp_subcategory_created_by_idToauth_user")
-    dashapp_subcategory_dashapp_subcategory_modified_by_idToauth_user               dashapp_subcategory[]          @relation("dashapp_subcategory_modified_by_idToauth_user")
-    dashapp_subpersonality_dashapp_subpersonality_created_by_idToauth_user          dashapp_subpersonality[]       @relation("dashapp_subpersonality_created_by_idToauth_user")
-    dashapp_subpersonality_dashapp_subpersonality_modified_by_idToauth_user         dashapp_subpersonality[]       @relation("dashapp_subpersonality_modified_by_idToauth_user")
-    dashapp_taglines_dashapp_taglines_created_by_idToauth_user                      dashapp_taglines[]             @relation("dashapp_taglines_created_by_idToauth_user")
-    dashapp_taglines_dashapp_taglines_modified_by_idToauth_user                     dashapp_taglines[]             @relation("dashapp_taglines_modified_by_idToauth_user")
-    dashapp_team_dashapp_team_created_by_idToauth_user                              dashapp_team[]                 @relation("dashapp_team_created_by_idToauth_user")
-    dashapp_team_dashapp_team_modified_by_idToauth_user                             dashapp_team[]                 @relation("dashapp_team_modified_by_idToauth_user")
-    dashapp_teamcontact_dashapp_teamcontact_created_by_idToauth_user                dashapp_teamcontact[]          @relation("dashapp_teamcontact_created_by_idToauth_user")
-    dashapp_teamcontact_dashapp_teamcontact_modified_by_idToauth_user               dashapp_teamcontact[]          @relation("dashapp_teamcontact_modified_by_idToauth_user")
-    dashapp_teamendorsements_dashapp_teamendorsements_created_by_idToauth_user      dashapp_teamendorsements[]     @relation("dashapp_teamendorsements_created_by_idToauth_user")
-    dashapp_teamendorsements_dashapp_teamendorsements_modified_by_idToauth_user     dashapp_teamendorsements[]     @relation("dashapp_teamendorsements_modified_by_idToauth_user")
-    dashapp_teamowner_dashapp_teamowner_created_by_idToauth_user                    dashapp_teamowner[]            @relation("dashapp_teamowner_created_by_idToauth_user")
-    dashapp_teamowner_dashapp_teamowner_modified_by_idToauth_user                   dashapp_teamowner[]            @relation("dashapp_teamowner_modified_by_idToauth_user")
-    dashapp_territory_dashapp_territory_created_by_idToauth_user                    dashapp_territory[]            @relation("dashapp_territory_created_by_idToauth_user")
-    dashapp_territory_dashapp_territory_modified_by_idToauth_user                   dashapp_territory[]            @relation("dashapp_territory_modified_by_idToauth_user")
-    dashapp_tier_dashapp_tier_created_by_idToauth_user                              dashapp_tier[]                 @relation("dashapp_tier_created_by_idToauth_user")
-    dashapp_tier_dashapp_tier_modified_by_idToauth_user                             dashapp_tier[]                 @relation("dashapp_tier_modified_by_idToauth_user")
+    id                                                                              BigInt                           @id @default(autoincrement())
+    password                                                                        String                           @db.VarChar(128)
+    last_login                                                                      DateTime?                        @db.Timestamp(6)
+    username                                                                        String                           @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    last_name                                                                       String                           @db.VarChar(150)
+    email                                                                           String                           @db.VarChar(254)
+    date_joined                                                                     DateTime                         @db.Timestamp(6)
+    first_name                                                                      String                           @db.VarChar(150)
+    role                                                                            role                             @default(USER)
+    association_level_association_level_created_by_idToauth_user                    association_level[]              @relation("association_level_created_by_idToauth_user")
+    association_level_association_level_modified_by_idToauth_user                   association_level[]              @relation("association_level_modified_by_idToauth_user")
+    dashapp_activation_dashapp_activation_created_by_idToauth_user                  dashapp_activation[]             @relation("dashapp_activation_created_by_idToauth_user")
+    dashapp_activation_dashapp_activation_modified_by_idToauth_user                 dashapp_activation[]             @relation("dashapp_activation_modified_by_idToauth_user")
+    dashapp_activecampaigns_dashapp_activecampaigns_created_by_idToauth_user        dashapp_activecampaigns[]        @relation("dashapp_activecampaigns_created_by_idToauth_user")
+    dashapp_activecampaigns_dashapp_activecampaigns_modified_by_idToauth_user       dashapp_activecampaigns[]        @relation("dashapp_activecampaigns_modified_by_idToauth_user")
+    dashapp_age_dashapp_age_created_by_idToauth_user                                dashapp_age[]                    @relation("dashapp_age_created_by_idToauth_user")
+    dashapp_age_dashapp_age_modified_by_idToauth_user                               dashapp_age[]                    @relation("dashapp_age_modified_by_idToauth_user")
+    dashapp_agency_dashapp_agency_created_by_idToauth_user                          dashapp_agency[]                 @relation("dashapp_agency_created_by_idToauth_user")
+    dashapp_agency_dashapp_agency_modified_by_idToauth_user                         dashapp_agency[]                 @relation("dashapp_agency_modified_by_idToauth_user")
+    dashapp_assets_dashapp_assets_created_by_idToauth_user                          dashapp_assets[]                 @relation("dashapp_assets_created_by_idToauth_user")
+    dashapp_assets_dashapp_assets_modified_by_idToauth_user                         dashapp_assets[]                 @relation("dashapp_assets_modified_by_idToauth_user")
+    dashapp_athlete_dashapp_athlete_created_by_idToauth_user                        dashapp_athlete[]                @relation("dashapp_athlete_created_by_idToauth_user")
+    dashapp_athlete_dashapp_athlete_modified_by_idToauth_user                       dashapp_athlete[]                @relation("dashapp_athlete_modified_by_idToauth_user")
+    dashapp_athlete_status_dashapp_athlete_status_created_by_idToauth_user          dashapp_athlete_status[]         @relation("dashapp_athlete_status_created_by_idToauth_user")
+    dashapp_athlete_status_dashapp_athlete_status_modified_by_idToauth_user         dashapp_athlete_status[]         @relation("dashapp_athlete_status_modified_by_idToauth_user")
+    dashapp_athletecontact_dashapp_athletecontact_created_by_idToauth_user          dashapp_athletecontact[]         @relation("dashapp_athletecontact_created_by_idToauth_user")
+    dashapp_athletecontact_dashapp_athletecontact_modified_by_idToauth_user         dashapp_athletecontact[]         @relation("dashapp_athletecontact_modified_by_idToauth_user")
+    dashapp_brandcontact_dashapp_brandcontact_created_by_idToauth_user              dashapp_brandcontact[]           @relation("dashapp_brandcontact_created_by_idToauth_user")
+    dashapp_brandcontact_dashapp_brandcontact_modified_by_idToauth_user             dashapp_brandcontact[]           @relation("dashapp_brandcontact_modified_by_idToauth_user")
+    dashapp_brandendorsements_dashapp_brandendorsements_created_by_idToauth_user    dashapp_brandendorsements[]      @relation("dashapp_brandendorsements_created_by_idToauth_user")
+    dashapp_brandendorsements_dashapp_brandendorsements_modified_by_idToauth_user   dashapp_brandendorsements[]      @relation("dashapp_brandendorsements_modified_by_idToauth_user")
+    dashapp_broadcastpartner_dashapp_broadcastpartner_created_by_idToauth_user      dashapp_broadcastpartner[]       @relation("dashapp_broadcastpartner_created_by_idToauth_user")
+    dashapp_broadcastpartner_dashapp_broadcastpartner_modified_by_idToauth_user     dashapp_broadcastpartner[]       @relation("dashapp_broadcastpartner_modified_by_idToauth_user")
+    dashapp_category_dashapp_category_created_by_idToauth_user                      dashapp_category[]               @relation("dashapp_category_created_by_idToauth_user")
+    dashapp_category_dashapp_category_modified_by_idToauth_user                     dashapp_category[]               @relation("dashapp_category_modified_by_idToauth_user")
+    dashapp_companydata_dashapp_companydata_created_by_idToauth_user                dashapp_companydata[]            @relation("dashapp_companydata_created_by_idToauth_user")
+    dashapp_companydata_dashapp_companydata_modified_by_idToauth_user               dashapp_companydata[]            @relation("dashapp_companydata_modified_by_idToauth_user")
+    dashapp_gender_dashapp_gender_created_by_idToauth_user                          dashapp_gender[]                 @relation("dashapp_gender_created_by_idToauth_user")
+    dashapp_gender_dashapp_gender_modified_by_idToauth_user                         dashapp_gender[]                 @relation("dashapp_gender_modified_by_idToauth_user")
+    dashapp_hqcity_dashapp_hqcity_created_by_idToauth_user                          dashapp_hqcity[]                 @relation("dashapp_hqcity_created_by_idToauth_user")
+    dashapp_hqcity_dashapp_hqcity_modified_by_idToauth_user                         dashapp_hqcity[]                 @relation("dashapp_hqcity_modified_by_idToauth_user")
+    dashapp_income_dashapp_income_created_by_idToauth_user                          dashapp_nccs[]                   @relation("dashapp_income_created_by_idToauth_user")
+    dashapp_income_dashapp_income_modified_by_idToauth_user                         dashapp_nccs[]                   @relation("dashapp_income_modified_by_idToauth_user")
+    dashapp_keymarket_dashapp_keymarket_created_by_idToauth_user                    dashapp_keymarket[]              @relation("dashapp_keymarket_created_by_idToauth_user")
+    dashapp_keymarket_dashapp_keymarket_modified_by_idToauth_user                   dashapp_keymarket[]              @relation("dashapp_keymarket_modified_by_idToauth_user")
+    dashapp_keyplatform_dashapp_keyplatform_created_by_idToauth_user                dashapp_keyplatform[]            @relation("dashapp_keyplatform_created_by_idToauth_user")
+    dashapp_keyplatform_dashapp_keyplatform_modified_by_idToauth_user               dashapp_keyplatform[]            @relation("dashapp_keyplatform_modified_by_idToauth_user")
+    dashapp_league_dashapp_league_created_by_idToauth_user                          dashapp_league[]                 @relation("dashapp_league_created_by_idToauth_user")
+    dashapp_league_dashapp_league_modified_by_idToauth_user                         dashapp_league[]                 @relation("dashapp_league_modified_by_idToauth_user")
+    dashapp_leaguecontact_dashapp_leaguecontact_created_by_idToauth_user            dashapp_leaguecontact[]          @relation("dashapp_leaguecontact_created_by_idToauth_user")
+    dashapp_leaguecontact_dashapp_leaguecontact_modified_by_idToauth_user           dashapp_leaguecontact[]          @relation("dashapp_leaguecontact_modified_by_idToauth_user")
+    dashapp_leagueendorsements_dashapp_leagueendorsements_created_by_idToauth_user  dashapp_leagueendorsements[]     @relation("dashapp_leagueendorsements_created_by_idToauth_user")
+    dashapp_leagueendorsements_dashapp_leagueendorsements_modified_by_idToauth_user dashapp_leagueendorsements[]     @relation("dashapp_leagueendorsements_modified_by_idToauth_user")
+    dashapp_leagueinfo_dashapp_leagueinfo_created_by_idToauth_user                  dashapp_leagueinfo[]             @relation("dashapp_leagueinfo_created_by_idToauth_user")
+    dashapp_leagueinfo_dashapp_leagueinfo_modified_by_idToauth_user                 dashapp_leagueinfo[]             @relation("dashapp_leagueinfo_modified_by_idToauth_user")
+    dashapp_leagueowner_dashapp_leagueowner_created_by_idToauth_user                dashapp_leagueowner[]            @relation("dashapp_leagueowner_created_by_idToauth_user")
+    dashapp_leagueowner_dashapp_leagueowner_modified_by_idToauth_user               dashapp_leagueowner[]            @relation("dashapp_leagueowner_modified_by_idToauth_user")
+    dashapp_level_dashapp_level_created_by_idToauth_user                            dashapp_level[]                  @relation("dashapp_level_created_by_idToauth_user")
+    dashapp_level_dashapp_level_modified_by_idToauth_user                           dashapp_level[]                  @relation("dashapp_level_modified_by_idToauth_user")
+    dashapp_mainpersonality_dashapp_mainpersonality_created_by_idToauth_user        dashapp_mainpersonality[]        @relation("dashapp_mainpersonality_created_by_idToauth_user")
+    dashapp_mainpersonality_dashapp_mainpersonality_modified_by_idToauth_user       dashapp_mainpersonality[]        @relation("dashapp_mainpersonality_modified_by_idToauth_user")
+    dashapp_marketingplatform_dashapp_marketingplatform_created_by_idToauth_user    dashapp_marketingplatform[]      @relation("dashapp_marketingplatform_created_by_idToauth_user")
+    dashapp_marketingplatform_dashapp_marketingplatform_modified_by_idToauth_user   dashapp_marketingplatform[]      @relation("dashapp_marketingplatform_modified_by_idToauth_user")
+    dashapp_ottpartner_dashapp_ottpartner_created_by_idToauth_user                  dashapp_ottpartner[]             @relation("dashapp_ottpartner_created_by_idToauth_user")
+    dashapp_ottpartner_dashapp_ottpartner_modified_by_idToauth_user                 dashapp_ottpartner[]             @relation("dashapp_ottpartner_modified_by_idToauth_user")
+    dashapp_parentorg_dashapp_parentorg_created_by_idToauth_user                    dashapp_parentorg[]              @relation("dashapp_parentorg_created_by_idToauth_user")
+    dashapp_parentorg_dashapp_parentorg_modified_by_idToauth_user                   dashapp_parentorg[]              @relation("dashapp_parentorg_modified_by_idToauth_user")
+    dashapp_partner_dashapp_partner_created_by_idToauth_user                        dashapp_partner[]                @relation("dashapp_partner_created_by_idToauth_user")
+    dashapp_partner_dashapp_partner_modified_by_idToauth_user                       dashapp_partner[]                @relation("dashapp_partner_modified_by_idToauth_user")
+    dashapp_property_dashapp_property_created_by_idToauth_user                      dashapp_property[]               @relation("dashapp_property_created_by_idToauth_user")
+    dashapp_property_dashapp_property_modified_by_idToauth_user                     dashapp_property[]               @relation("dashapp_property_modified_by_idToauth_user")
+    dashapp_sport_dashapp_sport_created_by_idToauth_user                            dashapp_sport[]                  @relation("dashapp_sport_created_by_idToauth_user")
+    dashapp_sport_dashapp_sport_modified_by_idToauth_user                           dashapp_sport[]                  @relation("dashapp_sport_modified_by_idToauth_user")
+    dashapp_sportsdealsummary_dashapp_sportsdealsummary_created_by_idToauth_user    dashapp_sportsdealsummary[]      @relation("dashapp_sportsdealsummary_created_by_idToauth_user")
+    dashapp_sportsdealsummary_dashapp_sportsdealsummary_modified_by_idToauth_user   dashapp_sportsdealsummary[]      @relation("dashapp_sportsdealsummary_modified_by_idToauth_user")
+    dashapp_states_dashapp_states_created_by_idToauth_user                          dashapp_states[]                 @relation("dashapp_states_created_by_idToauth_user")
+    dashapp_states_dashapp_states_modified_by_idToauth_user                         dashapp_states[]                 @relation("dashapp_states_modified_by_idToauth_user")
+    dashapp_subcategory_dashapp_subcategory_created_by_idToauth_user                dashapp_subcategory[]            @relation("dashapp_subcategory_created_by_idToauth_user")
+    dashapp_subcategory_dashapp_subcategory_modified_by_idToauth_user               dashapp_subcategory[]            @relation("dashapp_subcategory_modified_by_idToauth_user")
+    dashapp_subpersonality_dashapp_subpersonality_created_by_idToauth_user          dashapp_subpersonality[]         @relation("dashapp_subpersonality_created_by_idToauth_user")
+    dashapp_subpersonality_dashapp_subpersonality_modified_by_idToauth_user         dashapp_subpersonality[]         @relation("dashapp_subpersonality_modified_by_idToauth_user")
+    dashapp_taglines_dashapp_taglines_created_by_idToauth_user                      dashapp_taglines[]               @relation("dashapp_taglines_created_by_idToauth_user")
+    dashapp_taglines_dashapp_taglines_modified_by_idToauth_user                     dashapp_taglines[]               @relation("dashapp_taglines_modified_by_idToauth_user")
+    dashapp_team_dashapp_team_created_by_idToauth_user                              dashapp_team[]                   @relation("dashapp_team_created_by_idToauth_user")
+    dashapp_team_dashapp_team_modified_by_idToauth_user                             dashapp_team[]                   @relation("dashapp_team_modified_by_idToauth_user")
+    dashapp_teamcontact_dashapp_teamcontact_created_by_idToauth_user                dashapp_teamcontact[]            @relation("dashapp_teamcontact_created_by_idToauth_user")
+    dashapp_teamcontact_dashapp_teamcontact_modified_by_idToauth_user               dashapp_teamcontact[]            @relation("dashapp_teamcontact_modified_by_idToauth_user")
+    dashapp_teamendorsements_dashapp_teamendorsements_created_by_idToauth_user      dashapp_teamendorsements[]       @relation("dashapp_teamendorsements_created_by_idToauth_user")
+    dashapp_teamendorsements_dashapp_teamendorsements_modified_by_idToauth_user     dashapp_teamendorsements[]       @relation("dashapp_teamendorsements_modified_by_idToauth_user")
+    dashapp_teamowner_dashapp_teamowner_created_by_idToauth_user                    dashapp_teamowner[]              @relation("dashapp_teamowner_created_by_idToauth_user")
+    dashapp_teamowner_dashapp_teamowner_modified_by_idToauth_user                   dashapp_teamowner[]              @relation("dashapp_teamowner_modified_by_idToauth_user")
+    dashapp_territory_dashapp_territory_created_by_idToauth_user                    dashapp_territory[]              @relation("dashapp_territory_created_by_idToauth_user")
+    dashapp_territory_dashapp_territory_modified_by_idToauth_user                   dashapp_territory[]              @relation("dashapp_territory_modified_by_idToauth_user")
+    dashapp_tier_dashapp_tier_created_by_idToauth_user                              dashapp_tier[]                   @relation("dashapp_tier_created_by_idToauth_user")
+    dashapp_tier_dashapp_tier_modified_by_idToauth_user                             dashapp_tier[]                   @relation("dashapp_tier_modified_by_idToauth_user")
     django_admin_log                                                                django_admin_log[]
     refresh_token                                                                   refresh_token[]
-    dashapp_format_created_by                                                       dashapp_format[]               @relation("created_by")
-    dashapp_format_modified_by                                                      dashapp_format[]               @relation("modified_by")
-    dashapp_countries_created_by                                                    dashapp_countries[]            @relation("created_by")
-    dashapp_countries_modified_by                                                   dashapp_countries[]            @relation("modified_by")
-    dashapp_socialmedia_platform_created_by                                         dashapp_socialmedia_platform[] @relation("created_by")
-    dashapp_socialmedia_platform_modified_by                                        dashapp_socialmedia_platform[] @relation("modified_by")
-    dashapp_reach_created_by                                                        dashapp_reach[]                @relation("created_by")
-    dashapp_reach_modified_by                                                       dashapp_reach[]                @relation("modified_by")
-    dashapp_viewership_created_by                                                   dashapp_viewership[]           @relation("created_by")
-    dashapp_viewership_modified_by                                                  dashapp_viewership[]           @relation("modified_by")
+    dashapp_format_created_by                                                       dashapp_format[]                 @relation("created_by")
+    dashapp_format_modified_by                                                      dashapp_format[]                 @relation("modified_by")
+    dashapp_countries_created_by                                                    dashapp_countries[]              @relation("created_by")
+    dashapp_countries_modified_by                                                   dashapp_countries[]              @relation("modified_by")
+    dashapp_socialmedia_platform_created_by                                         dashapp_socialmedia_platform[]   @relation("created_by")
+    dashapp_socialmedia_platform_modified_by                                        dashapp_socialmedia_platform[]   @relation("modified_by")
+    dashapp_reach_created_by                                                        dashapp_reach[]                  @relation("created_by")
+    dashapp_reach_modified_by                                                       dashapp_reach[]                  @relation("modified_by")
+    dashapp_viewership_created_by                                                   dashapp_viewership[]             @relation("created_by")
+    dashapp_viewership_modified_by                                                  dashapp_viewership[]             @relation("modified_by")
+    dashapp_team_association_created_by                                             dashapp_team_association[]       @relation("created_by")
+    dashapp_team_association_modified_by                                            dashapp_team_association[]       @relation("modified_by")
+    dashapp_leagueinfo_association_created_by                                       dashapp_leagueinfo_association[] @relation("created_by")
+    dashapp_leagueinfo_association_modified_by                                      dashapp_leagueinfo_association[] @relation("modified_by")
+    dashapp_athlete_association_created_by                                          dashapp_athlete_association[]    @relation("created_by")
+    dashapp_athlete_association_modified_by                                         dashapp_athlete_association[]    @relation("modified_by")
 }
 
 model dashapp_activation {
@@ -395,7 +431,7 @@ model dashapp_athlete {
     dashapp_sportsdealsummary                      dashapp_sportsdealsummary[]
     dashapp_athlete_socialmedia_platform_primary   dashapp_athlete_socialmedia_platform_primary[]
     dashapp_athlete_socialmedia_platform_secondary dashapp_athlete_socialmedia_platform_secondary[]
-    association                                    association[]
+    dashapp_athlete_association                    dashapp_athlete_association[]
 
     @@index([agency_id], map: "dashapp_athlete_agency_id_50deebaa")
     @@index([modified_by_id], map: "dashapp_athlete_modified_by_id_b04f0216")
@@ -980,7 +1016,7 @@ model dashapp_leagueinfo {
     dashapp_team                                     dashapp_team[]
     dashapp_reach                                    dashapp_reach[]
     dashapp_viewership                               dashapp_viewership[]
-    association                                      association[]
+    dashapp_leagueinfo_association                   dashapp_leagueinfo_association[]
 
     @@index([brodcast_partner_id], map: "dashapp_leagueinfo_brodcast_partner_id_40f27555")
     @@index([modified_by_id], map: "dashapp_leagueinfo_modified_by_id_d356e033")
@@ -1475,7 +1511,7 @@ model dashapp_team {
     dashapp_teamendorsements                   dashapp_teamendorsements[]
     dashapp_reach                              dashapp_reach[]
     dashapp_viewership                         dashapp_viewership[]
-    association                                association[]
+    dashapp_team_association                   dashapp_team_association[]
 
     @@index([hq_city_id], map: "dashapp_team_hq_city_id_fa8703dd")
     @@index([league_id], map: "dashapp_team_league_id_30ad02cd")
