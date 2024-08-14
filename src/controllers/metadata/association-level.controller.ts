@@ -29,7 +29,6 @@ export const getAllAssociationLevels = asyncHandler(async (req, res) => {
                     email: true,
                 },
             },
-            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -54,7 +53,6 @@ export const getAllAssociationLevels = asyncHandler(async (req, res) => {
                 userId: associationLevel.modified_by?.id,
                 email: associationLevel.modified_by?.email,
             },
-            count: associationLevel._count,
         })),
     );
 });
