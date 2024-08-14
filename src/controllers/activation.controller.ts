@@ -176,18 +176,26 @@ export const editActivation = asyncHandler(async (req, res) => {
         year,
     } = req.validatedData as TEditActivationSchema;
 
+    if (
+        (leagueId && teamId) ||
+        (leagueId && athleteId) ||
+        (athleteId && teamId)
+    ) {
+        throw new BadRequestError(
+            "Activation summary cannot have multiple stakeholders",
+        );
+    }
+
     await prisma.dashapp_activation.update({
         where: { id: BigInt(activationId) },
         data: {
-            name: name,
-            created_by: userId
-                ? { connect: { id: BigInt(userId) } }
-                : undefined,
+            name: name || undefined,
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,
             dashapp_activation_assets: assetIds
                 ? {
+                      deleteMany: {},
                       create: assetIds?.map((assetId) => ({
                           dashapp_assets: {
                               connect: { id: BigInt(assetId) },
@@ -197,6 +205,7 @@ export const editActivation = asyncHandler(async (req, res) => {
                 : undefined,
             dashapp_activation_market: marketIds
                 ? {
+                      deleteMany: {},
                       create: marketIds.map((marketId) => ({
                           dashapp_states: { connect: { id: BigInt(marketId) } },
                       })),
@@ -204,6 +213,7 @@ export const editActivation = asyncHandler(async (req, res) => {
                 : undefined,
             dashapp_activation_type: typeIds
                 ? {
+                      deleteMany: {},
                       create: typeIds.map((typeId) => ({
                           dashapp_marketingplatform: {
                               connect: { id: BigInt(typeId) },
@@ -213,17 +223,17 @@ export const editActivation = asyncHandler(async (req, res) => {
                 : undefined,
             dashapp_companydata: brandId
                 ? { connect: { id: BigInt(brandId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_leagueinfo: leagueId
                 ? { connect: { id: BigInt(leagueId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_team: teamId
                 ? { connect: { id: BigInt(teamId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_athlete: athleteId
                 ? { connect: { id: BigInt(athleteId) } }
-                : undefined,
-            Year: year,
+                : { disconnect: true },
+            Year: year || undefined,
         },
     });
 
