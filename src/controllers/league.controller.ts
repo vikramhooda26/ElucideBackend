@@ -9,6 +9,7 @@ import {
 } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -34,6 +35,8 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 
 export const getAllLeagues = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
+
+    printLogs("Reached league get all controller");
 
     const leagues = await prisma.dashapp_leagueinfo.findMany({
         select: {
@@ -61,9 +64,11 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
     });
 
     if (leagues.length < 1) {
+        printLogs("League data does not exists in get-all controller");
         throw new NotFoundError("League data does not exists");
     }
 
+    printLogs("League response returned get-all controller");
     res.status(STATUS_CODE.OK).json(
         leagues.map((league) => ({
             id: league.id,
