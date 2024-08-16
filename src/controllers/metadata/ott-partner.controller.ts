@@ -80,7 +80,7 @@ export const getOttPartnerById = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json({
         id: ottpartner.id,
-        ottpartnerName: ottpartner.name,
+        ottPartnerName: ottpartner.name,
     });
 });
 

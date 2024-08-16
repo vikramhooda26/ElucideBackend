@@ -6,10 +6,7 @@ export const createSubcategorySchema = z.object({
     subcategoryName: z.string(),
 });
 
-export const editSubcategorySchema = z.object({
-    userId: z.string(),
-    subcategoryName: z.string(),
-});
+export const editSubcategorySchema = createSubcategorySchema;
 
 export type TCreateSubcategorySchema = z.infer<typeof createSubcategorySchema>;
 

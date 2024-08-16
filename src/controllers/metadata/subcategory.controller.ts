@@ -128,13 +128,14 @@ export const editSubcategory = asyncHandler(async (req, res) => {
         throw new NotFoundError("This subcategory does not exists");
     }
 
-    const { subcategoryName, userId } =
+    const { subcategoryName, userId, categoryId } =
         req.validatedData as TEditSubcategorySchema;
 
     await prisma.dashapp_subcategory.update({
         where: { id: BigInt(subcategoryId) },
         data: {
             subcategory: subcategoryName,
+            dashapp_category: { connect: { id: BigInt(categoryId) } },
             modified_by: { connect: { id: BigInt(userId) } },
         },
         select: {
