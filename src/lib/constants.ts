@@ -8,8 +8,7 @@ export const COOKIE_NAME = {
 export const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    domain: "https://elucide-sports-dev-backend.vercel.app/",
+    sameSite: "none",
 } satisfies CookieOptions;
 
 export const STATUS_CODE = {
