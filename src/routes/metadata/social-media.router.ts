@@ -7,7 +7,7 @@ import {
     editSocialMedia,
     getAllSocialMedias,
     getSocialMediaById,
-} from "../../controllers/metadata/social-media.router.js";
+} from "../../controllers/metadata/social-media.controller.js";
 import {
     createSocialMediaSchema,
     editSocialMediaSchema,

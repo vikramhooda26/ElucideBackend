@@ -8,7 +8,7 @@ export const COOKIE_NAME = {
 export const cookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: "none",
+    sameSite: "lax",
 } satisfies CookieOptions;
 
 export const STATUS_CODE = {

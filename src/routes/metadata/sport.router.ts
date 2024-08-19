@@ -7,7 +7,7 @@ import {
     editSport,
     getAllSports,
     getSportById,
-} from "../../controllers/metadata/sport.router.js";
+} from "../../controllers/metadata/sport.controller.js";
 import {
     createSportSchema,
     editSportSchema,

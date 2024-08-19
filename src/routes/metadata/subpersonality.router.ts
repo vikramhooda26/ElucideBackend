@@ -7,7 +7,7 @@ import {
     editSubpersonality,
     getAllSubpersonalities,
     getSubpersonalityById,
-} from "../../controllers/metadata/subpersonality.js";
+} from "../../controllers/metadata/subpersonality.controller.js";
 import {
     createSubpersonalitySchema,
     editSubpersonalitySchema,
