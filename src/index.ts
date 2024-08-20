@@ -65,6 +65,7 @@ app.use("/api/admin/nationality", Routers.nationalityRouter);
 app.use("/api/admin/social-media", Routers.socialMediaRouter);
 app.use("/api/admin/filter", Routers.filterRouter);
 app.use("/api/admin/athlete-status", Routers.athleteStatusRouter);
+app.use("/api/admin/dashboard", Routers.dashboardRouter);
 
 app.use(globalErrorHandler);
 

@@ -41,6 +41,9 @@ import { associationLevel } from "../routes/metadata/association-level.router.js
 import { nationalityRouter } from "../routes/metadata/nationality.router.js";
 import { socialMediaRouter } from "../routes/metadata/social-media.router.js";
 
+// Dashboard Routers
+import { dashboardRouter } from "../routes/dashboard.router.js";
+
 export {
     authRouter,
     activationRouter,
@@ -79,4 +82,5 @@ export {
     associationLevel,
     nationalityRouter,
     socialMediaRouter,
+    dashboardRouter,
 };
