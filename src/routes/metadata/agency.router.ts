@@ -21,20 +21,20 @@ agencyRouter.get("/:id", getAgencyById);
 
 agencyRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createAgencySchema),
     createAgency,
 );
 
 agencyRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editAgencySchema),
     editAgency,
 );
 
 agencyRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteAgency,
 );

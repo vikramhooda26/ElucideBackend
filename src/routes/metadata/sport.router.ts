@@ -21,20 +21,16 @@ sportRouter.get("/:id", getSportById);
 
 sportRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createSportSchema),
     createSport,
 );
 
 sportRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editSportSchema),
     editSport,
 );
 
-sportRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteSport,
-);
+sportRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteSport);

@@ -21,20 +21,20 @@ nationalityRouter.get("/:id", getNationalityById);
 
 nationalityRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createNationalitySchema),
     createNationality,
 );
 
 nationalityRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editNationalitySchema),
     editNationality,
 );
 
 nationalityRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteNationality,
 );

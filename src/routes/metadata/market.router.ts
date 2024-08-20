@@ -21,20 +21,20 @@ keyMarketRouter.get("/:id", getKeyMarketById);
 
 keyMarketRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createkeyMarketchema),
     createKeyMarket,
 );
 
 keyMarketRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editKeyMarketSchema),
     editKeyMarket,
 );
 
 keyMarketRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteKeyMarket,
 );

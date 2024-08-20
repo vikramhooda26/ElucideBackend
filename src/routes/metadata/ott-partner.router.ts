@@ -21,20 +21,20 @@ ottPartnerRouter.get("/:id", getOttPartnerById);
 
 ottPartnerRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createOttPartnerSchema),
     createOttPartner,
 );
 
 ottPartnerRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editOttPartnerSchema),
     editOttPartner,
 );
 
 ottPartnerRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteOttPartner,
 );

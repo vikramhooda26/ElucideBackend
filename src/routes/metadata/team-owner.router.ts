@@ -21,20 +21,20 @@ teamOwnerRouter.get("/:id", getTeamOwnerById);
 
 teamOwnerRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createTeamOwnerSchema),
     createTeamOwner,
 );
 
 teamOwnerRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editTeamOwnerSchema),
     editTeamOwner,
 );
 
 teamOwnerRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteTeamOwner,
 );

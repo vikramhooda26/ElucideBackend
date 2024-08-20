@@ -21,20 +21,20 @@ subpersonalityRouter.get("/:id", getSubpersonalityById);
 
 subpersonalityRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createSubpersonalitySchema),
     createSubpersonality,
 );
 
 subpersonalityRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editSubpersonalitySchema),
     editSubpersonality,
 );
 
 subpersonalityRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteSubpersonality,
 );

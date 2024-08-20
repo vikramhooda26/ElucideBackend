@@ -21,20 +21,20 @@ ageRangeRouter.get("/:id", getAgeRangeById);
 
 ageRangeRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createAgeRangeSchema),
     createAgeRange,
 );
 
 ageRangeRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editAgeRangeSchema),
     editAgeRange,
 );
 
 ageRangeRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteAgeRange,
 );

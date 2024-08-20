@@ -11,17 +11,13 @@ import { prisma } from "../db/index.js";
 import pkg, { JwtPayload } from "jsonwebtoken";
 import { TUser } from "../lib/types.js";
 import { ForbiddenError } from "../lib/errors.js";
-import { printLogs } from "../lib/log.js";
 
 const { TokenExpiredError } = pkg;
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
     const token = req.cookies[COOKIE_NAME.CSRF];
 
-    printLogs("Access token:", token);
-
     if (!token) {
-        printLogs("Access token not found in cookies");
         clearAuthCookies(res);
         throw new ForbiddenError();
     }
@@ -30,12 +26,10 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
         req.user = verifyAccessToken(token);
         next();
     } catch (error) {
-        printLogs("auth middleware error:", error);
         if (error instanceof TokenExpiredError) {
             const refreshToken = req.cookies[COOKIE_NAME.REFRESH_TOKEN];
 
             if (!refreshToken) {
-                printLogs("Refresh token not found in cookies");
                 clearAuthCookies(res);
                 throw new ForbiddenError();
             }

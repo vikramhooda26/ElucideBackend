@@ -21,20 +21,20 @@ marketingPlatformRouter.get("/:id", getMarkingPlatformById);
 
 marketingPlatformRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createMarkingPlatformSchema),
     createMarkingPlatform,
 );
 
 marketingPlatformRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editMarkingPlatformSchema),
     editMarkingPlatform,
 );
 
 marketingPlatformRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteMarkingPlatform,
 );

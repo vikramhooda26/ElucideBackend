@@ -21,20 +21,20 @@ broadcastPartnerRouter.get("/:id", getBroadcastPartnerById);
 
 broadcastPartnerRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createBroadcastPartnerSchema),
     createBroadcastPartner,
 );
 
 broadcastPartnerRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editBroadcastPartnerSchema),
     editBroadcastPartner,
 );
 
 broadcastPartnerRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteBroadcastPartner,
 );

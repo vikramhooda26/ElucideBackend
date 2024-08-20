@@ -21,20 +21,20 @@ personalityRouter.get("/:id", getPersonalityById);
 
 personalityRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createPersonalitySchema),
     createPersonality,
 );
 
 personalityRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editPersonalitySchema),
     editPersonality,
 );
 
 personalityRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deletePersonality,
 );

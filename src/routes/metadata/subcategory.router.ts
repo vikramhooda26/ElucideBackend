@@ -21,20 +21,20 @@ subcategoryRouter.get("/:id", getsubcategoryById);
 
 subcategoryRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createSubcategorySchema),
     createSubcategory,
 );
 
 subcategoryRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editSubcategorySchema),
     editSubcategory,
 );
 
 subcategoryRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteSubcategory,
 );

@@ -21,20 +21,20 @@ associationLevel.get("/:id", getAssociationLevelById);
 
 associationLevel.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createAssociationLevelSchema),
     createAssociationLevel,
 );
 
 associationLevel.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editAssociationLevelSchema),
     editAssociationLevel,
 );
 
 associationLevel.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteAssociationLevel,
 );

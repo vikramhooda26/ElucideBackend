@@ -21,20 +21,16 @@ nccsRouter.get("/:id", getNccsById);
 
 nccsRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createNccsSchema),
     createNccs,
 );
 
 nccsRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editNccsSchema),
     editNccs,
 );
 
-nccsRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteNccs,
-);
+nccsRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteNccs);

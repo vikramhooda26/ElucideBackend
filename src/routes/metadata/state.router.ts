@@ -21,20 +21,16 @@ stateRouter.get("/:id", getStateById);
 
 stateRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createStateSchema),
     createState,
 );
 
 stateRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editStateSchema),
     editState,
 );
 
-stateRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteState,
-);
+stateRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteState);

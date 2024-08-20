@@ -21,20 +21,16 @@ cityRouter.get("/:id", getCityById);
 
 cityRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createCitySchema),
     createCity,
 );
 
 cityRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editCitySchema),
     editCity,
 );
 
-cityRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteCity,
-);
+cityRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteCity);

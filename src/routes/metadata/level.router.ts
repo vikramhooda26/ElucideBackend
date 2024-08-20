@@ -21,20 +21,16 @@ levelRouter.get("/:id", getLevelById);
 
 levelRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createLevelSchema),
     createLevel,
 );
 
 levelRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editLevelSchema),
     editLevel,
 );
 
-levelRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteLevel,
-);
+levelRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteLevel);

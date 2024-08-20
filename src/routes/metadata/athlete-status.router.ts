@@ -21,20 +21,20 @@ athleteStatusRouter.get("/:id", getAthleteStatusById);
 
 athleteStatusRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createAthleteStatusSchema),
     createAthleteStatus,
 );
 
 athleteStatusRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editAthleteStatusSchema),
     editAthleteStatus,
 );
 
 athleteStatusRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteAthleteStatus,
 );

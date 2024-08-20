@@ -21,20 +21,16 @@ tierRouter.get("/:id", getTierById);
 
 tierRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createTierSchema),
     createTier,
 );
 
 tierRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editTierSchema),
     editTier,
 );
 
-tierRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteTier,
-);
+tierRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTier);

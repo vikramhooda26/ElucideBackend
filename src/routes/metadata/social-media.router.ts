@@ -21,20 +21,20 @@ socialMediaRouter.get("/:id", getSocialMediaById);
 
 socialMediaRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createSocialMediaSchema),
     createSocialMedia,
 );
 
 socialMediaRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editSocialMediaSchema),
     editSocialMedia,
 );
 
 socialMediaRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteSocialMedia,
 );

@@ -21,20 +21,20 @@ territoryRouter.get("/:id", getTerritoryById);
 
 territoryRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createTerritorySchema),
     createTerritory,
 );
 
 territoryRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editTerritorySchema),
     editTerritory,
 );
 
 territoryRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     deleteTerritory,
 );

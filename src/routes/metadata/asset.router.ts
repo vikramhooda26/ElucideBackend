@@ -21,20 +21,16 @@ assetRouter.get("/:id", getAssetById);
 
 assetRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(createAssetSchema),
     createAsset,
 );
 
 assetRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(editAssetSchema),
     editAsset,
 );
 
-assetRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteAsset,
-);
+assetRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAsset);
