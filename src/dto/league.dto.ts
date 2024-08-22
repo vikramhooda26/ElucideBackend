@@ -1,5 +1,6 @@
 import { Prisma, viewship_type } from "@prisma/client";
 import { TLeagueDetails } from "../types/league.type.js";
+import { format } from "date-fns";
 
 export class LeagueResponseDTO {
     id?: string;
@@ -8,6 +9,16 @@ export class LeagueResponseDTO {
         id?: string;
         name?: string;
     };
+    createdBy?: {
+        id?: string;
+        name?: string;
+    };
+    modifiedBy?: {
+        id?: string;
+        name?: string;
+    };
+    createdDate?: string;
+    modifiedDate?: string;
     owners?: {
         id?: string;
         name?: string;
@@ -228,12 +239,33 @@ export class LeagueResponseDTO {
                 name: tagline.dashapp_taglines.name,
             }),
         );
-        leagueDTO.gender = leagueDetails.dashapp_leagueinfo_gender.map(
-            (gender) => ({
-                id: gender.dashapp_gender.id.toString(),
-                name: gender.dashapp_gender.gender_is,
-            }),
-        );
+        leagueDTO.tiers = leagueDetails.dashapp_leagueinfo_tier.map((tier) => ({
+            id: tier.dashapp_tier?.id.toString(),
+            name: tier.dashapp_tier?.name,
+        }));
+        leagueDTO.createdBy = {
+            id: leagueDetails.created_by?.id.toString(),
+            name: leagueDetails.created_by?.email,
+        };
+        leagueDTO.modifiedBy = {
+            id: leagueDetails.modified_by?.id.toString(),
+            name: leagueDetails.modified_by?.email,
+        };
+        (leagueDTO.createdDate = leagueDetails.created_date
+            ? format(leagueDetails.created_date, "dd-MM-yyyy, hh:mm aaaaaa")
+            : undefined),
+            (leagueDTO.modifiedDate = leagueDetails.modified_date
+                ? format(
+                      leagueDetails.modified_date,
+                      "dd-MM-yyyy, hh:mm aaaaaa",
+                  )
+                : undefined),
+            (leagueDTO.gender = leagueDetails.dashapp_leagueinfo_gender.map(
+                (gender) => ({
+                    id: gender.dashapp_gender.id.toString(),
+                    name: gender.dashapp_gender.gender_is,
+                }),
+            ));
         leagueDTO.team = leagueDetails.dashapp_team.map((team) => ({
             id: team.id.toString(),
             name: team.team_name,

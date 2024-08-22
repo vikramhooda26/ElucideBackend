@@ -181,7 +181,7 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_leagueinfo_tier: tierIds
+            dashapp_leagueinfo_tier: tierIds?.length
                 ? {
                       create: tierIds?.map((tierId) => ({
                           dashapp_tier: {

@@ -24,6 +24,20 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 },
             },
         },
+        created_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_date: true,
+        created_date: true,
         year_of_inception: true,
         dashapp_broadcastpartner: {
             select: {
