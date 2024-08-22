@@ -37,6 +37,13 @@ export const createBrandSchema = z.object({
         })
         .array()
         .optional(),
+    endorsements: z
+        .object({
+            name: z.string(),
+            active: z.boolean(),
+        })
+        .array()
+        .optional(),
 });
 
 export const editBrandSchema = createBrandSchema.partial().extend({
@@ -49,6 +56,13 @@ export const editBrandSchema = createBrandSchema.partial().extend({
             contactEmail: z.string().optional(),
             contactNumber: z.string().optional(),
             contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
+    endorsements: z
+        .object({
+            name: z.string(),
+            active: z.boolean(),
         })
         .array()
         .optional(),

@@ -110,6 +110,7 @@ export const createBrand = asyncHandler(async (req, res) => {
         tertiaryIds,
         userId,
         contactPerson,
+        endorsements,
     } = req.validatedData as TCreateBrandSchema;
 
     const brand = await prisma.dashapp_companydata.create({
@@ -152,6 +153,14 @@ export const createBrand = asyncHandler(async (req, res) => {
                       connect: {
                           id: BigInt(agencyId),
                       },
+                  }
+                : undefined,
+            dashapp_brandendorsements: endorsements?.length
+                ? {
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
+                      })),
                   }
                 : undefined,
             dashapp_companydata_tier: tierIds
@@ -351,6 +360,7 @@ export const editBrand = asyncHandler(async (req, res) => {
         tertiaryIds,
         userId,
         contactPerson,
+        endorsements,
     } = req.validatedData as TEditBrandSchema;
 
     await prisma.dashapp_companydata.update({
@@ -368,6 +378,15 @@ export const editBrand = asyncHandler(async (req, res) => {
                           dashapp_subcategory: {
                               connect: { id: BigInt(subCategoryId) },
                           },
+                      })),
+                  }
+                : undefined,
+            dashapp_brandendorsements: endorsements?.length
+                ? {
+                      deleteMany: {},
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
                       })),
                   }
                 : undefined,
