@@ -79,7 +79,7 @@ export class LeagueResponseDTO {
         id?: string;
         name?: string;
     }[];
-    subPersonalityTriats?: {
+    subPersonalityTraits?: {
         id?: string;
         name?: string;
     }[];
@@ -325,7 +325,7 @@ export class LeagueResponseDTO {
                 },
                 costOfAssociation: association.cost,
             }));
-        leagueDTO.subPersonalityTriats =
+        leagueDTO.subPersonalityTraits =
             leagueDetails.dashapp_leagueinfo_personality_traits.map(
                 (trait) => ({
                     id: trait.dashapp_subpersonality.id.toString(),
