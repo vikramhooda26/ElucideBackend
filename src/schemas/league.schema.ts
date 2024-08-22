@@ -27,6 +27,13 @@ export const createLeagueSchema = z.object({
     youtube: z.string().optional(),
     website: z.string().optional(),
     strategyOverview: z.string().optional(),
+    endorsements: z
+        .object({
+            name: z.string(),
+            active: z.boolean(),
+        })
+        .array()
+        .optional(),
     viewershipMetrics: z
         .object({
             id: z.string().optional(),
@@ -81,6 +88,13 @@ export const editLeagueSchema = createLeagueSchema.partial().extend({
             contactEmail: z.string().optional(),
             contactNumber: z.string().optional(),
             contactLinkedin: z.string().optional(),
+        })
+        .array()
+        .optional(),
+    endorsements: z
+        .object({
+            name: z.string(),
+            active: z.boolean(),
         })
         .array()
         .optional(),

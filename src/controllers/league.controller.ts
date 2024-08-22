@@ -121,6 +121,7 @@ export const createLeague = asyncHandler(async (req, res) => {
         association,
         userId,
         contactPerson,
+        endorsements,
     } = req.validatedData as TCreateLeagueSchema;
 
     if (association?.length) {
@@ -203,6 +204,14 @@ export const createLeague = asyncHandler(async (req, res) => {
                           dashapp_taglines: {
                               connect: { id: BigInt(taglineId) },
                           },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueendorsements: endorsements?.length
+                ? {
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
                       })),
                   }
                 : undefined,
@@ -404,6 +413,7 @@ export const editLeague = asyncHandler(async (req, res) => {
         association,
         userId,
         contactPerson,
+        endorsements,
     } = req.validatedData as TEditLeagueSchema;
 
     if (association?.length) {
@@ -486,6 +496,15 @@ export const editLeague = asyncHandler(async (req, res) => {
                           dashapp_taglines: {
                               connect: { id: BigInt(taglineId) },
                           },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueendorsements: endorsements?.length
+                ? {
+                      deleteMany: {},
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
                       })),
                   }
                 : undefined,

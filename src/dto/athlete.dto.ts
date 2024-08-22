@@ -35,11 +35,11 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    primarySocialMedia?: {
+    primaryMarketingPlatform?: {
         id?: string;
         name?: string;
     }[];
-    secondarySocialMedia?: {
+    secondaryMarketingPlatform?: {
         id?: string;
         name?: string;
     }[];
@@ -156,14 +156,6 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    primaryMarketingPlatform?: {
-        id?: string;
-        name?: string;
-    };
-    secondaryMarketingPlatform?: {
-        id?: string;
-        name?: string;
-    };
     status?: {
         id?: string;
         name?: string;
@@ -195,20 +187,6 @@ export class AthleteResponseDTO {
         athleteDTO.website = athleteDetails.website;
         athleteDTO.twitter = athleteDetails.twitter;
         athleteDTO.facebook = athleteDetails.facebook;
-        athleteDTO.primarySocialMedia =
-            athleteDetails.dashapp_athlete_socialmedia_platform_primary.map(
-                (platform) => ({
-                    id: platform.dashapp_socialmedia_platform?.id.toString(),
-                    name: platform.dashapp_socialmedia_platform?.name,
-                }),
-            );
-        athleteDTO.secondarySocialMedia =
-            athleteDetails.dashapp_athlete_socialmedia_platform_secondary.map(
-                (platform) => ({
-                    id: platform.dashapp_socialmedia_platform?.id.toString(),
-                    name: platform.dashapp_socialmedia_platform?.name,
-                }),
-            );
         athleteDTO.primaryKeyMarket =
             athleteDetails.dashapp_athlete_key_markets_primary.map(
                 (market) => ({
@@ -358,15 +336,20 @@ export class AthleteResponseDTO {
                 name: nccs.dashapp_nccs?.nccs_class,
             }),
         );
-        athleteDTO.primaryMarketingPlatform = {
-            id: athleteDetails.dashapp_athlete_keyplatform_primary?.id.toString(),
-            name: athleteDetails.dashapp_athlete_keyplatform_primary?.platform,
-        };
-        athleteDTO.secondaryMarketingPlatform = {
-            id: athleteDetails.dashapp_athlete_keyplatform_secondary?.id.toString(),
-            name: athleteDetails.dashapp_athlete_keyplatform_secondary
-                ?.platform,
-        };
+        (athleteDTO.primaryMarketingPlatform =
+            athleteDetails.dashapp_athlete_socialmedia_platform_primary.map(
+                (social) => ({
+                    id: social.dashapp_socialmedia_platform?.id.toString(),
+                    name: social.dashapp_socialmedia_platform?.name,
+                }),
+            )),
+            (athleteDTO.secondaryMarketingPlatform =
+                athleteDetails.dashapp_athlete_socialmedia_platform_secondary.map(
+                    (social) => ({
+                        id: social.dashapp_socialmedia_platform?.id.toString(),
+                        name: social.dashapp_socialmedia_platform?.name,
+                    }),
+                ));
         athleteDTO.status = {
             id: athleteDetails.dashapp_athlete_status?.id.toString(),
             name: athleteDetails.dashapp_athlete_status?.status,

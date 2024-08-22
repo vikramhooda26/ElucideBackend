@@ -125,6 +125,7 @@ export const createTeam = asyncHandler(async (req, res) => {
         viewershipMetrics,
         contactPerson,
         userId,
+        endorsements,
     } = req.validatedData as TCreateTeamSchema;
 
     const team = await prisma.dashapp_team.create({
@@ -155,6 +156,14 @@ export const createTeam = asyncHandler(async (req, res) => {
                 : undefined,
             year_of_inception: yearOfInception || undefined,
             franchise_fee: franchiseFee || undefined,
+            dashapp_teamendorsements: endorsements?.length
+                ? {
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
+                      })),
+                  }
+                : undefined,
             dashapp_hqcity: cityId
                 ? {
                       connect: { id: BigInt(cityId) },
@@ -411,6 +420,7 @@ export const editTeam = asyncHandler(async (req, res) => {
         stateId,
         contactPerson,
         userId,
+        endorsements,
     } = req.validatedData as TEditTeamSchema;
 
     if (association?.length) {
@@ -491,6 +501,15 @@ export const editTeam = asyncHandler(async (req, res) => {
                                   id: BigInt(activeCampaignId),
                               },
                           },
+                      })),
+                  }
+                : undefined,
+            dashapp_teamendorsements: endorsements?.length
+                ? {
+                      deleteMany: {},
+                      create: endorsements.map((endorse) => ({
+                          name: endorse.name,
+                          active: endorse.active,
                       })),
                   }
                 : undefined,
