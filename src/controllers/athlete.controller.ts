@@ -123,7 +123,7 @@ export const getAthleteById = asyncHandler(async (req, res) => {
 export const createAthlete = asyncHandler(async (req, res) => {
     const {
         name,
-        age,
+        athleteAge,
         genderIds,
         nccsIds,
         userId,
@@ -149,7 +149,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
         tierIds,
     } = req.validatedData as TCreateAthleteSchema;
 
-    const ageRange = age ? await findAgeRange(age) : undefined;
+    const ageRange = athleteAge ? await findAgeRange(athleteAge) : undefined;
 
     printLogs("\n\nageRange:", ageRange);
 
@@ -251,7 +251,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            age: age || undefined,
+            age: athleteAge || undefined,
             dashapp_athlete_target_age: ageRange
                 ? {
                       create: {
@@ -344,7 +344,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
 
     const {
         name,
-        age,
+        athleteAge,
         genderIds,
         nccsIds,
         userId,
@@ -380,9 +380,9 @@ export const editAthlete = asyncHandler(async (req, res) => {
         }
     }
 
-    const ageRange = age ? await findAgeRange(age) : undefined;
+    const ageRange = athleteAge ? await findAgeRange(athleteAge) : undefined;
 
-    printLogs("age:", age);
+    printLogs("age:", athleteAge);
 
     printLogs("Age range:", ageRange);
 
@@ -390,7 +390,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
         where: { id: BigInt(athleteId) },
         data: {
             athlete_name: name || undefined,
-            age: age || undefined,
+            age: athleteAge || undefined,
             dashapp_athlete_association: {
                 deleteMany: {},
                 create: association?.length
