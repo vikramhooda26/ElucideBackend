@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { TAthleteDetails } from "../types/athlete.type.js";
 import { parseISO } from "date-fns";
-import { printLogs } from "../lib/log.js";
 
 export class AthleteResponseDTO {
     id?: string;
@@ -48,6 +47,10 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
+    age?: {
+        id?: string;
+        name?: string;
+    }[];
     subPersonalityTraits?: {
         id?: string;
         name?: string;
@@ -56,7 +59,7 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    age?: Date | null;
+    athleteAge?: Date | null;
     association?: {
         associationId?: string;
         associationLevel?: {
@@ -231,6 +234,12 @@ export class AthleteResponseDTO {
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));
+        athleteDTO.age = athleteDetails.dashapp_athlete_target_age.map(
+            (age) => ({
+                id: age.dashapp_age?.id.toString(),
+                name: age.dashapp_age?.age_range,
+            }),
+        );
         athleteDTO.subPersonalityTraits =
             athleteDetails.dashapp_athlete_personality_traits.map((trait) => ({
                 id: trait.dashapp_subpersonality.id.toString(),
@@ -241,7 +250,7 @@ export class AthleteResponseDTO {
                 id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
                 name: trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             }));
-        athleteDTO.age = athleteDetails?.age
+        athleteDTO.athleteAge = athleteDetails?.age
             ? parseISO(athleteDetails?.age)
             : undefined;
         athleteDTO.association = athleteDetails.dashapp_athlete_association.map(

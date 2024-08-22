@@ -23,6 +23,7 @@ app.use(
         origin: authorizedHosts,
     }),
 );
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

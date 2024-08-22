@@ -15,6 +15,9 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             dashapp_socialmedia_platform: { select: { id: true, name: true } },
         },
     },
+    dashapp_athlete_target_age: {
+        select: { dashapp_age: { select: { id: true, age_range: true } } },
+    },
     dashapp_athlete_socialmedia_platform_secondary: {
         select: {
             dashapp_socialmedia_platform: { select: { name: true, id: true } },
