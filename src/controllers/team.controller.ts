@@ -631,78 +631,25 @@ export const editTeam = asyncHandler(async (req, res) => {
                       }))
                     : undefined,
             },
-            dashapp_viewership: {
-                deleteMany: viewershipMetrics?.length
-                    ? {
-                          AND: [
-                              {
-                                  id: {
-                                      notIn: viewershipMetrics.map(
-                                          (viewership) =>
-                                              BigInt(viewership.id || ""),
-                                      ),
-                                  },
-                              },
-                              {
-                                  team_id: BigInt(teamId),
-                              },
-                          ],
-                      }
-                    : { team_id: BigInt(teamId) },
-                upsert: viewershipMetrics
-                    ? viewershipMetrics.map((viewership) => ({
-                          where: {
-                              id: BigInt(viewership.id || ""),
-                              team_id: BigInt(teamId),
-                          },
-                          create: {
-                              viewership: viewership.viewership,
-                              viewship_type: viewership.viewershipType,
-                              year: viewership.year,
-                          },
-                          update: {
-                              viewership: viewership.viewership || undefined,
-                              viewship_type:
-                                  viewership.viewershipType || undefined,
-                              year: viewership.year || undefined,
-                          },
-                      }))
-                    : undefined,
-            },
-            dashapp_reach: {
-                deleteMany: reachMetrics?.length
-                    ? {
-                          AND: [
-                              {
-                                  id: {
-                                      notIn: reachMetrics.map((reachMetric) =>
-                                          BigInt(reachMetric.id || ""),
-                                      ),
-                                  },
-                              },
-                              {
-                                  team_id: BigInt(teamId),
-                              },
-                          ],
-                      }
-                    : { team_id: BigInt(teamId) },
-                upsert: reachMetrics?.length
-                    ? reachMetrics.map((reachMetric) => ({
-                          where: {
-                              id: BigInt(reachMetric.id || ""),
-                              team_id: BigInt(teamId),
-                          },
-                          create: {
-                              reach: reachMetric.reach,
-                              year: reachMetric.year,
-                          },
-                          update: {
-                              reach: reachMetric.reach || undefined,
-                              year: reachMetric.year || undefined,
-                          },
-                      }))
-                    : undefined,
-            },
+            dashapp_viewership: viewershipMetrics?.length
+                ? {
+                      deleteMany: {},
+                      create: viewershipMetrics.map((viewership) => ({
+                          viewership: viewership.viewership,
+                          viewship_type: viewership.viewershipType,
+                          year: viewership.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_reach: reachMetrics?.length
+                ? {
+                      deleteMany: {},
+                      create: reachMetrics.map((reachMetric) => ({
+                          reach: reachMetric.reach,
+                          year: reachMetric.year,
+                      })),
+                  }
+                : undefined,
             instagram: instagram || undefined,
             facebook: facebook || undefined,
             linkedin: linkedin || undefined,

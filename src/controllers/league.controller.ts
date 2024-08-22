@@ -606,78 +606,25 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_viewership: {
-                deleteMany: viewershipMetrics?.length
-                    ? {
-                          AND: [
-                              {
-                                  id: {
-                                      notIn: viewershipMetrics.map(
-                                          (viewership) =>
-                                              BigInt(viewership.id || ""),
-                                      ),
-                                  },
-                              },
-                              {
-                                  leagueinfo_id: BigInt(leagueId),
-                              },
-                          ],
-                      }
-                    : { leagueinfo_id: BigInt(leagueId) },
-                upsert: viewershipMetrics
-                    ? viewershipMetrics.map((viewership) => ({
-                          where: {
-                              id: BigInt(viewership.id || ""),
-                              leagueinfo_id: BigInt(leagueId),
-                          },
-                          create: {
-                              viewership: viewership.viewership,
-                              viewship_type: viewership.viewershipType,
-                              year: viewership.year,
-                          },
-                          update: {
-                              viewership: viewership.viewership || undefined,
-                              viewship_type:
-                                  viewership.viewershipType || undefined,
-                              year: viewership.year || undefined,
-                          },
-                      }))
-                    : undefined,
-            },
-            dashapp_reach: {
-                deleteMany: reachMetrics?.length
-                    ? {
-                          AND: [
-                              {
-                                  id: {
-                                      notIn: reachMetrics.map((reachMetric) =>
-                                          BigInt(reachMetric.id || ""),
-                                      ),
-                                  },
-                              },
-                              {
-                                  leagueinfo_id: BigInt(leagueId),
-                              },
-                          ],
-                      }
-                    : { leagueinfo_id: BigInt(leagueId) },
-                upsert: reachMetrics?.length
-                    ? reachMetrics.map((reachMetric) => ({
-                          where: {
-                              id: BigInt(reachMetric.id || ""),
-                              leagueinfo_id: BigInt(leagueId),
-                          },
-                          create: {
-                              reach: reachMetric.reach,
-                              year: reachMetric.year,
-                          },
-                          update: {
-                              reach: reachMetric.reach || undefined,
-                              year: reachMetric.year || undefined,
-                          },
-                      }))
-                    : undefined,
-            },
+            dashapp_viewership: viewershipMetrics?.length
+                ? {
+                      deleteMany: {},
+                      create: viewershipMetrics.map((viewership) => ({
+                          viewership: viewership.viewership,
+                          viewship_type: viewership.viewershipType,
+                          year: viewership.year,
+                      })),
+                  }
+                : undefined,
+            dashapp_reach: reachMetrics?.length
+                ? {
+                      deleteMany: {},
+                      create: reachMetrics.map((reachMetric) => ({
+                          reach: reachMetric.reach,
+                          year: reachMetric.year,
+                      })),
+                  }
+                : undefined,
             dashapp_leagueinfo_association: {
                 deleteMany: {},
                 create: association?.length
