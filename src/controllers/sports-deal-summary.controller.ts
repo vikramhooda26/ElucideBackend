@@ -51,7 +51,7 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
                 dashapp_athlete: { select: { athlete_name: true } },
                 dashapp_team: { select: { team_name: true } },
                 dashapp_leagueinfo: { select: { property_name: true } },
-                type: true,
+                status: true,
                 created_date: true,
                 modified_date: true,
                 created_by: {
@@ -81,7 +81,7 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(
         sportsDealSummaries.map((sportsDealSummary) => ({
             id: sportsDealSummary.id,
-            type: sportsDealSummary.type,
+            status: sportsDealSummary.status,
             brand: sportsDealSummary.dashapp_companydata?.company_name,
             partner:
                 sportsDealSummary.dashapp_team?.team_name ||
