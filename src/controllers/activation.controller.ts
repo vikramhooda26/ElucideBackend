@@ -1,13 +1,14 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
+import { ActivationResponseDTO } from "../dto/activation.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
-import { activationSelect } from "../types/activation.type.js";
-import { ActivationResponseDTO } from "../dto/activation.dto.js";
 import {
     TCreateActivationSchema,
     TEditActivationSchema,
 } from "../schemas/activation.schema.js";
+import { activationSelect } from "../types/activation.type.js";
+import { printLogs } from "../lib/log.js";
 
 export const getAllActivations = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -18,6 +19,18 @@ export const getAllActivations = asyncHandler(async (req, res) => {
             name: true,
             created_date: true,
             modified_date: true,
+            dashapp_athlete: {
+                select: { id: true, athlete_name: true },
+            },
+            dashapp_leagueinfo: {
+                select: { id: true, property_name: true },
+            },
+            dashapp_team: {
+                select: { id: true, team_name: true },
+            },
+            dashapp_companydata: {
+                select: { id: true, company_name: true },
+            },
             created_by: {
                 select: {
                     id: true,
@@ -41,10 +54,17 @@ export const getAllActivations = asyncHandler(async (req, res) => {
         throw new NotFoundError("Activation summaries data does not exists");
     }
 
+    printLogs("Activations:", activations);
+
     res.status(STATUS_CODE.OK).json(
         activations.map((activation) => ({
             id: activation.id,
             name: activation.name,
+            brand: activation.dashapp_companydata?.company_name,
+            partner:
+                activation.dashapp_athlete?.athlete_name ||
+                activation.dashapp_team?.team_name ||
+                activation.dashapp_leagueinfo?.property_name,
             createdDate: activation.created_date,
             modifiedDate: activation.modified_date,
             createdBy: {

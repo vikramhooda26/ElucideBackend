@@ -83,9 +83,10 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
             id: sportsDealSummary.id,
             type: sportsDealSummary.type,
             brand: sportsDealSummary.dashapp_companydata?.company_name,
-            team: sportsDealSummary.dashapp_team?.team_name,
-            league: sportsDealSummary.dashapp_leagueinfo?.property_name,
-            athlete: sportsDealSummary.dashapp_athlete?.athlete_name,
+            partner:
+                sportsDealSummary.dashapp_team?.team_name ||
+                sportsDealSummary.dashapp_leagueinfo?.property_name ||
+                sportsDealSummary.dashapp_athlete?.athlete_name,
             createdDate: sportsDealSummary.created_date,
             modifiedDate: sportsDealSummary.modified_date,
             createdBy: {
