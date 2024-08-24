@@ -7,8 +7,8 @@ export const COOKIE_NAME = {
 
 export const cookieOptions = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
 } satisfies CookieOptions;
 
 export const STATUS_CODE = {
