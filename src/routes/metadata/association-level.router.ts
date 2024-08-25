@@ -21,7 +21,7 @@ associationLevel.get("/:id", getAssociationLevelById);
 
 associationLevel.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createAssociationLevelSchema),
     createAssociationLevel,
 );

@@ -21,14 +21,14 @@ sportsDealSummaryRouter.get("/:id", getSportsDealSummaryById);
 
 sportsDealSummaryRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createSportsDealSummarySchema),
     createSportsDealSummary,
 );
 
 sportsDealSummaryRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editSportsDealSummarySchema),
     editSportsDealSummary,
 );

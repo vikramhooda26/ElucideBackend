@@ -21,14 +21,14 @@ activationRouter.get("/:id", getActivationById);
 
 activationRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createActivationSchema),
     createActivation,
 );
 
 activationRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editActivationSchema),
     editActivation,
 );

@@ -30,8 +30,4 @@ brandRouter.put(
     editBrand,
 );
 
-brandRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    deleteBrand,
-);
+brandRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteBrand);

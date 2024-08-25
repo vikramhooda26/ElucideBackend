@@ -35,6 +35,6 @@ athleteRouter.put(
 
 athleteRouter.delete(
     "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN"]),
     removeAthlete,
 );

@@ -21,14 +21,14 @@ activeCampaignRouter.get("/:id", getActiveCampaignById);
 
 activeCampaignRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createActiveCampaignSchema),
     createActiveCampaign,
 );
 
 activeCampaignRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editActiveCampaignSchema),
     editActiveCampaign,
 );

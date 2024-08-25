@@ -21,14 +21,14 @@ assetRouter.get("/:id", getAssetById);
 
 assetRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createAssetSchema),
     createAsset,
 );
 
 assetRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editAssetSchema),
     editAsset,
 );
