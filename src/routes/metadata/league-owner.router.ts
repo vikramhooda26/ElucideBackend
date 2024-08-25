@@ -21,14 +21,14 @@ leagueOwnerRouter.get("/:id", getLeagueOwnerById);
 
 leagueOwnerRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createLeagueOwnerSchema),
     createLeagueOwner,
 );
 
 leagueOwnerRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editLeagueOwnerSchema),
     editLeagueOwner,
 );

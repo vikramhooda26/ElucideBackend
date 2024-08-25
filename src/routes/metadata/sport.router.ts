@@ -21,14 +21,14 @@ sportRouter.get("/:id", getSportById);
 
 sportRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createSportSchema),
     createSport,
 );
 
 sportRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editSportSchema),
     editSport,
 );

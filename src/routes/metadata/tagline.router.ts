@@ -21,14 +21,14 @@ taglineRouter.get("/:id", getTaglineById);
 
 taglineRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createTaglineSchema),
     createTagline,
 );
 
 taglineRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editTaglineSchema),
     editTagline,
 );

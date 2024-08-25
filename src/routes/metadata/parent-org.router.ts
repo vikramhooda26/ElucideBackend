@@ -21,14 +21,14 @@ parentOrgRouter.get("/:id", getParentOrgById);
 
 parentOrgRouter.post(
     "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
     validateSchema(createParentOrgSchema),
     createParentOrg,
 );
 
 parentOrgRouter.put(
     "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
+    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
     validateSchema(editParentOrgSchema),
     editParentOrg,
 );
