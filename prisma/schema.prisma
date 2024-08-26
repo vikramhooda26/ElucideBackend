@@ -406,7 +406,8 @@ model dashapp_athlete {
     youtube                                        String?                                          @db.VarChar(512)
     status_id                                      BigInt?
     age                                            String?
-    gender                                         String?
+    gender_id                                      BigInt?
+    dashapp_gender                                 dashapp_gender?                                  @relation(fields: [gender_id], references: [id], onDelete: SetNull)
     state_id                                       BigInt?
     keyplatform_primary_id                         BigInt?
     keyplatform_secondary_id                       BigInt?
@@ -850,6 +851,7 @@ model dashapp_gender {
     modified_by                   auth_user?                      @relation("dashapp_gender_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_leagueinfo_gender     dashapp_leagueinfo_gender[]
     dashapp_team_gender           dashapp_team_gender[]
+    dashapp_athlete               dashapp_athlete[]
 
     @@index([modified_by_id], map: "dashapp_gender_modified_by_id_c30eb1f4")
 }

@@ -10,6 +10,11 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     twitter: true,
     facebook: true,
     age: true,
+    strategy_overview: true,
+    created_date: true,
+    created_by: {
+        select: { id: true, email: true },
+    },
     dashapp_athlete_socialmedia_platform_primary: {
         select: {
             dashapp_socialmedia_platform: { select: { id: true, name: true } },
