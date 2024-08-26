@@ -13,6 +13,7 @@ import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 import { printLogs } from "../lib/log.js";
 import { differenceInYears, parseISO } from "date-fns";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { getAthletesCount } from "./dashboard/helpers.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -618,6 +619,13 @@ export const removeAthlete = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json({
         message: "Athlete deleted",
+    });
+});
+
+export const getTotalAthletes = asyncHandler(async (req, res) => {
+    const count = getAthletesCount();
+    res.status(STATUS_CODE.OK).json({
+        count,
     });
 });
 

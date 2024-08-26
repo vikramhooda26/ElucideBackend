@@ -4,6 +4,7 @@ import {
     editAthlete,
     getAllAthletes,
     getAthleteById,
+    getTotalAthletes,
     removeAthlete,
 } from "../controllers/athlete.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
@@ -18,6 +19,8 @@ export const athleteRouter = Router();
 athleteRouter.get("/", getAllAthletes);
 
 athleteRouter.get("/:id", getAthleteById);
+
+athleteRouter.get("/count", getTotalAthletes);
 
 athleteRouter.post(
     "/create",

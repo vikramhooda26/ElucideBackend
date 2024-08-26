@@ -5,6 +5,7 @@ import {
     getAllBrands,
     getBrandById,
     deleteBrand,
+    getTotalBrands,
 } from "../controllers/brand.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -15,6 +16,8 @@ export const brandRouter = Router();
 brandRouter.get("/", getAllBrands);
 
 brandRouter.get("/:id", getBrandById);
+
+brandRouter.get("/count", getTotalBrands);
 
 brandRouter.post(
     "/create",

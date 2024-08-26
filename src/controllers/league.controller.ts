@@ -10,6 +10,7 @@ import {
 import { leagueSelect } from "../types/league.type.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
+import { getLeaguesCount } from "./dashboard/helpers.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -86,6 +87,13 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
             count: league._count,
         })),
     );
+});
+
+export const getTotalLeagues = asyncHandler(async (req, res) => {
+    const count = getLeaguesCount();
+    res.status(STATUS_CODE.OK).json({
+        count,
+    });
 });
 
 export const createLeague = asyncHandler(async (req, res) => {

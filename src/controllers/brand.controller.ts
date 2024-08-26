@@ -1,13 +1,14 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
-import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
+import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import {
     TCreateBrandSchema,
     TEditBrandSchema,
 } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
-import { BrandResponseDTO } from "../dto/brand.dto.js";
+import { getBrandsCount } from "./dashboard/helpers.js";
 
 export const getAllBrands = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -79,6 +80,12 @@ export const getBrandById = asyncHandler(async (req, res) => {
     const brandResponse: BrandResponseDTO = BrandResponseDTO.toResponse(brand);
 
     res.status(STATUS_CODE.OK).json(brandResponse);
+});
+
+export const getTotalBrands = asyncHandler(async (req, res) => {
+    const count = getBrandsCount();
+
+    res.status(STATUS_CODE.OK).json({ count });
 });
 
 export const createBrand = asyncHandler(async (req, res) => {

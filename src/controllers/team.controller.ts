@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { getTeamsCount } from "./dashboard/helpers.js";
 
 export const getAllTeams = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -89,6 +90,12 @@ export const getTeamById = asyncHandler(async (req, res) => {
     const teamResponse: TeamResponseDTO = TeamResponseDTO.toResponse(team);
 
     res.status(STATUS_CODE.OK).json(teamResponse);
+});
+
+export const getTotalTeams = asyncHandler(async (req, res) => {
+    const count = getTeamsCount();
+
+    res.status(STATUS_CODE.OK).json({ count });
 });
 
 export const createTeam = asyncHandler(async (req, res) => {

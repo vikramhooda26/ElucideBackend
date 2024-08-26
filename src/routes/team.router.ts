@@ -5,6 +5,7 @@ import {
     getAllTeams,
     getTeamById,
     deleteTeam,
+    getTotalTeams,
 } from "../controllers/team.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -15,6 +16,8 @@ export const teamRouter = Router();
 teamRouter.get("/", getAllTeams);
 
 teamRouter.get("/:id", getTeamById);
+
+teamRouter.get("/count", getTotalTeams);
 
 teamRouter.post(
     "/create",

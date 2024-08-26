@@ -5,6 +5,7 @@ import {
     getAllLeagues,
     getLeagueById,
     deleteLeague,
+    getTotalLeagues,
 } from "../controllers/league.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -18,6 +19,8 @@ export const leagueRouter = Router();
 leagueRouter.get("/:id", getLeagueById);
 
 leagueRouter.get("/", getAllLeagues);
+
+leagueRouter.get("/count", getTotalLeagues);
 
 leagueRouter.post(
     "/create",
