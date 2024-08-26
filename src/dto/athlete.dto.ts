@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { TAthleteDetails } from "../types/athlete.type.js";
-import { parseISO } from "date-fns";
 
 export class AthleteResponseDTO {
     id?: string;
@@ -23,6 +22,7 @@ export class AthleteResponseDTO {
     website?: string | null;
     twitter?: string | null;
     facebook?: string | null;
+    strategyOverview?: string | null;
     primaryKeyMarket?: {
         id?: string;
         name?: string;
@@ -47,10 +47,11 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    age?: {
+    targetAge?: {
         id?: string;
         name?: string;
     }[];
+    athleteAge?: string | null;
     subPersonalityTraits?: {
         id?: string;
         name?: string;
@@ -59,7 +60,6 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    athleteAge?: Date | null;
     association?: {
         associationId?: string;
         associationLevel?: {
@@ -148,10 +148,14 @@ export class AthleteResponseDTO {
         contactNumber?: string | null;
         contactDesignation?: string | null;
     }[];
-    gender?: {
+    targetGender?: {
         id?: string;
         name?: string;
     }[];
+    athleteGender?: {
+        id?: string;
+        name?: string;
+    };
     nccs?: {
         id?: string;
         name?: string;
@@ -187,6 +191,7 @@ export class AthleteResponseDTO {
         athleteDTO.website = athleteDetails.website;
         athleteDTO.twitter = athleteDetails.twitter;
         athleteDTO.facebook = athleteDetails.facebook;
+        athleteDTO.strategyOverview = athleteDetails.strategy_overview;
         athleteDTO.primaryKeyMarket =
             athleteDetails.dashapp_athlete_key_markets_primary.map(
                 (market) => ({
@@ -212,7 +217,7 @@ export class AthleteResponseDTO {
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));
-        athleteDTO.age = athleteDetails.dashapp_athlete_target_age.map(
+        athleteDTO.targetAge = athleteDetails.dashapp_athlete_target_age.map(
             (age) => ({
                 id: age.dashapp_age?.id.toString(),
                 name: age.dashapp_age?.age_range,
@@ -228,9 +233,7 @@ export class AthleteResponseDTO {
                 id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
                 name: trait.dashapp_subpersonality.dashapp_mainpersonality.name,
             }));
-        athleteDTO.athleteAge = athleteDetails?.age
-            ? parseISO(athleteDetails?.age)
-            : undefined;
+        athleteDTO.athleteAge = athleteDetails?.age;
         athleteDTO.association = athleteDetails.dashapp_athlete_association.map(
             (association) => ({
                 associationId: association.id.toString(),
@@ -324,12 +327,15 @@ export class AthleteResponseDTO {
                 contactDesignation: contact.contact_designation,
             }),
         );
-        athleteDTO.gender = athleteDetails.dashapp_athlete_target_gender.map(
-            (gender) => ({
+        athleteDTO.targetGender =
+            athleteDetails.dashapp_athlete_target_gender.map((gender) => ({
                 id: gender.dashapp_gender?.id.toString(),
                 name: gender.dashapp_gender?.gender_is,
-            }),
-        );
+            }));
+        athleteDTO.athleteGender = {
+            id: athleteDetails.dashapp_gender?.id.toString(),
+            name: athleteDetails.dashapp_gender?.gender_is,
+        };
         athleteDTO.nccs = athleteDetails.dashapp_athlete_target_income.map(
             (nccs) => ({
                 id: nccs.dashapp_nccs?.id.toString(),

@@ -607,15 +607,16 @@ model dashapp_brandendorsements {
 }
 
 model dashapp_broadcastpartner {
-    id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @default(now())
-    modified_date      DateTime             @updatedAt
-    modified_by_id     BigInt?
-    name               String               @unique(map: "sqlite_autoindex_dashapp_broadcastpartner_1") @db.VarChar(512)
-    created_by_id      BigInt?
-    created_by         auth_user?           @relation("dashapp_broadcastpartner_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
-    modified_by        auth_user?           @relation("dashapp_broadcastpartner_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo dashapp_leagueinfo[]
+    id                                BigInt                              @id @default(autoincrement())
+    created_date                      DateTime?                           @default(now())
+    modified_date                     DateTime                            @updatedAt
+    modified_by_id                    BigInt?
+    name                              String                              @unique(map: "sqlite_autoindex_dashapp_broadcastpartner_1") @db.VarChar(512)
+    created_by_id                     BigInt?
+    created_by                        auth_user?                          @relation("dashapp_broadcastpartner_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
+    modified_by                       auth_user?                          @relation("dashapp_broadcastpartner_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo                dashapp_leagueinfo[]
+    dashapp_broadcast_partner_metrics dashapp_broadcast_partner_metrics[]
 
     @@index([modified_by_id], map: "dashapp_broadcastpartner_modified_by_id_55432538")
 }
@@ -1251,8 +1252,10 @@ model dashapp_ott_partner_metrics {
     modified_date      DateTime            @updatedAt
     created_by_id      BigInt?
     modified_by_id     BigInt?
-    viewership         String
-    reach              String
+    ottpartner_id      BigInt
+    dashapp_ottpartner dashapp_ottpartner  @relation(fields: [ottpartner_id], references: [id], onDelete: Cascade)
+    viewership         String?
+    reach              String?
     year               String
     leagueinfo_id      BigInt?
     team_id            BigInt?
@@ -1263,32 +1266,35 @@ model dashapp_ott_partner_metrics {
 }
 
 model dashapp_broadcast_partner_metrics {
-    id                 BigInt              @id @default(autoincrement())
-    created_date       DateTime?           @default(now())
-    modified_date      DateTime            @updatedAt
-    created_by_id      BigInt?
-    modified_by_id     BigInt?
-    viewership         String
-    reach              String
-    year               String
-    leagueinfo_id      BigInt?
-    team_id            BigInt?
-    created_by         auth_user?          @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_leagueinfo dashapp_leagueinfo? @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
-    modified_by        auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team       dashapp_team?       @relation(fields: [team_id], references: [id], onDelete: Cascade)
+    id                       BigInt                   @id @default(autoincrement())
+    created_date             DateTime?                @default(now())
+    modified_date            DateTime                 @updatedAt
+    created_by_id            BigInt?
+    modified_by_id           BigInt?
+    viewership               String?
+    reach                    String?
+    broadcast_partner_id     BigInt
+    dashapp_broadcastpartner dashapp_broadcastpartner @relation(fields: [broadcast_partner_id], references: [id], onDelete: Cascade)
+    year                     String
+    leagueinfo_id            BigInt?
+    team_id                  BigInt?
+    created_by               auth_user?               @relation("created_by", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_leagueinfo       dashapp_leagueinfo?      @relation(fields: [leagueinfo_id], references: [id], onDelete: Cascade)
+    modified_by              auth_user?               @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team             dashapp_team?            @relation(fields: [team_id], references: [id], onDelete: Cascade)
 }
 
 model dashapp_ottpartner {
-    id                 BigInt               @id @default(autoincrement())
-    created_date       DateTime?            @default(now())
-    modified_date      DateTime             @updatedAt
-    modified_by_id     BigInt?
-    name               String               @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
-    created_by_id      BigInt?
-    dashapp_leagueinfo dashapp_leagueinfo[]
-    created_by         auth_user?           @relation("dashapp_ottpartner_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
-    modified_by        auth_user?           @relation("dashapp_ottpartner_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    id                          BigInt                        @id @default(autoincrement())
+    created_date                DateTime?                     @default(now())
+    modified_date               DateTime                      @updatedAt
+    modified_by_id              BigInt?
+    name                        String                        @unique(map: "sqlite_autoindex_dashapp_ottpartner_1") @db.VarChar(512)
+    created_by_id               BigInt?
+    dashapp_leagueinfo          dashapp_leagueinfo[]
+    created_by                  auth_user?                    @relation("dashapp_ottpartner_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
+    modified_by                 auth_user?                    @relation("dashapp_ottpartner_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_ott_partner_metrics dashapp_ott_partner_metrics[]
 
     @@index([modified_by_id], map: "dashapp_ottpartner_modified_by_id_8e9a4877")
 }

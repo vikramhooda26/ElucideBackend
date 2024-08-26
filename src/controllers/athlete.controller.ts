@@ -125,6 +125,8 @@ export const createAthlete = asyncHandler(async (req, res) => {
     const {
         name,
         athleteAge,
+        ageIds,
+        athleteGenderId,
         genderIds,
         nccsIds,
         userId,
@@ -148,11 +150,8 @@ export const createAthlete = asyncHandler(async (req, res) => {
         stateId,
         contactPerson,
         tierIds,
+        strategyOverview,
     } = req.validatedData as TCreateAthleteSchema;
-
-    const ageRange = athleteAge ? await findAgeRange(athleteAge) : undefined;
-
-    printLogs("\n\nageRange:", ageRange);
 
     if (association?.length) {
         const isDistinct = areElementsDistinct(
@@ -253,13 +252,13 @@ export const createAthlete = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             age: athleteAge || undefined,
-            dashapp_athlete_target_age: ageRange
+            dashapp_athlete_target_age: ageIds?.length
                 ? {
-                      create: {
+                      create: ageIds.map((ageId) => ({
                           dashapp_age: {
-                              connect: { age_range: ageRange },
+                              connect: { id: BigInt(ageId) },
                           },
-                      },
+                      })),
                   }
                 : undefined,
             dashapp_athlete_target_gender: genderIds?.length
@@ -269,6 +268,12 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
+            dashapp_gender: athleteGenderId
+                ? {
+                      connect: { id: BigInt(athleteGenderId) },
+                  }
+                : undefined,
+            strategy_overview: strategyOverview || undefined,
             dashapp_athlete_target_income: nccsIds?.length
                 ? {
                       create: nccsIds.map((nccsId) => ({
@@ -369,6 +374,9 @@ export const editAthlete = asyncHandler(async (req, res) => {
         stateId,
         tierIds,
         contactPerson,
+        ageIds,
+        athleteGenderId,
+        strategyOverview,
     } = req.validatedData as TEditAthleteSchema;
 
     if (association?.length) {
@@ -380,12 +388,6 @@ export const editAthlete = asyncHandler(async (req, res) => {
             throw new BadRequestError("Association Level must be unique");
         }
     }
-
-    const ageRange = athleteAge ? await findAgeRange(athleteAge) : undefined;
-
-    printLogs("age:", athleteAge);
-
-    printLogs("Age range:", ageRange);
 
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
@@ -407,6 +409,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
                       }))
                     : undefined,
             },
+            strategy_overview: strategyOverview || undefined,
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
                 : undefined,
@@ -483,11 +486,18 @@ export const editAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_athlete_target_age: ageRange
+            dashapp_athlete_target_age: ageIds?.length
                 ? {
                       deleteMany: {},
-                      create: {
-                          dashapp_age: { connect: { age_range: ageRange } },
+                      create: ageIds.map((ageId) => ({
+                          dashapp_age: { connect: { id: BigInt(ageId) } },
+                      })),
+                  }
+                : undefined,
+            dashapp_gender: athleteGenderId
+                ? {
+                      connect: {
+                          id: BigInt(athleteGenderId),
                       },
                   }
                 : undefined,
