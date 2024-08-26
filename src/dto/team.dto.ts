@@ -1,4 +1,4 @@
-import { Prisma, viewship_type } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { TTeamDetails } from "../types/team.type.js";
 
 export class TeamResponseDTO {
@@ -179,16 +179,19 @@ export class TeamResponseDTO {
         contactNumber: string | null;
         contactLinkedin: string | null;
     }[];
-    viewershipMetrics?: {
-        id?: string;
+    ottPartnerMetrics?: {
+        id: string;
         viewership: string | null;
-        viewershipType: viewship_type | null;
-        year: string | null;
-    }[];
-    reachMetrics?: {
-        id?: string;
         reach: string | null;
-        year: string | null;
+        year: string;
+        ottPartner: { id: string; name: string };
+    }[];
+    broadcastPartnerMetrics?: {
+        id: string;
+        reach: string | null;
+        viewership: string | null;
+        year: string;
+        broadcastPartner: { id: string; name: string };
     }[];
 
     static toResponse(teamDetails: TTeamDetails): TeamResponseDTO {
@@ -394,19 +397,29 @@ export class TeamResponseDTO {
                 }),
             )),
         );
-        teamDTO.viewershipMetrics = teamDetails.dashapp_viewership.map(
+        teamDTO.ottPartnerMetrics = teamDetails.dashapp_ott_partner_metrics.map(
             (metric) => ({
                 id: metric.id.toString(),
                 viewership: metric.viewership,
-                viewershipType: metric.viewship_type,
+                reach: metric.reach,
                 year: metric.year,
+                ottPartner: {
+                    id: metric.dashapp_ottpartner.id.toString(),
+                    name: metric.dashapp_ottpartner.name,
+                },
             }),
         );
-        teamDTO.reachMetrics = teamDetails.dashapp_reach.map((metric) => ({
-            id: metric.id.toString(),
-            reach: metric.reach,
-            year: metric.year,
-        }));
+        teamDTO.broadcastPartnerMetrics =
+            teamDetails.dashapp_broadcast_partner_metrics.map((metric) => ({
+                id: metric.id.toString(),
+                viewership: metric.viewership,
+                reach: metric.reach,
+                year: metric.year,
+                broadcastPartner: {
+                    id: metric.dashapp_broadcastpartner.id.toString(),
+                    name: metric.dashapp_broadcastpartner.name,
+                },
+            }));
 
         return teamDTO;
     }

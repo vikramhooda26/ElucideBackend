@@ -1,4 +1,4 @@
-import { Prisma, viewship_type } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { TLeagueDetails } from "../types/league.type.js";
 
 export class LeagueResponseDTO {
@@ -190,16 +190,19 @@ export class LeagueResponseDTO {
         contactNumber?: string | null;
         contactDesignation?: string | null;
     }[];
-    viewershipMetrics?: {
-        id?: string;
-        viewership?: string;
-        viewershipType?: viewship_type;
-        year?: string;
+    ottPartnerMetrics?: {
+        id: string;
+        viewership: string | null;
+        reach: string | null;
+        year: string;
+        ottPartner: { id: string; name: string };
     }[];
-    reachMetrics?: {
-        id?: string;
-        reach?: string | null;
-        year?: string | null;
+    broadcastPartnerMetrics?: {
+        id: string;
+        reach: string | null;
+        viewership: string | null;
+        year: string;
+        broadcastPartner: { id: string; name: string };
     }[];
 
     static toResponse(leagueDetails: TLeagueDetails): LeagueResponseDTO {
@@ -431,19 +434,28 @@ export class LeagueResponseDTO {
                 }),
             )),
         );
-        leagueDTO.viewershipMetrics = leagueDetails.dashapp_viewership.map(
-            (metric) => ({
+        leagueDTO.ottPartnerMetrics =
+            leagueDetails.dashapp_ott_partner_metrics.map((metric) => ({
                 id: metric.id.toString(),
-                viewership: metric?.viewership,
-                viewershipType: metric?.viewship_type,
+                viewership: metric.viewership,
+                reach: metric.reach,
+                year: metric.year,
+                ottPartner: {
+                    id: metric.dashapp_ottpartner.id.toString(),
+                    name: metric.dashapp_ottpartner.name,
+                },
+            }));
+        leagueDTO.broadcastPartnerMetrics =
+            leagueDetails.dashapp_broadcast_partner_metrics.map((metric) => ({
+                id: metric.id.toString(),
+                reach: metric?.reach,
+                viewership: metric.viewership,
                 year: metric?.year,
-            }),
-        );
-        leagueDTO.reachMetrics = leagueDetails.dashapp_reach.map((metric) => ({
-            id: metric.id.toString(),
-            reach: metric?.reach,
-            year: metric?.year,
-        }));
+                broadcastPartner: {
+                    id: metric.dashapp_broadcastpartner.id.toString(),
+                    name: metric.dashapp_broadcastpartner.name,
+                },
+            }));
 
         return leagueDTO;
     }

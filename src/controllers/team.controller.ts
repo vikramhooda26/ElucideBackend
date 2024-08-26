@@ -99,6 +99,8 @@ export const getTotalTeams = asyncHandler(async (req, res) => {
 });
 
 export const createTeam = asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+
     const {
         sportId,
         leagueId,
@@ -128,11 +130,10 @@ export const createTeam = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         association,
-        reachMetrics,
-        viewershipMetrics,
         contactPerson,
-        userId,
         endorsements,
+        broadcastPartnerMetrics,
+        ottPartnerMetrics,
     } = req.validatedData as TCreateTeamSchema;
 
     const team = await prisma.dashapp_team.create({
@@ -331,20 +332,35 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_viewership: viewershipMetrics
+            dashapp_broadcast_partner_metrics: broadcastPartnerMetrics?.length
                 ? {
-                      create: viewershipMetrics.map((metric) => ({
+                      create: broadcastPartnerMetrics.map((metric) => ({
+                          reach: metric.reach,
                           viewership: metric.viewership,
-                          viewship_type: metric.viewershipType,
                           year: metric.year,
+                          dashapp_broadcastpartner: {
+                              connect: {
+                                  id: BigInt(metric.broadcastPartnerId),
+                              },
+                          },
+                          created_by: { connect: { id: BigInt(userId) } },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
-            dashapp_reach: reachMetrics
+            dashapp_ott_partner_metrics: ottPartnerMetrics?.length
                 ? {
-                      create: reachMetrics.map((metric) => ({
+                      create: ottPartnerMetrics.map((metric) => ({
                           reach: metric.reach,
+                          viewership: metric.viewership,
                           year: metric.year,
+                          dashapp_ottpartner: {
+                              connect: {
+                                  id: BigInt(metric.ottPartnerId),
+                              },
+                          },
+                          created_by: { connect: { id: BigInt(userId) } },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
@@ -394,6 +410,8 @@ export const editTeam = asyncHandler(async (req, res) => {
         throw new NotFoundError("This team does not exists");
     }
 
+    const userId = req.user.userId;
+
     const {
         sportId,
         leagueId,
@@ -418,16 +436,15 @@ export const editTeam = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         association,
-        reachMetrics,
-        viewershipMetrics,
         cityId,
         name,
         primaryMarketingPlatformIds,
         secondaryMarketingPlatformIds,
         stateId,
         contactPerson,
-        userId,
         endorsements,
+        broadcastPartnerMetrics,
+        ottPartnerMetrics,
     } = req.validatedData as TEditTeamSchema;
 
     if (association?.length) {
@@ -638,22 +655,35 @@ export const editTeam = asyncHandler(async (req, res) => {
                       }))
                     : undefined,
             },
-            dashapp_viewership: viewershipMetrics?.length
+            dashapp_broadcast_partner_metrics: broadcastPartnerMetrics?.length
                 ? {
                       deleteMany: {},
-                      create: viewershipMetrics.map((viewership) => ({
-                          viewership: viewership.viewership,
-                          viewship_type: viewership.viewershipType,
-                          year: viewership.year,
+                      create: broadcastPartnerMetrics.map((metric) => ({
+                          reach: metric.reach,
+                          viewership: metric.viewership,
+                          year: metric.year,
+                          dashapp_broadcastpartner: {
+                              connect: {
+                                  id: BigInt(metric.broadcastPartnerId),
+                              },
+                          },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
-            dashapp_reach: reachMetrics?.length
+            dashapp_ott_partner_metrics: ottPartnerMetrics?.length
                 ? {
                       deleteMany: {},
-                      create: reachMetrics.map((reachMetric) => ({
-                          reach: reachMetric.reach,
-                          year: reachMetric.year,
+                      create: ottPartnerMetrics.map((metric) => ({
+                          reach: metric.reach,
+                          viewership: metric.viewership,
+                          year: metric.year,
+                          dashapp_ottpartner: {
+                              connect: {
+                                  id: BigInt(metric.ottPartnerId),
+                              },
+                          },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,

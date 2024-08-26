@@ -2,7 +2,6 @@ import z from "zod";
 
 export const createTeamSchema = z.object({
     name: z.string(),
-    userId: z.string(),
     yearOfInception: z.string().optional(),
     sportId: z.string().optional(),
     leagueId: z.string().optional(),
@@ -37,20 +36,23 @@ export const createTeamSchema = z.object({
         })
         .array()
         .optional(),
-    viewershipMetrics: z
+    ottPartnerMetrics: z
         .object({
             id: z.string().optional(),
-            viewership: z.string(),
+            reach: z.string().optional(),
+            viewership: z.string().optional(),
             year: z.string(),
-            viewershipType: z.enum(["OTT", "BROADCAST"]),
+            ottPartnerId: z.string(),
         })
         .array()
         .optional(),
-    reachMetrics: z
+    broadcastPartnerMetrics: z
         .object({
             id: z.string().optional(),
-            reach: z.string(),
+            reach: z.string().optional(),
+            viewership: z.string().optional(),
             year: z.string(),
+            broadcastPartnerId: z.string(),
         })
         .array()
         .optional(),
@@ -101,7 +103,6 @@ export const editTeamSchema = createTeamSchema.partial().extend({
         })
         .array()
         .optional(),
-    userId: z.string(),
 });
 
 export type TCreateTeamSchema = z.infer<typeof createTeamSchema>;

@@ -43,7 +43,7 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    tier?: {
+    tiers?: {
         id?: string;
         name?: string;
     }[];
@@ -213,7 +213,7 @@ export class AthleteResponseDTO {
                     name: state.dashapp_states.state,
                 }),
             );
-        athleteDTO.tier = athleteDetails.dashapp_athlete_tier.map((tier) => ({
+        athleteDTO.tiers = athleteDetails.dashapp_athlete_tier.map((tier) => ({
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));

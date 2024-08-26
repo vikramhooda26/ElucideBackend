@@ -301,10 +301,22 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             },
         },
         dashapp_broadcast_partner_metrics: {
-            select: { id: true, viewership: true, reach: true, year: true },
+            select: {
+                id: true,
+                dashapp_broadcastpartner: { select: { id: true, name: true } },
+                viewership: true,
+                reach: true,
+                year: true,
+            },
         },
         dashapp_ott_partner_metrics: {
-            select: { id: true, viewership: true, reach: true, year: true },
+            select: {
+                id: true,
+                dashapp_ottpartner: { select: { id: true, name: true } },
+                viewership: true,
+                reach: true,
+                year: true,
+            },
         },
         dashapp_leagueinfo_gender: {
             select: {

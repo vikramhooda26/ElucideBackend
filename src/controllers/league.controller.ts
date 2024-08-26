@@ -97,6 +97,8 @@ export const getTotalLeagues = asyncHandler(async (req, res) => {
 });
 
 export const createLeague = asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+
     const {
         name,
         sportId,
@@ -124,12 +126,11 @@ export const createLeague = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         nccsIds,
-        reachMetrics,
-        viewershipMetrics,
         association,
-        userId,
         contactPerson,
         endorsements,
+        broadcastPartnerMetrics,
+        ottPartnerMetrics,
     } = req.validatedData as TCreateLeagueSchema;
 
     if (association?.length) {
@@ -318,20 +319,33 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_viewership: viewershipMetrics
+            dashapp_broadcast_partner_metrics: broadcastPartnerMetrics?.length
                 ? {
-                      create: viewershipMetrics.map((metric) => ({
-                          viewership: metric.viewership,
-                          viewship_type: metric.viewershipType,
+                      create: broadcastPartnerMetrics.map((metric) => ({
+                          viewership: metric.viewership || undefined,
+                          reach: metric.reach || undefined,
                           year: metric.year,
+                          dashapp_broadcastpartner: {
+                              connect: {
+                                  id: BigInt(metric.broadcastPartnerId),
+                              },
+                          },
+                          created_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
-            dashapp_reach: reachMetrics
+            dashapp_ott_partner_metrics: ottPartnerMetrics?.length
                 ? {
-                      create: reachMetrics.map((metric) => ({
-                          reach: metric.reach,
+                      create: ottPartnerMetrics.map((metric) => ({
+                          viewership: metric.viewership || undefined,
+                          reach: metric.reach || undefined,
                           year: metric.year,
+                          dashapp_ottpartner: {
+                              connect: {
+                                  id: BigInt(metric.ottPartnerId),
+                              },
+                          },
+                          created_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
@@ -389,6 +403,8 @@ export const editLeague = asyncHandler(async (req, res) => {
         throw new NotFoundError("This league does not exists");
     }
 
+    const userId = req.user.userId;
+
     const {
         name,
         sportId,
@@ -416,12 +432,11 @@ export const editLeague = asyncHandler(async (req, res) => {
         secondaryMarketIds,
         tertiaryIds,
         nccsIds,
-        reachMetrics,
-        viewershipMetrics,
         association,
-        userId,
         contactPerson,
         endorsements,
+        broadcastPartnerMetrics,
+        ottPartnerMetrics,
     } = req.validatedData as TEditLeagueSchema;
 
     if (association?.length) {
@@ -614,22 +629,35 @@ export const editLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_viewership: viewershipMetrics?.length
+            dashapp_broadcast_partner_metrics: broadcastPartnerMetrics?.length
                 ? {
                       deleteMany: {},
-                      create: viewershipMetrics.map((viewership) => ({
-                          viewership: viewership.viewership,
-                          viewship_type: viewership.viewershipType,
-                          year: viewership.year,
+                      create: broadcastPartnerMetrics.map((metric) => ({
+                          viewership: metric.viewership,
+                          reach: metric.reach,
+                          year: metric.year,
+                          dashapp_broadcastpartner: {
+                              connect: {
+                                  id: BigInt(metric.broadcastPartnerId),
+                              },
+                          },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
-            dashapp_reach: reachMetrics?.length
+            dashapp_ott_partner_metrics: ottPartnerMetrics?.length
                 ? {
                       deleteMany: {},
-                      create: reachMetrics.map((reachMetric) => ({
-                          reach: reachMetric.reach,
-                          year: reachMetric.year,
+                      create: ottPartnerMetrics.map((metric) => ({
+                          viewership: metric.viewership,
+                          reach: metric.reach,
+                          year: metric.year,
+                          dashapp_ottpartner: {
+                              connect: {
+                                  id: BigInt(metric.ottPartnerId),
+                              },
+                          },
+                          modified_by: { connect: { id: BigInt(userId) } },
                       })),
                   }
                 : undefined,
