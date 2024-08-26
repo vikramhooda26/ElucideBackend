@@ -399,6 +399,7 @@ model dashapp_athlete {
     twitter                                        String?                                          @db.VarChar(512)
     linkedin                                       String?                                          @db.VarChar(512)
     website                                        String?                                          @db.VarChar(512)
+    strategy_overview                              String?
     agency_id                                      BigInt?
     modified_by_id                                 BigInt?
     sport_id                                       BigInt?
