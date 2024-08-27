@@ -97,6 +97,7 @@ export class LeagueResponseDTO {
     endorsements?: {
         id?: string;
         name?: string;
+        active?: boolean;
     }[];
     format?: {
         id?: string;
@@ -339,6 +340,7 @@ export class LeagueResponseDTO {
             (endorse) => ({
                 id: endorse.id.toString(),
                 name: endorse.name,
+                active: endorse.active,
             }),
         );
         leagueDTO.age = leagueDetails.dashapp_leagueinfo_age.map((age) => ({

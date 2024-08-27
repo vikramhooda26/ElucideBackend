@@ -185,6 +185,7 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
             select: {
                 id: true,
                 name: true,
+                active: true,
             },
         },
         dashapp_sportsdealsummary: {

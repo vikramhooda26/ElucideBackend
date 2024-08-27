@@ -60,6 +60,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
         select: {
             id: true,
             name: true,
+            active: true,
         },
     },
     dashapp_team_active_campaigns: {

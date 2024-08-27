@@ -57,6 +57,7 @@ export class BrandResponseDTO {
     endorsements?: {
         id?: string;
         name?: string;
+        active?: boolean;
     }[];
     activeCampaigns?: {
         id?: string;
@@ -249,6 +250,7 @@ export class BrandResponseDTO {
             (endorse) => ({
                 id: endorse.id.toString(),
                 name: endorse.name,
+                active: endorse.active,
             }),
         );
         brandDTO.activeCampaigns =

@@ -40,6 +40,7 @@ export class TeamResponseDTO {
     endorsements?: {
         id?: string;
         name?: string;
+        active?: boolean;
     }[];
     activeCampaigns?: {
         id?: string;
@@ -235,6 +236,7 @@ export class TeamResponseDTO {
             (endorse) => ({
                 id: endorse.id.toString(),
                 name: endorse.name,
+                active: endorse.active,
             }),
         );
         teamDTO.activeCampaigns = teamDetails.dashapp_team_active_campaigns.map(
