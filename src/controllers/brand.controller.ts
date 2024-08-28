@@ -81,8 +81,8 @@ export const getBrandById = asyncHandler(async (req, res) => {
         where: {
             dashapp_subpersonality: {
                 some: {
-                    dashapp_athlete_personality_traits: {
-                        some: { athlete_id: BigInt(brandId) },
+                    dashapp_companydata_personality_traits: {
+                        some: { companydata_id: BigInt(brandId) },
                     },
                 },
             },
@@ -92,9 +92,9 @@ export const getBrandById = asyncHandler(async (req, res) => {
             name: true,
             dashapp_subpersonality: {
                 where: {
-                    dashapp_athlete_personality_traits: {
+                    dashapp_companydata_personality_traits: {
                         some: {
-                            athlete_id: BigInt(brandId),
+                            companydata_id: BigInt(brandId),
                         },
                     },
                 },

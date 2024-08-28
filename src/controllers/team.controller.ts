@@ -91,8 +91,8 @@ export const getTeamById = asyncHandler(async (req, res) => {
         where: {
             dashapp_subpersonality: {
                 some: {
-                    dashapp_athlete_personality_traits: {
-                        some: { athlete_id: BigInt(teamId) },
+                    dashapp_team_personality_traits: {
+                        some: { team_id: BigInt(teamId) },
                     },
                 },
             },
@@ -102,9 +102,9 @@ export const getTeamById = asyncHandler(async (req, res) => {
             name: true,
             dashapp_subpersonality: {
                 where: {
-                    dashapp_athlete_personality_traits: {
+                    dashapp_team_personality_traits: {
                         some: {
-                            athlete_id: BigInt(teamId),
+                            team_id: BigInt(teamId),
                         },
                     },
                 },

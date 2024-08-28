@@ -32,8 +32,8 @@ export const getLeagueById = asyncHandler(async (req, res) => {
         where: {
             dashapp_subpersonality: {
                 some: {
-                    dashapp_athlete_personality_traits: {
-                        some: { athlete_id: BigInt(leagueId) },
+                    dashapp_leagueinfo_personality_traits: {
+                        some: { leagueinfo_id: BigInt(leagueId) },
                     },
                 },
             },
@@ -43,9 +43,9 @@ export const getLeagueById = asyncHandler(async (req, res) => {
             name: true,
             dashapp_subpersonality: {
                 where: {
-                    dashapp_athlete_personality_traits: {
+                    dashapp_leagueinfo_personality_traits: {
                         some: {
-                            athlete_id: BigInt(leagueId),
+                            leagueinfo_id: BigInt(leagueId),
                         },
                     },
                 },
