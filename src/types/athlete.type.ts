@@ -79,22 +79,6 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
             },
         },
     },
-    dashapp_athlete_personality_traits: {
-        select: {
-            dashapp_subpersonality: {
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_mainpersonality: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                },
-            },
-        },
-    },
     dashapp_athlete_association: {
         select: {
             id: true,
