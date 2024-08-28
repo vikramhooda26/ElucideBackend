@@ -115,8 +115,40 @@ export const getAthleteById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This athlete does not exists");
     }
 
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: { athlete_id: BigInt(athleteId) },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: BigInt(athleteId),
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const updatedAthlete = {
+        ...athlete,
+        mainPersonalities,
+    };
+
     const athleteResponse: AthleteResponseDTO =
-        AthleteResponseDTO.toResponse(athlete);
+        AthleteResponseDTO.toResponse(updatedAthlete);
+
+    printLogs("Athelte response DTO:", athleteResponse);
 
     res.status(STATUS_CODE.OK).json(athleteResponse);
 });

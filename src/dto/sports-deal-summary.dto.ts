@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { TSportsDealSummaryDetails } from "../types/sports-deal-summary.type.js";
 
 export class SportsDealSummaryResponseDTO {

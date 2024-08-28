@@ -86,7 +86,10 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
                     id: true,
                     name: true,
                     dashapp_mainpersonality: {
-                        select: { id: true, name: true },
+                        select: {
+                            id: true,
+                            name: true,
+                        },
                     },
                 },
             },
@@ -187,6 +190,16 @@ export const athleteSelect = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     dashapp_states: { select: { id: true, state: true } },
 });
 
-export type TAthleteDetails = Prisma.dashapp_athleteGetPayload<{
-    select: typeof athleteSelect;
-}>;
+export interface TAthleteDetails
+    extends Prisma.dashapp_athleteGetPayload<{
+        select: typeof athleteSelect;
+    }> {
+    mainPersonalities: {
+        id: bigint;
+        name: string;
+        dashapp_subpersonality: {
+            id: bigint;
+            name: string;
+        }[];
+    }[];
+}

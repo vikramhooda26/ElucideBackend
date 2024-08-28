@@ -52,13 +52,13 @@ export class AthleteResponseDTO {
         name?: string;
     }[];
     athleteAge?: string | null;
-    subPersonalityTraits?: {
-        id?: string;
-        name?: string;
-    }[];
     mainPersonalityTraits?: {
         id?: string;
         name?: string;
+        subPersonalityTraits?: {
+            id?: string;
+            name?: string;
+        }[];
     }[];
     association?: {
         associationId?: string;
@@ -223,16 +223,18 @@ export class AthleteResponseDTO {
                 name: age.dashapp_age?.age_range,
             }),
         );
-        athleteDTO.subPersonalityTraits =
-            athleteDetails.dashapp_athlete_personality_traits.map((trait) => ({
-                id: trait.dashapp_subpersonality.id.toString(),
-                name: trait.dashapp_subpersonality.name,
-            }));
-        athleteDTO.mainPersonalityTraits =
-            athleteDetails.dashapp_athlete_personality_traits.map((trait) => ({
-                id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
-                name: trait.dashapp_subpersonality.dashapp_mainpersonality.name,
-            }));
+        athleteDTO.mainPersonalityTraits = athleteDetails.mainPersonalities.map(
+            (trait) => ({
+                id: trait.id.toString(),
+                name: trait.name,
+                subPersonalityTraits: trait.dashapp_subpersonality.map(
+                    (sub) => ({
+                        id: sub.id.toString(),
+                        name: sub.name,
+                    }),
+                ),
+            }),
+        );
         athleteDTO.athleteAge = athleteDetails?.age;
         athleteDTO.association = athleteDetails.dashapp_athlete_association.map(
             (association) => ({
