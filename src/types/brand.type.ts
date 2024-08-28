@@ -79,22 +79,6 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
         linkedin: true,
         youtube: true,
         website: true,
-        dashapp_companydata_personality_traits: {
-            select: {
-                dashapp_subpersonality: {
-                    select: {
-                        id: true,
-                        name: true,
-                        dashapp_mainpersonality: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
-            },
-        },
         strategy_overview: true,
         dashapp_companydata_taglines: {
             select: { dashapp_taglines: { select: { id: true, name: true } } },
@@ -310,6 +294,16 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
     },
 );
 
-export type TBrandDetails = Prisma.dashapp_companydataGetPayload<{
-    select: typeof brandSelect;
-}>;
+export interface TBrandDetails
+    extends Prisma.dashapp_companydataGetPayload<{
+        select: typeof brandSelect;
+    }> {
+    mainPersonalities: {
+        id: bigint;
+        name: string;
+        dashapp_subpersonality: {
+            id: bigint;
+            name: string;
+        }[];
+    }[];
+}

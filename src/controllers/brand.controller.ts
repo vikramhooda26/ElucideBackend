@@ -77,7 +77,38 @@ export const getBrandById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This brand does not exists");
     }
 
-    const brandResponse: BrandResponseDTO = BrandResponseDTO.toResponse(brand);
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: { athlete_id: BigInt(brandId) },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: BigInt(brandId),
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const updatedBrand = {
+        ...brand,
+        mainPersonalities,
+    };
+
+    const brandResponse: BrandResponseDTO =
+        BrandResponseDTO.toResponse(updatedBrand);
 
     res.status(STATUS_CODE.OK).json(brandResponse);
 });

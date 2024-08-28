@@ -179,22 +179,6 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
             },
         },
     },
-    dashapp_team_personality_traits: {
-        select: {
-            dashapp_subpersonality: {
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_mainpersonality: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                },
-            },
-        },
-    },
     dashapp_sportsdealsummary: {
         select: {
             dashapp_sportsdeal_assets: {
@@ -319,6 +303,16 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     },
 });
 
-export type TTeamDetails = Prisma.dashapp_teamGetPayload<{
-    select: typeof teamSelect;
-}>;
+export interface TTeamDetails
+    extends Prisma.dashapp_teamGetPayload<{
+        select: typeof teamSelect;
+    }> {
+    mainPersonalities: {
+        id: bigint;
+        name: string;
+        dashapp_subpersonality: {
+            id: bigint;
+            name: string;
+        }[];
+    }[];
+}

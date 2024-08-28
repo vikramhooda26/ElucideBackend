@@ -153,22 +153,6 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
                 },
             },
         },
-        dashapp_leagueinfo_personality_traits: {
-            select: {
-                dashapp_subpersonality: {
-                    select: {
-                        id: true,
-                        name: true,
-                        dashapp_mainpersonality: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
-            },
-        },
         dashapp_leagueendorsements: {
             select: {
                 id: true,
@@ -337,6 +321,16 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
     },
 );
 
-export type TLeagueDetails = Prisma.dashapp_leagueinfoGetPayload<{
-    select: typeof leagueSelect;
-}>;
+export interface TLeagueDetails
+    extends Prisma.dashapp_leagueinfoGetPayload<{
+        select: typeof leagueSelect;
+    }> {
+    mainPersonalities: {
+        id: bigint;
+        name: string;
+        dashapp_subpersonality: {
+            id: bigint;
+            name: string;
+        }[];
+    }[];
+}

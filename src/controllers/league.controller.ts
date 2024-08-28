@@ -28,8 +28,38 @@ export const getLeagueById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This league does not exists");
     }
 
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: { athlete_id: BigInt(leagueId) },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: BigInt(leagueId),
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const updatedLeague = {
+        ...league,
+        mainPersonalities,
+    };
+
     const leagueResponse: LeagueResponseDTO =
-        LeagueResponseDTO.toResponse(league);
+        LeagueResponseDTO.toResponse(updatedLeague);
 
     res.status(STATUS_CODE.OK).json(leagueResponse);
 });

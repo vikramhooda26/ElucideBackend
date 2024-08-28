@@ -78,13 +78,13 @@ export class LeagueResponseDTO {
         id?: string;
         name?: string;
     }[];
-    subPersonalityTraits?: {
-        id?: string;
-        name?: string;
-    }[];
     mainPersonalityTraits?: {
         id?: string;
         name?: string;
+        subPersonalityTraits?: {
+            id?: string;
+            name?: string;
+        }[];
     }[];
     team?: {
         id?: string;
@@ -321,21 +321,18 @@ export class LeagueResponseDTO {
                 },
                 costOfAssociation: association.cost,
             }));
-        leagueDTO.subPersonalityTraits =
-            leagueDetails.dashapp_leagueinfo_personality_traits.map(
-                (trait) => ({
-                    id: trait.dashapp_subpersonality.id.toString(),
-                    name: trait.dashapp_subpersonality.name,
-                }),
-            );
-        leagueDTO.mainPersonalityTraits =
-            leagueDetails.dashapp_leagueinfo_personality_traits.map(
-                (trait) => ({
-                    id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
-                    name: trait.dashapp_subpersonality.dashapp_mainpersonality
-                        .name,
-                }),
-            );
+        leagueDTO.mainPersonalityTraits = leagueDetails.mainPersonalities.map(
+            (trait) => ({
+                id: trait.id.toString(),
+                name: trait.name,
+                subPersonalityTraits: trait.dashapp_subpersonality.map(
+                    (sub) => ({
+                        id: sub.id.toString(),
+                        name: sub.name,
+                    }),
+                ),
+            }),
+        );
         leagueDTO.endorsements = leagueDetails.dashapp_leagueendorsements.map(
             (endorse) => ({
                 id: endorse.id.toString(),

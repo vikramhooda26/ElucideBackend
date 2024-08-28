@@ -94,13 +94,13 @@ export class TeamResponseDTO {
         id?: string;
         name?: string;
     }[];
-    subPersonalityTraits?: {
-        id?: string;
-        name?: string;
-    }[];
     mainPersonalityTraits?: {
         id?: string;
         name?: string;
+        subPersonalityTraits?: {
+            id?: string;
+            name?: string;
+        }[];
     }[];
     sportsDealSummary?: {
         annualValue: Prisma.Decimal | null;
@@ -305,16 +305,18 @@ export class TeamResponseDTO {
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));
-        teamDTO.subPersonalityTraits =
-            teamDetails.dashapp_team_personality_traits.map((trait) => ({
-                id: trait.dashapp_subpersonality.id.toString(),
-                name: trait.dashapp_subpersonality.name,
-            }));
-        teamDTO.mainPersonalityTraits =
-            teamDetails.dashapp_team_personality_traits.map((trait) => ({
-                id: trait.dashapp_subpersonality.dashapp_mainpersonality.id.toString(),
-                name: trait.dashapp_subpersonality.dashapp_mainpersonality.name,
-            }));
+        teamDTO.mainPersonalityTraits = teamDetails.mainPersonalities.map(
+            (trait) => ({
+                id: trait.id.toString(),
+                name: trait.name,
+                subPersonalityTraits: trait.dashapp_subpersonality.map(
+                    (sub) => ({
+                        id: sub.id.toString(),
+                        name: sub.name,
+                    }),
+                ),
+            }),
+        );
         teamDTO.sportsDealSummary = teamDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
                 annualValue: deal.annual_value,

@@ -87,7 +87,38 @@ export const getTeamById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This team does not exists");
     }
 
-    const teamResponse: TeamResponseDTO = TeamResponseDTO.toResponse(team);
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: { athlete_id: BigInt(teamId) },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: BigInt(teamId),
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const updatedTeam = {
+        ...team,
+        mainPersonalities,
+    };
+
+    const teamResponse: TeamResponseDTO =
+        TeamResponseDTO.toResponse(updatedTeam);
 
     res.status(STATUS_CODE.OK).json(teamResponse);
 });
