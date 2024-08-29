@@ -8,7 +8,6 @@ import {
     TEditActivationSchema,
 } from "../schemas/activation.schema.js";
 import { activationSelect } from "../types/activation.type.js";
-import { printLogs } from "../lib/log.js";
 
 export const getAllActivations = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -53,8 +52,6 @@ export const getAllActivations = asyncHandler(async (req, res) => {
     if (activations.length < 1) {
         throw new NotFoundError("Activation summaries data does not exists");
     }
-
-    printLogs("Activations:", activations);
 
     res.status(STATUS_CODE.OK).json(
         activations.map((activation) => ({

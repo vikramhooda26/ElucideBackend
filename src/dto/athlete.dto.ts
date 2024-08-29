@@ -23,6 +23,16 @@ export class AthleteResponseDTO {
     twitter?: string | null;
     facebook?: string | null;
     strategyOverview?: string | null;
+    createdBy?: {
+        id?: string;
+        name?: string;
+    };
+    modifiedBy?: {
+        id?: string;
+        name?: string;
+    };
+    createdDate?: Date | null;
+    modifiedDate?: Date | null;
     primaryKeyMarket?: {
         id?: string;
         name?: string;
@@ -47,7 +57,7 @@ export class AthleteResponseDTO {
         id?: string;
         name?: string;
     }[];
-    targetAge?: {
+    age?: {
         id?: string;
         name?: string;
     }[];
@@ -148,7 +158,7 @@ export class AthleteResponseDTO {
         contactNumber?: string | null;
         contactDesignation?: string | null;
     }[];
-    targetGender?: {
+    gender?: {
         id?: string;
         name?: string;
     }[];
@@ -217,7 +227,17 @@ export class AthleteResponseDTO {
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));
-        athleteDTO.targetAge = athleteDetails.dashapp_athlete_target_age.map(
+        athleteDTO.createdBy = {
+            id: athleteDetails.created_by?.id.toString(),
+            name: athleteDetails.created_by?.email,
+        };
+        athleteDTO.modifiedBy = {
+            id: athleteDetails.modified_by?.id.toString(),
+            name: athleteDetails.modified_by?.email,
+        };
+        athleteDTO.createdDate = athleteDetails.created_date;
+        athleteDTO.modifiedDate = athleteDetails.modified_date;
+        athleteDTO.age = athleteDetails.dashapp_athlete_target_age.map(
             (age) => ({
                 id: age.dashapp_age?.id.toString(),
                 name: age.dashapp_age?.age_range,
@@ -329,11 +349,12 @@ export class AthleteResponseDTO {
                 contactDesignation: contact.contact_designation,
             }),
         );
-        athleteDTO.targetGender =
-            athleteDetails.dashapp_athlete_target_gender.map((gender) => ({
+        athleteDTO.gender = athleteDetails.dashapp_athlete_target_gender.map(
+            (gender) => ({
                 id: gender.dashapp_gender?.id.toString(),
                 name: gender.dashapp_gender?.gender_is,
-            }));
+            }),
+        );
         athleteDTO.athleteGender = {
             id: athleteDetails.dashapp_gender?.id.toString(),
             name: athleteDetails.dashapp_gender?.gender_is,

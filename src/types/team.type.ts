@@ -3,6 +3,10 @@ import { Prisma } from "@prisma/client";
 export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     id: true,
     team_name: true,
+    created_by: { select: { id: true, email: true } },
+    modified_by: { select: { id: true, email: true } },
+    created_date: true,
+    modified_date: true,
     dashapp_team_owner: {
         select: {
             dashapp_teamowner: {

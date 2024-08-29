@@ -639,7 +639,7 @@ model dashapp_companydata {
     id                                                BigInt                                              @id @default(autoincrement())
     created_date                                      DateTime?                                           @default(now())
     modified_date                                     DateTime                                            @updatedAt
-    company_name                                      String                                              @unique(map: "sqlite_autoindex_dashapp_companydata_1") @db.VarChar(512)
+    company_name                                      String
     instagram                                         String?                                             @db.VarChar(512)
     facebook                                          String?                                             @db.VarChar(512)
     twitter                                           String?                                             @db.VarChar(512)

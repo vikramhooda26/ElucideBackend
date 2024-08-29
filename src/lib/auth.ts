@@ -5,7 +5,6 @@ import { prisma } from "../db/index.js";
 import { tokenManager } from "../managers/TokenManager.js";
 import { COOKIE_NAME } from "./constants.js";
 import { TUser } from "./types.js";
-import { printLogs } from "./log.js";
 
 const ACCESS_TOKEN_SECRET =
     process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";

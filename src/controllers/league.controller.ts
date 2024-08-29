@@ -3,13 +3,12 @@ import { prisma } from "../db/index.js";
 import { LeagueResponseDTO } from "../dto/league.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { areElementsDistinct } from "../lib/helpers.js";
 import {
     TCreateLeagueSchema,
     TEditLeagueSchema,
 } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
-import { areElementsDistinct } from "../lib/helpers.js";
-import { printLogs } from "../lib/log.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
@@ -67,8 +66,6 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 export const getAllLeagues = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    printLogs("Reached league get all controller");
-
     const leagues = await prisma.dashapp_leagueinfo.findMany({
         select: {
             id: true,
@@ -95,11 +92,9 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
     });
 
     if (leagues.length < 1) {
-        printLogs("League data does not exists in get-all controller");
         throw new NotFoundError("League data does not exists");
     }
 
-    printLogs("League response returned get-all controller");
     res.status(STATUS_CODE.OK).json(
         leagues.map((league) => ({
             id: league.id,

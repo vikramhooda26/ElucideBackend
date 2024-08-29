@@ -26,6 +26,16 @@ export class TeamResponseDTO {
         id?: string;
         name?: string;
     };
+    createdBy?: {
+        id?: string;
+        name?: string;
+    };
+    modifiedBy?: {
+        id?: string;
+        name?: string;
+    };
+    createdDate?: Date | null;
+    modifiedDate?: Date | null;
     instagram?: string | null;
     facebook?: string | null;
     twitter?: string | null;
@@ -287,6 +297,16 @@ export class TeamResponseDTO {
                 name: state.dashapp_states.state,
             }),
         );
+        teamDTO.createdBy = {
+            id: teamDetails.created_by?.id.toString(),
+            name: teamDetails.created_by?.email,
+        };
+        teamDTO.modifiedBy = {
+            id: teamDetails.modified_by?.id.toString(),
+            name: teamDetails.modified_by?.email,
+        };
+        teamDTO.createdDate = teamDetails.created_date;
+        teamDTO.modifiedDate = teamDetails.modified_date;
         teamDTO.association = teamDetails.dashapp_team_association.map(
             (association) => ({
                 associationId: association.id.toString(),

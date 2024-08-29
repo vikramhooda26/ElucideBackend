@@ -1,18 +1,17 @@
+import { differenceInYears, parseISO } from "date-fns";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { AthleteResponseDTO } from "../dto/athlete.dto.js";
+import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { areElementsDistinct } from "../lib/helpers.js";
 import {
     TCreateAthleteSchema,
     TEditAthleteSchema,
     TFilteredAthleteSchema,
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
-import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
-import { printLogs } from "../lib/log.js";
-import { differenceInYears, parseISO } from "date-fns";
-import { areElementsDistinct } from "../lib/helpers.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
@@ -147,8 +146,6 @@ export const getAthleteById = asyncHandler(async (req, res) => {
 
     const athleteResponse: AthleteResponseDTO =
         AthleteResponseDTO.toResponse(updatedAthlete);
-
-    printLogs("Athelte response DTO:", athleteResponse);
 
     res.status(STATUS_CODE.OK).json(athleteResponse);
 });
