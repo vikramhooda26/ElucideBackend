@@ -133,19 +133,19 @@ export class LeagueResponseDTO {
         };
         status?: string | null;
         type?: string | null;
-        brandName?: {
+        brand?: {
             id?: string;
             name?: string;
         };
-        athleteName?: {
+        athlete?: {
             id?: string;
             name?: string;
         };
-        leagueName?: {
+        league?: {
             id?: string;
             name?: string;
         };
-        teamName?: {
+        team?: {
             id?: string;
             name?: string;
         };
@@ -166,19 +166,19 @@ export class LeagueResponseDTO {
             id?: string;
             name?: string;
         }[];
-        brandName?: {
+        brand?: {
             id?: string;
             name?: string;
         };
-        athleteName?: {
+        athlete?: {
             id?: string;
             name?: string;
         };
-        leagueName?: {
+        league?: {
             id?: string;
             name?: string;
         };
-        teamName?: {
+        team?: {
             id?: string;
             name?: string;
         };
@@ -352,6 +352,7 @@ export class LeagueResponseDTO {
         );
         leagueDTO.sportsDealSummary =
             leagueDetails.dashapp_sportsdealsummary.map((deal) => ({
+                id: deal.id.toString(),
                 annualValue: deal.annual_value,
                 assets: deal.dashapp_sportsdeal_assets.map((asset) => ({
                     id: asset.dashapp_assets.id.toString(),
@@ -365,19 +366,19 @@ export class LeagueResponseDTO {
                     name: deal.dashapp_level?.name,
                 },
                 mediaLink: deal.media_link,
-                brandName: {
+                brand: {
                     id: deal.dashapp_companydata?.id.toString(),
                     name: deal.dashapp_companydata?.company_name,
                 },
-                athleteName: {
+                athlete: {
                     id: deal.dashapp_athlete?.id.toString(),
                     name: deal.dashapp_athlete?.athlete_name,
                 },
-                leagueName: {
+                league: {
                     id: deal.dashapp_leagueinfo?.id.toString(),
                     name: deal.dashapp_leagueinfo?.property_name,
                 },
-                teamName: {
+                team: {
                     id: deal.dashapp_team?.id.toString(),
                     name: deal.dashapp_team?.team_name,
                 },
@@ -391,6 +392,7 @@ export class LeagueResponseDTO {
             }));
         leagueDTO.activations = leagueDetails.dashapp_activation.map(
             (activation) => ({
+                id: activation.id.toString(),
                 asset: activation.dashapp_activation_assets.map((asset) => ({
                     id: asset.dashapp_assets.id.toString(),
                     name: asset.dashapp_assets.asset,
@@ -404,19 +406,19 @@ export class LeagueResponseDTO {
                     id: type.dashapp_marketingplatform.id.toString(),
                     name: type.dashapp_marketingplatform.platform,
                 })),
-                brandName: {
+                brand: {
                     id: activation.dashapp_companydata?.id.toString(),
                     name: activation.dashapp_companydata?.company_name,
                 },
-                athleteName: {
+                athlete: {
                     id: activation.dashapp_athlete?.id.toString(),
                     name: activation.dashapp_athlete?.athlete_name,
                 },
-                leagueName: {
+                league: {
                     id: activation.dashapp_leagueinfo?.id.toString(),
                     name: activation.dashapp_leagueinfo?.property_name,
                 },
-                teamName: {
+                team: {
                     id: activation.dashapp_team?.id.toString(),
                     name: activation.dashapp_team?.team_name,
                 },

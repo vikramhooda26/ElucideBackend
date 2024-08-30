@@ -122,20 +122,21 @@ export class BrandResponseDTO {
         }[];
     }[];
     sportsDealSummary?: {
+        id?: string;
         annualValue?: string;
         assets: {
             id?: string;
             name?: string;
         }[];
-        athleteName?: {
+        athlete?: {
             id?: string;
             name?: string;
         };
-        leagueName?: {
+        league?: {
             id?: string;
             name?: string;
         };
-        teamName?: {
+        team?: {
             id?: string;
             name?: string;
         };
@@ -147,7 +148,7 @@ export class BrandResponseDTO {
             name?: string;
         };
         mediaLink: string | null;
-        brandName?: {
+        brand?: {
             id?: string;
             name?: string;
         };
@@ -159,20 +160,21 @@ export class BrandResponseDTO {
         totalValue?: string;
         type: string;
     }[];
-    activationSummary?: {
-        brandName?: {
+    activations?: {
+        id?: string;
+        brand?: {
             id?: string;
             name?: string;
         };
-        athleteName?: {
+        athlete?: {
             id?: string;
             name?: string;
         };
-        leagueName?: {
+        league?: {
             id?: string;
             name?: string;
         };
-        teamName?: {
+        team?: {
             id?: string;
             name?: string;
         };
@@ -351,24 +353,25 @@ export class BrandResponseDTO {
         );
         brandDTO.sportsDealSummary = brandDetails.dashapp_sportsdealsummary.map(
             (deal) => ({
+                id: deal.id.toString(),
                 annualValue: deal.annual_value?.toString(),
                 assets: deal.dashapp_sportsdeal_assets.map((asset) => ({
                     id: asset.dashapp_assets.id.toString(),
                     name: asset.dashapp_assets.asset,
                 })),
-                brandName: {
+                brand: {
                     id: deal.dashapp_companydata?.id.toString(),
                     name: deal.dashapp_companydata?.company_name,
                 },
-                athleteName: {
+                athlete: {
                     id: deal.dashapp_athlete?.id.toString(),
                     name: deal.dashapp_athlete?.athlete_name,
                 },
-                leagueName: {
+                league: {
                     id: deal.dashapp_leagueinfo?.id.toString(),
                     name: deal.dashapp_leagueinfo?.property_name,
                 },
-                teamName: {
+                team: {
                     id: deal.dashapp_team?.id.toString(),
                     name: deal.dashapp_team?.team_name,
                 },
@@ -389,8 +392,9 @@ export class BrandResponseDTO {
                 type: deal.type,
             }),
         );
-        brandDTO.activationSummary = brandDetails.dashapp_activation.map(
+        brandDTO.activations = brandDetails.dashapp_activation.map(
             (activation) => ({
+                id: activation.id.toString(),
                 asset: activation.dashapp_activation_assets.map((asset) => ({
                     id: asset.dashapp_assets.id.toString(),
                     name: asset.dashapp_assets.asset,
@@ -399,19 +403,19 @@ export class BrandResponseDTO {
                     id: market.dashapp_states.id.toString(),
                     name: market.dashapp_states.state,
                 })),
-                brandName: {
+                brand: {
                     id: activation.dashapp_companydata?.id.toString(),
                     name: activation.dashapp_companydata?.company_name,
                 },
-                athleteName: {
+                athlete: {
                     id: activation.dashapp_athlete?.id.toString(),
                     name: activation.dashapp_athlete?.athlete_name,
                 },
-                leagueName: {
+                league: {
                     id: activation.dashapp_leagueinfo?.id.toString(),
                     name: activation.dashapp_leagueinfo?.property_name,
                 },
-                teamName: {
+                team: {
                     id: activation.dashapp_team?.id.toString(),
                     name: activation.dashapp_team?.team_name,
                 },

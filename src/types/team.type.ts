@@ -185,6 +185,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
     },
     dashapp_sportsdealsummary: {
         select: {
+            id: true,
             dashapp_sportsdeal_assets: {
                 select: {
                     dashapp_assets: {
