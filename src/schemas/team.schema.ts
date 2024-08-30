@@ -78,7 +78,7 @@ export const createTeamSchema = z.object({
 export const editTeamSchema = createTeamSchema.partial().extend({
     association: z
         .object({
-            associationId: z.string(),
+            associationId: z.string().optional(),
             associationLevelId: z.string(),
             costOfAssociation: z.number().optional(),
             brandIds: z.string().array().optional(),
@@ -87,7 +87,7 @@ export const editTeamSchema = createTeamSchema.partial().extend({
         .optional(),
     contactPerson: z
         .object({
-            contactId: z.string(),
+            contactId: z.string().optional(),
             contactName: z.string(),
             contactDesignation: z.string().optional(),
             contactEmail: z.string().optional(),

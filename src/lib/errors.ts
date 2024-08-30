@@ -42,3 +42,9 @@ export class InternalServerError extends CustomError {
         );
     }
 }
+
+export class ConflictError extends CustomError {
+    constructor(message?: string) {
+        super(message || "Conflict with existing data!", STATUS_CODE.CONFLICT);
+    }
+}

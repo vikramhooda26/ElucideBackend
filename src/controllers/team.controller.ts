@@ -167,6 +167,24 @@ export const createTeam = asyncHandler(async (req, res) => {
         ottPartnerMetrics,
     } = req.validatedData as TCreateTeamSchema;
 
+    const isEndorsementsExists =
+        await prisma.dashapp_teamendorsements.findFirst({
+            where: {
+                name: { in: endorsements?.map((endorse) => endorse.name) },
+            },
+            select: {
+                name: true,
+            },
+        });
+
+    if (isEndorsementsExists?.name) {
+        res.status(STATUS_CODE.CONFLICT).json({
+            key: isEndorsementsExists.name,
+            message: "This endorsement already exists",
+        });
+        return;
+    }
+
     const team = await prisma.dashapp_team.create({
         data: {
             team_name: name,

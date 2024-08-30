@@ -49,7 +49,7 @@ export const createAthleteSchema = z.object({
 export const editAthleteSchema = createAthleteSchema.partial().extend({
     association: z
         .object({
-            associationId: z.string(),
+            associationId: z.string().optional(),
             associationLevelId: z.string(),
             costOfAssociation: z.number().optional(),
         })

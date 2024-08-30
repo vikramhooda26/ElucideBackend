@@ -8,6 +8,16 @@ export class BrandResponseDTO {
         id?: string;
         name?: string;
     };
+    createdBy?: {
+        id?: string;
+        name?: string;
+    };
+    modifiedBy?: {
+        id?: string;
+        name?: string;
+    };
+    createdDate?: Date | null;
+    modifiedDate?: Date | null;
     subcategory?: {
         id?: string;
         name?: string;
@@ -103,6 +113,14 @@ export class BrandResponseDTO {
             name?: string;
         }[];
     }[];
+    mainCategories?: {
+        id?: string;
+        name?: string;
+        subCategories?: {
+            id?: string;
+            name?: string;
+        }[];
+    }[];
     sportsDealSummary?: {
         annualValue?: string;
         assets: {
@@ -190,18 +208,18 @@ export class BrandResponseDTO {
             id: brandDetails.dashapp_parentorg?.id.toString(),
             name: brandDetails.dashapp_parentorg?.name,
         };
-        brandDTO.subcategory = brandDetails.dashapp_companydata_subcategory.map(
-            (subcategory) => ({
-                id: subcategory.dashapp_subcategory?.id.toString(),
-                name: subcategory.dashapp_subcategory?.subcategory,
+        brandDTO.mainCategories = brandDetails.mainCategories?.map(
+            (category) => ({
+                id: category.id?.toString(),
+                name: category?.category,
+                subCategories: category.dashapp_subcategory?.map(
+                    (subCategory) => ({
+                        id: subCategory.id?.toString(),
+                        name: subCategory.subcategory,
+                    }),
+                ),
             }),
         );
-        brandDTO.maincategory =
-            brandDetails.dashapp_companydata_subcategory.map((subcategory) => ({
-                id: subcategory.dashapp_subcategory?.dashapp_category.id.toString(),
-                name: subcategory.dashapp_subcategory?.dashapp_category
-                    .category,
-            }));
         brandDTO.city = {
             id: brandDetails.dashapp_hqcity?.id.toString(),
             name: brandDetails.dashapp_hqcity?.name,
@@ -246,6 +264,16 @@ export class BrandResponseDTO {
                 },
             }),
         );
+        brandDTO.createdBy = {
+            id: brandDetails.created_by?.id.toString(),
+            name: brandDetails.created_by?.email,
+        };
+        brandDTO.modifiedBy = {
+            id: brandDetails.modified_by?.id.toString(),
+            name: brandDetails.modified_by?.email,
+        };
+        brandDTO.createdDate = brandDetails.created_date;
+        brandDTO.modifiedDate = brandDetails.modified_date;
         brandDTO.endorsements = brandDetails.dashapp_brandendorsements.map(
             (endorse) => ({
                 id: endorse.id.toString(),

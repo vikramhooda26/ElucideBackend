@@ -4,23 +4,14 @@ export const brandSelect = Prisma.validator<Prisma.dashapp_companydataSelect>()(
     {
         id: true,
         company_name: true,
+        created_by: { select: { id: true, email: true } },
+        modified_by: { select: { id: true, email: true } },
+        created_date: true,
+        modified_date: true,
         dashapp_parentorg: {
             select: {
                 id: true,
                 name: true,
-            },
-        },
-        dashapp_companydata_subcategory: {
-            select: {
-                dashapp_subcategory: {
-                    select: {
-                        id: true,
-                        subcategory: true,
-                        dashapp_category: {
-                            select: { id: true, category: true },
-                        },
-                    },
-                },
             },
         },
         dashapp_brand_association: {
@@ -304,6 +295,14 @@ export interface TBrandDetails
         dashapp_subpersonality: {
             id: bigint;
             name: string;
+        }[];
+    }[];
+    mainCategories?: {
+        id?: bigint;
+        category?: string;
+        dashapp_subcategory?: {
+            id?: bigint;
+            subcategory?: string;
         }[];
     }[];
 }

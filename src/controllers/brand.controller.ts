@@ -77,6 +77,35 @@ export const getBrandById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This brand does not exists");
     }
 
+    const mainCategories = await prisma.dashapp_category.findMany({
+        where: {
+            dashapp_subcategory: {
+                some: {
+                    dashapp_companydata_subcategory: {
+                        some: { companydata_id: BigInt(brandId) },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            category: true,
+            dashapp_subcategory: {
+                where: {
+                    dashapp_companydata_subcategory: {
+                        some: {
+                            companydata_id: BigInt(brandId),
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    subcategory: true,
+                },
+            },
+        },
+    });
+
     const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
         where: {
             dashapp_subpersonality: {
@@ -105,6 +134,7 @@ export const getBrandById = asyncHandler(async (req, res) => {
     const updatedBrand = {
         ...brand,
         mainPersonalities,
+        mainCategories,
     };
 
     const brandResponse: BrandResponseDTO =
@@ -150,6 +180,24 @@ export const createBrand = asyncHandler(async (req, res) => {
         contactPerson,
         endorsements,
     } = req.validatedData as TCreateBrandSchema;
+
+    const isEndorsementsExists =
+        await prisma.dashapp_brandendorsements.findFirst({
+            where: {
+                name: { in: endorsements?.map((endorse) => endorse.name) },
+            },
+            select: {
+                name: true,
+            },
+        });
+
+    if (isEndorsementsExists?.name) {
+        res.status(STATUS_CODE.CONFLICT).json({
+            key: isEndorsementsExists.name,
+            message: "This endorsement already exists",
+        });
+        return;
+    }
 
     const brand = await prisma.dashapp_companydata.create({
         data: {
@@ -232,7 +280,9 @@ export const createBrand = asyncHandler(async (req, res) => {
                 ? {
                       create: activeCampaignIds?.map((activeCampaignId) => ({
                           dashapp_activecampaigns: {
-                              connect: { id: BigInt(activeCampaignId) },
+                              connect: {
+                                  id: BigInt(activeCampaignId),
+                              },
                           },
                       })),
                   }
