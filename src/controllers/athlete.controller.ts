@@ -280,7 +280,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            age: athleteAge || undefined,
+            age: athleteAge,
             dashapp_athlete_target_age: ageIds?.length
                 ? {
                       create: ageIds.map((ageId) => ({
@@ -302,7 +302,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(athleteGenderId) },
                   }
                 : undefined,
-            strategy_overview: strategyOverview || undefined,
+            strategy_overview: strategyOverview,
             dashapp_athlete_target_income: nccsIds?.length
                 ? {
                       create: nccsIds.map((nccsId) => ({
@@ -347,10 +347,10 @@ export const createAthlete = asyncHandler(async (req, res) => {
         await prisma.dashapp_athletecontact.createMany({
             data: contactPerson.map((details) => ({
                 contact_name: details.contactName,
-                contact_designation: details.contactDesignation || undefined,
-                contact_email: details.contactEmail || undefined,
-                contact_no: details.contactNumber || undefined,
-                contact_linkedin: details.contactLinkedin || undefined,
+                contact_designation: details.contactDesignation,
+                contact_email: details.contactEmail,
+                contact_no: details.contactNumber,
+                contact_linkedin: details.contactLinkedin,
                 athlete_id: athlete.id,
             })),
         });
@@ -421,55 +421,57 @@ export const editAthlete = asyncHandler(async (req, res) => {
     await prisma.dashapp_athlete.update({
         where: { id: BigInt(athleteId) },
         data: {
-            athlete_name: name || undefined,
-            age: athleteAge || undefined,
+            athlete_name: name,
+            age: athleteAge,
             dashapp_athlete_association: {
                 deleteMany: {},
-                create: association?.length
-                    ? association.map((asso) => ({
-                          association_level: asso.associationLevelId
-                              ? {
-                                    connect: {
-                                        id: BigInt(asso.associationLevelId),
-                                    },
-                                }
-                              : undefined,
-                          cost: asso.costOfAssociation || undefined,
-                      }))
-                    : undefined,
+                ...(association?.length
+                    ? {
+                          create: association.map((asso) => ({
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(asso.associationLevelId),
+                                  },
+                              },
+                              cost: asso.costOfAssociation,
+                          })),
+                      }
+                    : undefined),
             },
-            strategy_overview: strategyOverview || undefined,
+            strategy_overview: strategyOverview,
             modified_by: userId
                 ? { connect: { id: BigInt(userId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_states: stateId
                 ? {
                       connect: { id: BigInt(stateId) },
                   }
-                : undefined,
-            dashapp_athlete_tier: tierIds
-                ? {
-                      deleteMany: {},
-                      create: tierIds.map((tierId) => ({
-                          dashapp_tier: { connect: { id: BigInt(tierId) } },
-                      })),
-                  }
-                : undefined,
-            facebook: facebook || undefined,
-            instagram: instagram || undefined,
-            twitter: twitter || undefined,
-            linkedin: linkedin || undefined,
-            youtube: youtube || undefined,
-            website: website || undefined,
+                : { disconnect: true },
+            dashapp_athlete_tier: {
+                deleteMany: {},
+                ...(tierIds?.length
+                    ? {
+                          create: tierIds.map((tierId) => ({
+                              dashapp_tier: { connect: { id: BigInt(tierId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            facebook: facebook,
+            instagram: instagram,
+            twitter: twitter,
+            linkedin: linkedin,
+            youtube: youtube,
+            website: website,
             dashapp_athlete_status: statusId
                 ? {
                       connect: { id: BigInt(statusId) },
                   }
                 : undefined,
-            dashapp_athlete_socialmedia_platform_primary:
-                primarySocialMediaPlatformIds
+            dashapp_athlete_socialmedia_platform_primary: {
+                deleteMany: {},
+                ...(primarySocialMediaPlatformIds?.length
                     ? {
-                          deleteMany: {},
                           create: primarySocialMediaPlatformIds.map(
                               (primarySocialMediaId) => ({
                                   dashapp_socialmedia_platform: {
@@ -480,11 +482,12 @@ export const editAthlete = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
-            dashapp_athlete_socialmedia_platform_secondary:
-                secondarySocialMediaPlatformIds
+                    : undefined),
+            },
+            dashapp_athlete_socialmedia_platform_secondary: {
+                deleteMany: {},
+                ...(secondarySocialMediaPlatformIds?.length
                     ? {
-                          deleteMany: {},
                           create: secondarySocialMediaPlatformIds.map(
                               (secondarySocialMediaId) => ({
                                   dashapp_socialmedia_platform: {
@@ -495,16 +498,17 @@ export const editAthlete = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
+                    : undefined),
+            },
             dashapp_agency: agencyId
                 ? { connect: { id: BigInt(agencyId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_sport: sportId
                 ? { connect: { id: BigInt(sportId) } }
-                : undefined,
+                : { disconnect: true },
             nationality: nationalityId
                 ? { connect: { id: BigInt(nationalityId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_athlete_personality_traits: subPersonalityTraitIds
                 ? {
                       deleteMany: {},
@@ -515,119 +519,97 @@ export const editAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_athlete_target_age: ageIds?.length
-                ? {
-                      deleteMany: {},
-                      create: ageIds.map((ageId) => ({
-                          dashapp_age: { connect: { id: BigInt(ageId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_gender: athleteGenderId
+            dashapp_athlete_target_age: {
+                deleteMany: {},
+                ...(ageIds?.length
+                    ? {
+                          create: ageIds.map((ageId) => ({
+                              dashapp_age: { connect: { id: BigInt(ageId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_gender: athleteGenderId?.length
                 ? {
                       connect: {
                           id: BigInt(athleteGenderId),
                       },
                   }
-                : undefined,
-            dashapp_athlete_target_gender: genderIds
-                ? {
-                      deleteMany: {},
-                      create: genderIds.map((genderId) => ({
-                          dashapp_gender: {
-                              connect: { id: BigInt(genderId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_athlete_target_income: nccsIds
-                ? {
-                      deleteMany: {},
-                      create: nccsIds.map((nccsId) => ({
-                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_athlete_key_markets_primary: primaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: primaryMarketIds?.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_athlete_key_markets_secondary: secondaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: secondaryMarketIds?.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_athlete_key_markets_tertiary: tertiaryIds
-                ? {
-                      deleteMany: {},
-                      create: tertiaryIds?.map((tertiaryId) => ({
-                          dashapp_states: {
-                              connect: { id: BigInt(tertiaryId) },
-                          },
-                      })),
-                  }
-                : undefined,
+                : { disconnect: true },
+            dashapp_athlete_target_gender: {
+                deleteMany: {},
+                ...(genderIds?.length
+                    ? {
+                          create: genderIds.map((genderId) => ({
+                              dashapp_gender: {
+                                  connect: { id: BigInt(genderId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_athlete_target_income: {
+                deleteMany: {},
+                ...(nccsIds?.length
+                    ? {
+                          create: nccsIds.map((nccsId) => ({
+                              dashapp_nccs: { connect: { id: BigInt(nccsId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_athlete_key_markets_primary: {
+                deleteMany: {},
+                ...(primaryMarketIds?.length
+                    ? {
+                          create: primaryMarketIds?.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_athlete_key_markets_secondary: {
+                deleteMany: {},
+                ...(secondaryMarketIds?.length
+                    ? {
+                          create: secondaryMarketIds?.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_athlete_key_markets_tertiary: {
+                deleteMany: {},
+                ...(tertiaryIds?.length
+                    ? {
+                          create: tertiaryIds?.map((tertiaryId) => ({
+                              dashapp_states: {
+                                  connect: { id: BigInt(tertiaryId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
         },
     });
 
-    if (contactPerson?.length) {
-        await prisma.dashapp_athletecontact.deleteMany({
-            where: {
-                AND: [
-                    {
-                        id: {
-                            notIn: contactPerson.map((details) =>
-                                BigInt(details.contactId || ""),
-                            ),
-                        },
-                    },
-                    {
-                        athlete_id: BigInt(athleteId),
-                    },
-                ],
-            },
-        });
+    await prisma.dashapp_athletecontact.deleteMany();
 
-        for (const details of contactPerson) {
-            await prisma.dashapp_athletecontact.upsert({
-                where: { id: BigInt(details.contactId || "") },
-                create: {
-                    contact_name: details.contactName,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                    dashapp_athlete: {
-                        connect: {
-                            id: BigInt(athleteId),
-                        },
-                    },
-                },
-                update: {
-                    contact_name: details.contactName || undefined,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                },
-            });
-        }
-    } else {
-        await prisma.dashapp_athletecontact.deleteMany({
-            where: { athlete_id: BigInt(athleteId) },
+    if (contactPerson?.length) {
+        const contactData = contactPerson.map((details) => ({
+            contact_name: details.contactName,
+            contact_designation: details.contactDesignation,
+            contact_email: details.contactEmail,
+            contact_no: details.contactNumber,
+            contact_linkedin: details.contactLinkedin,
+            athlete_id: BigInt(athleteId),
+        }));
+        await prisma.dashapp_athletecontact.createMany({
+            data: contactData,
         });
     }
 

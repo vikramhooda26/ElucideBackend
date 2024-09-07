@@ -47,9 +47,9 @@ export const createAthleteSchema = z.object({
 });
 
 export const editAthleteSchema = createAthleteSchema.partial().extend({
+    name: z.string().min(1, "Required"),
     association: z
         .object({
-            associationId: z.string().optional(),
             associationLevelId: z.string(),
             costOfAssociation: z.number().optional(),
         })
@@ -58,7 +58,6 @@ export const editAthleteSchema = createAthleteSchema.partial().extend({
     userId: z.string(),
     contactPerson: z
         .object({
-            contactId: z.string().optional(),
             contactName: z.string(),
             contactDesignation: z.string().optional(),
             contactEmail: z.string().optional(),

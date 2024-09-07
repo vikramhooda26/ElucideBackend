@@ -47,6 +47,7 @@ export const createBrandSchema = z.object({
 });
 
 export const editBrandSchema = createBrandSchema.partial().extend({
+    name: z.string(),
     userId: z.string(),
     contactPerson: z
         .object({

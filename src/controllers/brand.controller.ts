@@ -249,7 +249,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_tier: tierIds
+            dashapp_companydata_tier: tierIds?.length
                 ? {
                       create: tierIds?.map((tierId) => ({
                           dashapp_tier: {
@@ -258,16 +258,17 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_personality_traits: subPersonalityTraitIds
-                ? {
-                      create: subPersonalityTraitIds?.map((traitId) => ({
-                          dashapp_subpersonality: {
-                              connect: { id: BigInt(traitId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_taglines: taglineIds
+            dashapp_companydata_personality_traits:
+                subPersonalityTraitIds?.length
+                    ? {
+                          create: subPersonalityTraitIds?.map((traitId) => ({
+                              dashapp_subpersonality: {
+                                  connect: { id: BigInt(traitId) },
+                              },
+                          })),
+                      }
+                    : undefined,
+            dashapp_companydata_taglines: taglineIds?.length
                 ? {
                       create: taglineIds?.map((taglineId) => ({
                           dashapp_taglines: {
@@ -276,7 +277,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_active_campaigns: activeCampaignIds
+            dashapp_companydata_active_campaigns: activeCampaignIds?.length
                 ? {
                       create: activeCampaignIds?.map((activeCampaignId) => ({
                           dashapp_activecampaigns: {
@@ -288,7 +289,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                   }
                 : undefined,
             dashapp_companydata_marketing_platforms_primary:
-                primaryMarketingPlatformIds
+                primaryMarketingPlatformIds?.length
                     ? {
                           create: primaryMarketingPlatformIds?.map(
                               (primaryMarketingPlatformId) => ({
@@ -304,7 +305,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       }
                     : undefined,
             dashapp_companydata_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds
+                secondaryMarketingPlatformIds?.length
                     ? {
                           create: secondaryMarketingPlatformIds?.map(
                               (secondaryMarketingPlatformId) => ({
@@ -319,7 +320,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                           ),
                       }
                     : undefined,
-            dashapp_companydata_age: ageIds
+            dashapp_companydata_age: ageIds?.length
                 ? {
                       create: ageIds?.map((ageId) => ({
                           dashapp_age: {
@@ -328,7 +329,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_gender: genderIds
+            dashapp_companydata_gender: genderIds?.length
                 ? {
                       create: genderIds?.map((genderId) => ({
                           dashapp_gender: {
@@ -337,7 +338,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_income: nccsIds
+            dashapp_companydata_income: nccsIds?.length
                 ? {
                       create: nccsIds?.map((nccsId) => ({
                           dashapp_nccs: {
@@ -346,7 +347,7 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_key_markets_primary: primaryMarketIds
+            dashapp_companydata_key_markets_primary: primaryMarketIds?.length
                 ? {
                       create: primaryMarketIds?.map((marketId) => ({
                           dashapp_keymarket: {
@@ -355,16 +356,17 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_key_markets_secondary: secondaryMarketIds
-                ? {
-                      create: secondaryMarketIds?.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_key_markets_tertiary: tertiaryIds
+            dashapp_companydata_key_markets_secondary:
+                secondaryMarketIds?.length
+                    ? {
+                          create: secondaryMarketIds?.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined,
+            dashapp_companydata_key_markets_tertiary: tertiaryIds?.length
                 ? {
                       create: tertiaryIds?.map((tertiaryId) => ({
                           dashapp_states: {
@@ -373,13 +375,13 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            strategy_overview: strategyOverview || undefined,
-            instagram: instagram || undefined,
-            facebook: facebook || undefined,
-            linkedin: linkedin || undefined,
-            twitter: twitter || undefined,
-            youtube: youtube || undefined,
-            website: website || undefined,
+            strategy_overview: strategyOverview,
+            instagram: instagram,
+            facebook: facebook,
+            linkedin: linkedin,
+            twitter: twitter,
+            youtube: youtube,
+            website: website,
         },
         select: {
             id: true,
@@ -390,10 +392,10 @@ export const createBrand = asyncHandler(async (req, res) => {
         await prisma.dashapp_brandcontact.createMany({
             data: contactPerson.map((details) => ({
                 contact_name: details.contactName,
-                contact_designation: details.contactDesignation || undefined,
-                contact_email: details.contactEmail || undefined,
-                contact_no: details.contactNumber || undefined,
-                contact_linkedin: details.contactLinkedin || undefined,
+                contact_designation: details.contactDesignation,
+                contact_email: details.contactEmail,
+                contact_no: details.contactNumber,
+                contact_linkedin: details.contactLinkedin,
                 brand_id: brand.id,
             })),
         });
@@ -454,81 +456,93 @@ export const editBrand = asyncHandler(async (req, res) => {
     await prisma.dashapp_companydata.update({
         where: { id: BigInt(brandId) },
         data: {
-            company_name: name || undefined,
+            company_name: name,
+            modified_by: { connect: { id: BigInt(userId) } },
             dashapp_parentorg: parentOrgId
                 ? { connect: { id: BigInt(parentOrgId) } }
-                : undefined,
-            modified_by: { connect: { id: BigInt(userId) } },
-            dashapp_companydata_subcategory: subCategoryIds
-                ? {
-                      deleteMany: {},
-                      create: subCategoryIds.map((subCategoryId) => ({
-                          dashapp_subcategory: {
-                              connect: { id: BigInt(subCategoryId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_brandendorsements: endorsements?.length
-                ? {
-                      deleteMany: {},
-                      create: endorsements.map((endorse) => ({
-                          name: endorse.name,
-                          active: endorse.active,
-                      })),
-                  }
-                : undefined,
+                : { disconnect: true },
+            dashapp_companydata_subcategory: {
+                deleteMany: {},
+                ...(subCategoryIds?.length
+                    ? {
+                          create: subCategoryIds.map((subCategoryId) => ({
+                              dashapp_subcategory: {
+                                  connect: { id: BigInt(subCategoryId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_brandendorsements: {
+                deleteMany: {},
+                ...(endorsements?.length
+                    ? {
+                          create: endorsements.map((endorse) => ({
+                              name: endorse.name,
+                              active: endorse.active,
+                          })),
+                      }
+                    : undefined),
+            },
             dashapp_hqcity: cityId
                 ? { connect: { id: BigInt(cityId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_states: stateId
                 ? { connect: { id: BigInt(stateId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_agency: agencyId
                 ? { connect: { id: BigInt(agencyId) } }
-                : undefined,
-            dashapp_companydata_tier: tierIds
-                ? {
-                      deleteMany: {},
-                      create: tierIds.map((tierId) => ({
-                          dashapp_tier: { connect: { id: BigInt(tierId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_personality_traits: subPersonalityTraitIds
-                ? {
-                      deleteMany: {},
-                      create: subPersonalityTraitIds.map((traitId) => ({
-                          dashapp_subpersonality: {
-                              connect: { id: BigInt(traitId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_taglines: taglineIds
-                ? {
-                      deleteMany: {},
-                      create: taglineIds.map((taglineId) => ({
-                          dashapp_taglines: {
-                              connect: { id: BigInt(taglineId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_active_campaigns: activeCampaignIds
-                ? {
-                      deleteMany: {},
-                      create: activeCampaignIds.map((activeCampaignId) => ({
-                          dashapp_activecampaigns: {
-                              connect: { id: BigInt(activeCampaignId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_marketing_platforms_primary:
-                primaryMarketingPlatformIds
+                : { disconnect: true },
+            dashapp_companydata_tier: {
+                deleteMany: {},
+                ...(tierIds?.length
                     ? {
-                          deleteMany: {},
+                          create: tierIds.map((tierId) => ({
+                              dashapp_tier: { connect: { id: BigInt(tierId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_personality_traits: {
+                deleteMany: {},
+                ...(subPersonalityTraitIds?.length
+                    ? {
+                          create: subPersonalityTraitIds.map((traitId) => ({
+                              dashapp_subpersonality: {
+                                  connect: { id: BigInt(traitId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_taglines: {
+                deleteMany: {},
+                ...(taglineIds?.length
+                    ? {
+                          create: taglineIds.map((taglineId) => ({
+                              dashapp_taglines: {
+                                  connect: { id: BigInt(taglineId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_active_campaigns: {
+                deleteMany: {},
+                ...(activeCampaignIds?.length
+                    ? {
+                          create: activeCampaignIds.map((activeCampaignId) => ({
+                              dashapp_activecampaigns: {
+                                  connect: { id: BigInt(activeCampaignId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_marketing_platforms_primary: {
+                deleteMany: {},
+                ...(primaryMarketingPlatformIds?.length
+                    ? {
                           create: primaryMarketingPlatformIds.map(
                               (primaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
@@ -541,11 +555,12 @@ export const editBrand = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
-            dashapp_companydata_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds
+                    : undefined),
+            },
+            dashapp_companydata_marketing_platforms_secondary: {
+                deleteMany: {},
+                ...(secondaryMarketingPlatformIds?.length
                     ? {
-                          deleteMany: {},
                           create: secondaryMarketingPlatformIds.map(
                               (secondaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
@@ -558,113 +573,100 @@ export const editBrand = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
-            dashapp_companydata_age: ageIds
-                ? {
-                      deleteMany: {},
-                      create: ageIds.map((ageId) => ({
-                          dashapp_age: { connect: { id: BigInt(ageId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_gender: genderIds
-                ? {
-                      deleteMany: {},
-                      create: genderIds.map((genderId) => ({
-                          dashapp_gender: { connect: { id: BigInt(genderId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_income: nccsIds
-                ? {
-                      deleteMany: {},
-                      create: nccsIds.map((nccsId) => ({
-                          dashapp_nccs: { connect: { id: BigInt(nccsId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_key_markets_primary: primaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: primaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_key_markets_secondary: secondaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: secondaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_companydata_key_markets_tertiary: tertiaryIds
-                ? {
-                      deleteMany: {},
-                      create: tertiaryIds.map((tertiaryId) => ({
-                          dashapp_states: {
-                              connect: { id: BigInt(tertiaryId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            strategy_overview: strategyOverview || undefined,
-            instagram: instagram || undefined,
-            facebook: facebook || undefined,
-            linkedin: linkedin || undefined,
-            twitter: twitter || undefined,
-            youtube: youtube || undefined,
-            website: website || undefined,
+                    : undefined),
+            },
+            dashapp_companydata_age: {
+                deleteMany: {},
+                ...(ageIds?.length
+                    ? {
+                          create: ageIds.map((ageId) => ({
+                              dashapp_age: { connect: { id: BigInt(ageId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_gender: {
+                deleteMany: {},
+                ...(genderIds?.length
+                    ? {
+                          create: genderIds.map((genderId) => ({
+                              dashapp_gender: {
+                                  connect: { id: BigInt(genderId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_income: {
+                deleteMany: {},
+                ...(nccsIds?.length
+                    ? {
+                          create: nccsIds.map((nccsId) => ({
+                              dashapp_nccs: { connect: { id: BigInt(nccsId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_key_markets_primary: {
+                deleteMany: {},
+                ...(primaryMarketIds?.length
+                    ? {
+                          create: primaryMarketIds.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_key_markets_secondary: {
+                deleteMany: {},
+                ...(secondaryMarketIds?.length
+                    ? {
+                          create: secondaryMarketIds.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_companydata_key_markets_tertiary: {
+                deleteMany: {},
+                ...(tertiaryIds?.length
+                    ? {
+                          create: tertiaryIds.map((tertiaryId) => ({
+                              dashapp_states: {
+                                  connect: { id: BigInt(tertiaryId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            strategy_overview: strategyOverview,
+            instagram: instagram,
+            facebook: facebook,
+            linkedin: linkedin,
+            twitter: twitter,
+            youtube: youtube,
+            website: website,
         },
         select: { id: true },
     });
 
-    if (contactPerson?.length) {
-        await prisma.dashapp_brandcontact.deleteMany({
-            where: {
-                id: {
-                    notIn: contactPerson.map((details) =>
-                        BigInt(details.contactId || ""),
-                    ),
-                },
-                brand_id: BigInt(brandId),
-            },
-        });
+    await prisma.dashapp_brandcontact.deleteMany();
 
-        for (const details of contactPerson) {
-            await prisma.dashapp_brandcontact.upsert({
-                where: { id: BigInt(details.contactId || "") },
-                create: {
-                    contact_name: details.contactName,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                    dashapp_companydata: {
-                        connect: {
-                            id: BigInt(brandId),
-                        },
-                    },
-                },
-                update: {
-                    contact_name: details.contactName || undefined,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                },
-            });
-        }
-    } else {
-        await prisma.dashapp_brandcontact.deleteMany({
-            where: { brand_id: BigInt(brandId) },
+    if (contactPerson?.length) {
+        const contactData = contactPerson.map((details) => ({
+            contact_name: details.contactName,
+            contact_designation: details.contactDesignation,
+            contact_email: details.contactEmail,
+            contact_no: details.contactNumber,
+            contact_linkedin: details.contactLinkedin,
+            brand_id: BigInt(brandId),
+        }));
+        await prisma.dashapp_brandcontact.createMany({
+            data: contactData,
         });
     }
 
