@@ -111,7 +111,7 @@ export class AthleteResponseDTO {
             name?: string;
         };
     }[];
-    sportsDealsummary?: {
+    sportsDealSummary?: {
         id?: string;
         annualValue?: Prisma.Decimal | null;
         totalValue?: Prisma.Decimal | null;
@@ -301,7 +301,7 @@ export class AthleteResponseDTO {
                 },
             }),
         );
-        athleteDTO.sportsDealsummary =
+        athleteDTO.sportsDealSummary =
             athleteDetails.dashapp_sportsdealsummary.map((deal) => ({
                 id: deal.id.toString(),
                 annualValue: deal.annual_value,

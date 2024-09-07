@@ -38,7 +38,7 @@ export class BrandResponseDTO {
         id?: string;
         name?: string;
     };
-    tier?: {
+    tiers?: {
         id?: string;
         name?: string;
     }[];
@@ -234,7 +234,7 @@ export class BrandResponseDTO {
             id: brandDetails.dashapp_agency?.id.toString(),
             name: brandDetails.dashapp_agency?.name,
         };
-        brandDTO.tier = brandDetails.dashapp_companydata_tier.map((tier) => ({
+        brandDTO.tiers = brandDetails.dashapp_companydata_tier.map((tier) => ({
             id: tier.dashapp_tier?.id.toString(),
             name: tier.dashapp_tier?.name,
         }));
