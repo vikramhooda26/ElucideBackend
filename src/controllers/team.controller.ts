@@ -204,10 +204,14 @@ export const createTeam = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(leagueId) },
                   }
                 : undefined,
-            dashapp_team_owner: ownerIds
+            dashapp_team_owner: ownerIds?.length
                 ? {
-                      connect: ownerIds?.map((ownerId) => ({
-                          id: BigInt(ownerId),
+                      create: ownerIds.map((ownerId) => ({
+                          dashapp_teamowner: {
+                              connect: {
+                                  id: BigInt(ownerId),
+                              },
+                          },
                       })),
                   }
                 : undefined,
@@ -509,87 +513,102 @@ export const editTeam = asyncHandler(async (req, res) => {
     await prisma.dashapp_team.update({
         where: { id: BigInt(teamId) },
         data: {
-            team_name: name || undefined,
+            team_name: name,
             modified_by: {
                 connect: { id: BigInt(userId) },
             },
             dashapp_sport: sportId
                 ? { connect: { id: BigInt(sportId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_leagueinfo: leagueId
                 ? { connect: { id: BigInt(leagueId) } }
-                : undefined,
-            dashapp_team_owner: ownerIds
-                ? {
-                      connect: ownerIds.map((teamOwnerId) => ({
-                          id: BigInt(teamOwnerId),
-                      })),
-                  }
-                : undefined,
-            year_of_inception: yearOfInception || undefined,
-            franchise_fee: franchiseFee || undefined,
+                : { disconnect: true },
+            dashapp_team_owner: {
+                deleteMany: {},
+                ...(ownerIds?.length
+                    ? {
+                          create: ownerIds.map((ownerId) => ({
+                              dashapp_teamowner: {
+                                  connect: { id: BigInt(ownerId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            year_of_inception: yearOfInception,
+            franchise_fee: franchiseFee,
             dashapp_hqcity: cityId
                 ? { connect: { id: BigInt(cityId) } }
-                : undefined,
+                : { disconnect: true },
             dashapp_states: stateId
                 ? { connect: { id: BigInt(stateId) } }
-                : undefined,
-            dashapp_team_personality_traits: subPersonalityTraitIds
-                ? {
-                      deleteMany: {},
-                      create: subPersonalityTraitIds.map((traitId) => ({
-                          dashapp_subpersonality: {
-                              connect: { id: BigInt(traitId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_tier: tierIds
-                ? {
-                      deleteMany: {},
-                      create: tierIds.map((tierId) => ({
-                          dashapp_tier: {
-                              connect: { id: BigInt(tierId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            strategy_overview: strategyOverview || undefined,
-            dashapp_team_taglines: taglineIds
-                ? {
-                      deleteMany: {},
-                      create: taglineIds.map((taglineId) => ({
-                          dashapp_taglines: {
-                              connect: { id: BigInt(taglineId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_active_campaigns: activeCampaignIds
-                ? {
-                      deleteMany: {},
-                      create: activeCampaignIds.map((activeCampaignId) => ({
-                          dashapp_activecampaigns: {
-                              connect: {
-                                  id: BigInt(activeCampaignId),
-                              },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_teamendorsements: endorsements?.length
-                ? {
-                      deleteMany: {},
-                      create: endorsements.map((endorse) => ({
-                          name: endorse.name,
-                          active: endorse.active,
-                      })),
-                  }
-                : undefined,
-            dashapp_team_marketing_platforms_primary:
-                primaryMarketingPlatformIds
+                : { disconnect: true },
+            dashapp_team_personality_traits: {
+                deleteMany: {},
+                ...(subPersonalityTraitIds?.length
                     ? {
-                          deleteMany: {},
+                          create: subPersonalityTraitIds.map((traitId) => ({
+                              dashapp_subpersonality: {
+                                  connect: { id: BigInt(traitId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_tier: {
+                deleteMany: {},
+                ...(tierIds?.length
+                    ? {
+                          create: tierIds.map((tierId) => ({
+                              dashapp_tier: {
+                                  connect: { id: BigInt(tierId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            strategy_overview: strategyOverview,
+            dashapp_team_taglines: {
+                deleteMany: {},
+                ...(taglineIds?.length
+                    ? {
+                          create: taglineIds.map((taglineId) => ({
+                              dashapp_taglines: {
+                                  connect: { id: BigInt(taglineId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_active_campaigns: {
+                deleteMany: {},
+                ...(activeCampaignIds?.length
+                    ? {
+                          create: activeCampaignIds.map((activeCampaignId) => ({
+                              dashapp_activecampaigns: {
+                                  connect: {
+                                      id: BigInt(activeCampaignId),
+                                  },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_teamendorsements: {
+                deleteMany: {},
+                ...(endorsements?.length
+                    ? {
+                          create: endorsements.map((endorse) => ({
+                              name: endorse.name,
+                              active: endorse.active,
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_marketing_platforms_primary: {
+                deleteMany: {},
+                ...(primaryMarketingPlatformIds?.length
+                    ? {
                           create: primaryMarketingPlatformIds.map(
                               (primaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
@@ -602,11 +621,12 @@ export const editTeam = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
-            dashapp_team_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds
+                    : undefined),
+            },
+            dashapp_team_marketing_platforms_secondary: {
+                deleteMany: {},
+                ...(secondaryMarketingPlatformIds?.length
                     ? {
-                          deleteMany: {},
                           create: secondaryMarketingPlatformIds.map(
                               (secondaryMarketingPlatformId) => ({
                                   dashapp_marketingplatform: {
@@ -619,180 +639,167 @@ export const editTeam = asyncHandler(async (req, res) => {
                               }),
                           ),
                       }
-                    : undefined,
-            dashapp_team_age: ageIds
-                ? {
-                      deleteMany: {},
-                      create: ageIds.map((ageId) => ({
-                          dashapp_age: {
-                              connect: { id: BigInt(ageId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_gender: genderIds
-                ? {
-                      deleteMany: {},
-                      create: genderIds.map((genderId) => ({
-                          dashapp_gender: {
-                              connect: { id: BigInt(genderId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_income: nccsIds
-                ? {
-                      deleteMany: {},
-                      create: nccsIds.map((nccsId) => ({
-                          dashapp_nccs: {
-                              connect: { id: BigInt(nccsId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_key_markets_primary: primaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: primaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_key_markets_secondary: secondaryMarketIds
-                ? {
-                      deleteMany: {},
-                      create: secondaryMarketIds.map((marketId) => ({
-                          dashapp_keymarket: {
-                              connect: { id: BigInt(marketId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_team_key_markets_tertiary: tertiaryIds
-                ? {
-                      deleteMany: {},
-                      create: tertiaryIds.map((tertiaryId) => ({
-                          dashapp_states: {
-                              connect: { id: BigInt(tertiaryId) },
-                          },
-                      })),
-                  }
-                : undefined,
+                    : undefined),
+            },
+            dashapp_team_age: {
+                deleteMany: {},
+                ...(ageIds?.length
+                    ? {
+                          create: ageIds.map((ageId) => ({
+                              dashapp_age: {
+                                  connect: { id: BigInt(ageId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_gender: {
+                deleteMany: {},
+                ...(genderIds?.length
+                    ? {
+                          create: genderIds.map((genderId) => ({
+                              dashapp_gender: {
+                                  connect: { id: BigInt(genderId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_income: {
+                deleteMany: {},
+                ...(nccsIds?.length
+                    ? {
+                          create: nccsIds.map((nccsId) => ({
+                              dashapp_nccs: {
+                                  connect: { id: BigInt(nccsId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_key_markets_primary: {
+                deleteMany: {},
+                ...(primaryMarketIds?.length
+                    ? {
+                          create: primaryMarketIds.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_key_markets_secondary: {
+                deleteMany: {},
+                ...(secondaryMarketIds?.length
+                    ? {
+                          create: secondaryMarketIds.map((marketId) => ({
+                              dashapp_keymarket: {
+                                  connect: { id: BigInt(marketId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_team_key_markets_tertiary: {
+                deleteMany: {},
+                ...(tertiaryIds?.length
+                    ? {
+                          create: tertiaryIds.map((tertiaryId) => ({
+                              dashapp_states: {
+                                  connect: { id: BigInt(tertiaryId) },
+                              },
+                          })),
+                      }
+                    : undefined),
+            },
             dashapp_team_association: {
                 deleteMany: {},
-                create: association?.length
-                    ? association?.map((value) => ({
-                          association_level: {
-                              connect: {
-                                  id: BigInt(value.associationLevelId),
+                ...(association?.length
+                    ? {
+                          create: association?.map((value) => ({
+                              association_level: {
+                                  connect: {
+                                      id: BigInt(value.associationLevelId),
+                                  },
                               },
-                          },
-                          dashapp_brand_association: value.brandIds?.length
-                              ? {
-                                    create: value.brandIds.map((brandId) => ({
-                                        brand: {
-                                            connect: {
-                                                id: BigInt(brandId),
-                                            },
-                                        },
-                                    })),
-                                }
-                              : undefined,
-                          cost: value.costOfAssociation || undefined,
-                      }))
-                    : undefined,
+                              dashapp_brand_association: value.brandIds?.length
+                                  ? {
+                                        create: value.brandIds.map(
+                                            (brandId) => ({
+                                                brand: {
+                                                    connect: {
+                                                        id: BigInt(brandId),
+                                                    },
+                                                },
+                                            }),
+                                        ),
+                                    }
+                                  : undefined,
+                              cost: value.costOfAssociation || undefined,
+                          })),
+                      }
+                    : undefined),
             },
-            dashapp_broadcast_partner_metrics: broadcastPartnerMetrics?.length
-                ? {
-                      deleteMany: {},
-                      create: broadcastPartnerMetrics.map((metric) => ({
-                          reach: metric.reach,
-                          viewership: metric.viewership,
-                          year: metric.year,
-                          dashapp_broadcastpartner: {
-                              connect: {
-                                  id: BigInt(metric.broadcastPartnerId),
+            dashapp_broadcast_partner_metrics: {
+                deleteMany: {},
+                ...(broadcastPartnerMetrics?.length
+                    ? {
+                          create: broadcastPartnerMetrics.map((metric) => ({
+                              reach: metric.reach,
+                              viewership: metric.viewership,
+                              year: metric.year,
+                              dashapp_broadcastpartner: {
+                                  connect: {
+                                      id: BigInt(metric.broadcastPartnerId),
+                                  },
                               },
-                          },
-                          modified_by: { connect: { id: BigInt(userId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_ott_partner_metrics: ottPartnerMetrics?.length
-                ? {
-                      deleteMany: {},
-                      create: ottPartnerMetrics.map((metric) => ({
-                          reach: metric.reach,
-                          viewership: metric.viewership,
-                          year: metric.year,
-                          dashapp_ottpartner: {
-                              connect: {
-                                  id: BigInt(metric.ottPartnerId),
+                              modified_by: { connect: { id: BigInt(userId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            dashapp_ott_partner_metrics: {
+                deleteMany: {},
+                ...(ottPartnerMetrics?.length
+                    ? {
+                          create: ottPartnerMetrics.map((metric) => ({
+                              reach: metric.reach,
+                              viewership: metric.viewership,
+                              year: metric.year,
+                              dashapp_ottpartner: {
+                                  connect: {
+                                      id: BigInt(metric.ottPartnerId),
+                                  },
                               },
-                          },
-                          modified_by: { connect: { id: BigInt(userId) } },
-                      })),
-                  }
-                : undefined,
-            instagram: instagram || undefined,
-            facebook: facebook || undefined,
-            linkedin: linkedin || undefined,
-            twitter: twitter || undefined,
-            youtube: youtube || undefined,
-            website: website || undefined,
+                              modified_by: { connect: { id: BigInt(userId) } },
+                          })),
+                      }
+                    : undefined),
+            },
+            instagram: instagram,
+            facebook: facebook,
+            linkedin: linkedin,
+            twitter: twitter,
+            youtube: youtube,
+            website: website,
         },
         select: { id: true },
     });
 
+    await prisma.dashapp_teamcontact.deleteMany();
     if (contactPerson?.length) {
-        await prisma.dashapp_teamcontact.deleteMany({
-            where: {
-                AND: [
-                    {
-                        id: {
-                            notIn: contactPerson.map((details) =>
-                                BigInt(details.contactId || ""),
-                            ),
-                        },
-                    },
-                    {
-                        team_id: BigInt(teamId),
-                    },
-                ],
-            },
-        });
+        const contactData = contactPerson.map((details) => ({
+            contact_name: details.contactName,
+            contact_designation: details.contactDesignation,
+            contact_email: details.contactEmail,
+            contact_no: details.contactNumber,
+            contact_linkedin: details.contactLinkedin,
+            team_id: BigInt(teamId),
+        }));
 
-        for (const details of contactPerson) {
-            await prisma.dashapp_teamcontact.upsert({
-                where: { id: BigInt(details.contactId || "") },
-                create: {
-                    contact_name: details.contactName,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                    dashapp_team: {
-                        connect: {
-                            id: BigInt(teamId),
-                        },
-                    },
-                },
-                update: {
-                    contact_name: details.contactName || undefined,
-                    contact_designation:
-                        details.contactDesignation || undefined,
-                    contact_email: details.contactEmail || undefined,
-                    contact_no: details.contactNumber || undefined,
-                    contact_linkedin: details.contactLinkedin || undefined,
-                },
-            });
-        }
-    } else {
-        await prisma.dashapp_teamcontact.deleteMany({
-            where: { team_id: BigInt(teamId) },
+        await prisma.dashapp_teamcontact.createMany({
+            data: contactData,
         });
     }
 

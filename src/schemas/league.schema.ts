@@ -74,9 +74,9 @@ export const createLeagueSchema = z.object({
 });
 
 export const editLeagueSchema = createLeagueSchema.partial().extend({
+    name: z.string(),
     association: z
         .object({
-            associationId: z.string().optional(),
             associationLevelId: z.string(),
             costOfAssociation: z.number().optional(),
         })
@@ -84,7 +84,6 @@ export const editLeagueSchema = createLeagueSchema.partial().extend({
         .optional(),
     contactPerson: z
         .object({
-            contactId: z.string().optional(),
             contactName: z.string(),
             contactDesignation: z.string().optional(),
             contactEmail: z.string().optional(),

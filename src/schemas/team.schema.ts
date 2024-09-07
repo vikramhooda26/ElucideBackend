@@ -76,6 +76,7 @@ export const createTeamSchema = z.object({
 });
 
 export const editTeamSchema = createTeamSchema.partial().extend({
+    name: z.string(),
     association: z
         .object({
             associationId: z.string().optional(),
