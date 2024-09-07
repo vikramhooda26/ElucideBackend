@@ -3,6 +3,7 @@ import { prisma } from "../db/index.js";
 export const getAllAgeRanges = async () => {
     const ageRanges = await prisma.dashapp_age.findMany({
         select: { id: true, age_range: true },
+        orderBy: { age_range: "asc" },
     });
 
     return ageRanges.map((ageRange) => ({
@@ -14,6 +15,7 @@ export const getAllAgeRanges = async () => {
 export const getAllGenders = async () => {
     const genders = await prisma.dashapp_gender.findMany({
         select: { id: true, gender_is: true },
+        orderBy: { gender_is: "asc" },
     });
     return genders.map((gender) => ({
         value: gender.id,
@@ -24,6 +26,7 @@ export const getAllGenders = async () => {
 export const getAllCities = async () => {
     const cities = await prisma.dashapp_hqcity.findMany({
         select: { id: true, name: true },
+        orderBy: { name: "asc" },
     });
     return cities.map((city) => ({
         value: city.id,
@@ -34,6 +37,7 @@ export const getAllCities = async () => {
 export const getAllStates = async () => {
     const states = await prisma.dashapp_states.findMany({
         select: { id: true, state: true },
+        orderBy: { state: "asc" },
     });
     return states.map((state) => ({
         value: state.id,
@@ -44,6 +48,7 @@ export const getAllStates = async () => {
 export const getAllActiveCampaigns = async () => {
     const activeCampaigns = await prisma.dashapp_activecampaigns.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return activeCampaigns.map((campaign) => ({
         value: campaign.id,
@@ -54,6 +59,7 @@ export const getAllActiveCampaigns = async () => {
 export const getAllAgencies = async () => {
     const agencies = await prisma.dashapp_agency.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return agencies.map((agency) => ({
         value: agency.id,
@@ -64,6 +70,7 @@ export const getAllAgencies = async () => {
 export const getAllAssets = async () => {
     const assets = await prisma.dashapp_assets.findMany({
         select: { id: true, asset: true },
+        orderBy: { created_date: "desc" },
     });
     return assets.map((asset) => ({
         value: asset.id,
@@ -74,6 +81,7 @@ export const getAllAssets = async () => {
 export const getAllBroadcastPartners = async () => {
     const broadcastPartners = await prisma.dashapp_broadcastpartner.findMany({
         select: { id: true, name: true },
+        orderBy: { name: "asc" },
     });
     return broadcastPartners.map((partner) => ({
         value: partner.id,
@@ -84,6 +92,7 @@ export const getAllBroadcastPartners = async () => {
 export const getAllCategories = async () => {
     const categories = await prisma.dashapp_subcategory.findMany({
         select: { id: true, subcategory: true },
+        orderBy: { created_date: "desc" },
     });
     return categories.map((category) => ({
         value: category.id,
@@ -94,6 +103,7 @@ export const getAllCategories = async () => {
 export const getAllFormats = async () => {
     const formats = await prisma.dashapp_format.findMany({
         select: { id: true, format: true },
+        orderBy: { format: "asc" },
     });
     return formats.map((format) => ({
         value: format.id,
@@ -104,6 +114,7 @@ export const getAllFormats = async () => {
 export const getAllKeyMarkets = async () => {
     const keyMarketsList = await prisma.dashapp_keymarket.findMany({
         select: { id: true, zone: true },
+        orderBy: { zone: "asc" },
     });
     return keyMarketsList.map((market) => ({
         value: market.id,
@@ -114,6 +125,7 @@ export const getAllKeyMarkets = async () => {
 export const getAllLeagues = async () => {
     const leagues = await prisma.dashapp_leagueinfo.findMany({
         select: { id: true, property_name: true },
+        orderBy: { created_date: "desc" },
     });
     return leagues.map((league) => ({
         value: league.id,
@@ -127,6 +139,7 @@ export const getAllLeagueOwners = async () => {
             id: true,
             name: true,
         },
+        orderBy: { name: "asc" },
     });
     return leagueOwners.map((owner) => ({
         value: owner.id,
@@ -137,6 +150,7 @@ export const getAllLeagueOwners = async () => {
 export const getAllMarketingPlatforms = async () => {
     const marketingPlatforms = await prisma.dashapp_marketingplatform.findMany({
         select: { id: true, platform: true },
+        orderBy: { platform: "asc" },
     });
     return marketingPlatforms.map((platform) => ({
         value: platform.id,
@@ -147,6 +161,7 @@ export const getAllMarketingPlatforms = async () => {
 export const getAllNCCS = async () => {
     const nccsList = await prisma.dashapp_nccs.findMany({
         select: { id: true, nccs_class: true },
+        orderBy: { nccs_class: "asc" },
     });
     return nccsList.map((nccs) => ({
         value: nccs.id,
@@ -157,6 +172,7 @@ export const getAllNCCS = async () => {
 export const getAllOTTPartners = async () => {
     const ottPartners = await prisma.dashapp_ottpartner.findMany({
         select: { id: true, name: true },
+        orderBy: { name: "asc" },
     });
     return ottPartners.map((partner) => ({
         value: partner.id,
@@ -167,6 +183,7 @@ export const getAllOTTPartners = async () => {
 export const getAllParentOrgs = async () => {
     const parentOrgs = await prisma.dashapp_parentorg.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return parentOrgs.map((org) => ({
         value: org.id,
@@ -177,6 +194,7 @@ export const getAllParentOrgs = async () => {
 export const getAllPersonalityTraits = async () => {
     const personalityTraits = await prisma.dashapp_subpersonality.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return personalityTraits.map((trait) => ({
         value: trait.id,
@@ -190,6 +208,7 @@ export const getAllSportsDealSummaryLevels = async () => {
             id: true,
             name: true,
         },
+        orderBy: { created_date: "desc" },
     });
 
     return sportsDealSummaryLevels.map((level) => ({
@@ -202,6 +221,7 @@ export const getAllSportsDealSummaryStatuses = async () => {
     const sportsDealSummaryStatuses =
         await prisma.dashapp_athlete_status.findMany({
             select: { id: true, status: true },
+            orderBy: { status: "asc" },
         });
     return sportsDealSummaryStatuses.map((status) => ({
         value: status.id,
@@ -213,6 +233,7 @@ export const getAllSportsDealSummaryTerritories = async () => {
     const sportsDealSummaryTerritories =
         await prisma.dashapp_territory.findMany({
             select: { id: true, name: true },
+            orderBy: { name: "asc" },
         });
     return sportsDealSummaryTerritories.map((territory) => ({
         value: territory.id,
@@ -227,6 +248,7 @@ export const getAllSportsDealSummaryTypes = async () => {
                 id: true,
                 platform: true,
             },
+            orderBy: { platform: "asc" },
         });
     return sportsDealSummaryTypes.map((type) => ({
         value: type.id,
@@ -237,6 +259,7 @@ export const getAllSportsDealSummaryTypes = async () => {
 export const getAllTaglines = async () => {
     const taglines = await prisma.dashapp_taglines.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return taglines.map((tagline) => ({
         value: tagline.id,
@@ -247,6 +270,7 @@ export const getAllTaglines = async () => {
 export const getAllTeamOwners = async () => {
     const teamOwners = await prisma.dashapp_teamowner.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
     return teamOwners.map((owner) => ({
         value: owner.id,
@@ -262,6 +286,7 @@ export const getAllTertiaries = async () => {
 export const getAllSports = async () => {
     const sports = await prisma.dashapp_sport.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return sports.map((sport) => ({ value: sport.id, label: sport.name }));
@@ -270,6 +295,7 @@ export const getAllSports = async () => {
 export const getAllTiers = async () => {
     const tiers = await prisma.dashapp_tier.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return tiers.map((tier) => ({ value: tier.id, label: tier.name }));
@@ -281,6 +307,7 @@ export const getAllAssociationLevels = async () => {
             id: true,
             name: true,
         },
+        orderBy: { created_date: "desc" },
     });
 
     return associationLevels.map((associationLevel) => ({
@@ -295,6 +322,7 @@ export const getAllNationalities = async () => {
             id: true,
             name: true,
         },
+        orderBy: { name: "asc" },
     });
 
     return nationalities.map((nationality) => ({
@@ -307,6 +335,7 @@ export const getAllSocialMedia = async () => {
     const socialMediaplatforms =
         await prisma.dashapp_socialmedia_platform.findMany({
             select: { id: true, name: true },
+            orderBy: { name: "asc" },
         });
 
     return socialMediaplatforms.map((platform) => ({
@@ -318,6 +347,7 @@ export const getAllSocialMedia = async () => {
 export const getAllStatus = async () => {
     const status = await prisma.dashapp_athlete_status.findMany({
         select: { id: true, status: true },
+        orderBy: { created_date: "desc" },
     });
 
     return status.map((status) => ({
@@ -329,6 +359,7 @@ export const getAllStatus = async () => {
 export const getAllBrands = async () => {
     const brand = await prisma.dashapp_companydata.findMany({
         select: { id: true, company_name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return brand.map((v) => ({
@@ -340,6 +371,7 @@ export const getAllBrands = async () => {
 export const getAllTeams = async () => {
     const team = await prisma.dashapp_team.findMany({
         select: { id: true, team_name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return team.map((v) => ({ value: v.id, label: v.team_name }));
@@ -348,6 +380,7 @@ export const getAllTeams = async () => {
 export const getAllAthletes = async () => {
     const athlete = await prisma.dashapp_athlete.findMany({
         select: { id: true, athlete_name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return athlete.map((v) => ({ value: v.id, label: v.athlete_name }));
@@ -356,6 +389,7 @@ export const getAllAthletes = async () => {
 export const getAllMaincategories = async () => {
     const maincategories = await prisma.dashapp_category.findMany({
         select: { id: true, category: true },
+        orderBy: { created_date: "desc" },
     });
 
     return maincategories.map((category) => ({
@@ -367,6 +401,7 @@ export const getAllMaincategories = async () => {
 export const getAllMainPersonalities = async () => {
     const mainpersonalities = await prisma.dashapp_mainpersonality.findMany({
         select: { id: true, name: true },
+        orderBy: { created_date: "desc" },
     });
 
     return mainpersonalities.map((personality) => ({

@@ -7,7 +7,7 @@ import {
     editParentOrg,
     getAllParentOrgs,
     getParentOrgById,
-} from "../../controllers/metadata/parent-org.router.js";
+} from "../../controllers/metadata/parent-org.controller.js";
 import {
     createParentOrgSchema,
     editParentOrgSchema,
