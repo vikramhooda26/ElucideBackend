@@ -295,7 +295,7 @@ export const getAllSports = async () => {
 export const getAllTiers = async () => {
     const tiers = await prisma.dashapp_tier.findMany({
         select: { id: true, name: true },
-        orderBy: { created_date: "desc" },
+        orderBy: { id: "asc" },
     });
 
     return tiers.map((tier) => ({ value: tier.id, label: tier.name }));
