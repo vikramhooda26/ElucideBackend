@@ -109,6 +109,7 @@ model auth_user {
     date_joined                                                                     DateTime                            @db.Timestamp(6)
     first_name                                                                      String                              @db.VarChar(150)
     role                                                                            role                                @default(USER)
+    isDeleted                                                                       Boolean                             @default(false)
     association_level_association_level_created_by_idToauth_user                    association_level[]                 @relation("association_level_created_by_idToauth_user")
     association_level_association_level_modified_by_idToauth_user                   association_level[]                 @relation("association_level_modified_by_idToauth_user")
     dashapp_activation_dashapp_activation_created_by_idToauth_user                  dashapp_activation[]                @relation("dashapp_activation_created_by_idToauth_user")
