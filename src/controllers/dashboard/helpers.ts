@@ -147,7 +147,15 @@ export const getAthletesCount = async () => {
 
 export const getNumberOfAthletesPerSport = async () => {
     return await prisma.dashapp_sport.findMany({
-        select: { dashapp_athlete: { select: { _count: true } } },
+        select: {
+            id: true,
+            name: true,
+            _count: {
+                select: {
+                    dashapp_athlete: true,
+                },
+            },
+        },
     });
 };
 

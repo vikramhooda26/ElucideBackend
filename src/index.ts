@@ -30,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", Routers.authRouter);
 app.use(authMiddleware);
+app.use("/api/admin/user", Routers.userRouter);
 app.use("/api/admin/athlete", Routers.athleteRouter);
 app.use("/api/admin/league", Routers.leagueRouter);
 app.use("/api/admin/team", Routers.teamRouter);
