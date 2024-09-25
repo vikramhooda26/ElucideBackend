@@ -4,13 +4,14 @@ import { prisma } from "../db/index.js";
 import { COOKIE_NAME, cookieOptions, STATUS_CODE } from "../lib/constants.js";
 import {
     BadRequestError,
+    ConflictError,
     ForbiddenError,
     NotFoundError,
 } from "../lib/errors.js";
 import { hashPassword } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
 import { tokenManager } from "../managers/TokenManager.js";
-import { TUserRegistration } from "../schemas/auth.schema.js";
+import { TUserEdit, TUserRegistration } from "../schemas/auth.schema.js";
 
 export const fetchUserDetails = asyncHandler(
     async (req: Request, res: Response) => {
@@ -55,6 +56,39 @@ export const fetchUserDetails = asyncHandler(
         }
     },
 );
+
+export const fetchUserById = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+
+    if (!userId) {
+        throw new BadRequestError("User ID not found");
+    }
+
+    const userExists = await prisma.auth_user.findUnique({
+        where: { id: BigInt(userId) },
+        select: {
+            id: true,
+            username: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            role: true,
+        },
+    });
+
+    if (!userExists?.id) {
+        throw new NotFoundError("This user does not exist");
+    }
+
+    res.status(STATUS_CODE.OK).json({
+        id: userExists.id,
+        username: userExists.username,
+        firstName: userExists.first_name,
+        lastName: userExists.last_name,
+        email: userExists.email,
+        role: userExists.role,
+    });
+});
 
 export const fetchAllUsers = asyncHandler(async (req, res) => {
     const { userId } = req.user;
@@ -151,7 +185,7 @@ export const editUserById = asyncHandler(async (req, res) => {
 
     const userExists = await prisma.auth_user.findUnique({
         where: { id: BigInt(userId) },
-        select: { id: true },
+        select: { id: true, username: true },
     });
 
     if (!userExists?.id) {
@@ -159,9 +193,24 @@ export const editUserById = asyncHandler(async (req, res) => {
     }
 
     const { email, firstName, lastName, password, role, username } =
-        req.validatedData as TUserRegistration;
+        req.validatedData as TUserEdit;
 
-    const hashedPassword = await hashPassword(password);
+    if (userExists.username !== username) {
+        const usernameExists = await prisma.auth_user.findUnique({
+            where: { username },
+            select: { id: true },
+        });
+
+        if (usernameExists?.id) {
+            throw new ConflictError("This username already exist");
+        }
+    }
+
+    let hashedPassword;
+
+    if (password) {
+        hashedPassword = await hashPassword(password);
+    }
 
     await prisma.auth_user.update({
         where: { id: BigInt(userId) },
@@ -171,7 +220,7 @@ export const editUserById = asyncHandler(async (req, res) => {
             username,
             email,
             role,
-            password: hashedPassword,
+            password: hashedPassword || undefined,
         },
     });
 

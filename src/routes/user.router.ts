@@ -4,15 +4,21 @@ import {
     deleteUserById,
     editUserById,
     fetchAllUsers,
+    fetchUserById,
     fetchUserDetails,
 } from "../controllers/user.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
-import { userRegistrationSchema } from "../schemas/auth.schema.js";
+import {
+    editRegistrationSchema,
+    userRegistrationSchema,
+} from "../schemas/auth.schema.js";
 
 export const userRouter = Router();
 
 userRouter.get("/get-by-id", fetchUserDetails);
+
+userRouter.get("/:id", roleMiddleware(["SUPER_ADMIN"]), fetchUserById);
 
 userRouter.get("/", roleMiddleware(["SUPER_ADMIN"]), fetchAllUsers);
 
@@ -26,7 +32,7 @@ userRouter.post(
 userRouter.put(
     "/edit/:id",
     roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(userRegistrationSchema),
+    validateSchema(editRegistrationSchema),
     editUserById,
 );
 
