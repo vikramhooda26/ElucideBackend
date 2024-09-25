@@ -116,7 +116,7 @@ export const createUser = asyncHandler(async (req, res) => {
     });
 });
 
-export const editUserById = asyncHandler(async (req, res) => {
+export const deleteUserById = asyncHandler(async (req, res) => {
     const userId = req.params.id;
 
     if (!userId) {
@@ -139,5 +139,43 @@ export const editUserById = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json({
         message: "User deleted successfully",
+    });
+});
+
+export const editUserById = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+
+    if (!userId) {
+        throw new BadRequestError("User ID not found");
+    }
+
+    const userExists = await prisma.auth_user.findUnique({
+        where: { id: BigInt(userId) },
+        select: { id: true },
+    });
+
+    if (!userExists?.id) {
+        throw new NotFoundError("This user does not exist");
+    }
+
+    const { email, firstName, lastName, password, role, username } =
+        req.validatedData as TUserRegistration;
+
+    const hashedPassword = await hashPassword(password);
+
+    await prisma.auth_user.update({
+        where: { id: BigInt(userId) },
+        data: {
+            first_name: firstName,
+            last_name: lastName,
+            username,
+            email,
+            role,
+            password: hashedPassword,
+        },
+    });
+
+    res.status(STATUS_CODE.OK).json({
+        message: "User details updated",
     });
 });

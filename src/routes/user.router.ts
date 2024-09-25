@@ -1,8 +1,10 @@
 import { Router } from "express";
 import {
+    createUser,
+    deleteUserById,
+    editUserById,
     fetchAllUsers,
     fetchUserDetails,
-    createUser,
 } from "../controllers/user.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -21,11 +23,15 @@ userRouter.post(
     createUser,
 );
 
-userRouter.get(
+userRouter.put(
     "/edit/:id",
     roleMiddleware(["SUPER_ADMIN"]),
     validateSchema(userRegistrationSchema),
-    fetchAllUsers,
+    editUserById,
 );
 
-userRouter.get("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), fetchAllUsers);
+userRouter.delete(
+    "/delete/:id",
+    roleMiddleware(["SUPER_ADMIN"]),
+    deleteUserById,
+);
