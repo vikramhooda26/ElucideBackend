@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
-import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
+import pkg, { JwtPayload } from "jsonwebtoken";
+import { prisma } from "../db/index.js";
 import {
     clearAuthCookies,
     generateAccessToken,
@@ -7,10 +8,9 @@ import {
     verifyAccessToken,
     verifyRefreshToken,
 } from "../lib/auth.js";
-import { prisma } from "../db/index.js";
-import pkg, { JwtPayload } from "jsonwebtoken";
-import { TUser } from "../lib/types.js";
+import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
+import { TUser } from "../lib/types.js";
 
 const { TokenExpiredError } = pkg;
 

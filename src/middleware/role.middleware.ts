@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { TRole } from "../lib/types.js";
 import { ForbiddenError } from "../lib/errors.js";
+import { TRole } from "../lib/types.js";
 
 export const roleMiddleware =
     (allowedRoles: TRole[]) =>
     (req: Request, res: Response, next: NextFunction) => {
         if (
             !allowedRoles ||
-            !allowedRoles.some((role) => role === req.user.role)
+            allowedRoles.some((role) => role !== req.user.role)
         ) {
             throw new ForbiddenError();
         }

@@ -3,6 +3,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../db/index.js";
 import {
     checkUserExistence,
+    clearAuthCookies,
     generateAccessToken,
     generateRefreshToken,
     verifyPassword,
@@ -68,8 +69,7 @@ export const logoutHandler = asyncHandler(async (req, res) => {
         where: { user_id: userId },
     });
 
-    res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
-    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
+    clearAuthCookies(res);
 
     res.status(STATUS_CODE.OK).json({
         message: "Logged out",

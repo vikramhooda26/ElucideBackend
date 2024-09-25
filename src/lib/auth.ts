@@ -47,7 +47,7 @@ export const verifyPassword = async (
 
 export const checkUserExistence = async (username: string) => {
     const user = await prisma.auth_user.findFirst({
-        where: { username },
+        where: { username, isDeleted: false },
         select: {
             id: true,
             first_name: true,
@@ -83,5 +83,4 @@ export const verifyRefreshToken = (token: string) => {
 export const clearAuthCookies = (res: Response) => {
     res.clearCookie(COOKIE_NAME.CSRF);
     res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
-    return;
 };
