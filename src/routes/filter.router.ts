@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getFilteredAthlete } from "../controllers/athlete.controller.js";
+import { getFilteredAthletes } from "../controllers/athlete.controller.js";
 import { getFilteredTeam } from "../controllers/team.controller.js";
 import { getFilteredBrand } from "../controllers/brand.controller.js";
 import { getFilteredLeague } from "../controllers/league.controller.js";
@@ -12,7 +12,7 @@ export const filterRouter = Router();
 filterRouter.get(
     "/athlete",
     validateSchema(filteredAthleteSchema),
-    getFilteredAthlete,
+    getFilteredAthletes,
 );
 
 filterRouter.get("/team", getFilteredTeam);

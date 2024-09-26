@@ -7,7 +7,25 @@ export const getBrandsCount = async () => {
 };
 
 export const getCategoriesCount = async () => {
-    return await prisma.dashapp_category.count();
+    return await prisma.dashapp_category.findMany({
+        select: {
+            id: true,
+            category: true,
+            dashapp_subcategory: {
+                select: {
+                    dashapp_companydata_subcategory: {
+                        select: {
+                            dashapp_companydata: {
+                                select: {
+                                    _count: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
 };
 
 export const getRecentlyAddedBrands = async (take: number, skip: number) => {
@@ -50,13 +68,29 @@ export const getTeamsCount = async () => {
 
 export const getNumberOfTeamsPerSport = async () => {
     return await prisma.dashapp_sport.findMany({
-        select: { dashapp_team: { select: { _count: true } } },
+        select: {
+            id: true,
+            name: true,
+            _count: {
+                select: {
+                    dashapp_team: true,
+                },
+            },
+        },
     });
 };
 
 export const getNumberOfTeamsPerState = async () => {
     return await prisma.dashapp_states.findMany({
-        select: { dashapp_team: { select: { _count: true } } },
+        select: {
+            id: true,
+            state: true,
+            _count: {
+                select: {
+                    dashapp_team: true,
+                },
+            },
+        },
     });
 };
 
@@ -100,7 +134,15 @@ export const getLeaguesCount = async () => {
 
 export const getNumberOfLeaguesPerSport = async () => {
     return await prisma.dashapp_sport.findMany({
-        select: { dashapp_leagueinfo: { select: { _count: true } } },
+        select: {
+            id: true,
+            name: true,
+            _count: {
+                select: {
+                    dashapp_leagueinfo: true,
+                },
+            },
+        },
     });
 };
 

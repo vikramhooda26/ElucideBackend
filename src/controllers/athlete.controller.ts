@@ -2,7 +2,6 @@ import { differenceInYears, parseISO } from "date-fns";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { AthleteResponseDTO } from "../dto/athlete.dto.js";
-import { buildAthleteFilterQuery } from "../lib/buildAthleteFilterQuery.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
@@ -13,6 +12,8 @@ import {
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
+import { Prisma } from "@prisma/client";
+import { printLogs } from "../lib/log.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -650,35 +651,342 @@ export const getTotalAthletes = asyncHandler(async (req, res) => {
     });
 });
 
-/**
- * @todo
- * Fix this function, bring the queries inside the prisma findMany call itself.
- * Use null instead of undefined if you do not want the data if not filter is given else use undefined.
- * Send only the data that the get-all method does and then once they click on the list then they will hit the id API to get all the data.
- * For convinience, put the database calls inside a service folder so that they're are reusable like here for instance.
- * Make sure to validate the data coming in regardless
- */
+export const getFilteredAthletes = asyncHandler(async (req, res) => {
+    const {
+        ids,
+        associationLevelIds,
+        costOfAssociation,
+        strategyOverview,
+        sportIds,
+        agencyIds,
+        ageIds,
+        facebook,
+        instagram,
+        twitter,
+        linkedin,
+        youtube,
+        website,
+        subPersonalityTraitIds,
+        genderIds,
+        athleteGenderIds,
+        nccsIds,
+        primaryMarketIds,
+        tierIds,
+        secondaryMarketIds,
+        tertiaryIds,
+        stateIds,
+        nationalityIds,
+        primarySocialMediaPlatformIds,
+        secondarySocialMediaPlatformIds,
+        statusIds,
+        athleteAge,
+        contactName,
+        contactDesignation,
+        contactEmail,
+        contactNumber,
+        contactLinkedin,
+    } = req.validatedData as TFilteredAthleteSchema;
 
-export const getFilteredAthlete = asyncHandler(async (req, res) => {
-    const query = buildAthleteFilterQuery(
-        req.validatedData as TFilteredAthleteSchema,
-    );
+    const filterConditions: Prisma.dashapp_athleteWhereInput = {
+        id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
 
-    const filteredAthletes = await prisma.dashapp_athlete.findMany({
-        where: {
-            AND: [
-                {
-                    age: req.validatedData.age
-                        ? {
-                              in: req.validatedData.age.map((v: string) =>
-                                  parseInt(v, 10),
-                              ),
-                          }
-                        : null,
+        dashapp_athlete_association: associationLevelIds?.length
+            ? {
+                  some: {
+                      association_level_id: {
+                          in: associationLevelIds.map((id) => BigInt(id)),
+                      },
+                  },
+              }
+            : undefined,
+
+        ...(costOfAssociation?.cost?.length === 2 && {
+            dashapp_athlete_association: {
+                some: {
+                    cost: {
+                        ...(costOfAssociation.operationType === "in" && {
+                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                            lte: new Prisma.Decimal(costOfAssociation.cost[1]),
+                        }),
+                        ...(costOfAssociation.operationType === "notIn" && {
+                            OR: [
+                                {
+                                    lte: new Prisma.Decimal(
+                                        costOfAssociation.cost[0],
+                                    ),
+                                },
+                                {
+                                    gte: new Prisma.Decimal(
+                                        costOfAssociation.cost[1],
+                                    ),
+                                },
+                            ],
+                        }),
+                    },
                 },
-            ].filter(Boolean),
-        },
+            },
+        }),
+
+        ...(costOfAssociation?.cost?.length === 1 && {
+            dashapp_athlete_association: {
+                some: {
+                    cost: {
+                        ...(costOfAssociation.operationType === "gt" && {
+                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                        }),
+                        ...(costOfAssociation.operationType === "lt" && {
+                            lte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                        }),
+                    },
+                },
+            },
+        }),
+
+        age:
+            athleteAge?.age?.length === 2
+                ? {
+                      ...(athleteAge.operationType === "in" && {
+                          gte: athleteAge.age[0],
+                          lte: athleteAge.age[1],
+                      }),
+                      ...(athleteAge.operationType === "notIn" && {
+                          OR: [
+                              { lt: athleteAge.age[0] },
+                              { gt: athleteAge.age[1] },
+                          ],
+                      }),
+                  }
+                : athleteAge?.age?.length === 1
+                  ? {
+                        ...(athleteAge.operationType === "gt" && {
+                            gt: athleteAge.age[0],
+                        }),
+                        ...(athleteAge.operationType === "lt" && {
+                            lte: athleteAge.age[0],
+                        }),
+                    }
+                  : undefined,
+
+        strategy_overview: strategyOverview
+            ? {
+                  contains: strategyOverview,
+                  mode: "insensitive",
+              }
+            : undefined,
+
+        dashapp_sport: sportIds?.length
+            ? {
+                  id: { in: sportIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_agency: agencyIds?.length
+            ? {
+                  id: { in: agencyIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_athlete_target_age: ageIds?.length
+            ? {
+                  some: {
+                      dashapp_age: {
+                          id: { in: ageIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        facebook: facebook
+            ? { contains: facebook, mode: "insensitive" }
+            : undefined,
+        instagram: instagram
+            ? { contains: instagram, mode: "insensitive" }
+            : undefined,
+        twitter: twitter
+            ? { contains: twitter, mode: "insensitive" }
+            : undefined,
+        linkedin: linkedin
+            ? { contains: linkedin, mode: "insensitive" }
+            : undefined,
+        youtube: youtube
+            ? { contains: youtube, mode: "insensitive" }
+            : undefined,
+        website: website
+            ? { contains: website, mode: "insensitive" }
+            : undefined,
+
+        dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
+            ? {
+                  some: {
+                      dashapp_subpersonality: {
+                          id: {
+                              in: subPersonalityTraitIds.map((id) =>
+                                  BigInt(id),
+                              ),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_gender: genderIds?.length
+            ? {
+                  id: { in: genderIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_athlete_target_gender: athleteGenderIds?.length
+            ? {
+                  some: {
+                      dashapp_gender: {
+                          id: { in: athleteGenderIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_athlete_target_income: nccsIds?.length
+            ? {
+                  some: {
+                      dashapp_nccs: {
+                          id: { in: nccsIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_athlete_key_markets_primary: primaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: {
+                              in: secondaryMarketIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
+            ? {
+                  some: {
+                      dashapp_states: {
+                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_states: stateIds?.length
+            ? {
+                  id: { in: stateIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        nationality: nationalityIds?.length
+            ? {
+                  id: { in: nationalityIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_athlete_tier: tierIds?.length
+            ? {
+                  some: {
+                      dashapp_tier: {
+                          id: { in: tierIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_athlete_status: statusIds?.length
+            ? {
+                  id: { in: statusIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_athlete_socialmedia_platform_primary:
+            primarySocialMediaPlatformIds?.length
+                ? {
+                      some: {
+                          dashapp_socialmedia_platform: {
+                              id: {
+                                  in: primarySocialMediaPlatformIds.map((id) =>
+                                      BigInt(id),
+                                  ),
+                              },
+                          },
+                      },
+                  }
+                : undefined,
+
+        dashapp_athlete_socialmedia_platform_secondary:
+            secondarySocialMediaPlatformIds?.length
+                ? {
+                      some: {
+                          dashapp_socialmedia_platform: {
+                              id: {
+                                  in: secondarySocialMediaPlatformIds.map(
+                                      (id) => BigInt(id),
+                                  ),
+                              },
+                          },
+                      },
+                  }
+                : undefined,
+
+        ...(contactName?.length && {
+            contactName: {
+                contains: contactName,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactDesignation?.length && {
+            contactDesignation: {
+                contains: contactDesignation,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactEmail?.length && {
+            contactEmail: {
+                contains: contactEmail,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactNumber?.length && {
+            contactNumber: {
+                contains: contactNumber,
+            },
+        }),
+        ...(contactLinkedin?.length && {
+            contactLinkedin: {
+                contains: contactLinkedin,
+                mode: "insensitive",
+            },
+        }),
+    };
+
+    const athletes = await prisma.dashapp_athlete.findMany({
+        where: filterConditions,
+        select: athleteSelect,
+        orderBy: { modified_date: "desc" },
     });
 
-    res.status(STATUS_CODE.OK).json(filteredAthletes);
+    if (athletes.length < 1) {
+        throw new NotFoundError("No athletes found for the given filters");
+    }
+
+    printLogs("Filtered athletes details:", athletes);
+
+    res.status(STATUS_CODE.OK).json(athletes);
 });

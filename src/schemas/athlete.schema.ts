@@ -1,4 +1,5 @@
 import z from "zod";
+import { OperationsTypeEnum } from "../lib/constants.js";
 
 export const createAthleteSchema = z.object({
     name: z.string().min(1, "Required"),
@@ -69,29 +70,104 @@ export const editAthleteSchema = createAthleteSchema.partial().extend({
 });
 
 export const filteredAthleteSchema = z.object({
-    name: z.string().optional(),
+    ids: z.string().array().optional(),
     associationLevelIds: z.string().array().optional(),
     costOfAssociation: z
         .object({
-            operationType: z.enum(["range", "gte", "lte", "equals"]),
-            cost: z.bigint(),
+            cost: z
+                .number()
+                .array()
+                .max(2, "Cost array can have maximum of 2 elements")
+                .optional(),
+            operationType: z.enum(OperationsTypeEnum).optional(),
         })
-        .optional(),
-    createdByIds: z.string().array().optional(),
-    modifiedByIds: z.string().array().optional(),
+        .optional()
+        .refine(
+            (data) => {
+                if (data?.cost && data?.operationType === undefined) {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "operationType is required when cost is provided",
+                path: ["operationType"],
+            },
+        )
+        .refine(
+            (data) => {
+                if (data?.operationType && data?.cost === undefined) {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "cost is required when operationType is provided",
+                path: ["cost"],
+            },
+        ),
+    strategyOverview: z.string().optional(),
     sportIds: z.string().array().optional(),
-    age: z.string().optional(),
-    ageRangeIds: z.string().array().optional(),
-    personalityTraitIds: z.string().array().optional(),
-    subpersonalityTraitIds: z.string().array().optional(),
+    agencyIds: z.string().array().optional(),
+    ageIds: z.string().array().optional(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional(),
+    linkedin: z.string().optional(),
+    youtube: z.string().optional(),
+    website: z.string().optional(),
+    subPersonalityTraitIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
+    athleteGenderIds: z.string().array().optional(),
     nccsIds: z.string().array().optional(),
     primaryMarketIds: z.string().array().optional(),
     secondaryMarketIds: z.string().array().optional(),
-    tertiaryMarketIds: z.string().array().optional(),
+    tertiaryIds: z.string().array().optional(),
+    stateIds: z.string().array().optional(),
     nationalityIds: z.string().array().optional(),
-    primarySocialMediaIds: z.string().array().optional(),
-    secondarySocialMediaIds: z.string().array().optional(),
+    tierIds: z.string().array().optional(),
+    statusIds: z.string().array().optional(),
+    primarySocialMediaPlatformIds: z.string().array().optional(),
+    secondarySocialMediaPlatformIds: z.string().array().optional(),
+    athleteAge: z
+        .object({
+            age: z
+                .string()
+                .array()
+                .max(2, "Age array can have maximum of 2 elements")
+                .optional(),
+            operationType: z.enum(OperationsTypeEnum).optional(),
+        })
+        .optional()
+        .refine(
+            (data) => {
+                if (data?.age && data?.operationType === undefined) {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "operationType is required when age is provided",
+                path: ["operationType"],
+            },
+        )
+        .refine(
+            (data) => {
+                if (data?.operationType && data?.age === undefined) {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "age is required when operationType is provided",
+                path: ["age"],
+            },
+        ),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
 });
 
 export type TCreateAthleteSchema = z.infer<typeof createAthleteSchema>;
