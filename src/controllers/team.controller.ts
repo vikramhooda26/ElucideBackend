@@ -167,22 +167,24 @@ export const createTeam = asyncHandler(async (req, res) => {
         ottPartnerMetrics,
     } = req.validatedData as TCreateTeamSchema;
 
-    const isEndorsementsExists =
-        await prisma.dashapp_teamendorsements.findFirst({
-            where: {
-                name: { in: endorsements?.map((endorse) => endorse.name) },
-            },
-            select: {
-                name: true,
-            },
-        });
+    if (endorsements?.length) {
+        const isEndorsementsExists =
+            await prisma.dashapp_teamendorsements.findFirst({
+                where: {
+                    name: { in: endorsements?.map((endorse) => endorse.name) },
+                },
+                select: {
+                    name: true,
+                },
+            });
 
-    if (isEndorsementsExists?.name) {
-        res.status(STATUS_CODE.CONFLICT).json({
-            key: isEndorsementsExists.name,
-            message: "This endorsement already exists",
-        });
-        return;
+        if (isEndorsementsExists?.name) {
+            res.status(STATUS_CODE.CONFLICT).json({
+                key: isEndorsementsExists.name,
+                message: "This endorsement already exists",
+            });
+            return;
+        }
     }
 
     const team = await prisma.dashapp_team.create({
@@ -507,6 +509,16 @@ export const editTeam = asyncHandler(async (req, res) => {
 
         if (!isDistinct) {
             throw new BadRequestError("Association level must be unique");
+        }
+    }
+
+    if (endorsements?.length) {
+        const isDistinct = areElementsDistinct(
+            endorsements?.map((endorse) => endorse.name),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Endorsements must be unique");
         }
     }
 

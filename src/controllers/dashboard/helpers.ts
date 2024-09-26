@@ -13,13 +13,11 @@ export const getCategoriesCount = async () => {
             category: true,
             dashapp_subcategory: {
                 select: {
-                    dashapp_companydata_subcategory: {
+                    id: true,
+                    subcategory: true,
+                    _count: {
                         select: {
-                            dashapp_companydata: {
-                                select: {
-                                    _count: true,
-                                },
-                            },
+                            dashapp_companydata_subcategory: true,
                         },
                     },
                 },

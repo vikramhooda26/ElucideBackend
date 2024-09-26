@@ -9,6 +9,7 @@ import {
 } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
+import { areElementsDistinct } from "../lib/helpers.js";
 
 export const getAllBrands = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -181,22 +182,24 @@ export const createBrand = asyncHandler(async (req, res) => {
         endorsements,
     } = req.validatedData as TCreateBrandSchema;
 
-    const isEndorsementsExists =
-        await prisma.dashapp_brandendorsements.findFirst({
-            where: {
-                name: { in: endorsements?.map((endorse) => endorse.name) },
-            },
-            select: {
-                name: true,
-            },
-        });
+    if (endorsements?.length) {
+        const isEndorsementsExists =
+            await prisma.dashapp_brandendorsements.findFirst({
+                where: {
+                    name: { in: endorsements?.map((endorse) => endorse.name) },
+                },
+                select: {
+                    name: true,
+                },
+            });
 
-    if (isEndorsementsExists?.name) {
-        res.status(STATUS_CODE.CONFLICT).json({
-            key: isEndorsementsExists.name,
-            message: "This endorsement already exists",
-        });
-        return;
+        if (isEndorsementsExists?.name) {
+            res.status(STATUS_CODE.CONFLICT).json({
+                key: isEndorsementsExists.name,
+                message: "This endorsement already exists",
+            });
+            return;
+        }
     }
 
     const brand = await prisma.dashapp_companydata.create({
@@ -452,6 +455,16 @@ export const editBrand = asyncHandler(async (req, res) => {
         contactPerson,
         endorsements,
     } = req.validatedData as TEditBrandSchema;
+
+    if (endorsements?.length) {
+        const isDistinct = areElementsDistinct(
+            endorsements?.map((endorse) => endorse.name),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Endorsements must be unique");
+        }
+    }
 
     await prisma.dashapp_companydata.update({
         where: { id: BigInt(brandId) },

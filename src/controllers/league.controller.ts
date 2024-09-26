@@ -168,22 +168,24 @@ export const createLeague = asyncHandler(async (req, res) => {
         }
     }
 
-    const isEndorsementsExists =
-        await prisma.dashapp_leagueendorsements.findFirst({
-            where: {
-                name: { in: endorsements?.map((endorse) => endorse.name) },
-            },
-            select: {
-                name: true,
-            },
-        });
+    if (endorsements?.length) {
+        const isEndorsementsExists =
+            await prisma.dashapp_leagueendorsements.findFirst({
+                where: {
+                    name: { in: endorsements?.map((endorse) => endorse.name) },
+                },
+                select: {
+                    name: true,
+                },
+            });
 
-    if (isEndorsementsExists?.name) {
-        res.status(STATUS_CODE.CONFLICT).json({
-            key: isEndorsementsExists.name,
-            message: "This endorsement already exists",
-        });
-        return;
+        if (isEndorsementsExists?.name) {
+            res.status(STATUS_CODE.CONFLICT).json({
+                key: isEndorsementsExists.name,
+                message: "This endorsement already exists",
+            });
+            return;
+        }
     }
 
     const league = await prisma.dashapp_leagueinfo.create({
@@ -490,6 +492,16 @@ export const editLeague = asyncHandler(async (req, res) => {
 
         if (!isDistinct) {
             throw new BadRequestError("Association Level must be unique");
+        }
+    }
+
+    if (endorsements?.length) {
+        const isDistinct = areElementsDistinct(
+            endorsements?.map((endorse) => endorse.name),
+        );
+
+        if (!isDistinct) {
+            throw new BadRequestError("Endorsements must be unique");
         }
     }
 
