@@ -132,7 +132,7 @@ export const filteredAthleteSchema = z.object({
     athleteAge: z
         .object({
             age: z
-                .string()
+                .number()
                 .array()
                 .max(2, "Age array can have maximum of 2 elements")
                 .optional(),

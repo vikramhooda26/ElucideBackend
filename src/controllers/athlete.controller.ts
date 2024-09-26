@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { differenceInYears, parseISO } from "date-fns";
+import { differenceInYears, format, parseISO } from "date-fns";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { AthleteResponseDTO } from "../dto/athlete.dto.js";
@@ -652,6 +652,8 @@ export const getTotalAthletes = asyncHandler(async (req, res) => {
 });
 
 export const getFilteredAthletes = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
     const {
         ids,
         associationLevelIds,
@@ -687,6 +689,31 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         contactLinkedin,
     } = req.validatedData as TFilteredAthleteSchema;
 
+    printLogs(
+        "age 1",
+        format(
+            new Date(
+                new Date().setFullYear(
+                    //@ts-ignore
+                    new Date().getFullYear() - athleteAge.age[0],
+                ),
+            ),
+            "yyyy-MM-dd",
+        ),
+    );
+    printLogs(
+        "age 2:",
+        format(
+            new Date(
+                new Date().setFullYear(
+                    //@ts-ignore
+                    new Date().getFullYear() - athleteAge.age[1],
+                ),
+            ),
+            "yyyy-MM-dd",
+        ),
+    );
+
     const filterConditions: Prisma.dashapp_athleteWhereInput = {
         id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
 
@@ -708,20 +735,6 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                             gte: new Prisma.Decimal(costOfAssociation.cost[0]),
                             lte: new Prisma.Decimal(costOfAssociation.cost[1]),
                         }),
-                        ...(costOfAssociation.operationType === "notIn" && {
-                            OR: [
-                                {
-                                    lte: new Prisma.Decimal(
-                                        costOfAssociation.cost[0],
-                                    ),
-                                },
-                                {
-                                    gte: new Prisma.Decimal(
-                                        costOfAssociation.cost[1],
-                                    ),
-                                },
-                            ],
-                        }),
                     },
                 },
             },
@@ -742,30 +755,61 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
             },
         }),
 
-        age:
-            athleteAge?.age?.length === 2
-                ? {
-                      ...(athleteAge.operationType === "in" && {
-                          gte: athleteAge.age[0],
-                          lte: athleteAge.age[1],
-                      }),
-                      ...(athleteAge.operationType === "notIn" && {
-                          OR: [
-                              { lt: athleteAge.age[0] },
-                              { gt: athleteAge.age[1] },
-                          ],
-                      }),
-                  }
-                : athleteAge?.age?.length === 1
-                  ? {
-                        ...(athleteAge.operationType === "gt" && {
-                            gt: athleteAge.age[0],
-                        }),
-                        ...(athleteAge.operationType === "lt" && {
-                            lte: athleteAge.age[0],
-                        }),
-                    }
-                  : undefined,
+        ...(athleteAge?.age?.length === 2 && {
+            AND: [
+                {
+                    age: {
+                        lte: format(
+                            new Date(
+                                new Date().setFullYear(
+                                    new Date().getFullYear() -
+                                        athleteAge.age[0],
+                                ),
+                            ),
+                            "yyyy-MM-dd",
+                        ).toString(),
+                    },
+                },
+                {
+                    age: {
+                        gte: format(
+                            new Date(
+                                new Date().setFullYear(
+                                    new Date().getFullYear() -
+                                        athleteAge.age[1],
+                                ),
+                            ),
+                            "yyyy-MM-dd",
+                        ).toString(),
+                    },
+                },
+            ],
+        }),
+
+        ...(athleteAge?.age?.length === 1 && {
+            age: {
+                ...(athleteAge.operationType === "gt" && {
+                    lte: format(
+                        new Date(
+                            new Date().setFullYear(
+                                new Date().getFullYear() - athleteAge.age[0],
+                            ),
+                        ),
+                        "yyyy-MM-dd",
+                    ).toString(),
+                }),
+                ...(athleteAge.operationType === "lt" && {
+                    gte: format(
+                        new Date(
+                            new Date().setFullYear(
+                                new Date().getFullYear() - athleteAge.age[0],
+                            ),
+                        ),
+                        "yyyy-MM-dd",
+                    ).toString(),
+                }),
+            },
+        }),
 
         strategy_overview: strategyOverview
             ? {
@@ -978,15 +1022,51 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
     const athletes = await prisma.dashapp_athlete.findMany({
         where: filterConditions,
-        select: athleteSelect,
+        select: {
+            id: true,
+            athlete_name: true,
+            nationality: { select: { name: true } },
+            created_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            created_date: true,
+            modified_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            modified_date: true,
+            _count: true,
+        },
         orderBy: { modified_date: "desc" },
+        take: Number.isNaN(Number(take)) ? undefined : Number(take),
+        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
 
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");
     }
 
-    printLogs("Filtered athletes details:", athletes);
-
-    res.status(STATUS_CODE.OK).json(athletes);
+    res.status(STATUS_CODE.OK).json(
+        athletes.map((athlete) => ({
+            id: athlete.id,
+            name: athlete.athlete_name,
+            nationality: athlete.nationality?.name,
+            createdDate: athlete.created_date,
+            modifiedDate: athlete.modified_date,
+            createdBy: {
+                userId: athlete.created_by?.id,
+                email: athlete.created_by?.email,
+            },
+            modifiedBy: {
+                userId: athlete.modified_by?.id,
+                email: athlete.modified_by?.email,
+            },
+            count: athlete._count,
+        })),
+    );
 });
