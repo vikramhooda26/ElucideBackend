@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { differenceInYears, parseISO } from "date-fns";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
@@ -5,6 +6,7 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
 import {
     TCreateAthleteSchema,
     TEditAthleteSchema,
@@ -12,8 +14,6 @@ import {
 } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
-import { Prisma } from "@prisma/client";
-import { printLogs } from "../lib/log.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
