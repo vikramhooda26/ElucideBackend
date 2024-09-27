@@ -168,6 +168,7 @@ export const filteredAthleteSchema = z.object({
     contactEmail: z.string().optional(),
     contactNumber: z.string().optional(),
     contactLinkedin: z.string().optional(),
+    isMandatory: z.boolean({ message: "isMandatory is required" }),
 });
 
 export type TCreateAthleteSchema = z.infer<typeof createAthleteSchema>;

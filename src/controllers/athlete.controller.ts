@@ -8,6 +8,7 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
 import {
+    filteredAthleteSchema,
     TCreateAthleteSchema,
     TEditAthleteSchema,
     TFilteredAthleteSchema,
@@ -46,10 +47,25 @@ const findAgeRange = async (dob: string): Promise<string | undefined> => {
     return matchedAgeRange;
 };
 
-export const getAllAthletes = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
+const formatDob = (date: Date) => {
+    return format(date, "yyyy-MM-dd").toString();
+};
 
-    const athletes = await prisma.dashapp_athlete.findMany({
+const getAthleteCount = async () => {
+    return await prisma.dashapp_athlete.count();
+};
+
+const getAthletes = async ({
+    query,
+    take,
+    skip,
+}: {
+    query?: Prisma.dashapp_athleteWhereInput;
+    take?: any;
+    skip?: any;
+}) => {
+    return await prisma.dashapp_athlete.findMany({
+        where: query || undefined,
         select: {
             id: true,
             athlete_name: true,
@@ -68,12 +84,20 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 },
             },
             modified_date: true,
-            _count: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
+};
+
+export const getAllAthletes = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
+    const [athletes, count] = await Promise.all([
+        getAthletes({ take, skip }),
+        getAthleteCount(),
+    ]);
 
     if (athletes.length < 1) {
         throw new NotFoundError("Athlete data does not exists");
@@ -94,7 +118,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
                 userId: athlete.modified_by?.id,
                 email: athlete.modified_by?.email,
             },
-            count: athlete._count,
+            count,
         })),
     );
 });
@@ -687,35 +711,131 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         contactEmail,
         contactNumber,
         contactLinkedin,
+        isMandatory,
     } = req.validatedData as TFilteredAthleteSchema;
 
-    printLogs(
-        "age 1",
-        format(
-            new Date(
-                new Date().setFullYear(
-                    //@ts-ignore
-                    new Date().getFullYear() - athleteAge.age[0],
-                ),
-            ),
-            "yyyy-MM-dd",
-        ),
-    );
-    printLogs(
-        "age 2:",
-        format(
-            new Date(
-                new Date().setFullYear(
-                    //@ts-ignore
-                    new Date().getFullYear() - athleteAge.age[1],
-                ),
-            ),
-            "yyyy-MM-dd",
-        ),
-    );
+    const today = new Date();
+
+    const getAgeRangeQuery = () => {
+        if (athleteAge?.age?.length) {
+            const [lowerAge, upperAge] = athleteAge.age;
+
+            const lowerBoundDate = new Date(today);
+            lowerBoundDate.setFullYear(lowerBoundDate.getFullYear() - lowerAge);
+
+            const lowerBoundStartDate = new Date(today);
+            lowerBoundStartDate.setFullYear(
+                lowerBoundStartDate.getFullYear() - lowerAge,
+            );
+            lowerBoundStartDate.setDate(1);
+            lowerBoundStartDate.setMonth(0);
+
+            const lowerBoundYear = new Date(today);
+            lowerBoundYear.setFullYear(
+                lowerBoundYear.getFullYear() - lowerAge + 1,
+            );
+            lowerBoundYear.setDate(1);
+            lowerBoundYear.setMonth(0);
+
+            const upperBoundStartDate = new Date(today);
+            upperBoundStartDate.setFullYear(
+                upperBoundStartDate.getFullYear() - upperAge,
+            );
+            upperBoundStartDate.setDate(1);
+            upperBoundStartDate.setMonth(0);
+
+            const upperBoundYear = new Date(today);
+            upperBoundYear.setFullYear(
+                upperBoundYear.getFullYear() - upperAge + 1,
+            );
+            upperBoundYear.setDate(1);
+            upperBoundYear.setMonth(0);
+
+            const upperBoundDate = new Date(today);
+            upperBoundDate.setFullYear(upperBoundDate.getFullYear() - upperAge);
+
+            if (athleteAge.age.length === 2) {
+                return {
+                    OR: [
+                        {
+                            AND: [
+                                {
+                                    age: {
+                                        gte: formatDob(upperBoundStartDate),
+                                    },
+                                },
+                                {
+                                    age: {
+                                        lte: formatDob(upperBoundDate),
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            AND: [
+                                {
+                                    age: {
+                                        gte: formatDob(upperBoundYear),
+                                    },
+                                },
+                                {
+                                    age: {
+                                        lte: formatDob(lowerBoundDate),
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                };
+            } else if (athleteAge.age.length === 1) {
+                const operationConditions =
+                    athleteAge.operationType === "gt"
+                        ? {
+                              age: {
+                                  lte: formatDob(lowerBoundDate),
+                              },
+                          }
+                        : athleteAge.operationType === "lt"
+                          ? {
+                                OR: [
+                                    {
+                                        AND: [
+                                            {
+                                                age: {
+                                                    gte: formatDob(
+                                                        lowerBoundStartDate,
+                                                    ),
+                                                },
+                                            },
+                                            {
+                                                age: {
+                                                    lte: formatDob(
+                                                        lowerBoundDate,
+                                                    ),
+                                                },
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        age: {
+                                            gte: formatDob(lowerBoundYear),
+                                        },
+                                    },
+                                ],
+                            }
+                          : undefined;
+
+                return operationConditions || undefined;
+            }
+        } else {
+            return undefined;
+        }
+    };
 
     const filterConditions: Prisma.dashapp_athleteWhereInput = {
         id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
+
+        ...(athleteAge?.age?.length && getAgeRangeQuery()),
 
         dashapp_athlete_association: associationLevelIds?.length
             ? {
@@ -752,62 +872,6 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                         }),
                     },
                 },
-            },
-        }),
-
-        ...(athleteAge?.age?.length === 2 && {
-            AND: [
-                {
-                    age: {
-                        lte: format(
-                            new Date(
-                                new Date().setFullYear(
-                                    new Date().getFullYear() -
-                                        athleteAge.age[0],
-                                ),
-                            ),
-                            "yyyy-MM-dd",
-                        ).toString(),
-                    },
-                },
-                {
-                    age: {
-                        gte: format(
-                            new Date(
-                                new Date().setFullYear(
-                                    new Date().getFullYear() -
-                                        athleteAge.age[1],
-                                ),
-                            ),
-                            "yyyy-MM-dd",
-                        ).toString(),
-                    },
-                },
-            ],
-        }),
-
-        ...(athleteAge?.age?.length === 1 && {
-            age: {
-                ...(athleteAge.operationType === "gt" && {
-                    lte: format(
-                        new Date(
-                            new Date().setFullYear(
-                                new Date().getFullYear() - athleteAge.age[0],
-                            ),
-                        ),
-                        "yyyy-MM-dd",
-                    ).toString(),
-                }),
-                ...(athleteAge.operationType === "lt" && {
-                    gte: format(
-                        new Date(
-                            new Date().setFullYear(
-                                new Date().getFullYear() - athleteAge.age[0],
-                            ),
-                        ),
-                        "yyyy-MM-dd",
-                    ).toString(),
-                }),
             },
         }),
 
@@ -1020,32 +1084,18 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         }),
     };
 
-    const athletes = await prisma.dashapp_athlete.findMany({
-        where: filterConditions,
-        select: {
-            id: true,
-            athlete_name: true,
-            nationality: { select: { name: true } },
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            created_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_date: true,
-            _count: true,
-        },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
-    });
+    const combinedFilterConditions = isMandatory
+        ? filterConditions
+        : {
+              OR: Object.entries(filterConditions)
+                  .filter(([_, condition]) => condition)
+                  .map(([key, condition]) => ({ [key]: condition })),
+          };
+
+    const [athletes, count] = await Promise.all([
+        getAthletes({ query: combinedFilterConditions, take, skip }),
+        getAthleteCount(),
+    ]);
 
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");
@@ -1066,7 +1116,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                 userId: athlete.modified_by?.id,
                 email: athlete.modified_by?.email,
             },
-            count: athlete._count,
+            count,
         })),
     );
 });
