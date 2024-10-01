@@ -4,7 +4,7 @@ import { LeagueResponseDTO } from "../dto/league.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import { TCreateLeagueSchema, TEditLeagueSchema } from "../schemas/league.schema.js";
+import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
@@ -783,4 +783,47 @@ export const deleteLeague = asyncHandler(async (req, res) => {
     });
 });
 
-export const getFilteredLeague = asyncHandler(async (req, res) => {});
+export const getFilteredLeague = asyncHandler(async (req, res) => {
+    const {
+        isMandatory,
+        activeCampaignIds,
+        ageIds,
+        associationLevelIds,
+        broadCastPartnerIds,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
+        costOfAssociation,
+        endorsementName,
+        facebook,
+        formatIds,
+        genderIds,
+        ids,
+        instagram,
+        isActiveEndorsement,
+        linkedin,
+        nccsIds,
+        ottPartnerIds,
+        ownerIds,
+        partnerIdMetrics,
+        primaryMarketIds,
+        primaryMarketingPlatformIds,
+        reachMetrics,
+        secondaryMarketIds,
+        secondaryMarketingPlatformIds,
+        sportIds,
+        strategyOverview,
+        subPersonalityTraitIds,
+        taglineIds,
+        tertiaryIds,
+        tierIds,
+        twitter,
+        viewershipMetrics,
+        website,
+        yearMetrics,
+        yearOfInception,
+        youtube,
+    } = req.validatedData as TFilteredLeagueSchema;
+});

@@ -164,9 +164,18 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
         getRecentlyModifiedBrands(convertedTake, convertedSkip),
     ]);
 
+    const modifiedCategoryCount = categoriesCount.map((category) => ({
+        id: category.id,
+        name: category.category,
+        brandCount: category.dashapp_subcategory.reduce(
+            (count, subcategory) => count + subcategory._count.dashapp_companydata_subcategory,
+            0,
+        ),
+    }));
+
     res.status(STATUS_CODE.OK).json({
         brandsCount,
-        categoriesCount,
+        categoriesCount: modifiedCategoryCount,
         recentlyAddedBrands: recentlyAddedBrands.map((data) => ({
             id: data.id,
             name: data.company_name,

@@ -13,6 +13,8 @@ export const cookieOptions = {
 
 export const operationsTypeEnum = ["gt", "lt", "equals", "in"] as const;
 
+export const partnerTypeEnum = ["ott", "broadcast"] as const;
+
 export const STATUS_CODE = {
     OK: 200,
     CREATED: 201,
