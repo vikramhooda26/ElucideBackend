@@ -10,7 +10,7 @@ import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from
 import { athleteSelect } from "../types/athlete.type.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
 import { printLogs } from "../lib/log.js";
-import { getGenderQuery } from "./constants/index.js";
+import { getCostQuery, getGenderQuery } from "./constants/index.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -786,29 +786,6 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         }
     };
 
-    const getCostQuery = () => {
-        let query;
-        if (costOfAssociation?.cost?.length === 2) {
-            if (costOfAssociation.operationType === "in") {
-                query = {
-                    gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                    lte: new Prisma.Decimal(costOfAssociation.cost[1]),
-                };
-            }
-        } else if (costOfAssociation?.cost?.length === 1) {
-            if (costOfAssociation.operationType === "gt") {
-                query = {
-                    gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                };
-            } else if (costOfAssociation.operationType === "lt") {
-                query = {
-                    lte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                };
-            }
-        }
-        return query;
-    };
-
     const filterConditions: Prisma.dashapp_athleteWhereInput = {
         id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
 
@@ -823,38 +800,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                                     in: associationLevelIds.map((id) => BigInt(id)),
                                 }
                               : undefined,
-                          cost: costOfAssociation?.cost?.length ? getCostQuery() : undefined,
+                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
                       },
                   }
                 : undefined,
-
-        // ...(costOfAssociation?.cost?.length === 2 && {
-        //     dashapp_athlete_association: {
-        //         some: {
-        //             cost: {
-        //                 ...(costOfAssociation.operationType === "in" && {
-        //                     gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-        //                     lte: new Prisma.Decimal(costOfAssociation.cost[1]),
-        //                 }),
-        //             },
-        //         },
-        //     },
-        // }),
-
-        // ...(costOfAssociation?.cost?.length === 1 && {
-        //     dashapp_athlete_association: {
-        //         some: {
-        //             cost: {
-        //                 ...(costOfAssociation.operationType === "gt" && {
-        //                     gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-        //                 }),
-        //                 ...(costOfAssociation.operationType === "lt" && {
-        //                     lte: new Prisma.Decimal(costOfAssociation.cost[0]),
-        //                 }),
-        //             },
-        //         },
-        //     },
-        // }),
 
         strategy_overview: strategyOverview
             ? {
@@ -1008,35 +957,29 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        ...(contactName?.length && {
-            contactName: {
-                contains: contactName,
-                mode: "insensitive",
+        dashapp_athletecontact: {
+            some: {
+                contact_name: {
+                    contains: contactName,
+                    mode: "insensitive",
+                },
+                contact_designation: {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                },
+                contact_email: {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                },
+                contact_no: {
+                    contains: contactNumber,
+                },
+                contact_linkedin: {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                },
             },
-        }),
-        ...(contactDesignation?.length && {
-            contactDesignation: {
-                contains: contactDesignation,
-                mode: "insensitive",
-            },
-        }),
-        ...(contactEmail?.length && {
-            contactEmail: {
-                contains: contactEmail,
-                mode: "insensitive",
-            },
-        }),
-        ...(contactNumber?.length && {
-            contactNumber: {
-                contains: contactNumber,
-            },
-        }),
-        ...(contactLinkedin?.length && {
-            contactLinkedin: {
-                contains: contactLinkedin,
-                mode: "insensitive",
-            },
-        }),
+        },
     };
 
     const combinedFilterConditions = isMandatory

@@ -129,12 +129,16 @@ export const filteredLeagueSchema = z.object({
     youtube: z.string().optional(),
     website: z.string().optional(),
     strategyOverview: z.string().optional(),
-    endorsementName: z.string().optional(),
-    isActiveEndorsement: z.boolean().optional(),
+    endorsement: z
+        .object({
+            name: z.string().optional(),
+            isActive: z.boolean().optional(),
+        })
+        .optional(),
     reachMetrics: z
         .object({
             reach: z
-                .number()
+                .string()
                 .array()
                 .max(2, "Reach array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
@@ -185,7 +189,7 @@ export const filteredLeagueSchema = z.object({
     viewershipMetrics: z
         .object({
             viewership: z
-                .number()
+                .string()
                 .array()
                 .max(2, "Viewership array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
@@ -236,7 +240,7 @@ export const filteredLeagueSchema = z.object({
     yearMetrics: z
         .object({
             year: z
-                .number()
+                .string()
                 .array()
                 .max(2, "Year array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
@@ -287,12 +291,9 @@ export const filteredLeagueSchema = z.object({
     partnerIdMetrics: z
         .object({
             partnerIds: z
-                .number()
+                .string()
                 .array()
                 .max(2, "PartnerIds array can have maximum of 2 elements i.e the min and max range")
-                .optional(),
-            operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
                 .optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
@@ -301,38 +302,26 @@ export const filteredLeagueSchema = z.object({
         .optional()
         .refine(
             (data) => {
-                if (data?.partnerIds && (data?.operationType === undefined || data?.partnerType === undefined)) {
+                if (data?.partnerIds && data?.partnerType === undefined) {
                     return false;
                 }
                 return true;
             },
             {
-                message: "operationType and partnerType are both required when partner id is provided",
-                path: ["operationType", "partnerType"],
+                message: "partnerType is required when partner id is provided",
+                path: ["partnerType"],
             },
         )
         .refine(
             (data) => {
-                if (data?.operationType && (data?.partnerIds === undefined || data.partnerType === undefined)) {
+                if (data?.partnerType && data?.partnerIds === undefined) {
                     return false;
                 }
                 return true;
             },
             {
-                message: "Partner ID and partnerType are both required when operationType is provided",
-                path: ["partnerIds", "partnerType"],
-            },
-        )
-        .refine(
-            (data) => {
-                if (data?.partnerType && (data?.partnerIds === undefined || data.operationType === undefined)) {
-                    return false;
-                }
-                return true;
-            },
-            {
-                message: "Partner ID and operationType are both required when operationType is provided",
-                path: ["partnerIds", "operationType"],
+                message: "Partner ID is required when operationType is provided",
+                path: ["partnerIds"],
             },
         ),
     associationLevelIds: z.string().array().optional(),

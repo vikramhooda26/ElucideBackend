@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { LeagueResponseDTO } from "../dto/league.dto.js";
@@ -6,9 +7,44 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
+import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
-import { Prisma } from "@prisma/client";
-import { getGenderQuery } from "./constants/index.js";
+
+const getLeagues = async ({
+    query,
+    take,
+    skip,
+}: {
+    query?: Prisma.dashapp_leagueinfoWhereInput;
+    take?: any;
+    skip?: any;
+}) => {
+    return await prisma.dashapp_leagueinfo.findMany({
+        where: query || undefined,
+        select: {
+            id: true,
+            property_name: true,
+            created_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            dashapp_leagueinfo_gender: true,
+            created_date: true,
+            modified_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            modified_date: true,
+        },
+        orderBy: { modified_date: "desc" },
+        take: Number.isNaN(Number(take)) ? undefined : Number(take),
+        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+    });
+};
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -64,34 +100,13 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 export const getAllLeagues = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const leagues = await prisma.dashapp_leagueinfo.findMany({
-        select: {
-            id: true,
-            property_name: true,
-            created_date: true,
-            modified_date: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            _count: true,
-        },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
-    });
+    const leagues = await getLeagues({ skip, take });
 
     if (leagues.length < 1) {
         throw new NotFoundError("League data does not exists");
     }
+
+    const count = await getLeaguesCount();
 
     res.status(STATUS_CODE.OK).json(
         leagues.map((league) => ({
@@ -107,7 +122,7 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
                 userId: league.modified_by?.id,
                 email: league.modified_by?.email,
             },
-            count: league._count,
+            count,
         })),
     );
 });
@@ -800,13 +815,12 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         contactName,
         contactNumber,
         costOfAssociation,
-        endorsementName,
         facebook,
         formatIds,
         genderIds,
         ids,
         instagram,
-        isActiveEndorsement,
+        endorsement,
         linkedin,
         nccsIds,
         ottPartnerIds,
@@ -834,59 +848,66 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     const filterConditions: Prisma.dashapp_leagueinfoWhereInput = {
         id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
 
-        dashapp_leagueinfo_association: associationLevelIds?.length
+        ...(reachMetrics?.partnerType === "broadcast" ||
+        viewershipMetrics?.partnerType === "broadcast" ||
+        yearMetrics?.partnerType === "broadcast" ||
+        partnerIdMetrics?.partnerType === "broadcast"
             ? {
-                  some: {
-                      association_level_id: {
-                          in: associationLevelIds.map((id) => BigInt(id)),
-                      },
+                  dashapp_broadcast_partner_metrics: {
+                      some: getMetricsQuery(
+                          "broadcast",
+                          reachMetrics,
+                          viewershipMetrics,
+                          yearMetrics,
+                          partnerIdMetrics,
+                      ),
                   },
+              }
+            : undefined),
+
+        ...(reachMetrics?.partnerType === "ott" ||
+        viewershipMetrics?.partnerType === "ott" ||
+        yearMetrics?.partnerType === "ott" ||
+        partnerIdMetrics?.partnerType === "ott"
+            ? {
+                  dashapp_ott_partner_metrics: {
+                      some: getMetricsQuery("ott", reachMetrics, viewershipMetrics, yearMetrics, partnerIdMetrics),
+                  },
+              }
+            : undefined),
+
+        dashapp_leagueinfo_association:
+            associationLevelIds?.length || costOfAssociation?.cost?.length
+                ? {
+                      some: {
+                          association_level_id: associationLevelIds?.length
+                              ? {
+                                    in: associationLevelIds.map((id) => BigInt(id)),
+                                }
+                              : undefined,
+                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
+                      },
+                  }
+                : undefined,
+
+        dashapp_broadcastpartner: broadCastPartnerIds?.length
+            ? {
+                  id: { in: broadCastPartnerIds.map((id) => BigInt(id)) },
               }
             : undefined,
 
-        ...(costOfAssociation?.cost?.length === 2 && {
-            dashapp_leagueinfo_association: {
-                some: {
-                    cost: {
-                        ...(costOfAssociation.operationType === "in" && {
-                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                            lte: new Prisma.Decimal(costOfAssociation.cost[1]),
-                        }),
-                    },
-                },
-            },
-        }),
+        dashapp_ottpartner: ottPartnerIds?.length
+            ? {
+                  id: { in: ottPartnerIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
 
-        ...(costOfAssociation?.cost?.length === 1 && {
-            dashapp_leagueinfo_association: {
-                some: {
-                    cost: {
-                        ...(costOfAssociation.operationType === "gt" && {
-                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                        }),
-                        ...(costOfAssociation.operationType === "lt" && {
-                            lte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                        }),
-                    },
-                },
-            },
-        }),
-
-        ...(endorsementName && {
-            dashapp_leagueendorsements: {
-                some: {
-                    name: { contains: endorsementName, mode: "insensitive" },
-                },
-            },
-        }),
-
-        ...(isActiveEndorsement && {
-            dashapp_leagueendorsements: {
-                some: {
-                    active: isActiveEndorsement,
-                },
-            },
-        }),
+        dashapp_leagueendorsements:
+            endorsement?.name || endorsement?.isActive
+                ? {
+                      some: getEndorsementQuery(endorsement),
+                  }
+                : undefined,
 
         strategy_overview: strategyOverview
             ? {
@@ -1052,35 +1073,29 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        ...(contactName?.length && {
-            contactName: {
-                contains: contactName,
-                mode: "insensitive",
+        dashapp_leaguecontact: {
+            some: {
+                contact_name: {
+                    contains: contactName,
+                    mode: "insensitive",
+                },
+                contact_designation: {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                },
+                contact_email: {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                },
+                contact_no: {
+                    contains: contactNumber,
+                },
+                contact_linkedin: {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                },
             },
-        }),
-        ...(contactDesignation?.length && {
-            contactDesignation: {
-                contains: contactDesignation,
-                mode: "insensitive",
-            },
-        }),
-        ...(contactEmail?.length && {
-            contactEmail: {
-                contains: contactEmail,
-                mode: "insensitive",
-            },
-        }),
-        ...(contactNumber?.length && {
-            contactNumber: {
-                contains: contactNumber,
-            },
-        }),
-        ...(contactLinkedin?.length && {
-            contactLinkedin: {
-                contains: contactLinkedin,
-                mode: "insensitive",
-            },
-        }),
+        },
     };
 
     const combinedFilterConditions = isMandatory
@@ -1090,4 +1105,34 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                   .filter(([_, condition]) => condition)
                   .map(([key, condition]) => ({ [key]: condition })),
           };
+
+    const [leagues, count] = await Promise.all([
+        getLeagues({ query: combinedFilterConditions, take, skip }),
+        getLeaguesCount(),
+    ]);
+
+    if (leagues.length < 1) {
+        throw new NotFoundError("No leagues found for the given filters");
+    }
+
+    const modifiedLeagues =
+        genderIds?.length === 2 ? leagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2) : leagues;
+
+    res.status(STATUS_CODE.OK).json(
+        modifiedLeagues.map((league) => ({
+            id: league.id,
+            name: league.property_name,
+            createdDate: league.created_date,
+            modifiedDate: league.modified_date,
+            createdBy: {
+                userId: league.created_by?.id,
+                email: league.created_by?.email,
+            },
+            modifiedBy: {
+                userId: league.modified_by?.id,
+                email: league.modified_by?.email,
+            },
+            count,
+        })),
+    );
 });
