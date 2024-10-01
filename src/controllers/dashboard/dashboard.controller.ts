@@ -14,9 +14,10 @@ import {
     getTeamsCount,
     getRecentlyAddedTeams,
     getRecentlyModifiedTeams,
-    getCategoriesCount,
+    getBrandsPerCategory,
     getRecentlyAddedBrands,
     getRecentlyModifiedBrands,
+    getCategoriesCount,
 } from "./helpers.js";
 import { STATUS_CODE } from "../../lib/constants.js";
 /**
@@ -157,14 +158,16 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
     const convertedTake = Number.isNaN(Number(take)) ? 50 : Number(take);
     const convertedSkip = Number.isNaN(Number(skip)) ? 0 : Number(skip);
 
-    const [brandsCount, categoriesCount, recentlyAddedBrands, recentlyModifiedBrands] = await Promise.all([
-        getBrandsCount(),
-        getCategoriesCount(),
-        getRecentlyAddedBrands(convertedTake, convertedSkip),
-        getRecentlyModifiedBrands(convertedTake, convertedSkip),
-    ]);
+    const [brandsCount, brandsPerCategory, categoriesCount, recentlyAddedBrands, recentlyModifiedBrands] =
+        await Promise.all([
+            getBrandsCount(),
+            getBrandsPerCategory(),
+            getCategoriesCount(),
+            getRecentlyAddedBrands(convertedTake, convertedSkip),
+            getRecentlyModifiedBrands(convertedTake, convertedSkip),
+        ]);
 
-    const modifiedCategoryCount = categoriesCount.map((category) => ({
+    const modifiedCategoryCount = brandsPerCategory.map((category) => ({
         id: category.id,
         name: category.category,
         brandCount: category.dashapp_subcategory.reduce(
@@ -175,7 +178,8 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
 
     res.status(STATUS_CODE.OK).json({
         brandsCount,
-        categoriesCount: modifiedCategoryCount,
+        brandsPerCategory: modifiedCategoryCount,
+        categoriesCount,
         recentlyAddedBrands: recentlyAddedBrands.map((data) => ({
             id: data.id,
             name: data.company_name,

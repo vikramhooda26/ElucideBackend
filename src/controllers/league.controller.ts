@@ -7,6 +7,8 @@ import { areElementsDistinct } from "../lib/helpers.js";
 import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
+import { Prisma } from "@prisma/client";
+import { getGenderQuery } from "./constants/index.js";
 
 export const getLeagueById = asyncHandler(async (req, res) => {
     const leagueId = req.params.id;
@@ -784,6 +786,8 @@ export const deleteLeague = asyncHandler(async (req, res) => {
 });
 
 export const getFilteredLeague = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
     const {
         isMandatory,
         activeCampaignIds,
@@ -826,4 +830,264 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         yearOfInception,
         youtube,
     } = req.validatedData as TFilteredLeagueSchema;
+
+    const filterConditions: Prisma.dashapp_leagueinfoWhereInput = {
+        id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
+
+        dashapp_leagueinfo_association: associationLevelIds?.length
+            ? {
+                  some: {
+                      association_level_id: {
+                          in: associationLevelIds.map((id) => BigInt(id)),
+                      },
+                  },
+              }
+            : undefined,
+
+        ...(costOfAssociation?.cost?.length === 2 && {
+            dashapp_leagueinfo_association: {
+                some: {
+                    cost: {
+                        ...(costOfAssociation.operationType === "in" && {
+                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                            lte: new Prisma.Decimal(costOfAssociation.cost[1]),
+                        }),
+                    },
+                },
+            },
+        }),
+
+        ...(costOfAssociation?.cost?.length === 1 && {
+            dashapp_leagueinfo_association: {
+                some: {
+                    cost: {
+                        ...(costOfAssociation.operationType === "gt" && {
+                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                        }),
+                        ...(costOfAssociation.operationType === "lt" && {
+                            lte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                        }),
+                    },
+                },
+            },
+        }),
+
+        ...(endorsementName && {
+            dashapp_leagueendorsements: {
+                some: {
+                    name: { contains: endorsementName, mode: "insensitive" },
+                },
+            },
+        }),
+
+        ...(isActiveEndorsement && {
+            dashapp_leagueendorsements: {
+                some: {
+                    active: isActiveEndorsement,
+                },
+            },
+        }),
+
+        strategy_overview: strategyOverview
+            ? {
+                  contains: strategyOverview,
+                  mode: "insensitive",
+              }
+            : undefined,
+
+        year_of_inception: yearOfInception ? { contains: yearOfInception, mode: "insensitive" } : undefined,
+
+        dashapp_sport: sportIds?.length
+            ? {
+                  id: { in: sportIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_age: ageIds?.length
+            ? {
+                  some: {
+                      dashapp_age: {
+                          id: { in: ageIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+        website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+        dashapp_leagueinfo_personality_traits: subPersonalityTraitIds?.length
+            ? {
+                  some: {
+                      dashapp_subpersonality: {
+                          id: {
+                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_gender: genderIds?.length
+            ? {
+                  every: {
+                      dashapp_gender: await getGenderQuery(genderIds),
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_income: nccsIds?.length
+            ? {
+                  some: {
+                      dashapp_nccs: {
+                          id: { in: nccsIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        format: formatIds?.length
+            ? {
+                  id: { in: formatIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_owner: ownerIds?.length
+            ? {
+                  some: {
+                      dashapp_leagueowner: {
+                          id: { in: ownerIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_taglines: taglineIds?.length
+            ? {
+                  some: {
+                      dashapp_taglines: {
+                          id: { in: taglineIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_key_markets_primary: primaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_key_markets_secondary: secondaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: {
+                              in: secondaryMarketIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_key_markets_tertiary: tertiaryIds?.length
+            ? {
+                  some: {
+                      dashapp_states: {
+                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_tier: tierIds?.length
+            ? {
+                  some: {
+                      dashapp_tier: {
+                          id: { in: tierIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_active_campaigns: activeCampaignIds?.length
+            ? {
+                  some: {
+                      dashapp_activecampaigns: {
+                          id: { in: activeCampaignIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_marketing_platforms_primary: primaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        ...(contactName?.length && {
+            contactName: {
+                contains: contactName,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactDesignation?.length && {
+            contactDesignation: {
+                contains: contactDesignation,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactEmail?.length && {
+            contactEmail: {
+                contains: contactEmail,
+                mode: "insensitive",
+            },
+        }),
+        ...(contactNumber?.length && {
+            contactNumber: {
+                contains: contactNumber,
+            },
+        }),
+        ...(contactLinkedin?.length && {
+            contactLinkedin: {
+                contains: contactLinkedin,
+                mode: "insensitive",
+            },
+        }),
+    };
+
+    const combinedFilterConditions = isMandatory
+        ? filterConditions
+        : {
+              OR: Object.entries(filterConditions)
+                  .filter(([_, condition]) => condition)
+                  .map(([key, condition]) => ({ [key]: condition })),
+          };
 });

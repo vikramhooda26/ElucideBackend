@@ -6,7 +6,7 @@ export const getBrandsCount = async () => {
     return await prisma.dashapp_companydata.count();
 };
 
-export const getCategoriesCount = async () => {
+export const getBrandsPerCategory = async () => {
     return await prisma.dashapp_category.findMany({
         select: {
             id: true,
@@ -24,6 +24,10 @@ export const getCategoriesCount = async () => {
             },
         },
     });
+};
+
+export const getCategoriesCount = async () => {
+    return await prisma.dashapp_category.count();
 };
 
 export const getRecentlyAddedBrands = async (take: number, skip: number) => {

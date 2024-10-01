@@ -10,6 +10,7 @@ import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from
 import { athleteSelect } from "../types/athlete.type.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
 import { printLogs } from "../lib/log.js";
+import { getGenderQuery } from "./constants/index.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -785,53 +786,26 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         }
     };
 
-    const getGenderQuery = async (genderIds: string[]) => {
-        const length = genderIds.length;
-
-        if (length === 0) {
-            return undefined;
-        }
-
-        let query: { [key: string]: any } | undefined;
-
-        const genders = await prisma.dashapp_gender.findMany({ select: { id: true } });
-
-        if (!genders.length) {
-            return undefined;
-        }
-
-        if (length === 1) {
-            const genderId = genderIds[0];
-            const genderInDatabase = genders.find((value) => value.id.toString() === genderId);
-
-            if (!genderInDatabase) {
-                throw new NotFoundError("This gender ID does not exist");
-            }
-
-            const notIn = genders.filter((gender) => gender.id !== genderInDatabase.id).map((gender) => gender.id);
-
-            if (genderInDatabase?.id) {
+    const getCostQuery = () => {
+        let query;
+        if (costOfAssociation?.cost?.length === 2) {
+            if (costOfAssociation.operationType === "in") {
                 query = {
-                    AND: [
-                        {
-                            id: genderInDatabase.id,
-                        },
-                        {
-                            id: { notIn },
-                        },
-                    ],
+                    gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                    lte: new Prisma.Decimal(costOfAssociation.cost[1]),
+                };
+            }
+        } else if (costOfAssociation?.cost?.length === 1) {
+            if (costOfAssociation.operationType === "gt") {
+                query = {
+                    gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+                };
+            } else if (costOfAssociation.operationType === "lt") {
+                query = {
+                    lte: new Prisma.Decimal(costOfAssociation.cost[0]),
                 };
             }
         }
-
-        if (length === 2) {
-            query = {
-                OR: genderIds.map((id) => ({
-                    id: BigInt(id),
-                })),
-            };
-        }
-
         return query;
     };
 
@@ -840,43 +814,47 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         ...(athleteAge?.age?.length && getAgeRangeQuery()),
 
-        dashapp_athlete_association: associationLevelIds?.length
-            ? {
-                  some: {
-                      association_level_id: {
-                          in: associationLevelIds.map((id) => BigInt(id)),
+        dashapp_athlete_association:
+            associationLevelIds?.length || costOfAssociation?.cost?.length
+                ? {
+                      some: {
+                          association_level_id: associationLevelIds?.length
+                              ? {
+                                    in: associationLevelIds.map((id) => BigInt(id)),
+                                }
+                              : undefined,
+                          cost: costOfAssociation?.cost?.length ? getCostQuery() : undefined,
                       },
-                  },
-              }
-            : undefined,
+                  }
+                : undefined,
 
-        ...(costOfAssociation?.cost?.length === 2 && {
-            dashapp_athlete_association: {
-                some: {
-                    cost: {
-                        ...(costOfAssociation.operationType === "in" && {
-                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                            lte: new Prisma.Decimal(costOfAssociation.cost[1]),
-                        }),
-                    },
-                },
-            },
-        }),
+        // ...(costOfAssociation?.cost?.length === 2 && {
+        //     dashapp_athlete_association: {
+        //         some: {
+        //             cost: {
+        //                 ...(costOfAssociation.operationType === "in" && {
+        //                     gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+        //                     lte: new Prisma.Decimal(costOfAssociation.cost[1]),
+        //                 }),
+        //             },
+        //         },
+        //     },
+        // }),
 
-        ...(costOfAssociation?.cost?.length === 1 && {
-            dashapp_athlete_association: {
-                some: {
-                    cost: {
-                        ...(costOfAssociation.operationType === "gt" && {
-                            gte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                        }),
-                        ...(costOfAssociation.operationType === "lt" && {
-                            lte: new Prisma.Decimal(costOfAssociation.cost[0]),
-                        }),
-                    },
-                },
-            },
-        }),
+        // ...(costOfAssociation?.cost?.length === 1 && {
+        //     dashapp_athlete_association: {
+        //         some: {
+        //             cost: {
+        //                 ...(costOfAssociation.operationType === "gt" && {
+        //                     gte: new Prisma.Decimal(costOfAssociation.cost[0]),
+        //                 }),
+        //                 ...(costOfAssociation.operationType === "lt" && {
+        //                     lte: new Prisma.Decimal(costOfAssociation.cost[0]),
+        //                 }),
+        //             },
+        //         },
+        //     },
+        // }),
 
         strategy_overview: strategyOverview
             ? {
