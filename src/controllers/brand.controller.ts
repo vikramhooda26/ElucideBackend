@@ -1,44 +1,61 @@
+import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import { TCreateBrandSchema, TEditBrandSchema } from "../schemas/brand.schema.js";
+import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
+import { getEndorsementQuery, getGenderQuery } from "./constants/index.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
 
-export const getAllBrands = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
-
-    const brands = await prisma.dashapp_companydata.findMany({
+const getBrands = async ({
+    query,
+    take,
+    skip,
+}: {
+    query?: Prisma.dashapp_companydataWhereInput;
+    take?: any;
+    skip?: any;
+}) => {
+    return await prisma.dashapp_companydata.findMany({
+        where: query || undefined,
         select: {
             id: true,
             company_name: true,
-            created_date: true,
-            modified_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
             created_by: {
                 select: {
                     id: true,
                     email: true,
                 },
             },
-            _count: true,
+            dashapp_companydata_gender: true,
+            created_date: true,
+            modified_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            modified_date: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
+};
+
+export const getAllBrands = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
+    const brands = await getBrands({ take, skip });
 
     if (brands.length < 1) {
         throw new NotFoundError("Brands data does not exists");
     }
+
+    const count = await getBrandsCount();
 
     res.status(STATUS_CODE.OK).json(
         brands.map((brand) => ({
@@ -54,7 +71,7 @@ export const getAllBrands = asyncHandler(async (req, res) => {
                 userId: brand.modified_by?.id,
                 email: brand.modified_by?.email,
             },
-            count: brand._count,
+            count,
         })),
     );
 });
@@ -679,4 +696,288 @@ export const deleteBrand = asyncHandler(async (req, res) => {
     });
 });
 
-export const getFilteredBrand = asyncHandler(async (req, res) => {});
+export const getFilteredBrand = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
+    const {
+        isMandatory,
+        activeCampaignIds,
+        ageIds,
+        agencyIds,
+        cityIds,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
+        endorsement,
+        facebook,
+        genderIds,
+        ids,
+        instagram,
+        linkedin,
+        nccsIds,
+        parentOrgIds,
+        primaryMarketIds,
+        primaryMarketingPlatformIds,
+        secondaryMarketIds,
+        secondaryMarketingPlatformIds,
+        stateIds,
+        strategyOverview,
+        subCategoryIds,
+        subPersonalityTraitIds,
+        taglineIds,
+        tertiaryIds,
+        tierIds,
+        twitter,
+        website,
+        youtube,
+    } = req.validatedData as TFilteredBrandSchema;
+
+    const filterConditions: Prisma.dashapp_companydataWhereInput = {
+        id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
+
+        dashapp_brandendorsements:
+            endorsement?.name || endorsement?.isActive
+                ? {
+                      some: getEndorsementQuery(endorsement),
+                  }
+                : undefined,
+
+        strategy_overview: strategyOverview
+            ? {
+                  contains: strategyOverview,
+                  mode: "insensitive",
+              }
+            : undefined,
+
+        dashapp_companydata_age: ageIds?.length
+            ? {
+                  some: {
+                      dashapp_age: {
+                          id: { in: ageIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+        website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+        dashapp_companydata_personality_traits: subPersonalityTraitIds?.length
+            ? {
+                  some: {
+                      dashapp_subpersonality: {
+                          id: {
+                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_gender: genderIds?.length
+            ? {
+                  every: {
+                      dashapp_gender: await getGenderQuery(genderIds),
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_income: nccsIds?.length
+            ? {
+                  some: {
+                      dashapp_nccs: {
+                          id: { in: nccsIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_taglines: taglineIds?.length
+            ? {
+                  some: {
+                      dashapp_taglines: {
+                          id: { in: taglineIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_key_markets_primary: primaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_key_markets_secondary: secondaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: {
+                              in: secondaryMarketIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_key_markets_tertiary: tertiaryIds?.length
+            ? {
+                  some: {
+                      dashapp_states: {
+                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_tier: tierIds?.length
+            ? {
+                  some: {
+                      dashapp_tier: {
+                          id: { in: tierIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_active_campaigns: activeCampaignIds?.length
+            ? {
+                  some: {
+                      dashapp_activecampaigns: {
+                          id: { in: activeCampaignIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_marketing_platforms_primary: primaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_companydata_subcategory: subCategoryIds?.length
+            ? {
+                  some: {
+                      dashapp_subcategory: {
+                          id: { in: subCategoryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_states: stateIds?.length
+            ? {
+                  id: { in: stateIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_hqcity: cityIds?.length
+            ? {
+                  id: { in: cityIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_agency: agencyIds?.length
+            ? {
+                  id: { in: agencyIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_parentorg: parentOrgIds?.length
+            ? {
+                  id: { in: parentOrgIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_brandcontact: {
+            some: {
+                contact_name: {
+                    contains: contactName,
+                    mode: "insensitive",
+                },
+                contact_designation: {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                },
+                contact_email: {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                },
+                contact_no: {
+                    contains: contactNumber,
+                },
+                contact_linkedin: {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                },
+            },
+        },
+    };
+
+    const combinedFilterConditions = isMandatory
+        ? filterConditions
+        : {
+              OR: Object.entries(filterConditions)
+                  .filter(([_, condition]) => condition)
+                  .map(([key, condition]) => ({ [key]: condition })),
+          };
+
+    const [brands, count] = await Promise.all([
+        getBrands({ query: combinedFilterConditions, take, skip }),
+        getBrandsCount(),
+    ]);
+
+    if (brands.length < 1) {
+        throw new NotFoundError("No brands found for the given filters");
+    }
+
+    const modifiedBrands =
+        genderIds?.length === 2 ? brands.filter((brand) => brand.dashapp_companydata_gender.length === 2) : brands;
+
+    res.status(STATUS_CODE.OK).json(
+        modifiedBrands.map((brand) => ({
+            id: brand.id,
+            name: brand.company_name,
+            createdDate: brand.created_date,
+            modifiedDate: brand.modified_date,
+            createdBy: {
+                userId: brand.created_by?.id,
+                email: brand.created_by?.email,
+            },
+            modifiedBy: {
+                userId: brand.modified_by?.id,
+                email: brand.modified_by?.email,
+            },
+            count,
+        })),
+    );
+});

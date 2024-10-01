@@ -69,5 +69,46 @@ export const editBrandSchema = createBrandSchema.partial().extend({
         .optional(),
 });
 
+export const filteredBrandSchema = z.object({
+    ids: z.string().array().optional(),
+    parentOrgIds: z.string().array().optional(),
+    subCategoryIds: z.string().array().optional(),
+    cityIds: z.string().array().optional(),
+    stateIds: z.string().array().optional(),
+    agencyIds: z.string().array().optional(),
+    tierIds: z.string().array().optional(),
+    instagram: z.string().optional(),
+    facebook: z.string().optional(),
+    linkedin: z.string().optional(),
+    twitter: z.string().optional(),
+    youtube: z.string().optional(),
+    website: z.string().optional(),
+    subPersonalityTraitIds: z.string().array().optional(),
+    strategyOverview: z.string().optional(),
+    taglineIds: z.string().array().optional(),
+    activeCampaignIds: z.string().array().optional(),
+    primaryMarketIds: z.string().array().optional(),
+    secondaryMarketIds: z.string().array().optional(),
+    tertiaryIds: z.string().array().optional(),
+    nccsIds: z.string().array().optional(),
+    primaryMarketingPlatformIds: z.string().array().optional(),
+    secondaryMarketingPlatformIds: z.string().array().optional(),
+    ageIds: z.string().array().optional(),
+    genderIds: z.string().array().optional(),
+    endorsement: z
+        .object({
+            name: z.string().optional(),
+            isActive: z.boolean().optional(),
+        })
+        .optional(),
+    contactName: z.string().optional(),
+    contactDesignation: z.string().optional(),
+    contactEmail: z.string().optional(),
+    contactNumber: z.string().optional(),
+    contactLinkedin: z.string().optional(),
+    isMandatory: z.boolean({ message: "isMandatory is required" }),
+});
+
 export type TCreateBrandSchema = z.infer<typeof createBrandSchema>;
 export type TEditBrandSchema = z.infer<typeof editBrandSchema>;
+export type TFilteredBrandSchema = z.infer<typeof filteredBrandSchema>;
