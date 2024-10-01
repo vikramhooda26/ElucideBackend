@@ -1,50 +1,53 @@
+import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { TeamResponseDTO } from "../dto/team.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
-import { TCreateTeamSchema, TEditTeamSchema } from "../schemas/team.schema.js";
-import { teamSelect } from "../types/team.type.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { TCreateTeamSchema, TEditTeamSchema, TFilteredTeamSchema } from "../schemas/team.schema.js";
+import { teamSelect } from "../types/team.type.js";
+import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getTeamsCount } from "./dashboard/helpers.js";
 
-export const getAllTeams = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
-
-    const teams = await prisma.dashapp_team.findMany({
+const getTeams = async ({ query, take, skip }: { query?: Prisma.dashapp_teamWhereInput; take?: any; skip?: any }) => {
+    return await prisma.dashapp_team.findMany({
+        where: query || undefined,
         select: {
             id: true,
             team_name: true,
-            created_date: true,
-            modified_date: true,
             created_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
+            dashapp_team_gender: true,
+            created_date: true,
             modified_by: {
                 select: {
                     id: true,
-                    username: true,
                     email: true,
-                    first_name: true,
-                    last_name: true,
                 },
             },
-            _count: true,
+            modified_date: true,
         },
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
     });
+};
+
+export const getAllTeams = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
+    const teams = await getTeams({ skip, take });
 
     if (teams.length < 1) {
         throw new NotFoundError("Team data does not exists");
     }
+
+    const count = await getTeamsCount();
 
     res.status(STATUS_CODE.OK).json(
         teams.map((team) => ({
@@ -55,18 +58,12 @@ export const getAllTeams = asyncHandler(async (req, res) => {
             createdBy: {
                 userId: team.created_by?.id,
                 email: team.created_by?.email,
-                firstName: team.created_by?.first_name,
-                lastName: team.created_by?.last_name,
-                username: team.created_by?.username,
             },
             modifiedBy: {
                 userId: team.modified_by?.id,
                 email: team.modified_by?.email,
-                firstName: team.modified_by?.first_name,
-                lastName: team.modified_by?.last_name,
-                username: team.modified_by?.username,
             },
-            count: team._count,
+            count,
         })),
     );
 });
@@ -807,4 +804,341 @@ export const deleteTeam = asyncHandler(async (req, res) => {
     });
 });
 
-export const getFilteredTeam = asyncHandler(async (req, res) => {});
+export const getFilteredTeam = asyncHandler(async (req, res) => {
+    const { take, skip } = req.query;
+
+    const {
+        isMandatory,
+        activeCampaignIds,
+        ageIds,
+        associationLevelIds,
+        cityIds,
+        contactDesignation,
+        contactEmail,
+        contactLinkedin,
+        contactName,
+        contactNumber,
+        costOfAssociation,
+        endorsement,
+        facebook,
+        franchiseFee,
+        genderIds,
+        ids,
+        instagram,
+        leagueIds,
+        linkedin,
+        nccsIds,
+        ownerIds,
+        partnerIdMetrics,
+        primaryMarketIds,
+        primaryMarketingPlatformIds,
+        reachMetrics,
+        secondaryMarketIds,
+        secondaryMarketingPlatformIds,
+        sportIds,
+        stateIds,
+        strategyOverview,
+        subPersonalityTraitIds,
+        taglineIds,
+        tertiaryIds,
+        tierIds,
+        twitter,
+        viewershipMetrics,
+        website,
+        yearMetrics,
+        yearOfInception,
+        youtube,
+    } = req.validatedData as TFilteredTeamSchema;
+
+    const filterConditions: Prisma.dashapp_teamWhereInput = {
+        id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
+
+        ...(reachMetrics?.partnerType === "broadcast" ||
+        viewershipMetrics?.partnerType === "broadcast" ||
+        yearMetrics?.partnerType === "broadcast" ||
+        partnerIdMetrics?.partnerType === "broadcast"
+            ? {
+                  dashapp_broadcast_partner_metrics: {
+                      some: getMetricsQuery(
+                          "broadcast",
+                          reachMetrics,
+                          viewershipMetrics,
+                          yearMetrics,
+                          partnerIdMetrics,
+                      ),
+                  },
+              }
+            : undefined),
+
+        ...(reachMetrics?.partnerType === "ott" ||
+        viewershipMetrics?.partnerType === "ott" ||
+        yearMetrics?.partnerType === "ott" ||
+        partnerIdMetrics?.partnerType === "ott"
+            ? {
+                  dashapp_ott_partner_metrics: {
+                      some: getMetricsQuery("ott", reachMetrics, viewershipMetrics, yearMetrics, partnerIdMetrics),
+                  },
+              }
+            : undefined),
+
+        dashapp_team_association:
+            associationLevelIds?.length || costOfAssociation?.cost?.length
+                ? {
+                      some: {
+                          association_level_id: associationLevelIds?.length
+                              ? {
+                                    in: associationLevelIds.map((id) => BigInt(id)),
+                                }
+                              : undefined,
+                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
+                      },
+                  }
+                : undefined,
+
+        dashapp_teamendorsements:
+            endorsement?.name || endorsement?.isActive
+                ? {
+                      some: getEndorsementQuery(endorsement),
+                  }
+                : undefined,
+
+        strategy_overview: strategyOverview
+            ? {
+                  contains: strategyOverview,
+                  mode: "insensitive",
+              }
+            : undefined,
+
+        year_of_inception: yearOfInception ? { contains: yearOfInception, mode: "insensitive" } : undefined,
+
+        dashapp_sport: sportIds?.length
+            ? {
+                  id: { in: sportIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_team_age: ageIds?.length
+            ? {
+                  some: {
+                      dashapp_age: {
+                          id: { in: ageIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_leagueinfo: leagueIds?.length
+            ? {
+                  id: { in: leagueIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_states: stateIds?.length
+            ? {
+                  id: { in: stateIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        dashapp_hqcity: cityIds?.length
+            ? {
+                  id: { in: cityIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        franchise_fee: franchiseFee ? new Prisma.Decimal(franchiseFee) : undefined,
+        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+        website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+        dashapp_team_personality_traits: subPersonalityTraitIds?.length
+            ? {
+                  some: {
+                      dashapp_subpersonality: {
+                          id: {
+                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_gender: genderIds?.length
+            ? {
+                  every: {
+                      dashapp_gender: await getGenderQuery(genderIds),
+                  },
+              }
+            : undefined,
+
+        dashapp_team_income: nccsIds?.length
+            ? {
+                  some: {
+                      dashapp_nccs: {
+                          id: { in: nccsIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_owner: ownerIds?.length
+            ? {
+                  some: {
+                      dashapp_teamowner: {
+                          id: { in: ownerIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_taglines: taglineIds?.length
+            ? {
+                  some: {
+                      dashapp_taglines: {
+                          id: { in: taglineIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_key_markets_primary: primaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_key_markets_secondary: secondaryMarketIds?.length
+            ? {
+                  some: {
+                      dashapp_keymarket: {
+                          id: {
+                              in: secondaryMarketIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_key_markets_tertiary: tertiaryIds?.length
+            ? {
+                  some: {
+                      dashapp_states: {
+                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_tier: tierIds?.length
+            ? {
+                  some: {
+                      dashapp_tier: {
+                          id: { in: tierIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_active_campaigns: activeCampaignIds?.length
+            ? {
+                  some: {
+                      dashapp_activecampaigns: {
+                          id: { in: activeCampaignIds.map((id) => BigInt(id)) },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_marketing_platforms_primary: primaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_team_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+              }
+            : undefined,
+
+        dashapp_teamcontact: {
+            some: {
+                contact_name: {
+                    contains: contactName,
+                    mode: "insensitive",
+                },
+                contact_designation: {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                },
+                contact_email: {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                },
+                contact_no: {
+                    contains: contactNumber,
+                },
+                contact_linkedin: {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                },
+            },
+        },
+    };
+
+    const combinedFilterConditions = isMandatory
+        ? filterConditions
+        : {
+              OR: Object.entries(filterConditions)
+                  .filter(([_, condition]) => condition)
+                  .map(([key, condition]) => ({ [key]: condition })),
+          };
+
+    const [teams, count] = await Promise.all([
+        getTeams({ query: combinedFilterConditions, take, skip }),
+        getTeamsCount(),
+    ]);
+
+    if (teams.length < 1) {
+        throw new NotFoundError("No teams found for the given filters");
+    }
+
+    const modifiedTeams =
+        genderIds?.length === 2 ? teams.filter((team) => team.dashapp_team_gender.length === 2) : teams;
+
+    res.status(STATUS_CODE.OK).json(
+        modifiedTeams.map((team) => ({
+            id: team.id,
+            name: team.team_name,
+            createdDate: team.created_date,
+            modifiedDate: team.modified_date,
+            createdBy: {
+                userId: team.created_by?.id,
+                email: team.created_by?.email,
+            },
+            modifiedBy: {
+                userId: team.modified_by?.id,
+                email: team.modified_by?.email,
+            },
+            count,
+        })),
+    );
+});

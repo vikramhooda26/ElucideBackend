@@ -8,9 +8,8 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
-import { getAthletesCount } from "./dashboard/helpers.js";
-import { printLogs } from "../lib/log.js";
 import { getCostQuery, getGenderQuery } from "./constants/index.js";
+import { getAthletesCount } from "./dashboard/helpers.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);

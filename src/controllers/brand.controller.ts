@@ -3,10 +3,10 @@ import { prisma } from "../db/index.js";
 import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
+import { areElementsDistinct } from "../lib/helpers.js";
 import { TCreateBrandSchema, TEditBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
-import { areElementsDistinct } from "../lib/helpers.js";
 
 export const getAllBrands = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
