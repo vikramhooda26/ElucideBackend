@@ -8,10 +8,7 @@ import {
     getAllLeagueOwners,
     getLeagueOwnerById,
 } from "../../controllers/metadata/league-owner.controller.js";
-import {
-    createLeagueOwnerSchema,
-    editLeagueOwnerSchema,
-} from "../../schemas/metadata/league-owner.schema.js";
+import { createLeagueOwnerSchema, editLeagueOwnerSchema } from "../../schemas/metadata/league-owner.schema.js";
 
 export const leagueOwnerRouter = Router();
 
@@ -33,8 +30,4 @@ leagueOwnerRouter.put(
     editLeagueOwner,
 );
 
-leagueOwnerRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteLeagueOwner,
-);
+leagueOwnerRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteLeagueOwner);

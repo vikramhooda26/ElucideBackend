@@ -8,10 +8,7 @@ import {
     getAllOttPartners,
     getOttPartnerById,
 } from "../../controllers/metadata/ott-partner.controller.js";
-import {
-    createOttPartnerSchema,
-    editOttPartnerSchema,
-} from "../../schemas/metadata/ott-partner.schema.js";
+import { createOttPartnerSchema, editOttPartnerSchema } from "../../schemas/metadata/ott-partner.schema.js";
 
 export const ottPartnerRouter = Router();
 
@@ -33,8 +30,4 @@ ottPartnerRouter.put(
     editOttPartner,
 );
 
-ottPartnerRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteOttPartner,
-);
+ottPartnerRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteOttPartner);

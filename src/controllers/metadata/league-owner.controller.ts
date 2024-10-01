@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateLeagueOwnerSchema,
-    TEditLeagueOwnerSchema,
-} from "../../schemas/metadata/league-owner.schema.js";
+import { TCreateLeagueOwnerSchema, TEditLeagueOwnerSchema } from "../../schemas/metadata/league-owner.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllLeagueOwners = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getLeagueOwnerById = asyncHandler(async (req, res) => {
 });
 
 export const createLeagueOwner = asyncHandler(async (req, res) => {
-    const { leagueOwnerName, userId } =
-        req.validatedData as TCreateLeagueOwnerSchema;
+    const { leagueOwnerName, userId } = req.validatedData as TCreateLeagueOwnerSchema;
 
     await prisma.dashapp_leagueowner.create({
         data: {
@@ -120,8 +116,7 @@ export const editLeagueOwner = asyncHandler(async (req, res) => {
         throw new NotFoundError("This league owner does not exists");
     }
 
-    const { leagueOwnerName, userId } =
-        req.validatedData as TEditLeagueOwnerSchema;
+    const { leagueOwnerName, userId } = req.validatedData as TEditLeagueOwnerSchema;
 
     await prisma.dashapp_leagueowner.update({
         where: { id: BigInt(leagueOwnerId) },

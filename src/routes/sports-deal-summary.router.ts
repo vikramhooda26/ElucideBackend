@@ -8,10 +8,7 @@ import {
     getAllSportsDealSummaries,
     getSportsDealSummaryById,
 } from "../controllers/sports-deal-summary.controller.js";
-import {
-    createSportsDealSummarySchema,
-    editSportsDealSummarySchema,
-} from "../schemas/sports-deal-summary.schema.js";
+import { createSportsDealSummarySchema, editSportsDealSummarySchema } from "../schemas/sports-deal-summary.schema.js";
 
 export const sportsDealSummaryRouter = Router();
 
@@ -33,8 +30,4 @@ sportsDealSummaryRouter.put(
     editSportsDealSummary,
 );
 
-sportsDealSummaryRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteSportsDealSummary,
-);
+sportsDealSummaryRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteSportsDealSummary);

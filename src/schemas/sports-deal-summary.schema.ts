@@ -19,13 +19,8 @@ export const createSportsDealSummarySchema = z.object({
     userId: z.string(),
 });
 
-export const editSportsDealSummarySchema =
-    createSportsDealSummarySchema.partial();
+export const editSportsDealSummarySchema = createSportsDealSummarySchema.partial();
 
-export type TCreateSportsDealSummarySchema = z.infer<
-    typeof createSportsDealSummarySchema
->;
+export type TCreateSportsDealSummarySchema = z.infer<typeof createSportsDealSummarySchema>;
 
-export type TEditSportsDealSummarySchema = z.infer<
-    typeof editSportsDealSummarySchema
->;
+export type TEditSportsDealSummarySchema = z.infer<typeof editSportsDealSummarySchema>;

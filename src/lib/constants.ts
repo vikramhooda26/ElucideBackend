@@ -11,7 +11,7 @@ export const cookieOptions = {
     sameSite: "lax",
 } satisfies CookieOptions;
 
-export const OperationsTypeEnum = ["gt", "lt", "equals", "in"] as const;
+export const operationsTypeEnum = ["gt", "lt", "equals", "in"] as const;
 
 export const STATUS_CODE = {
     OK: 200,

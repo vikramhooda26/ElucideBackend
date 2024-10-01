@@ -8,10 +8,7 @@ import {
 } from "../../controllers/metadata/campaign.controller.js";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
-import {
-    createActiveCampaignSchema,
-    editActiveCampaignSchema,
-} from "../../schemas/metadata/campaign.schema.js";
+import { createActiveCampaignSchema, editActiveCampaignSchema } from "../../schemas/metadata/campaign.schema.js";
 
 export const activeCampaignRouter = Router();
 
@@ -33,8 +30,4 @@ activeCampaignRouter.put(
     editActiveCampaign,
 );
 
-activeCampaignRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteActiveCampaign,
-);
+activeCampaignRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteActiveCampaign);

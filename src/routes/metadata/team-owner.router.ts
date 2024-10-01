@@ -8,10 +8,7 @@ import {
     getAllTeamOwners,
     getTeamOwnerById,
 } from "../../controllers/metadata/team-owner.controller.js";
-import {
-    createTeamOwnerSchema,
-    editTeamOwnerSchema,
-} from "../../schemas/metadata/team-owner.schema.js";
+import { createTeamOwnerSchema, editTeamOwnerSchema } from "../../schemas/metadata/team-owner.schema.js";
 
 export const teamOwnerRouter = Router();
 
@@ -33,8 +30,4 @@ teamOwnerRouter.put(
     editTeamOwner,
 );
 
-teamOwnerRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteTeamOwner,
-);
+teamOwnerRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTeamOwner);

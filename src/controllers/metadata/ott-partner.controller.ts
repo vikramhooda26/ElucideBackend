@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateOttPartnerSchema,
-    TEditOttPartnerSchema,
-} from "../../schemas/metadata/ott-partner.schema.js";
+import { TCreateOttPartnerSchema, TEditOttPartnerSchema } from "../../schemas/metadata/ott-partner.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllOttPartners = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getOttPartnerById = asyncHandler(async (req, res) => {
 });
 
 export const createOttPartner = asyncHandler(async (req, res) => {
-    const { ottPartnerName, userId } =
-        req.validatedData as TCreateOttPartnerSchema;
+    const { ottPartnerName, userId } = req.validatedData as TCreateOttPartnerSchema;
 
     await prisma.dashapp_ottpartner.create({
         data: {
@@ -120,8 +116,7 @@ export const editOttPartner = asyncHandler(async (req, res) => {
         throw new NotFoundError("This ott partner does not exists");
     }
 
-    const { ottPartnerName, userId } =
-        req.validatedData as TEditOttPartnerSchema;
+    const { ottPartnerName, userId } = req.validatedData as TEditOttPartnerSchema;
 
     await prisma.dashapp_ottpartner.update({
         where: { id: BigInt(ottpartnerId) },

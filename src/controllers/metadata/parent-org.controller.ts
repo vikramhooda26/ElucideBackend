@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateParentOrgSchema,
-    TEditParentOrgSchema,
-} from "../../schemas/metadata/parent-org.schema.js";
+import { TCreateParentOrgSchema, TEditParentOrgSchema } from "../../schemas/metadata/parent-org.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllParentOrgs = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getParentOrgById = asyncHandler(async (req, res) => {
 });
 
 export const createParentOrg = asyncHandler(async (req, res) => {
-    const { parentOrgName, userId } =
-        req.validatedData as TCreateParentOrgSchema;
+    const { parentOrgName, userId } = req.validatedData as TCreateParentOrgSchema;
 
     await prisma.dashapp_parentorg.create({
         data: {

@@ -7,10 +7,6 @@ export const createActiveCampaignSchema = z.object({
 
 export const editActiveCampaignSchema = createActiveCampaignSchema;
 
-export type TCreateActiveCampaignSchema = z.infer<
-    typeof createActiveCampaignSchema
->;
+export type TCreateActiveCampaignSchema = z.infer<typeof createActiveCampaignSchema>;
 
-export type TEditActiveCampaignSchema = z.infer<
-    typeof editActiveCampaignSchema
->;
+export type TEditActiveCampaignSchema = z.infer<typeof editActiveCampaignSchema>;

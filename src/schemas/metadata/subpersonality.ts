@@ -8,10 +8,6 @@ export const createSubpersonalitySchema = z.object({
 
 export const editSubpersonalitySchema = createSubpersonalitySchema;
 
-export type TCreateSubpersonalitySchema = z.infer<
-    typeof createSubpersonalitySchema
->;
+export type TCreateSubpersonalitySchema = z.infer<typeof createSubpersonalitySchema>;
 
-export type TEditSubpersonalitySchema = z.infer<
-    typeof editSubpersonalitySchema
->;
+export type TEditSubpersonalitySchema = z.infer<typeof editSubpersonalitySchema>;

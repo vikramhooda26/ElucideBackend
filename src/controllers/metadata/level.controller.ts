@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateLevelSchema,
-    TEditLevelSchema,
-} from "../../schemas/metadata/level.schema.js";
+import { TCreateLevelSchema, TEditLevelSchema } from "../../schemas/metadata/level.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllLevels = asyncHandler(async (req, res) => {

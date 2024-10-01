@@ -8,10 +8,7 @@ import {
     getAllAssets,
     getAssetById,
 } from "../../controllers/metadata/asset.controller.js";
-import {
-    createAssetSchema,
-    editAssetSchema,
-} from "../../schemas/metadata/asset.schema.js";
+import { createAssetSchema, editAssetSchema } from "../../schemas/metadata/asset.schema.js";
 
 export const assetRouter = Router();
 
@@ -26,11 +23,6 @@ assetRouter.post(
     createAsset,
 );
 
-assetRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editAssetSchema),
-    editAsset,
-);
+assetRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editAssetSchema), editAsset);
 
 assetRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAsset);

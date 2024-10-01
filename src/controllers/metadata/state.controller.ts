@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
-import {
-    TCreateStateSchema,
-    TEditStateSchema,
-} from "../../schemas/metadata/state.schema.js";
+import { TCreateStateSchema, TEditStateSchema } from "../../schemas/metadata/state.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllStates = asyncHandler(async (req, res) => {

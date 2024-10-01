@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateTeamOwnerSchema,
-    TEditTeamOwnerSchema,
-} from "../../schemas/metadata/team-owner.schema.js";
+import { TCreateTeamOwnerSchema, TEditTeamOwnerSchema } from "../../schemas/metadata/team-owner.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllTeamOwners = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getTeamOwnerById = asyncHandler(async (req, res) => {
 });
 
 export const createTeamOwner = asyncHandler(async (req, res) => {
-    const { teamOwnerName, userId } =
-        req.validatedData as TCreateTeamOwnerSchema;
+    const { teamOwnerName, userId } = req.validatedData as TCreateTeamOwnerSchema;
 
     await prisma.dashapp_teamowner.create({
         data: {

@@ -2,12 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CustomError } from "../lib/errors.js";
 import { STATUS_CODE } from "../lib/constants.js";
 
-export const globalErrorHandler = (
-    err: Error | CustomError,
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
+export const globalErrorHandler = (err: Error | CustomError, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
 
     if (err instanceof CustomError) {

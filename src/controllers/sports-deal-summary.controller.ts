@@ -3,10 +3,7 @@ import { prisma } from "../db/index.js";
 import { SportsDealSummaryResponseDTO } from "../dto/sports-deal-summary.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
-import {
-    TCreateSportsDealSummarySchema,
-    TEditSportsDealSummarySchema,
-} from "../schemas/sports-deal-summary.schema.js";
+import { TCreateSportsDealSummarySchema, TEditSportsDealSummarySchema } from "../schemas/sports-deal-summary.schema.js";
 import { sportsDealSummarySelect } from "../types/sports-deal-summary.type.js";
 
 export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
@@ -42,37 +39,35 @@ export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
         });
     }
 
-    const sportsDealSummaries = await prisma.dashapp_sportsdealsummary.findMany(
-        {
-            where: searchQuery.OR.length ? searchQuery : undefined,
-            select: {
-                id: true,
-                dashapp_companydata: { select: { company_name: true } },
-                dashapp_athlete: { select: { athlete_name: true } },
-                dashapp_team: { select: { team_name: true } },
-                dashapp_leagueinfo: { select: { property_name: true } },
-                status: true,
-                created_date: true,
-                modified_date: true,
-                created_by: {
-                    select: {
-                        id: true,
-                        email: true,
-                    },
+    const sportsDealSummaries = await prisma.dashapp_sportsdealsummary.findMany({
+        where: searchQuery.OR.length ? searchQuery : undefined,
+        select: {
+            id: true,
+            dashapp_companydata: { select: { company_name: true } },
+            dashapp_athlete: { select: { athlete_name: true } },
+            dashapp_team: { select: { team_name: true } },
+            dashapp_leagueinfo: { select: { property_name: true } },
+            status: true,
+            created_date: true,
+            modified_date: true,
+            created_by: {
+                select: {
+                    id: true,
+                    email: true,
                 },
-                modified_by: {
-                    select: {
-                        id: true,
-                        email: true,
-                    },
-                },
-                _count: true,
             },
-            orderBy: { modified_date: "desc" },
-            take: Number.isNaN(Number(take)) ? undefined : Number(take),
-            skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+            modified_by: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+            _count: true,
         },
-    );
+        orderBy: { modified_date: "desc" },
+        take: Number.isNaN(Number(take)) ? undefined : Number(take),
+        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+    });
 
     if (sportsDealSummaries.length < 1) {
         throw new NotFoundError("Sports deal summaries data does not exists");
@@ -109,12 +104,10 @@ export const getSportsDealSummaryById = asyncHandler(async (req, res) => {
         throw new BadRequestError("Sport deal summary ID not found");
     }
 
-    const sportsDealSummary = await prisma.dashapp_sportsdealsummary.findUnique(
-        {
-            where: { id: BigInt(sportsDealSummaryId) },
-            select: sportsDealSummarySelect,
-        },
-    );
+    const sportsDealSummary = await prisma.dashapp_sportsdealsummary.findUnique({
+        where: { id: BigInt(sportsDealSummaryId) },
+        select: sportsDealSummarySelect,
+    });
 
     if (!sportsDealSummary?.id) {
         throw new NotFoundError("This sports deal summary does not exists");
@@ -169,18 +162,10 @@ export const createSportsDealSummary = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(levelId) },
                   }
                 : undefined,
-            dashapp_companydata: brandId
-                ? { connect: { id: BigInt(brandId) } }
-                : undefined,
-            dashapp_leagueinfo: leagueId
-                ? { connect: { id: BigInt(leagueId) } }
-                : undefined,
-            dashapp_team: teamId
-                ? { connect: { id: BigInt(teamId) } }
-                : undefined,
-            dashapp_athlete: athleteId
-                ? { connect: { id: BigInt(athleteId) } }
-                : undefined,
+            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : undefined,
+            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : undefined,
+            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : undefined,
+            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : undefined,
             annual_value: annualValue || undefined,
             total_value: totalValue || undefined,
             commencement_date: commencementYear || undefined,
@@ -204,11 +189,10 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
         throw new BadRequestError("Sports deal summary ID not found");
     }
 
-    const sportsDealSummaryExits =
-        await prisma.dashapp_sportsdealsummary.findUnique({
-            where: { id: BigInt(sportsDealSummaryId) },
-            select: { id: true },
-        });
+    const sportsDealSummaryExits = await prisma.dashapp_sportsdealsummary.findUnique({
+        where: { id: BigInt(sportsDealSummaryId) },
+        select: { id: true },
+    });
 
     if (!sportsDealSummaryExits?.id) {
         throw new NotFoundError("This sports deal summary does not exists");
@@ -236,9 +220,7 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
     await prisma.dashapp_sportsdealsummary.update({
         where: { id: BigInt(sportsDealSummaryId) },
         data: {
-            modified_by: userId
-                ? { connect: { id: BigInt(userId) } }
-                : undefined,
+            modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
             dashapp_sportsdeal_assets: assetIds
                 ? {
                       deleteMany: {},
@@ -259,18 +241,10 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
                       connect: { id: BigInt(levelId) },
                   }
                 : undefined,
-            dashapp_companydata: brandId
-                ? { connect: { id: BigInt(brandId) } }
-                : { disconnect: true },
-            dashapp_leagueinfo: leagueId
-                ? { connect: { id: BigInt(leagueId) } }
-                : { disconnect: true },
-            dashapp_team: teamId
-                ? { connect: { id: BigInt(teamId) } }
-                : { disconnect: true },
-            dashapp_athlete: athleteId
-                ? { connect: { id: BigInt(athleteId) } }
-                : { disconnect: true },
+            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
+            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
+            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
+            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
             annual_value: annualValue || undefined,
             total_value: totalValue || undefined,
             commencement_date: commencementYear || undefined,
@@ -294,11 +268,10 @@ export const deleteSportsDealSummary = asyncHandler(async (req, res) => {
         throw new BadRequestError("Sports deal summary ID not found");
     }
 
-    const sportsDealSummaryExists =
-        await prisma.dashapp_sportsdealsummary.findUnique({
-            where: { id: BigInt(sportsDealSummaryId) },
-            select: { id: true },
-        });
+    const sportsDealSummaryExists = await prisma.dashapp_sportsdealsummary.findUnique({
+        where: { id: BigInt(sportsDealSummaryId) },
+        select: { id: true },
+    });
 
     if (!sportsDealSummaryExists?.id) {
         throw new NotFoundError("This sports deal summary does not exists");

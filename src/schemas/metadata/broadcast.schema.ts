@@ -7,10 +7,6 @@ export const createBroadcastPartnerSchema = z.object({
 
 export const editBroadcastPartnerSchema = createBroadcastPartnerSchema;
 
-export type TCreateBroadcastPartnerSchema = z.infer<
-    typeof createBroadcastPartnerSchema
->;
+export type TCreateBroadcastPartnerSchema = z.infer<typeof createBroadcastPartnerSchema>;
 
-export type TEditBroadcastPartnerSchema = z.infer<
-    typeof editBroadcastPartnerSchema
->;
+export type TEditBroadcastPartnerSchema = z.infer<typeof editBroadcastPartnerSchema>;

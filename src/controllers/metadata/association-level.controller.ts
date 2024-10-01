@@ -83,8 +83,7 @@ export const getAssociationLevelById = asyncHandler(async (req, res) => {
 });
 
 export const createAssociationLevel = asyncHandler(async (req, res) => {
-    const { associationLevelName, userId } =
-        req.validatedData as TCreateAssociationLevelSchema;
+    const { associationLevelName, userId } = req.validatedData as TCreateAssociationLevelSchema;
 
     await prisma.association_level.create({
         data: {
@@ -118,8 +117,7 @@ export const editAssociationLevel = asyncHandler(async (req, res) => {
         throw new NotFoundError("This association level does not exists");
     }
 
-    const { associationLevelName, userId } =
-        req.validatedData as TEditAssociationLevelSchema;
+    const { associationLevelName, userId } = req.validatedData as TEditAssociationLevelSchema;
 
     await prisma.association_level.update({
         where: { id: BigInt(associationLevelId) },

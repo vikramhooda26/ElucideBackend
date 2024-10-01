@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateBroadcastPartnerSchema,
-    TEditBroadcastPartnerSchema,
-} from "../../schemas/metadata/broadcast.schema.js";
+import { TCreateBroadcastPartnerSchema, TEditBroadcastPartnerSchema } from "../../schemas/metadata/broadcast.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllBroadcastPartners = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getBroadcastPartnerById = asyncHandler(async (req, res) => {
 });
 
 export const createBroadcastPartner = asyncHandler(async (req, res) => {
-    const { broadcastPartnerName, userId } =
-        req.validatedData as TCreateBroadcastPartnerSchema;
+    const { broadcastPartnerName, userId } = req.validatedData as TCreateBroadcastPartnerSchema;
 
     await prisma.dashapp_broadcastpartner.create({
         data: {
@@ -111,18 +107,16 @@ export const editBroadcastPartner = asyncHandler(async (req, res) => {
         throw new BadRequestError("Broadcast partner ID not found");
     }
 
-    const broadcastPartnerExists =
-        await prisma.dashapp_broadcastpartner.findUnique({
-            where: { id: BigInt(broadcastPartnerId) },
-            select: { id: true },
-        });
+    const broadcastPartnerExists = await prisma.dashapp_broadcastpartner.findUnique({
+        where: { id: BigInt(broadcastPartnerId) },
+        select: { id: true },
+    });
 
     if (!broadcastPartnerExists?.id) {
         throw new NotFoundError("This broadcast partner does not exists");
     }
 
-    const { broadcastPartnerName, userId } =
-        req.validatedData as TEditBroadcastPartnerSchema;
+    const { broadcastPartnerName, userId } = req.validatedData as TEditBroadcastPartnerSchema;
 
     await prisma.dashapp_broadcastpartner.update({
         where: { id: BigInt(broadcastPartnerId) },
@@ -149,11 +143,10 @@ export const deleteBroadcastPartner = asyncHandler(async (req, res) => {
         throw new BadRequestError("Broadcast partner ID not found");
     }
 
-    const broadcastPartnerExists =
-        await prisma.dashapp_broadcastpartner.findUnique({
-            where: { id: BigInt(broadcastPartnerId) },
-            select: { id: true },
-        });
+    const broadcastPartnerExists = await prisma.dashapp_broadcastpartner.findUnique({
+        where: { id: BigInt(broadcastPartnerId) },
+        select: { id: true },
+    });
 
     if (!broadcastPartnerExists?.id) {
         throw new NotFoundError("This broadcast partner does not exists");

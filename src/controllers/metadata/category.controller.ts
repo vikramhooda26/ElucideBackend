@@ -2,10 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateCategorySchema,
-    TEditCategorySchema,
-} from "../../schemas/metadata/category.schema.js";
+import { TCreateCategorySchema, TEditCategorySchema } from "../../schemas/metadata/category.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllCategories = expressAsyncHandler(async (req, res) => {

@@ -6,15 +6,10 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import { printLogs } from "../lib/log.js";
-import {
-    filteredAthleteSchema,
-    TCreateAthleteSchema,
-    TEditAthleteSchema,
-    TFilteredAthleteSchema,
-} from "../schemas/athlete.schema.js";
+import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
+import { printLogs } from "../lib/log.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
     const dobDate = parseISO(dob);
@@ -33,10 +28,7 @@ const findAgeRange = async (dob: string): Promise<string | undefined> => {
 
     ageRanges.find((range) => {
         const [minAge, maxAge] = range.age_range.split(/[-+]/).map(Number);
-        if (
-            (minAge && maxAge && age >= minAge && age <= maxAge) ||
-            ((!maxAge || maxAge === 0) && age >= minAge)
-        ) {
+        if ((minAge && maxAge && age >= minAge && age <= maxAge) || ((!maxAge || maxAge === 0) && age >= minAge)) {
             matchedAgeRange = range.age_range;
             return true;
         } else {
@@ -76,6 +68,7 @@ const getAthletes = async ({
                     email: true,
                 },
             },
+            dashapp_athlete_target_gender: true,
             created_date: true,
             modified_by: {
                 select: {
@@ -94,10 +87,7 @@ const getAthletes = async ({
 export const getAllAthletes = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const [athletes, count] = await Promise.all([
-        getAthletes({ take, skip }),
-        getAthleteCount(),
-    ]);
+    const [athletes, count] = await Promise.all([getAthletes({ take, skip }), getAthleteCount()]);
 
     if (athletes.length < 1) {
         throw new NotFoundError("Athlete data does not exists");
@@ -169,8 +159,7 @@ export const getAthleteById = asyncHandler(async (req, res) => {
         mainPersonalities,
     };
 
-    const athleteResponse: AthleteResponseDTO =
-        AthleteResponseDTO.toResponse(updatedAthlete);
+    const athleteResponse: AthleteResponseDTO = AthleteResponseDTO.toResponse(updatedAthlete);
 
     res.status(STATUS_CODE.OK).json(athleteResponse);
 });
@@ -208,9 +197,7 @@ export const createAthlete = asyncHandler(async (req, res) => {
     } = req.validatedData as TCreateAthleteSchema;
 
     if (association?.length) {
-        const isDistinct = areElementsDistinct(
-            association?.map((association) => association.associationLevelId),
-        );
+        const isDistinct = areElementsDistinct(association?.map((association) => association.associationLevelId));
 
         if (!isDistinct) {
             throw new BadRequestError("Association Level must be unique");
@@ -264,38 +251,30 @@ export const createAthlete = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_athlete_socialmedia_platform_primary:
-                primarySocialMediaPlatformIds?.length
-                    ? {
-                          create: primarySocialMediaPlatformIds.map(
-                              (platformId) => ({
-                                  dashapp_socialmedia_platform: {
-                                      connect: { id: BigInt(platformId) },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
-            dashapp_athlete_socialmedia_platform_secondary:
-                secondarySocialMediaPlatformIds?.length
-                    ? {
-                          create: secondarySocialMediaPlatformIds.map(
-                              (platformId) => ({
-                                  dashapp_socialmedia_platform: {
-                                      connect: { id: BigInt(platformId) },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
+            dashapp_athlete_socialmedia_platform_primary: primarySocialMediaPlatformIds?.length
+                ? {
+                      create: primarySocialMediaPlatformIds.map((platformId) => ({
+                          dashapp_socialmedia_platform: {
+                              connect: { id: BigInt(platformId) },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_athlete_socialmedia_platform_secondary: secondarySocialMediaPlatformIds?.length
+                ? {
+                      create: secondarySocialMediaPlatformIds.map((platformId) => ({
+                          dashapp_socialmedia_platform: {
+                              connect: { id: BigInt(platformId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_sport: sportId
                 ? {
                       connect: { id: BigInt(sportId) },
                   }
                 : undefined,
-            nationality: nationalityId
-                ? { connect: { id: BigInt(nationalityId) } }
-                : undefined,
+            nationality: nationalityId ? { connect: { id: BigInt(nationalityId) } } : undefined,
             dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
                 ? {
                       create: subPersonalityTraitIds.map((traitId) => ({
@@ -434,9 +413,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
     } = req.validatedData as TEditAthleteSchema;
 
     if (association?.length) {
-        const isDistinct = areElementsDistinct(
-            association?.map((association) => association.associationLevelId),
-        );
+        const isDistinct = areElementsDistinct(association?.map((association) => association.associationLevelId));
 
         if (!isDistinct) {
             throw new BadRequestError("Association Level must be unique");
@@ -464,9 +441,7 @@ export const editAthlete = asyncHandler(async (req, res) => {
                     : undefined),
             },
             strategy_overview: strategyOverview,
-            modified_by: userId
-                ? { connect: { id: BigInt(userId) } }
-                : { disconnect: true },
+            modified_by: userId ? { connect: { id: BigInt(userId) } } : { disconnect: true },
             dashapp_states: stateId
                 ? {
                       connect: { id: BigInt(stateId) },
@@ -497,15 +472,13 @@ export const editAthlete = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(primarySocialMediaPlatformIds?.length
                     ? {
-                          create: primarySocialMediaPlatformIds.map(
-                              (primarySocialMediaId) => ({
-                                  dashapp_socialmedia_platform: {
-                                      connect: {
-                                          id: BigInt(primarySocialMediaId),
-                                      },
+                          create: primarySocialMediaPlatformIds.map((primarySocialMediaId) => ({
+                              dashapp_socialmedia_platform: {
+                                  connect: {
+                                      id: BigInt(primarySocialMediaId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
@@ -513,27 +486,19 @@ export const editAthlete = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(secondarySocialMediaPlatformIds?.length
                     ? {
-                          create: secondarySocialMediaPlatformIds.map(
-                              (secondarySocialMediaId) => ({
-                                  dashapp_socialmedia_platform: {
-                                      connect: {
-                                          id: BigInt(secondarySocialMediaId),
-                                      },
+                          create: secondarySocialMediaPlatformIds.map((secondarySocialMediaId) => ({
+                              dashapp_socialmedia_platform: {
+                                  connect: {
+                                      id: BigInt(secondarySocialMediaId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
-            dashapp_agency: agencyId
-                ? { connect: { id: BigInt(agencyId) } }
-                : { disconnect: true },
-            dashapp_sport: sportId
-                ? { connect: { id: BigInt(sportId) } }
-                : { disconnect: true },
-            nationality: nationalityId
-                ? { connect: { id: BigInt(nationalityId) } }
-                : { disconnect: true },
+            dashapp_agency: agencyId ? { connect: { id: BigInt(agencyId) } } : { disconnect: true },
+            dashapp_sport: sportId ? { connect: { id: BigInt(sportId) } } : { disconnect: true },
+            nationality: nationalityId ? { connect: { id: BigInt(nationalityId) } } : { disconnect: true },
             dashapp_athlete_personality_traits: subPersonalityTraitIds
                 ? {
                       deleteMany: {},
@@ -668,7 +633,7 @@ export const removeAthlete = asyncHandler(async (req, res) => {
     });
 });
 
-export const getTotalAthletes = asyncHandler(async (req, res) => {
+export const getTotalAthletes = asyncHandler(async (_, res) => {
     const count = getAthletesCount();
     res.status(STATUS_CODE.OK).json({
         count,
@@ -724,30 +689,22 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
             lowerBoundDate.setFullYear(lowerBoundDate.getFullYear() - lowerAge);
 
             const lowerBoundStartDate = new Date(today);
-            lowerBoundStartDate.setFullYear(
-                lowerBoundStartDate.getFullYear() - lowerAge,
-            );
+            lowerBoundStartDate.setFullYear(lowerBoundStartDate.getFullYear() - lowerAge);
             lowerBoundStartDate.setDate(1);
             lowerBoundStartDate.setMonth(0);
 
             const lowerBoundYear = new Date(today);
-            lowerBoundYear.setFullYear(
-                lowerBoundYear.getFullYear() - lowerAge + 1,
-            );
+            lowerBoundYear.setFullYear(lowerBoundYear.getFullYear() - lowerAge + 1);
             lowerBoundYear.setDate(1);
             lowerBoundYear.setMonth(0);
 
             const upperBoundStartDate = new Date(today);
-            upperBoundStartDate.setFullYear(
-                upperBoundStartDate.getFullYear() - upperAge,
-            );
+            upperBoundStartDate.setFullYear(upperBoundStartDate.getFullYear() - upperAge);
             upperBoundStartDate.setDate(1);
             upperBoundStartDate.setMonth(0);
 
             const upperBoundYear = new Date(today);
-            upperBoundYear.setFullYear(
-                upperBoundYear.getFullYear() - upperAge + 1,
-            );
+            upperBoundYear.setFullYear(upperBoundYear.getFullYear() - upperAge + 1);
             upperBoundYear.setDate(1);
             upperBoundYear.setMonth(0);
 
@@ -802,16 +759,12 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                                         AND: [
                                             {
                                                 age: {
-                                                    gte: formatDob(
-                                                        lowerBoundStartDate,
-                                                    ),
+                                                    gte: formatDob(lowerBoundStartDate),
                                                 },
                                             },
                                             {
                                                 age: {
-                                                    lte: formatDob(
-                                                        lowerBoundDate,
-                                                    ),
+                                                    lte: formatDob(lowerBoundDate),
                                                 },
                                             },
                                         ],
@@ -830,6 +783,56 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         } else {
             return undefined;
         }
+    };
+
+    const getGenderQuery = async (genderIds: string[]) => {
+        const length = genderIds.length;
+
+        if (length === 0) {
+            return undefined;
+        }
+
+        let query: { [key: string]: any } | undefined;
+
+        const genders = await prisma.dashapp_gender.findMany({ select: { id: true } });
+
+        if (!genders.length) {
+            return undefined;
+        }
+
+        if (length === 1) {
+            const genderId = genderIds[0];
+            const genderInDatabase = genders.find((value) => value.id.toString() === genderId);
+
+            if (!genderInDatabase) {
+                throw new NotFoundError("This gender ID does not exist");
+            }
+
+            const notIn = genders.filter((gender) => gender.id !== genderInDatabase.id).map((gender) => gender.id);
+
+            if (genderInDatabase?.id) {
+                query = {
+                    AND: [
+                        {
+                            id: genderInDatabase.id,
+                        },
+                        {
+                            id: { notIn },
+                        },
+                    ],
+                };
+            }
+        }
+
+        if (length === 2) {
+            query = {
+                OR: genderIds.map((id) => ({
+                    id: BigInt(id),
+                })),
+            };
+        }
+
+        return query;
     };
 
     const filterConditions: Prisma.dashapp_athleteWhereInput = {
@@ -904,51 +907,31 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        facebook: facebook
-            ? { contains: facebook, mode: "insensitive" }
-            : undefined,
-        instagram: instagram
-            ? { contains: instagram, mode: "insensitive" }
-            : undefined,
-        twitter: twitter
-            ? { contains: twitter, mode: "insensitive" }
-            : undefined,
-        linkedin: linkedin
-            ? { contains: linkedin, mode: "insensitive" }
-            : undefined,
-        youtube: youtube
-            ? { contains: youtube, mode: "insensitive" }
-            : undefined,
-        website: website
-            ? { contains: website, mode: "insensitive" }
-            : undefined,
+        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+        website: website ? { contains: website, mode: "insensitive" } : undefined,
 
         dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
             ? {
                   some: {
                       dashapp_subpersonality: {
                           id: {
-                              in: subPersonalityTraitIds.map((id) =>
-                                  BigInt(id),
-                              ),
+                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
                           },
                       },
                   },
               }
             : undefined,
 
-        dashapp_gender: genderIds?.length
-            ? {
-                  id: { in: genderIds.map((id) => BigInt(id)) },
-              }
-            : undefined,
+        dashapp_gender: athleteGenderIds?.length ? await getGenderQuery(athleteGenderIds) : undefined,
 
-        dashapp_athlete_target_gender: athleteGenderIds?.length
+        dashapp_athlete_target_gender: genderIds?.length
             ? {
-                  some: {
-                      dashapp_gender: {
-                          id: { in: athleteGenderIds.map((id) => BigInt(id)) },
-                      },
+                  every: {
+                      dashapp_gender: await getGenderQuery(genderIds),
                   },
               }
             : undefined,
@@ -1023,35 +1006,29 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        dashapp_athlete_socialmedia_platform_primary:
-            primarySocialMediaPlatformIds?.length
-                ? {
-                      some: {
-                          dashapp_socialmedia_platform: {
-                              id: {
-                                  in: primarySocialMediaPlatformIds.map((id) =>
-                                      BigInt(id),
-                                  ),
-                              },
+        dashapp_athlete_socialmedia_platform_primary: primarySocialMediaPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_socialmedia_platform: {
+                          id: {
+                              in: primarySocialMediaPlatformIds.map((id) => BigInt(id)),
                           },
                       },
-                  }
-                : undefined,
+                  },
+              }
+            : undefined,
 
-        dashapp_athlete_socialmedia_platform_secondary:
-            secondarySocialMediaPlatformIds?.length
-                ? {
-                      some: {
-                          dashapp_socialmedia_platform: {
-                              id: {
-                                  in: secondarySocialMediaPlatformIds.map(
-                                      (id) => BigInt(id),
-                                  ),
-                              },
+        dashapp_athlete_socialmedia_platform_secondary: secondarySocialMediaPlatformIds?.length
+            ? {
+                  some: {
+                      dashapp_socialmedia_platform: {
+                          id: {
+                              in: secondarySocialMediaPlatformIds.map((id) => BigInt(id)),
                           },
                       },
-                  }
-                : undefined,
+                  },
+              }
+            : undefined,
 
         ...(contactName?.length && {
             contactName: {
@@ -1101,8 +1078,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         throw new NotFoundError("No athletes found for the given filters");
     }
 
+    const modifiedAthletes =
+        genderIds?.length === 2
+            ? athletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
+            : athletes;
+
     res.status(STATUS_CODE.OK).json(
-        athletes.map((athlete) => ({
+        modifiedAthletes.map((athlete) => ({
             id: athlete.id,
             name: athlete.athlete_name,
             nationality: athlete.nationality?.name,

@@ -8,10 +8,7 @@ import {
     getAllNationalities,
     getNationalityById,
 } from "../../controllers/metadata/nationality.controller.js";
-import {
-    createNationalitySchema,
-    editNationalitySchema,
-} from "../../schemas/metadata/nationality.schema.js";
+import { createNationalitySchema, editNationalitySchema } from "../../schemas/metadata/nationality.schema.js";
 
 export const nationalityRouter = Router();
 
@@ -33,8 +30,4 @@ nationalityRouter.put(
     editNationality,
 );
 
-nationalityRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteNationality,
-);
+nationalityRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteNationality);

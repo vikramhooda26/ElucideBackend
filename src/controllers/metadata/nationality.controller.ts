@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateNationalitySchema,
-    TEditNationalitySchema,
-} from "../../schemas/metadata/nationality.schema.js";
+import { TCreateNationalitySchema, TEditNationalitySchema } from "../../schemas/metadata/nationality.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllNationalities = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getNationalityById = asyncHandler(async (req, res) => {
 });
 
 export const createNationality = asyncHandler(async (req, res) => {
-    const { nationality, userId } =
-        req.validatedData as TCreateNationalitySchema;
+    const { nationality, userId } = req.validatedData as TCreateNationalitySchema;
 
     await prisma.dashapp_countries.create({
         data: {

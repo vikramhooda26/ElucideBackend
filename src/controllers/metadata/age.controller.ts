@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateAgeRangeSchema,
-    TEditAgeRangeSchema,
-} from "../../schemas/metadata/age.schema.js";
+import { TCreateAgeRangeSchema, TEditAgeRangeSchema } from "../../schemas/metadata/age.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 import { validateRangeFormat } from "../../lib/helpers.js";
 

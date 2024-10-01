@@ -3,10 +3,7 @@ import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
-import {
-    TCreatePersonalitySchema,
-    TEditPersonalitySchema,
-} from "../../schemas/metadata/personality.schema.js";
+import { TCreatePersonalitySchema, TEditPersonalitySchema } from "../../schemas/metadata/personality.schema.js";
 
 export const getAllPersonalities = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -84,18 +81,15 @@ export const getPersonalityById = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json({
         id: personality.id,
         personalityName: personality.name,
-        subpersonalities: personality.dashapp_subpersonality.map(
-            (subpersonality) => ({
-                id: subpersonality.id,
-                name: subpersonality.name,
-            }),
-        ),
+        subpersonalities: personality.dashapp_subpersonality.map((subpersonality) => ({
+            id: subpersonality.id,
+            name: subpersonality.name,
+        })),
     });
 });
 
 export const createPersonality = asyncHandler(async (req, res) => {
-    const { personalityName, userId } =
-        req.validatedData as TCreatePersonalitySchema;
+    const { personalityName, userId } = req.validatedData as TCreatePersonalitySchema;
 
     await prisma.dashapp_mainpersonality.create({
         data: {
@@ -129,8 +123,7 @@ export const editPersonality = asyncHandler(async (req, res) => {
         throw new NotFoundError("This personality does not exists");
     }
 
-    const { personalityName, userId } =
-        req.validatedData as TEditPersonalitySchema;
+    const { personalityName, userId } = req.validatedData as TEditPersonalitySchema;
 
     await prisma.dashapp_mainpersonality.update({
         where: { id: BigInt(personalityId) },

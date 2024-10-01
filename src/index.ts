@@ -1,8 +1,5 @@
 import { express, dotenv, cors, cookieParser } from "./imports/core.imports.js";
-import {
-    authMiddleware,
-    globalErrorHandler,
-} from "./imports/middleware.imports.js";
+import { authMiddleware, globalErrorHandler } from "./imports/middleware.imports.js";
 import * as Routers from "./imports/router.imports.js";
 
 (BigInt.prototype as any).toJSON = function () {
@@ -13,9 +10,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const authorizedHosts = process.env.AUTHORIZED_HOSTS
-    ? process.env.AUTHORIZED_HOSTS.split(",")
-    : [];
+const authorizedHosts = process.env.AUTHORIZED_HOSTS ? process.env.AUTHORIZED_HOSTS.split(",") : [];
 
 app.use(
     cors({
@@ -71,6 +66,4 @@ app.use("/api/admin/dashboard", Routers.dashboardRouter);
 
 app.use(globalErrorHandler);
 
-app.listen(port, () =>
-    console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`),
-);
+app.listen(port, () => console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`));

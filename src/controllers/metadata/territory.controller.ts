@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateTerritorySchema,
-    TEditTerritorySchema,
-} from "../../schemas/metadata/territory.schema.js";
+import { TCreateTerritorySchema, TEditTerritorySchema } from "../../schemas/metadata/territory.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllTerritoryies = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getTerritoryById = asyncHandler(async (req, res) => {
 });
 
 export const createTerritory = asyncHandler(async (req, res) => {
-    const { territoryName, userId } =
-        req.validatedData as TCreateTerritorySchema;
+    const { territoryName, userId } = req.validatedData as TCreateTerritorySchema;
 
     await prisma.dashapp_territory.create({
         data: {

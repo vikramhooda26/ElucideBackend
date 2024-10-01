@@ -218,11 +218,10 @@ export const getAllSportsDealSummaryLevels = async () => {
 };
 
 export const getAllSportsDealSummaryStatuses = async () => {
-    const sportsDealSummaryStatuses =
-        await prisma.dashapp_athlete_status.findMany({
-            select: { id: true, status: true },
-            orderBy: { status: "asc" },
-        });
+    const sportsDealSummaryStatuses = await prisma.dashapp_athlete_status.findMany({
+        select: { id: true, status: true },
+        orderBy: { status: "asc" },
+    });
     return sportsDealSummaryStatuses.map((status) => ({
         value: status.id,
         label: status.status,
@@ -230,11 +229,10 @@ export const getAllSportsDealSummaryStatuses = async () => {
 };
 
 export const getAllSportsDealSummaryTerritories = async () => {
-    const sportsDealSummaryTerritories =
-        await prisma.dashapp_territory.findMany({
-            select: { id: true, name: true },
-            orderBy: { name: "asc" },
-        });
+    const sportsDealSummaryTerritories = await prisma.dashapp_territory.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+    });
     return sportsDealSummaryTerritories.map((territory) => ({
         value: territory.id,
         label: territory.name,
@@ -242,14 +240,13 @@ export const getAllSportsDealSummaryTerritories = async () => {
 };
 
 export const getAllSportsDealSummaryTypes = async () => {
-    const sportsDealSummaryTypes =
-        await prisma.dashapp_marketingplatform.findMany({
-            select: {
-                id: true,
-                platform: true,
-            },
-            orderBy: { platform: "asc" },
-        });
+    const sportsDealSummaryTypes = await prisma.dashapp_marketingplatform.findMany({
+        select: {
+            id: true,
+            platform: true,
+        },
+        orderBy: { platform: "asc" },
+    });
     return sportsDealSummaryTypes.map((type) => ({
         value: type.id,
         label: type.platform,
@@ -332,11 +329,10 @@ export const getAllNationalities = async () => {
 };
 
 export const getAllSocialMedia = async () => {
-    const socialMediaplatforms =
-        await prisma.dashapp_socialmedia_platform.findMany({
-            select: { id: true, name: true },
-            orderBy: { name: "asc" },
-        });
+    const socialMediaplatforms = await prisma.dashapp_socialmedia_platform.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+    });
 
     return socialMediaplatforms.map((platform) => ({
         value: platform.id,

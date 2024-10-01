@@ -7,10 +7,6 @@ export const createMarkingPlatformSchema = z.object({
 
 export const editMarkingPlatformSchema = createMarkingPlatformSchema;
 
-export type TCreateMarketingPlatformSchema = z.infer<
-    typeof createMarkingPlatformSchema
->;
+export type TCreateMarketingPlatformSchema = z.infer<typeof createMarkingPlatformSchema>;
 
-export type TEditMarketingPlatformSchema = z.infer<
-    typeof editMarkingPlatformSchema
->;
+export type TEditMarketingPlatformSchema = z.infer<typeof editMarkingPlatformSchema>;

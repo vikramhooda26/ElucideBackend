@@ -27,13 +27,12 @@ import { STATUS_CODE } from "../../lib/constants.js";
  */
 
 export const fetchAllMetrics = asyncHandler(async (req, res) => {
-    const [brandsCount, athletesCount, teamsCount, leaguesCount] =
-        await Promise.all([
-            getBrandsCount(),
-            getAthletesCount(),
-            getTeamsCount(),
-            getLeaguesCount(),
-        ]);
+    const [brandsCount, athletesCount, teamsCount, leaguesCount] = await Promise.all([
+        getBrandsCount(),
+        getAthletesCount(),
+        getTeamsCount(),
+        getLeaguesCount(),
+    ]);
 
     res.status(STATUS_CODE.OK).json({
         brandsCount,
@@ -49,17 +48,13 @@ export const fetchAthletesMetrics = asyncHandler(async (req, res) => {
     const convertedTake = Number.isNaN(Number(take)) ? 50 : Number(take);
     const convertedSkip = Number.isNaN(Number(skip)) ? 0 : Number(skip);
 
-    const [
-        athletesCount,
-        numberOfAthletesPerSport,
-        recentlyAddedAthletes,
-        recentlyModifiedAthletes,
-    ] = await Promise.all([
-        getAthletesCount(),
-        getNumberOfAthletesPerSport(),
-        getRecentlyAddedAthletes(convertedTake, convertedSkip),
-        getRecentlyModifiedAthletes(convertedTake, convertedSkip),
-    ]);
+    const [athletesCount, numberOfAthletesPerSport, recentlyAddedAthletes, recentlyModifiedAthletes] =
+        await Promise.all([
+            getAthletesCount(),
+            getNumberOfAthletesPerSport(),
+            getRecentlyAddedAthletes(convertedTake, convertedSkip),
+            getRecentlyModifiedAthletes(convertedTake, convertedSkip),
+        ]);
 
     res.status(STATUS_CODE.OK).json({
         athletesCount,
@@ -89,12 +84,7 @@ export const fetchLeaguesMetrics = asyncHandler(async (req, res) => {
     const convertedTake = Number.isNaN(Number(take)) ? 50 : Number(take);
     const convertedSkip = Number.isNaN(Number(skip)) ? 0 : Number(skip);
 
-    const [
-        leaguesCount,
-        numberOfLeaguesPerSport,
-        recentlyAddedLeagues,
-        recentlyModifiedLeagues,
-    ] = await Promise.all([
+    const [leaguesCount, numberOfLeaguesPerSport, recentlyAddedLeagues, recentlyModifiedLeagues] = await Promise.all([
         getLeaguesCount(),
         getNumberOfLeaguesPerSport(),
         getRecentlyAddedLeagues(convertedTake, convertedSkip),
@@ -129,19 +119,14 @@ export const fetchTeamsMetrics = asyncHandler(async (req, res) => {
     const convertedTake = Number.isNaN(Number(take)) ? 50 : Number(take);
     const convertedSkip = Number.isNaN(Number(skip)) ? 0 : Number(skip);
 
-    const [
-        teamsCount,
-        numberOfTeamsPerSport,
-        numberOfTeamsPerState,
-        recentlyAddedTeams,
-        recentlyModifiedTeams,
-    ] = await Promise.all([
-        getTeamsCount(),
-        getNumberOfTeamsPerSport(),
-        getNumberOfTeamsPerState(),
-        getRecentlyAddedTeams(convertedTake, convertedSkip),
-        getRecentlyModifiedTeams(convertedTake, convertedSkip),
-    ]);
+    const [teamsCount, numberOfTeamsPerSport, numberOfTeamsPerState, recentlyAddedTeams, recentlyModifiedTeams] =
+        await Promise.all([
+            getTeamsCount(),
+            getNumberOfTeamsPerSport(),
+            getNumberOfTeamsPerState(),
+            getRecentlyAddedTeams(convertedTake, convertedSkip),
+            getRecentlyModifiedTeams(convertedTake, convertedSkip),
+        ]);
 
     res.status(STATUS_CODE.OK).json({
         teamsCount,
@@ -172,12 +157,7 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
     const convertedTake = Number.isNaN(Number(take)) ? 50 : Number(take);
     const convertedSkip = Number.isNaN(Number(skip)) ? 0 : Number(skip);
 
-    const [
-        brandsCount,
-        categoriesCount,
-        recentlyAddedBrands,
-        recentlyModifiedBrands,
-    ] = await Promise.all([
+    const [brandsCount, categoriesCount, recentlyAddedBrands, recentlyModifiedBrands] = await Promise.all([
         getBrandsCount(),
         getCategoriesCount(),
         getRecentlyAddedBrands(convertedTake, convertedSkip),

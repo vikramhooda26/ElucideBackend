@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { prisma } from "../../db/index.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateKeyMarketSchema,
-    TEditKeyMarketSchema,
-} from "../../schemas/metadata/market.schema.js";
+import { TCreateKeyMarketSchema, TEditKeyMarketSchema } from "../../schemas/metadata/market.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllkeyMarket = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getKeyMarketById = asyncHandler(async (req, res) => {
 });
 
 export const createKeyMarket = asyncHandler(async (req, res) => {
-    const { keyMarketName, userId } =
-        req.validatedData as TCreateKeyMarketSchema;
+    const { keyMarketName, userId } = req.validatedData as TCreateKeyMarketSchema;
 
     await prisma.dashapp_keymarket.create({
         data: {

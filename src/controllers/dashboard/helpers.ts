@@ -160,10 +160,7 @@ export const getRecentlyAddedLeagues = async (take: number, skip: number) => {
     });
 };
 
-export const getRecentlyModifiedLeagues = async (
-    take: number,
-    skip: number,
-) => {
+export const getRecentlyModifiedLeagues = async (take: number, skip: number) => {
     return await prisma.dashapp_leagueinfo.findMany({
         select: {
             id: true,
@@ -215,10 +212,7 @@ export const getRecentlyAddedAthletes = async (take: number, skip: number) => {
     });
 };
 
-export const getRecentlyModifiedAthletes = async (
-    take: number,
-    skip: number,
-) => {
+export const getRecentlyModifiedAthletes = async (take: number, skip: number) => {
     return await prisma.dashapp_athlete.findMany({
         select: {
             id: true,

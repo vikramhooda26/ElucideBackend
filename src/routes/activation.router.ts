@@ -8,10 +8,7 @@ import {
     getActivationById,
     getAllActivations,
 } from "../controllers/activation.controller.js";
-import {
-    createActivationSchema,
-    editActivationSchema,
-} from "../schemas/activation.schema.js";
+import { createActivationSchema, editActivationSchema } from "../schemas/activation.schema.js";
 
 export const activationRouter = Router();
 
@@ -33,8 +30,4 @@ activationRouter.put(
     editActivation,
 );
 
-activationRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteActivation,
-);
+activationRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteActivation);

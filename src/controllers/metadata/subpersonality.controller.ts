@@ -3,10 +3,7 @@ import { prisma } from "../../db/index.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
-import {
-    TCreateSubpersonalitySchema,
-    TEditSubpersonalitySchema,
-} from "../../schemas/metadata/subpersonality.js";
+import { TCreateSubpersonalitySchema, TEditSubpersonalitySchema } from "../../schemas/metadata/subpersonality.js";
 
 export const getAllSubpersonalities = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -95,8 +92,7 @@ export const getSubpersonalityById = asyncHandler(async (req, res) => {
 });
 
 export const createSubpersonality = asyncHandler(async (req, res) => {
-    const { mainPersonalityId, subpersonalityName, userId } =
-        req.validatedData as TCreateSubpersonalitySchema;
+    const { mainPersonalityId, subpersonalityName, userId } = req.validatedData as TCreateSubpersonalitySchema;
 
     await prisma.dashapp_subpersonality.create({
         data: {
@@ -133,8 +129,7 @@ export const editSubpersonality = asyncHandler(async (req, res) => {
         throw new NotFoundError("This sub personality does not exists");
     }
 
-    const { mainPersonalityId, subpersonalityName, userId } =
-        req.validatedData as TEditSubpersonalitySchema;
+    const { mainPersonalityId, subpersonalityName, userId } = req.validatedData as TEditSubpersonalitySchema;
 
     await prisma.dashapp_subpersonality.update({
         where: { id: BigInt(subpersonalityId) },
@@ -166,12 +161,10 @@ export const deleteSubpersonality = asyncHandler(async (req, res) => {
         throw new BadRequestError("Sub personality ID not found");
     }
 
-    const subpersonalityExists = await prisma.dashapp_subpersonality.findUnique(
-        {
-            where: { id: BigInt(subpersonalityId) },
-            select: { id: true },
-        },
-    );
+    const subpersonalityExists = await prisma.dashapp_subpersonality.findUnique({
+        where: { id: BigInt(subpersonalityId) },
+        select: { id: true },
+    });
 
     if (!subpersonalityExists?.id) {
         throw new NotFoundError("This sub personality does not exists");

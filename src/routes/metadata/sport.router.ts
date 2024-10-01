@@ -8,10 +8,7 @@ import {
     getAllSports,
     getSportById,
 } from "../../controllers/metadata/sport.controller.js";
-import {
-    createSportSchema,
-    editSportSchema,
-} from "../../schemas/metadata/sport.schema.js";
+import { createSportSchema, editSportSchema } from "../../schemas/metadata/sport.schema.js";
 
 export const sportRouter = Router();
 
@@ -26,11 +23,6 @@ sportRouter.post(
     createSport,
 );
 
-sportRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editSportSchema),
-    editSport,
-);
+sportRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editSportSchema), editSport);
 
 sportRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteSport);

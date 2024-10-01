@@ -9,10 +9,7 @@ import {
 } from "../controllers/league.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
-import {
-    createLeagueSchema,
-    editLeagueSchema,
-} from "../schemas/league.schema.js";
+import { createLeagueSchema, editLeagueSchema } from "../schemas/league.schema.js";
 
 export const leagueRouter = Router();
 
@@ -29,15 +26,6 @@ leagueRouter.post(
     createLeague,
 );
 
-leagueRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editLeagueSchema),
-    editLeague,
-);
+leagueRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editLeagueSchema), editLeague);
 
-leagueRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteLeague,
-);
+leagueRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteLeague);

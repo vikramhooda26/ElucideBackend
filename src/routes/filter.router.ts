@@ -9,11 +9,7 @@ import { filteredAthleteSchema } from "../schemas/athlete.schema.js";
 
 export const filterRouter = Router();
 
-filterRouter.post(
-    "/athlete",
-    validateSchema(filteredAthleteSchema),
-    getFilteredAthletes,
-);
+filterRouter.post("/athlete", validateSchema(filteredAthleteSchema), getFilteredAthletes);
 
 filterRouter.post("/team", getFilteredTeam);
 

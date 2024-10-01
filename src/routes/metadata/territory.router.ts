@@ -8,10 +8,7 @@ import {
     getAllTerritoryies,
     getTerritoryById,
 } from "../../controllers/metadata/territory.controller.js";
-import {
-    createTerritorySchema,
-    editTerritorySchema,
-} from "../../schemas/metadata/territory.schema.js";
+import { createTerritorySchema, editTerritorySchema } from "../../schemas/metadata/territory.schema.js";
 
 export const territoryRouter = Router();
 
@@ -26,15 +23,6 @@ territoryRouter.post(
     createTerritory,
 );
 
-territoryRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(editTerritorySchema),
-    editTerritory,
-);
+territoryRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN"]), validateSchema(editTerritorySchema), editTerritory);
 
-territoryRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteTerritory,
-);
+territoryRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTerritory);

@@ -7,8 +7,6 @@ export const createAthleteStatusSchema = z.object({
 
 export const editAthleteStatusSchema = createAthleteStatusSchema;
 
-export type TCreateAthleteStatusSchema = z.infer<
-    typeof createAthleteStatusSchema
->;
+export type TCreateAthleteStatusSchema = z.infer<typeof createAthleteStatusSchema>;
 
 export type TEditAthleteStatusSchema = z.infer<typeof editAthleteStatusSchema>;

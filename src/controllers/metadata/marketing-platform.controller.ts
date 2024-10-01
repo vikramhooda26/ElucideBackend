@@ -66,15 +66,13 @@ export const getMarkingPlatformById = asyncHandler(async (req, res) => {
         throw new BadRequestError("Marketing platform ID not found");
     }
 
-    const marketingPlatform = await prisma.dashapp_marketingplatform.findUnique(
-        {
-            where: { id: BigInt(marketingPlatformId) },
-            select: {
-                id: true,
-                platform: true,
-            },
+    const marketingPlatform = await prisma.dashapp_marketingplatform.findUnique({
+        where: { id: BigInt(marketingPlatformId) },
+        select: {
+            id: true,
+            platform: true,
         },
-    );
+    });
 
     if (!marketingPlatform?.id) {
         throw new NotFoundError("This marketing platform does not exists");
@@ -87,8 +85,7 @@ export const getMarkingPlatformById = asyncHandler(async (req, res) => {
 });
 
 export const createMarkingPlatform = asyncHandler(async (req, res) => {
-    const { marketingPlatformName, userId } =
-        req.validatedData as TCreateMarketingPlatformSchema;
+    const { marketingPlatformName, userId } = req.validatedData as TCreateMarketingPlatformSchema;
 
     await prisma.dashapp_marketingplatform.create({
         data: {
@@ -113,18 +110,16 @@ export const editMarkingPlatform = asyncHandler(async (req, res) => {
         throw new BadRequestError("Marketing platform ID not found");
     }
 
-    const marketingPlatformExits =
-        await prisma.dashapp_marketingplatform.findUnique({
-            where: { id: BigInt(marketingPlatformId) },
-            select: { id: true },
-        });
+    const marketingPlatformExits = await prisma.dashapp_marketingplatform.findUnique({
+        where: { id: BigInt(marketingPlatformId) },
+        select: { id: true },
+    });
 
     if (!marketingPlatformExits?.id) {
         throw new NotFoundError("This Marketing platform does not exists");
     }
 
-    const { marketingPlatformName, userId } =
-        req.validatedData as TEditMarketingPlatformSchema;
+    const { marketingPlatformName, userId } = req.validatedData as TEditMarketingPlatformSchema;
 
     await prisma.dashapp_marketingplatform.update({
         where: { id: BigInt(marketingPlatformId) },
@@ -151,11 +146,10 @@ export const deleteMarkingPlatform = asyncHandler(async (req, res) => {
         throw new BadRequestError("Marketing platform ID not found");
     }
 
-    const marketingPlatformExists =
-        await prisma.dashapp_marketingplatform.findUnique({
-            where: { id: BigInt(marketingPlatformId) },
-            select: { id: true },
-        });
+    const marketingPlatformExists = await prisma.dashapp_marketingplatform.findUnique({
+        where: { id: BigInt(marketingPlatformId) },
+        select: { id: true },
+    });
 
     if (!marketingPlatformExists?.id) {
         throw new NotFoundError("This marketing platform does not exists");

@@ -33,24 +33,18 @@ export class ActivationResponseDTO {
         name?: string;
     };
 
-    static toResponse(
-        activationDetails: TActivationDetails,
-    ): ActivationResponseDTO {
+    static toResponse(activationDetails: TActivationDetails): ActivationResponseDTO {
         const activationDTO = new ActivationResponseDTO();
         activationDTO.id = activationDetails.id.toString();
         activationDTO.name = activationDetails.name;
-        activationDTO.type = activationDetails.dashapp_activation_type.map(
-            (type) => ({
-                id: type.dashapp_marketingplatform.id.toString(),
-                name: type.dashapp_marketingplatform.platform,
-            }),
-        );
-        activationDTO.asset = activationDetails.dashapp_activation_assets.map(
-            (asset) => ({
-                id: asset.dashapp_assets.id.toString(),
-                name: asset.dashapp_assets.asset,
-            }),
-        );
+        activationDTO.type = activationDetails.dashapp_activation_type.map((type) => ({
+            id: type.dashapp_marketingplatform.id.toString(),
+            name: type.dashapp_marketingplatform.platform,
+        }));
+        activationDTO.asset = activationDetails.dashapp_activation_assets.map((asset) => ({
+            id: asset.dashapp_assets.id.toString(),
+            name: asset.dashapp_assets.asset,
+        }));
         activationDTO.year = activationDetails.Year;
         activationDTO.athlete = {
             id: activationDetails.dashapp_athlete?.id.toString(),
@@ -68,11 +62,10 @@ export class ActivationResponseDTO {
             id: activationDetails.dashapp_companydata?.id.toString(),
             name: activationDetails.dashapp_companydata?.company_name,
         };
-        activationDTO.marketIds =
-            activationDetails.dashapp_activation_market.map((market) => ({
-                id: market.dashapp_states.id.toString(),
-                name: market.dashapp_states.state,
-            }));
+        activationDTO.marketIds = activationDetails.dashapp_activation_market.map((market) => ({
+            id: market.dashapp_states.id.toString(),
+            name: market.dashapp_states.state,
+        }));
 
         return activationDTO;
     }

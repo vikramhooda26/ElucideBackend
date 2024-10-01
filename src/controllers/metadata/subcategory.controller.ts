@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateSubcategorySchema,
-    TEditSubcategorySchema,
-} from "../../schemas/metadata/subcategory.schema.js";
+import { TCreateSubcategorySchema, TEditSubcategorySchema } from "../../schemas/metadata/subcategory.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllSubcategories = asyncHandler(async (req, res) => {
@@ -92,8 +89,7 @@ export const getsubcategoryById = asyncHandler(async (req, res) => {
 });
 
 export const createSubcategory = asyncHandler(async (req, res) => {
-    const { subcategoryName, categoryId, userId } =
-        req.validatedData as TCreateSubcategorySchema;
+    const { subcategoryName, categoryId, userId } = req.validatedData as TCreateSubcategorySchema;
 
     await prisma.dashapp_subcategory.create({
         data: {
@@ -128,8 +124,7 @@ export const editSubcategory = asyncHandler(async (req, res) => {
         throw new NotFoundError("This subcategory does not exists");
     }
 
-    const { subcategoryName, userId, categoryId } =
-        req.validatedData as TEditSubcategorySchema;
+    const { subcategoryName, userId, categoryId } = req.validatedData as TEditSubcategorySchema;
 
     await prisma.dashapp_subcategory.update({
         where: { id: BigInt(subcategoryId) },

@@ -8,10 +8,7 @@ import {
     getAllPersonalities,
     getPersonalityById,
 } from "../../controllers/metadata/personality.controller.js";
-import {
-    createPersonalitySchema,
-    editPersonalitySchema,
-} from "../../schemas/metadata/personality.schema.js";
+import { createPersonalitySchema, editPersonalitySchema } from "../../schemas/metadata/personality.schema.js";
 
 export const personalityRouter = Router();
 
@@ -33,8 +30,4 @@ personalityRouter.put(
     editPersonality,
 );
 
-personalityRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deletePersonality,
-);
+personalityRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deletePersonality);

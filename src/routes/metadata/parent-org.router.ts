@@ -8,10 +8,7 @@ import {
     getAllParentOrgs,
     getParentOrgById,
 } from "../../controllers/metadata/parent-org.controller.js";
-import {
-    createParentOrgSchema,
-    editParentOrgSchema,
-} from "../../schemas/metadata/parent-org.schema.js";
+import { createParentOrgSchema, editParentOrgSchema } from "../../schemas/metadata/parent-org.schema.js";
 
 export const parentOrgRouter = Router();
 
@@ -33,8 +30,4 @@ parentOrgRouter.put(
     editParentOrg,
 );
 
-parentOrgRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteParentOrg,
-);
+parentOrgRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteParentOrg);

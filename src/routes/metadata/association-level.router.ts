@@ -33,8 +33,4 @@ associationLevel.put(
     editAssociationLevel,
 );
 
-associationLevel.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteAssociationLevel,
-);
+associationLevel.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAssociationLevel);

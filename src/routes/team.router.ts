@@ -26,11 +26,6 @@ teamRouter.post(
     createTeam,
 );
 
-teamRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editTeamSchema),
-    editTeam,
-);
+teamRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editTeamSchema), editTeam);
 
 teamRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTeam);

@@ -36,10 +36,7 @@ export class ForbiddenError extends CustomError {
 
 export class InternalServerError extends CustomError {
     constructor(message?: string) {
-        super(
-            message || "Internal server error!",
-            STATUS_CODE.INTERNAL_SERVER_ERROR,
-        );
+        super(message || "Internal server error!", STATUS_CODE.INTERNAL_SERVER_ERROR);
     }
 }
 

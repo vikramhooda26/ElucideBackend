@@ -8,10 +8,7 @@ import {
     getAllSocialMedias,
     getSocialMediaById,
 } from "../../controllers/metadata/social-media.controller.js";
-import {
-    createSocialMediaSchema,
-    editSocialMediaSchema,
-} from "../../schemas/metadata/social-media.schema.js";
+import { createSocialMediaSchema, editSocialMediaSchema } from "../../schemas/metadata/social-media.schema.js";
 
 export const socialMediaRouter = Router();
 
@@ -33,8 +30,4 @@ socialMediaRouter.put(
     editSocialMedia,
 );
 
-socialMediaRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteSocialMedia,
-);
+socialMediaRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteSocialMedia);

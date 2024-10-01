@@ -8,10 +8,7 @@ import {
     getAllGenders,
     getGenderById,
 } from "../../controllers/metadata/gender.controller.js";
-import {
-    createGenderSchema,
-    editGenderSchema,
-} from "../../schemas/metadata/gender.schema.js";
+import { createGenderSchema, editGenderSchema } from "../../schemas/metadata/gender.schema.js";
 
 export const genderRouter = Router();
 
@@ -19,22 +16,8 @@ genderRouter.get("/get-all", getAllGenders);
 
 genderRouter.get("/:id", getGenderById);
 
-genderRouter.post(
-    "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(createGenderSchema),
-    createGender,
-);
+genderRouter.post("/create", roleMiddleware(["SUPER_ADMIN"]), validateSchema(createGenderSchema), createGender);
 
-genderRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(editGenderSchema),
-    editGender,
-);
+genderRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN"]), validateSchema(editGenderSchema), editGender);
 
-genderRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteGender,
-);
+genderRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteGender);

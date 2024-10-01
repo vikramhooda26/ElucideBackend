@@ -7,10 +7,6 @@ export const createAssociationLevelSchema = z.object({
 
 export const editAssociationLevelSchema = createAssociationLevelSchema;
 
-export type TCreateAssociationLevelSchema = z.infer<
-    typeof createAssociationLevelSchema
->;
+export type TCreateAssociationLevelSchema = z.infer<typeof createAssociationLevelSchema>;
 
-export type TEditAssociationLevelSchema = z.infer<
-    typeof editAssociationLevelSchema
->;
+export type TEditAssociationLevelSchema = z.infer<typeof editAssociationLevelSchema>;

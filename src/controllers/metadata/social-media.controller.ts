@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateSocialMediaSchema,
-    TEditSocialMediaSchema,
-} from "../../schemas/metadata/social-media.schema.js";
+import { TCreateSocialMediaSchema, TEditSocialMediaSchema } from "../../schemas/metadata/social-media.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllSocialMedias = asyncHandler(async (req, res) => {
@@ -85,8 +82,7 @@ export const getSocialMediaById = asyncHandler(async (req, res) => {
 });
 
 export const createSocialMedia = asyncHandler(async (req, res) => {
-    const { socialMedia, userId } =
-        req.validatedData as TCreateSocialMediaSchema;
+    const { socialMedia, userId } = req.validatedData as TCreateSocialMediaSchema;
 
     await prisma.dashapp_socialmedia_platform.create({
         data: {
@@ -111,11 +107,10 @@ export const editSocialMedia = asyncHandler(async (req, res) => {
         throw new BadRequestError("Social media ID not found");
     }
 
-    const socialMediaExits =
-        await prisma.dashapp_socialmedia_platform.findUnique({
-            where: { id: BigInt(socialMediaId) },
-            select: { id: true },
-        });
+    const socialMediaExits = await prisma.dashapp_socialmedia_platform.findUnique({
+        where: { id: BigInt(socialMediaId) },
+        select: { id: true },
+    });
 
     if (!socialMediaExits?.id) {
         throw new NotFoundError("This social media does not exists");
@@ -148,11 +143,10 @@ export const deleteSocialMedia = asyncHandler(async (req, res) => {
         throw new BadRequestError("social media ID not found");
     }
 
-    const socialMediaExists =
-        await prisma.dashapp_socialmedia_platform.findUnique({
-            where: { id: BigInt(socialMediaId) },
-            select: { id: true },
-        });
+    const socialMediaExists = await prisma.dashapp_socialmedia_platform.findUnique({
+        where: { id: BigInt(socialMediaId) },
+        select: { id: true },
+    });
 
     if (!socialMediaExists?.id) {
         throw new NotFoundError("This social media does not exists");

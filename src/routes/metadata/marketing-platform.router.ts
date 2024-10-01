@@ -33,8 +33,4 @@ marketingPlatformRouter.put(
     editMarkingPlatform,
 );
 
-marketingPlatformRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteMarkingPlatform,
-);
+marketingPlatformRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteMarkingPlatform);

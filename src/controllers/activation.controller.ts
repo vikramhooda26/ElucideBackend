@@ -3,10 +3,7 @@ import { prisma } from "../db/index.js";
 import { ActivationResponseDTO } from "../dto/activation.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
-import {
-    TCreateActivationSchema,
-    TEditActivationSchema,
-} from "../schemas/activation.schema.js";
+import { TCreateActivationSchema, TEditActivationSchema } from "../schemas/activation.schema.js";
 import { activationSelect } from "../types/activation.type.js";
 
 export const getAllActivations = asyncHandler(async (req, res) => {
@@ -93,25 +90,14 @@ export const getActivationById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This activation summary does not exists");
     }
 
-    const activationResponseDTO: ActivationResponseDTO =
-        ActivationResponseDTO.toResponse(activation);
+    const activationResponseDTO: ActivationResponseDTO = ActivationResponseDTO.toResponse(activation);
 
     res.status(STATUS_CODE.OK).json(activationResponseDTO);
 });
 
 export const createActivation = asyncHandler(async (req, res) => {
-    const {
-        name,
-        userId,
-        assetIds,
-        marketIds,
-        typeIds,
-        year,
-        brandId,
-        athleteId,
-        leagueId,
-        teamId,
-    } = req.validatedData as TCreateActivationSchema;
+    const { name, userId, assetIds, marketIds, typeIds, year, brandId, athleteId, leagueId, teamId } =
+        req.validatedData as TCreateActivationSchema;
 
     await prisma.dashapp_activation.create({
         data: {
@@ -143,18 +129,10 @@ export const createActivation = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata: brandId
-                ? { connect: { id: BigInt(brandId) } }
-                : undefined,
-            dashapp_leagueinfo: leagueId
-                ? { connect: { id: BigInt(leagueId) } }
-                : undefined,
-            dashapp_team: teamId
-                ? { connect: { id: BigInt(teamId) } }
-                : undefined,
-            dashapp_athlete: athleteId
-                ? { connect: { id: BigInt(athleteId) } }
-                : undefined,
+            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : undefined,
+            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : undefined,
+            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : undefined,
+            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : undefined,
             Year: year,
         },
     });
@@ -180,36 +158,18 @@ export const editActivation = asyncHandler(async (req, res) => {
         throw new NotFoundError("This activation summary does not exists");
     }
 
-    const {
-        name,
-        assetIds,
-        athleteId,
-        brandId,
-        leagueId,
-        marketIds,
-        teamId,
-        typeIds,
-        userId,
-        year,
-    } = req.validatedData as TEditActivationSchema;
+    const { name, assetIds, athleteId, brandId, leagueId, marketIds, teamId, typeIds, userId, year } =
+        req.validatedData as TEditActivationSchema;
 
-    if (
-        (leagueId && teamId) ||
-        (leagueId && athleteId) ||
-        (athleteId && teamId)
-    ) {
-        throw new BadRequestError(
-            "Activation summary cannot have multiple stakeholders",
-        );
+    if ((leagueId && teamId) || (leagueId && athleteId) || (athleteId && teamId)) {
+        throw new BadRequestError("Activation summary cannot have multiple stakeholders");
     }
 
     await prisma.dashapp_activation.update({
         where: { id: BigInt(activationId) },
         data: {
             name: name || undefined,
-            modified_by: userId
-                ? { connect: { id: BigInt(userId) } }
-                : undefined,
+            modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
             dashapp_activation_assets: assetIds
                 ? {
                       deleteMany: {},
@@ -238,18 +198,10 @@ export const editActivation = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata: brandId
-                ? { connect: { id: BigInt(brandId) } }
-                : { disconnect: true },
-            dashapp_leagueinfo: leagueId
-                ? { connect: { id: BigInt(leagueId) } }
-                : { disconnect: true },
-            dashapp_team: teamId
-                ? { connect: { id: BigInt(teamId) } }
-                : { disconnect: true },
-            dashapp_athlete: athleteId
-                ? { connect: { id: BigInt(athleteId) } }
-                : { disconnect: true },
+            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
+            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
+            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
+            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
             Year: year || undefined,
         },
     });

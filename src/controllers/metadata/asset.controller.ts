@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateAssetSchema,
-    TEditAssetSchema,
-} from "../../schemas/metadata/asset.schema.js";
+import { TCreateAssetSchema, TEditAssetSchema } from "../../schemas/metadata/asset.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllAssets = asyncHandler(async (req, res) => {

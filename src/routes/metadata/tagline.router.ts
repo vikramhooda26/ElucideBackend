@@ -8,10 +8,7 @@ import {
     getAllTaglines,
     getTaglineById,
 } from "../../controllers/metadata/tagline.controller.js";
-import {
-    createTaglineSchema,
-    editTaglineSchema,
-} from "../../schemas/metadata/tagline.schema.js";
+import { createTaglineSchema, editTaglineSchema } from "../../schemas/metadata/tagline.schema.js";
 
 export const taglineRouter = Router();
 
@@ -33,8 +30,4 @@ taglineRouter.put(
     editTagline,
 );
 
-taglineRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteTagline,
-);
+taglineRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTagline);

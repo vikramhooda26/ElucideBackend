@@ -11,12 +11,7 @@ export const validateRangeFormat = (ageRange: string): boolean => {
     if (ageRange.includes("+")) {
         const parts = ageRange.split("+");
         const [minAge, plus] = parts;
-        if (
-            parts.length !== 2 ||
-            plus !== "" ||
-            Number.isNaN(Number(minAge)) ||
-            Number(minAge) < 0
-        ) {
+        if (parts.length !== 2 || plus !== "" || Number.isNaN(Number(minAge)) || Number(minAge) < 0) {
             return false;
         }
         return true;
@@ -41,18 +36,14 @@ export const validateRangeFormat = (ageRange: string): boolean => {
 export const convertStringToInt = (number: string) => {
     const parsedAge = parseInt(number, 10);
     if (isNaN(parsedAge)) {
-        throw new BadRequestError(
-            "Invalid input: Expected a string representing a positive integer.",
-        );
+        throw new BadRequestError("Invalid input: Expected a string representing a positive integer.");
     }
     return parsedAge;
 };
 
 export const convertStringToBigInt = (number: string) => {
     if (!/^\d+$/.test(number)) {
-        throw new BadRequestError(
-            "Invalid input: Expected a string representing a bigint.",
-        );
+        throw new BadRequestError("Invalid input: Expected a string representing a bigint.");
     }
     return BigInt(number);
 };

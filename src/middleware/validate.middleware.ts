@@ -8,9 +8,7 @@ export const validateSchema = (schema: ZodSchema) => {
         const validationResult = schema.safeParse(req.body);
 
         if (!validationResult.success) {
-            res.status(STATUS_CODE.BAD_REQUEST).json(
-                validationResult.error.format(),
-            );
+            res.status(STATUS_CODE.BAD_REQUEST).json(validationResult.error.format());
             return;
         }
 

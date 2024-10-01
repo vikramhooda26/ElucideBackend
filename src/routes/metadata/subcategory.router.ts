@@ -8,10 +8,7 @@ import {
     getAllSubcategories,
     getsubcategoryById,
 } from "../../controllers/metadata/subcategory.controller.js";
-import {
-    createSubcategorySchema,
-    editSubcategorySchema,
-} from "../../schemas/metadata/subcategory.schema.js";
+import { createSubcategorySchema, editSubcategorySchema } from "../../schemas/metadata/subcategory.schema.js";
 
 export const subcategoryRouter = Router();
 
@@ -33,8 +30,4 @@ subcategoryRouter.put(
     editSubcategory,
 );
 
-subcategoryRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteSubcategory,
-);
+subcategoryRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteSubcategory);

@@ -1,5 +1,5 @@
 import z from "zod";
-import { OperationsTypeEnum } from "../lib/constants.js";
+import { operationsTypeEnum } from "../lib/constants.js";
 
 export const createAthleteSchema = z.object({
     name: z.string().min(1, "Required"),
@@ -77,9 +77,11 @@ export const filteredAthleteSchema = z.object({
             cost: z
                 .number()
                 .array()
-                .max(2, "Cost array can have maximum of 2 elements")
+                .max(2, "Cost array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
-            operationType: z.enum(OperationsTypeEnum).optional(),
+            operationType: z
+                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .optional(),
         })
         .optional()
         .refine(
@@ -131,12 +133,10 @@ export const filteredAthleteSchema = z.object({
     secondarySocialMediaPlatformIds: z.string().array().optional(),
     athleteAge: z
         .object({
-            age: z
-                .number()
-                .array()
-                .max(2, "Age array can have maximum of 2 elements")
+            age: z.number().array().max(2, "Age array can have maximum of 2 elements").optional(),
+            operationType: z
+                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
                 .optional(),
-            operationType: z.enum(OperationsTypeEnum).optional(),
         })
         .optional()
         .refine(

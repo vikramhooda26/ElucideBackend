@@ -8,10 +8,7 @@ import {
     getAllBroadcastPartners,
     getBroadcastPartnerById,
 } from "../../controllers/metadata/broadcast.controller.js";
-import {
-    createBroadcastPartnerSchema,
-    editBroadcastPartnerSchema,
-} from "../../schemas/metadata/broadcast.schema.js";
+import { createBroadcastPartnerSchema, editBroadcastPartnerSchema } from "../../schemas/metadata/broadcast.schema.js";
 
 export const broadcastPartnerRouter = Router();
 
@@ -33,8 +30,4 @@ broadcastPartnerRouter.put(
     editBroadcastPartner,
 );
 
-broadcastPartnerRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteBroadcastPartner,
-);
+broadcastPartnerRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteBroadcastPartner);

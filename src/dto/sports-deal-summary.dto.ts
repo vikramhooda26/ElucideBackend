@@ -39,9 +39,7 @@ export class SportsDealSummaryResponseDTO {
         name?: string;
     }[];
 
-    static toResponse(
-        sportsDealSummaryDetails: TSportsDealSummaryDetails,
-    ): SportsDealSummaryResponseDTO {
+    static toResponse(sportsDealSummaryDetails: TSportsDealSummaryDetails): SportsDealSummaryResponseDTO {
         const sportsDealSummaryDTO = new SportsDealSummaryResponseDTO();
         sportsDealSummaryDTO.id = sportsDealSummaryDetails.id.toString();
         sportsDealSummaryDTO.brand = {
@@ -58,8 +56,7 @@ export class SportsDealSummaryResponseDTO {
         }),
             (sportsDealSummaryDTO.league = {
                 id: sportsDealSummaryDetails.dashapp_leagueinfo?.id.toString(),
-                name: sportsDealSummaryDetails.dashapp_leagueinfo
-                    ?.property_name,
+                name: sportsDealSummaryDetails.dashapp_leagueinfo?.property_name,
             }),
             (sportsDealSummaryDTO.type = sportsDealSummaryDetails.type);
         sportsDealSummaryDTO.status = sportsDealSummaryDetails.status;
@@ -67,25 +64,20 @@ export class SportsDealSummaryResponseDTO {
             id: sportsDealSummaryDetails.dashapp_level?.id.toString(),
             name: sportsDealSummaryDetails.dashapp_level?.name,
         };
-        sportsDealSummaryDTO.commencementDate =
-            sportsDealSummaryDetails.commencement_date;
-        sportsDealSummaryDTO.expirationDate =
-            sportsDealSummaryDetails.expiration_date;
+        sportsDealSummaryDTO.commencementDate = sportsDealSummaryDetails.commencement_date;
+        sportsDealSummaryDTO.expirationDate = sportsDealSummaryDetails.expiration_date;
         sportsDealSummaryDTO.duration = sportsDealSummaryDetails.duration;
-        sportsDealSummaryDTO.totalValue =
-            sportsDealSummaryDetails.total_value?.toString();
-        sportsDealSummaryDTO.annualValue =
-            sportsDealSummaryDetails.annual_value?.toString();
+        sportsDealSummaryDTO.totalValue = sportsDealSummaryDetails.total_value?.toString();
+        sportsDealSummaryDTO.annualValue = sportsDealSummaryDetails.annual_value?.toString();
         sportsDealSummaryDTO.territory = {
             id: sportsDealSummaryDetails.dashapp_territory?.id.toString(),
             name: sportsDealSummaryDetails.dashapp_territory?.name,
         };
         sportsDealSummaryDTO.mediaLink = sportsDealSummaryDetails.media_link;
-        sportsDealSummaryDTO.assets =
-            sportsDealSummaryDetails.dashapp_sportsdeal_assets.map((asset) => ({
-                id: asset.dashapp_assets.id.toString(),
-                name: asset.dashapp_assets.asset,
-            }));
+        sportsDealSummaryDTO.assets = sportsDealSummaryDetails.dashapp_sportsdeal_assets.map((asset) => ({
+            id: asset.dashapp_assets.id.toString(),
+            name: asset.dashapp_assets.asset,
+        }));
 
         return sportsDealSummaryDTO;
     }

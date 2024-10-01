@@ -6,10 +6,8 @@ import { tokenManager } from "../managers/TokenManager.js";
 import { COOKIE_NAME } from "./constants.js";
 import { TUser } from "./types.js";
 
-const ACCESS_TOKEN_SECRET =
-    process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
-const REFRESH_TOKEN_SECRET =
-    process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
 
 export const generateAccessToken = (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
@@ -38,10 +36,7 @@ export const generateRefreshToken = async (user: TUser) => {
     return refreshToken;
 };
 
-export const verifyPassword = async (
-    password: string,
-    hashedPassword: string,
-): Promise<boolean> => {
+export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
     return await bcrypt.compare(password, hashedPassword);
 };
 

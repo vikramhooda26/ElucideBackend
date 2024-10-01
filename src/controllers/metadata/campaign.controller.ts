@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateActiveCampaignSchema,
-    TEditActiveCampaignSchema,
-} from "../../schemas/metadata/campaign.schema.js";
+import { TCreateActiveCampaignSchema, TEditActiveCampaignSchema } from "../../schemas/metadata/campaign.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllActiveCampaigns = asyncHandler(async (req, res) => {
@@ -87,8 +84,7 @@ export const getActiveCampaignById = asyncHandler(async (req, res) => {
 });
 
 export const createActiveCampaign = asyncHandler(async (req, res) => {
-    const { activeCampaignName, userId } =
-        req.validatedData as TCreateActiveCampaignSchema;
+    const { activeCampaignName, userId } = req.validatedData as TCreateActiveCampaignSchema;
 
     await prisma.dashapp_activecampaigns.create({
         data: {
@@ -113,22 +109,20 @@ export const editActiveCampaign = asyncHandler(async (req, res) => {
         throw new BadRequestError("Active Campaign ID not found");
     }
 
-    const activeCampaignExists =
-        await prisma.dashapp_activecampaigns.findUnique({
-            where: {
-                id: BigInt(activeCampaignId),
-            },
-            select: {
-                id: true,
-            },
-        });
+    const activeCampaignExists = await prisma.dashapp_activecampaigns.findUnique({
+        where: {
+            id: BigInt(activeCampaignId),
+        },
+        select: {
+            id: true,
+        },
+    });
 
     if (!activeCampaignExists?.id) {
         throw new NotFoundError("This campaign does not exists");
     }
 
-    const { activeCampaignName, userId } =
-        req.validatedData as TEditActiveCampaignSchema;
+    const { activeCampaignName, userId } = req.validatedData as TEditActiveCampaignSchema;
 
     await prisma.dashapp_activecampaigns.update({
         where: { id: BigInt(activeCampaignId) },

@@ -9,10 +9,7 @@ import {
 } from "../controllers/athlete.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
-import {
-    createAthleteSchema,
-    editAthleteSchema,
-} from "../schemas/athlete.schema.js";
+import { createAthleteSchema, editAthleteSchema } from "../schemas/athlete.schema.js";
 
 export const athleteRouter = Router();
 
@@ -36,8 +33,4 @@ athleteRouter.put(
     editAthlete,
 );
 
-athleteRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    removeAthlete,
-);
+athleteRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), removeAthlete);

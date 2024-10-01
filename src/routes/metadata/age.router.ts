@@ -8,10 +8,7 @@ import {
     getAgeRangeById,
     getAllAgeRanges,
 } from "../../controllers/metadata/age.controller.js";
-import {
-    createAgeRangeSchema,
-    editAgeRangeSchema,
-} from "../../schemas/metadata/age.schema.js";
+import { createAgeRangeSchema, editAgeRangeSchema } from "../../schemas/metadata/age.schema.js";
 
 export const ageRangeRouter = Router();
 
@@ -19,22 +16,8 @@ ageRangeRouter.get("/get-all", getAllAgeRanges);
 
 ageRangeRouter.get("/:id", getAgeRangeById);
 
-ageRangeRouter.post(
-    "/create",
-    roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(createAgeRangeSchema),
-    createAgeRange,
-);
+ageRangeRouter.post("/create", roleMiddleware(["SUPER_ADMIN"]), validateSchema(createAgeRangeSchema), createAgeRange);
 
-ageRangeRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    validateSchema(editAgeRangeSchema),
-    editAgeRange,
-);
+ageRangeRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN"]), validateSchema(editAgeRangeSchema), editAgeRange);
 
-ageRangeRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteAgeRange,
-);
+ageRangeRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAgeRange);

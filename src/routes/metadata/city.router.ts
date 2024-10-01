@@ -8,10 +8,7 @@ import {
     getAllCities,
     getCityById,
 } from "../../controllers/metadata/city.controller.js";
-import {
-    createCitySchema,
-    editCitySchema,
-} from "../../schemas/metadata/city.schema.js";
+import { createCitySchema, editCitySchema } from "../../schemas/metadata/city.schema.js";
 
 export const cityRouter = Router();
 
@@ -26,11 +23,6 @@ cityRouter.post(
     createCity,
 );
 
-cityRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editCitySchema),
-    editCity,
-);
+cityRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editCitySchema), editCity);
 
 cityRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteCity);

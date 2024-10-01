@@ -2,60 +2,53 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { COOKIE_NAME, cookieOptions, STATUS_CODE } from "../lib/constants.js";
-import {
-    BadRequestError,
-    ConflictError,
-    ForbiddenError,
-    NotFoundError,
-} from "../lib/errors.js";
+import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from "../lib/errors.js";
 import { hashPassword } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
 import { tokenManager } from "../managers/TokenManager.js";
 import { TUserEdit, TUserRegistration } from "../schemas/auth.schema.js";
 
-export const fetchUserDetails = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { userId } = req.user;
+export const fetchUserDetails = asyncHandler(async (req: Request, res: Response) => {
+    const { userId } = req.user;
 
-        try {
-            const user = await prisma.auth_user.findUnique({
-                where: { id: BigInt(userId) },
-                select: {
-                    id: true,
-                    first_name: true,
-                    last_name: true,
-                    username: true,
-                    email: true,
-                    role: true,
-                },
-            });
+    try {
+        const user = await prisma.auth_user.findUnique({
+            where: { id: BigInt(userId) },
+            select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                username: true,
+                email: true,
+                role: true,
+            },
+        });
 
-            if (!user) {
-                res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
-                res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
-                tokenManager.removeToken(userId);
-
-                throw new ForbiddenError();
-            }
-
-            res.status(STATUS_CODE.OK).json({
-                userId: user.id,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-            });
-        } catch (error) {
-            console.error(error);
+        if (!user) {
             res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
             res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
             tokenManager.removeToken(userId);
 
-            throw new ForbiddenError("Could not fetch user details");
+            throw new ForbiddenError();
         }
-    },
-);
+
+        res.status(STATUS_CODE.OK).json({
+            userId: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+        });
+    } catch (error) {
+        console.error(error);
+        res.clearCookie(COOKIE_NAME.CSRF, cookieOptions);
+        res.clearCookie(COOKIE_NAME.REFRESH_TOKEN, cookieOptions);
+        tokenManager.removeToken(userId);
+
+        throw new ForbiddenError("Could not fetch user details");
+    }
+});
 
 export const fetchUserById = asyncHandler(async (req, res) => {
     const userId = req.params.id;
@@ -118,8 +111,7 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
 });
 
 export const createUser = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, username, password, role } =
-        req.validatedData as TUserRegistration;
+    const { firstName, lastName, email, username, password, role } = req.validatedData as TUserRegistration;
 
     const userExists = await prisma.auth_user.findUnique({
         where: { username },
@@ -192,8 +184,7 @@ export const editUserById = asyncHandler(async (req, res) => {
         throw new NotFoundError("This user does not exist");
     }
 
-    const { email, firstName, lastName, password, role, username } =
-        req.validatedData as TUserEdit;
+    const { email, firstName, lastName, password, role, username } = req.validatedData as TUserEdit;
 
     if (userExists.username !== username) {
         const usernameExists = await prisma.auth_user.findUnique({

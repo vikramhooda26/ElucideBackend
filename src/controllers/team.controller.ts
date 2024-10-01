@@ -117,8 +117,7 @@ export const getTeamById = asyncHandler(async (req, res) => {
         mainPersonalities,
     };
 
-    const teamResponse: TeamResponseDTO =
-        TeamResponseDTO.toResponse(updatedTeam);
+    const teamResponse: TeamResponseDTO = TeamResponseDTO.toResponse(updatedTeam);
 
     res.status(STATUS_CODE.OK).json(teamResponse);
 });
@@ -168,15 +167,14 @@ export const createTeam = asyncHandler(async (req, res) => {
     } = req.validatedData as TCreateTeamSchema;
 
     if (endorsements?.length) {
-        const isEndorsementsExists =
-            await prisma.dashapp_teamendorsements.findFirst({
-                where: {
-                    name: { in: endorsements?.map((endorse) => endorse.name) },
-                },
-                select: {
-                    name: true,
-                },
-            });
+        const isEndorsementsExists = await prisma.dashapp_teamendorsements.findFirst({
+            where: {
+                name: { in: endorsements?.map((endorse) => endorse.name) },
+            },
+            select: {
+                name: true,
+            },
+        });
 
         if (isEndorsementsExists?.name) {
             res.status(STATUS_CODE.CONFLICT).json({
@@ -276,38 +274,28 @@ export const createTeam = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_team_marketing_platforms_primary:
-                primaryMarketingPlatformIds
-                    ? {
-                          create: primaryMarketingPlatformIds?.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
-            dashapp_team_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds
-                    ? {
-                          create: secondaryMarketingPlatformIds?.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
+            dashapp_team_marketing_platforms_primary: primaryMarketingPlatformIds
+                ? {
+                      create: primaryMarketingPlatformIds?.map((primaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(primaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_team_marketing_platforms_secondary: secondaryMarketingPlatformIds
+                ? {
+                      create: secondaryMarketingPlatformIds?.map((secondaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(secondaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_team_age: ageIds
                 ? {
                       create: ageIds?.map((ageId) => ({
@@ -503,9 +491,7 @@ export const editTeam = asyncHandler(async (req, res) => {
     } = req.validatedData as TEditTeamSchema;
 
     if (association?.length) {
-        const isDistinct = areElementsDistinct(
-            association?.map((value) => value.associationLevelId),
-        );
+        const isDistinct = areElementsDistinct(association?.map((value) => value.associationLevelId));
 
         if (!isDistinct) {
             throw new BadRequestError("Association level must be unique");
@@ -513,9 +499,7 @@ export const editTeam = asyncHandler(async (req, res) => {
     }
 
     if (endorsements?.length) {
-        const isDistinct = areElementsDistinct(
-            endorsements?.map((endorse) => endorse.name),
-        );
+        const isDistinct = areElementsDistinct(endorsements?.map((endorse) => endorse.name));
 
         if (!isDistinct) {
             throw new BadRequestError("Endorsements must be unique");
@@ -529,12 +513,8 @@ export const editTeam = asyncHandler(async (req, res) => {
             modified_by: {
                 connect: { id: BigInt(userId) },
             },
-            dashapp_sport: sportId
-                ? { connect: { id: BigInt(sportId) } }
-                : { disconnect: true },
-            dashapp_leagueinfo: leagueId
-                ? { connect: { id: BigInt(leagueId) } }
-                : { disconnect: true },
+            dashapp_sport: sportId ? { connect: { id: BigInt(sportId) } } : { disconnect: true },
+            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
             dashapp_team_owner: {
                 deleteMany: {},
                 ...(ownerIds?.length
@@ -549,12 +529,8 @@ export const editTeam = asyncHandler(async (req, res) => {
             },
             year_of_inception: yearOfInception,
             franchise_fee: franchiseFee,
-            dashapp_hqcity: cityId
-                ? { connect: { id: BigInt(cityId) } }
-                : { disconnect: true },
-            dashapp_states: stateId
-                ? { connect: { id: BigInt(stateId) } }
-                : { disconnect: true },
+            dashapp_hqcity: cityId ? { connect: { id: BigInt(cityId) } } : { disconnect: true },
+            dashapp_states: stateId ? { connect: { id: BigInt(stateId) } } : { disconnect: true },
             dashapp_team_personality_traits: {
                 deleteMany: {},
                 ...(subPersonalityTraitIds?.length
@@ -621,17 +597,13 @@ export const editTeam = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(primaryMarketingPlatformIds?.length
                     ? {
-                          create: primaryMarketingPlatformIds.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: primaryMarketingPlatformIds.map((primaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(primaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
@@ -639,17 +611,13 @@ export const editTeam = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(secondaryMarketingPlatformIds?.length
                     ? {
-                          create: secondaryMarketingPlatformIds.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: secondaryMarketingPlatformIds.map((secondaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(secondaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
@@ -737,15 +705,13 @@ export const editTeam = asyncHandler(async (req, res) => {
                               },
                               dashapp_brand_association: value.brandIds?.length
                                   ? {
-                                        create: value.brandIds.map(
-                                            (brandId) => ({
-                                                brand: {
-                                                    connect: {
-                                                        id: BigInt(brandId),
-                                                    },
+                                        create: value.brandIds.map((brandId) => ({
+                                            brand: {
+                                                connect: {
+                                                    id: BigInt(brandId),
                                                 },
-                                            }),
-                                        ),
+                                            },
+                                        })),
                                     }
                                   : undefined,
                               cost: value.costOfAssociation || undefined,

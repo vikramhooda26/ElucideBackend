@@ -8,10 +8,7 @@ import {
     getAllAthleteStatus,
     getAthleteStatusById,
 } from "../../controllers/metadata/athlete-status.controller.js";
-import {
-    createAthleteStatusSchema,
-    editAthleteStatusSchema,
-} from "../../schemas/metadata/athlete-status.schema.js";
+import { createAthleteStatusSchema, editAthleteStatusSchema } from "../../schemas/metadata/athlete-status.schema.js";
 
 export const athleteStatusRouter = Router();
 
@@ -33,8 +30,4 @@ athleteStatusRouter.put(
     editAthleteStatus,
 );
 
-athleteStatusRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteAthleteStatus,
-);
+athleteStatusRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAthleteStatus);

@@ -126,48 +126,30 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             gender ? getAllGenders() : Promise.resolve(undefined),
             city ? getAllCities() : Promise.resolve(undefined),
             state ? getAllStates() : Promise.resolve(undefined),
-            activeCampaign
-                ? getAllActiveCampaigns()
-                : Promise.resolve(undefined),
+            activeCampaign ? getAllActiveCampaigns() : Promise.resolve(undefined),
             agency ? getAllAgencies() : Promise.resolve(undefined),
             asset ? getAllAssets() : Promise.resolve(undefined),
-            broadcastPartner
-                ? getAllBroadcastPartners()
-                : Promise.resolve(undefined),
+            broadcastPartner ? getAllBroadcastPartners() : Promise.resolve(undefined),
             category ? getAllCategories() : Promise.resolve(undefined),
             format ? getAllFormats() : Promise.resolve(undefined),
             keyMarket ? getAllKeyMarkets() : Promise.resolve(undefined),
             league ? getAllLeagues() : Promise.resolve(undefined),
             leagueOwner ? getAllLeagueOwners() : Promise.resolve(undefined),
-            marketingPlatform
-                ? getAllMarketingPlatforms()
-                : Promise.resolve(undefined),
+            marketingPlatform ? getAllMarketingPlatforms() : Promise.resolve(undefined),
             nccs ? getAllNCCS() : Promise.resolve(undefined),
             ottPartner ? getAllOTTPartners() : Promise.resolve(undefined),
             parentOrg ? getAllParentOrgs() : Promise.resolve(undefined),
-            personalityTrait
-                ? getAllPersonalityTraits()
-                : Promise.resolve(undefined),
-            sportsDealSummaryLevel
-                ? getAllSportsDealSummaryLevels()
-                : Promise.resolve(undefined),
-            sportsDealSummaryStatus
-                ? getAllSportsDealSummaryStatuses()
-                : Promise.resolve(undefined),
-            sportsDealSummaryTerritory
-                ? getAllSportsDealSummaryTerritories()
-                : Promise.resolve(undefined),
-            sportsDealSummaryType
-                ? getAllSportsDealSummaryTypes()
-                : Promise.resolve(undefined),
+            personalityTrait ? getAllPersonalityTraits() : Promise.resolve(undefined),
+            sportsDealSummaryLevel ? getAllSportsDealSummaryLevels() : Promise.resolve(undefined),
+            sportsDealSummaryStatus ? getAllSportsDealSummaryStatuses() : Promise.resolve(undefined),
+            sportsDealSummaryTerritory ? getAllSportsDealSummaryTerritories() : Promise.resolve(undefined),
+            sportsDealSummaryType ? getAllSportsDealSummaryTypes() : Promise.resolve(undefined),
             tagline ? getAllTaglines() : Promise.resolve(undefined),
             teamOwner ? getAllTeamOwners() : Promise.resolve(undefined),
             tertiary ? getAllTertiaries() : Promise.resolve(undefined),
             sport ? getAllSports() : Promise.resolve(undefined),
             tier ? getAllTiers() : Promise.resolve(undefined),
-            associationLevel
-                ? getAllAssociationLevels()
-                : Promise.resolve(undefined),
+            associationLevel ? getAllAssociationLevels() : Promise.resolve(undefined),
             nationality ? getAllNationalities() : Promise.resolve(undefined),
             socialMedia ? getAllSocialMedia() : Promise.resolve(undefined),
             athleteStatus ? getAllStatus() : Promise.resolve(undefined),
@@ -175,9 +157,7 @@ export const fetchAllMetadata = async (req: Request, res: Response) => {
             team ? getAllTeams() : Promise.resolve(undefined),
             athlete ? getAllAthletes() : Promise.resolve(undefined),
             maincategory ? getAllMaincategories() : Promise.resolve(undefined),
-            mainpersonality
-                ? getAllMainPersonalities()
-                : Promise.resolve(undefined),
+            mainpersonality ? getAllMainPersonalities() : Promise.resolve(undefined),
         ]);
 
         Object.values(METADATA_KEYS).forEach((key) => {

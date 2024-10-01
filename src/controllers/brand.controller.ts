@@ -3,10 +3,7 @@ import { prisma } from "../db/index.js";
 import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
-import {
-    TCreateBrandSchema,
-    TEditBrandSchema,
-} from "../schemas/brand.schema.js";
+import { TCreateBrandSchema, TEditBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
 import { areElementsDistinct } from "../lib/helpers.js";
@@ -138,8 +135,7 @@ export const getBrandById = asyncHandler(async (req, res) => {
         mainCategories,
     };
 
-    const brandResponse: BrandResponseDTO =
-        BrandResponseDTO.toResponse(updatedBrand);
+    const brandResponse: BrandResponseDTO = BrandResponseDTO.toResponse(updatedBrand);
 
     res.status(STATUS_CODE.OK).json(brandResponse);
 });
@@ -183,15 +179,14 @@ export const createBrand = asyncHandler(async (req, res) => {
     } = req.validatedData as TCreateBrandSchema;
 
     if (endorsements?.length) {
-        const isEndorsementsExists =
-            await prisma.dashapp_brandendorsements.findFirst({
-                where: {
-                    name: { in: endorsements?.map((endorse) => endorse.name) },
-                },
-                select: {
-                    name: true,
-                },
-            });
+        const isEndorsementsExists = await prisma.dashapp_brandendorsements.findFirst({
+            where: {
+                name: { in: endorsements?.map((endorse) => endorse.name) },
+            },
+            select: {
+                name: true,
+            },
+        });
 
         if (isEndorsementsExists?.name) {
             res.status(STATUS_CODE.CONFLICT).json({
@@ -261,16 +256,15 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_personality_traits:
-                subPersonalityTraitIds?.length
-                    ? {
-                          create: subPersonalityTraitIds?.map((traitId) => ({
-                              dashapp_subpersonality: {
-                                  connect: { id: BigInt(traitId) },
-                              },
-                          })),
-                      }
-                    : undefined,
+            dashapp_companydata_personality_traits: subPersonalityTraitIds?.length
+                ? {
+                      create: subPersonalityTraitIds?.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata_taglines: taglineIds?.length
                 ? {
                       create: taglineIds?.map((taglineId) => ({
@@ -291,38 +285,28 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_marketing_platforms_primary:
-                primaryMarketingPlatformIds?.length
-                    ? {
-                          create: primaryMarketingPlatformIds?.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
-            dashapp_companydata_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds?.length
-                    ? {
-                          create: secondaryMarketingPlatformIds?.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
+            dashapp_companydata_marketing_platforms_primary: primaryMarketingPlatformIds?.length
+                ? {
+                      create: primaryMarketingPlatformIds?.map((primaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(primaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_companydata_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
+                ? {
+                      create: secondaryMarketingPlatformIds?.map((secondaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(secondaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata_age: ageIds?.length
                 ? {
                       create: ageIds?.map((ageId) => ({
@@ -359,16 +343,15 @@ export const createBrand = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_companydata_key_markets_secondary:
-                secondaryMarketIds?.length
-                    ? {
-                          create: secondaryMarketIds?.map((marketId) => ({
-                              dashapp_keymarket: {
-                                  connect: { id: BigInt(marketId) },
-                              },
-                          })),
-                      }
-                    : undefined,
+            dashapp_companydata_key_markets_secondary: secondaryMarketIds?.length
+                ? {
+                      create: secondaryMarketIds?.map((marketId) => ({
+                          dashapp_keymarket: {
+                              connect: { id: BigInt(marketId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_companydata_key_markets_tertiary: tertiaryIds?.length
                 ? {
                       create: tertiaryIds?.map((tertiaryId) => ({
@@ -457,9 +440,7 @@ export const editBrand = asyncHandler(async (req, res) => {
     } = req.validatedData as TEditBrandSchema;
 
     if (endorsements?.length) {
-        const isDistinct = areElementsDistinct(
-            endorsements?.map((endorse) => endorse.name),
-        );
+        const isDistinct = areElementsDistinct(endorsements?.map((endorse) => endorse.name));
 
         if (!isDistinct) {
             throw new BadRequestError("Endorsements must be unique");
@@ -471,9 +452,7 @@ export const editBrand = asyncHandler(async (req, res) => {
         data: {
             company_name: name,
             modified_by: { connect: { id: BigInt(userId) } },
-            dashapp_parentorg: parentOrgId
-                ? { connect: { id: BigInt(parentOrgId) } }
-                : { disconnect: true },
+            dashapp_parentorg: parentOrgId ? { connect: { id: BigInt(parentOrgId) } } : { disconnect: true },
             dashapp_companydata_subcategory: {
                 deleteMany: {},
                 ...(subCategoryIds?.length
@@ -497,15 +476,9 @@ export const editBrand = asyncHandler(async (req, res) => {
                       }
                     : undefined),
             },
-            dashapp_hqcity: cityId
-                ? { connect: { id: BigInt(cityId) } }
-                : { disconnect: true },
-            dashapp_states: stateId
-                ? { connect: { id: BigInt(stateId) } }
-                : { disconnect: true },
-            dashapp_agency: agencyId
-                ? { connect: { id: BigInt(agencyId) } }
-                : { disconnect: true },
+            dashapp_hqcity: cityId ? { connect: { id: BigInt(cityId) } } : { disconnect: true },
+            dashapp_states: stateId ? { connect: { id: BigInt(stateId) } } : { disconnect: true },
+            dashapp_agency: agencyId ? { connect: { id: BigInt(agencyId) } } : { disconnect: true },
             dashapp_companydata_tier: {
                 deleteMany: {},
                 ...(tierIds?.length
@@ -556,17 +529,13 @@ export const editBrand = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(primaryMarketingPlatformIds?.length
                     ? {
-                          create: primaryMarketingPlatformIds.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: primaryMarketingPlatformIds.map((primaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(primaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
@@ -574,17 +543,13 @@ export const editBrand = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(secondaryMarketingPlatformIds?.length
                     ? {
-                          create: secondaryMarketingPlatformIds.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: secondaryMarketingPlatformIds.map((secondaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(secondaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },

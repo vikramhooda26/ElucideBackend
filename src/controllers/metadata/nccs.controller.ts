@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import {
-    TCreateNccsSchema,
-    TEditNccsSchema,
-} from "../../schemas/metadata/nccs.schema.js";
+import { TCreateNccsSchema, TEditNccsSchema } from "../../schemas/metadata/nccs.schema.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllNccs = asyncHandler(async (req, res) => {

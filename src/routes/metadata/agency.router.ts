@@ -8,10 +8,7 @@ import {
     getAgencyById,
     getAllAgencies,
 } from "../../controllers/metadata/agency.controller.js";
-import {
-    createAgencySchema,
-    editAgencySchema,
-} from "../../schemas/metadata/agency.schema.js";
+import { createAgencySchema, editAgencySchema } from "../../schemas/metadata/agency.schema.js";
 
 export const agencyRouter = Router();
 
@@ -26,15 +23,6 @@ agencyRouter.post(
     createAgency,
 );
 
-agencyRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editAgencySchema),
-    editAgency,
-);
+agencyRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editAgencySchema), editAgency);
 
-agencyRouter.delete(
-    "/delete/:id",
-    roleMiddleware(["SUPER_ADMIN"]),
-    deleteAgency,
-);
+agencyRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteAgency);

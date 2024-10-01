@@ -4,10 +4,7 @@ import { LeagueResponseDTO } from "../dto/league.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import {
-    TCreateLeagueSchema,
-    TEditLeagueSchema,
-} from "../schemas/league.schema.js";
+import { TCreateLeagueSchema, TEditLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
@@ -57,8 +54,7 @@ export const getLeagueById = asyncHandler(async (req, res) => {
         mainPersonalities,
     };
 
-    const leagueResponse: LeagueResponseDTO =
-        LeagueResponseDTO.toResponse(updatedLeague);
+    const leagueResponse: LeagueResponseDTO = LeagueResponseDTO.toResponse(updatedLeague);
 
     res.status(STATUS_CODE.OK).json(leagueResponse);
 });
@@ -159,9 +155,7 @@ export const createLeague = asyncHandler(async (req, res) => {
     } = req.validatedData as TCreateLeagueSchema;
 
     if (association?.length) {
-        const isDistinct = areElementsDistinct(
-            association?.map((association) => association.associationLevelId),
-        );
+        const isDistinct = areElementsDistinct(association?.map((association) => association.associationLevelId));
 
         if (!isDistinct) {
             throw new BadRequestError("Association Level must be unique");
@@ -169,15 +163,14 @@ export const createLeague = asyncHandler(async (req, res) => {
     }
 
     if (endorsements?.length) {
-        const isEndorsementsExists =
-            await prisma.dashapp_leagueendorsements.findFirst({
-                where: {
-                    name: { in: endorsements?.map((endorse) => endorse.name) },
-                },
-                select: {
-                    name: true,
-                },
-            });
+        const isEndorsementsExists = await prisma.dashapp_leagueendorsements.findFirst({
+            where: {
+                name: { in: endorsements?.map((endorse) => endorse.name) },
+            },
+            select: {
+                name: true,
+            },
+        });
 
         if (isEndorsementsExists?.name) {
             res.status(STATUS_CODE.CONFLICT).json({
@@ -227,16 +220,15 @@ export const createLeague = asyncHandler(async (req, res) => {
                       },
                   }
                 : undefined,
-            dashapp_leagueinfo_personality_traits:
-                subPersonalityTraitIds?.length
-                    ? {
-                          create: subPersonalityTraitIds?.map((traitId) => ({
-                              dashapp_subpersonality: {
-                                  connect: { id: BigInt(traitId) },
-                              },
-                          })),
-                      }
-                    : undefined,
+            dashapp_leagueinfo_personality_traits: subPersonalityTraitIds?.length
+                ? {
+                      create: subPersonalityTraitIds?.map((traitId) => ({
+                          dashapp_subpersonality: {
+                              connect: { id: BigInt(traitId) },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_leagueinfo_tier: tierIds?.length
                 ? {
                       create: tierIds?.map((tierId) => ({
@@ -279,38 +271,28 @@ export const createLeague = asyncHandler(async (req, res) => {
                       })),
                   }
                 : undefined,
-            dashapp_leagueinfo_marketing_platforms_primary:
-                primaryMarketingPlatformIds?.length
-                    ? {
-                          create: primaryMarketingPlatformIds?.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
-            dashapp_leagueinfo_marketing_platforms_secondary:
-                secondaryMarketingPlatformIds?.length
-                    ? {
-                          create: secondaryMarketingPlatformIds?.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
-                                  },
-                              }),
-                          ),
-                      }
-                    : undefined,
+            dashapp_leagueinfo_marketing_platforms_primary: primaryMarketingPlatformIds?.length
+                ? {
+                      create: primaryMarketingPlatformIds?.map((primaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(primaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
+            dashapp_leagueinfo_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
+                ? {
+                      create: secondaryMarketingPlatformIds?.map((secondaryMarketingPlatformId) => ({
+                          dashapp_marketingplatform: {
+                              connect: {
+                                  id: BigInt(secondaryMarketingPlatformId),
+                              },
+                          },
+                      })),
+                  }
+                : undefined,
             dashapp_leagueinfo_age: ageIds?.length
                 ? {
                       create: ageIds?.map((ageId) => ({
@@ -486,9 +468,7 @@ export const editLeague = asyncHandler(async (req, res) => {
     } = req.validatedData as TEditLeagueSchema;
 
     if (association?.length) {
-        const isDistinct = areElementsDistinct(
-            association?.map((association) => association.associationLevelId),
-        );
+        const isDistinct = areElementsDistinct(association?.map((association) => association.associationLevelId));
 
         if (!isDistinct) {
             throw new BadRequestError("Association Level must be unique");
@@ -496,9 +476,7 @@ export const editLeague = asyncHandler(async (req, res) => {
     }
 
     if (endorsements?.length) {
-        const isDistinct = areElementsDistinct(
-            endorsements?.map((endorse) => endorse.name),
-        );
+        const isDistinct = areElementsDistinct(endorsements?.map((endorse) => endorse.name));
 
         if (!isDistinct) {
             throw new BadRequestError("Endorsements must be unique");
@@ -613,17 +591,13 @@ export const editLeague = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(primaryMarketingPlatformIds?.length
                     ? {
-                          create: primaryMarketingPlatformIds.map(
-                              (primaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              primaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: primaryMarketingPlatformIds.map((primaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(primaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },
@@ -631,17 +605,13 @@ export const editLeague = asyncHandler(async (req, res) => {
                 deleteMany: {},
                 ...(secondaryMarketingPlatformIds?.length
                     ? {
-                          create: secondaryMarketingPlatformIds.map(
-                              (secondaryMarketingPlatformId) => ({
-                                  dashapp_marketingplatform: {
-                                      connect: {
-                                          id: BigInt(
-                                              secondaryMarketingPlatformId,
-                                          ),
-                                      },
+                          create: secondaryMarketingPlatformIds.map((secondaryMarketingPlatformId) => ({
+                              dashapp_marketingplatform: {
+                                  connect: {
+                                      id: BigInt(secondaryMarketingPlatformId),
                                   },
-                              }),
-                          ),
+                              },
+                          })),
                       }
                     : undefined),
             },

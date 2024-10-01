@@ -26,11 +26,6 @@ brandRouter.post(
     createBrand,
 );
 
-brandRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editBrandSchema),
-    editBrand,
-);
+brandRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editBrandSchema), editBrand);
 
 brandRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteBrand);

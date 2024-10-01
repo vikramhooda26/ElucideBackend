@@ -35,18 +35,14 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
             }
 
             try {
-                const decodedRefreshToken = verifyRefreshToken(
-                    refreshToken,
-                ) as JwtPayload;
+                const decodedRefreshToken = verifyRefreshToken(refreshToken) as JwtPayload;
 
                 const { count } = await prisma.refresh_token.deleteMany({
                     where: { token: refreshToken },
                 });
 
                 if (count < 1) {
-                    throw new ForbiddenError(
-                        "Refresh token not found or already deleted",
-                    );
+                    throw new ForbiddenError("Refresh token not found or already deleted");
                 }
 
                 const newTokenPayload = {
@@ -56,17 +52,12 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
                 } satisfies TUser;
 
                 const newAccessToken = generateAccessToken(newTokenPayload);
-                const newRefreshToken =
-                    await generateRefreshToken(newTokenPayload);
+                const newRefreshToken = await generateRefreshToken(newTokenPayload);
 
                 req.user = verifyAccessToken(newAccessToken);
 
                 res.cookie(COOKIE_NAME.CSRF, newAccessToken, cookieOptions);
-                res.cookie(
-                    COOKIE_NAME.REFRESH_TOKEN,
-                    newRefreshToken,
-                    cookieOptions,
-                );
+                res.cookie(COOKIE_NAME.REFRESH_TOKEN, newRefreshToken, cookieOptions);
 
                 next();
             } catch (error) {
