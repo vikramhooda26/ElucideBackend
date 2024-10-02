@@ -11,6 +11,7 @@ import {
 import { COOKIE_NAME, cookieOptions } from "../lib/constants.js";
 import { ForbiddenError } from "../lib/errors.js";
 import { TUser } from "../lib/types.js";
+import { printLogs } from "../lib/log.js";
 
 const { TokenExpiredError } = pkg;
 

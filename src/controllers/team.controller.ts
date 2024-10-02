@@ -1087,29 +1087,42 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        dashapp_teamcontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_teamcontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory

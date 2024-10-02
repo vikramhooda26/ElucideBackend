@@ -4,6 +4,7 @@ import { prisma } from "../../db/index.js";
 import { NotFoundError } from "../../lib/errors.js";
 import { filteredAthleteSchema } from "../../schemas/athlete.schema.js";
 import { filteredLeagueSchema } from "../../schemas/league.schema.js";
+import { printLogs } from "../../lib/log.js";
 
 export const getGenderQuery = async (genderIds: string[]) => {
     const length = genderIds.length;
@@ -24,11 +25,14 @@ export const getGenderQuery = async (genderIds: string[]) => {
         const genderId = genderIds[0];
         const genderInDatabase = genders.find((value) => value.id.toString() === genderId);
 
-        if (!genderInDatabase) {
+        if (!genderInDatabase?.id) {
             throw new NotFoundError("This gender ID does not exist");
         }
 
         const notIn = genders.filter((gender) => gender.id !== genderInDatabase.id).map((gender) => gender.id);
+
+        printLogs("notIn", notIn);
+        printLogs("genderInDatabase", genderInDatabase?.id);
 
         if (genderInDatabase?.id) {
             query = {
@@ -51,6 +55,8 @@ export const getGenderQuery = async (genderIds: string[]) => {
             })),
         };
     }
+
+    printLogs("Gender query", query);
 
     return query;
 };

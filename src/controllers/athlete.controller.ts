@@ -6,6 +6,7 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { getCostQuery, getGenderQuery } from "./constants/index.js";
@@ -53,7 +54,7 @@ export const getAthletes = async ({
     skip?: any;
 }) => {
     return await prisma.dashapp_athlete.findMany({
-        where: query || undefined,
+        where: query,
         select: {
             id: true,
             athlete_name: true,
@@ -742,13 +743,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                 };
             } else if (athleteAge.age.length === 1) {
                 const operationConditions =
-                    athleteAge.operationType === "gt"
+                    athleteAge.operationType === "gte"
                         ? {
                               age: {
                                   lte: formatDob(lowerBoundDate),
                               },
                           }
-                        : athleteAge.operationType === "lt"
+                        : athleteAge.operationType === "lte"
                           ? {
                                 OR: [
                                     {
@@ -952,29 +953,42 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        dashapp_athletecontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_athletecontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory
@@ -985,10 +999,14 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
+    printLogs("combinedFilterConditions for athletes", combinedFilterConditions);
+
     const [athletes, count] = await Promise.all([
         getAthletes({ query: combinedFilterConditions, take, skip }),
         getAthletesCount(),
     ]);
+
+    printLogs("athletes output", athletes);
 
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");

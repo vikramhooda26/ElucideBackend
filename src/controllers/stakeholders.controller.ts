@@ -134,29 +134,42 @@ const getFilteredAthletes = async (
         youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
         website: website ? { contains: website, mode: "insensitive" } : undefined,
 
-        dashapp_athletecontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_athletecontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory
@@ -323,29 +336,42 @@ const getFilteredLeagues = async (
         youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
         website: website ? { contains: website, mode: "insensitive" } : undefined,
 
-        dashapp_leaguecontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_leaguecontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory
@@ -507,29 +533,42 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
               }
             : undefined,
 
-        dashapp_teamcontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_teamcontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory
@@ -691,29 +730,42 @@ const getFilteredBrands = async (filterData: TFilteredStakeholdersSchema, { take
         youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
         website: website ? { contains: website, mode: "insensitive" } : undefined,
 
-        dashapp_brandcontact: {
-            some: {
-                contact_name: {
-                    contains: contactName,
-                    mode: "insensitive",
-                },
-                contact_designation: {
-                    contains: contactDesignation,
-                    mode: "insensitive",
-                },
-                contact_email: {
-                    contains: contactEmail,
-                    mode: "insensitive",
-                },
-                contact_no: {
-                    contains: contactNumber,
-                },
-                contact_linkedin: {
-                    contains: contactLinkedin,
-                    mode: "insensitive",
-                },
-            },
-        },
+        dashapp_brandcontact:
+            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+                ? {
+                      some: {
+                          contact_name: contactName
+                              ? {
+                                    contains: contactName,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_designation: contactDesignation
+                              ? {
+                                    contains: contactDesignation,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_email: contactEmail
+                              ? {
+                                    contains: contactEmail,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                          contact_no: contactNumber
+                              ? {
+                                    contains: contactNumber,
+                                }
+                              : undefined,
+                          contact_linkedin: contactLinkedin
+                              ? {
+                                    contains: contactLinkedin,
+                                    mode: "insensitive",
+                                }
+                              : undefined,
+                      },
+                  }
+                : undefined,
     };
 
     const combinedFilterConditions = isMandatory
