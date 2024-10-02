@@ -10,8 +10,6 @@ export const filteredStakeholdersSchema = z.object({
     youtube: z.string().optional(),
     website: z.string().optional(),
     strategyOverview: z.string().optional(),
-    primaryMarketingPlatformIds: z.string().array().optional(),
-    secondaryMarketingPlatformIds: z.string().array().optional(),
     ageIds: z.string().array().optional(),
     genderIds: z.string().array().optional(),
     primaryMarketIds: z.string().array().optional(),

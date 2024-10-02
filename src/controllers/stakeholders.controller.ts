@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { STATUS_CODE } from "../lib/constants.js";
-import { NotFoundError } from "../lib/errors.js";
 import { TFilteredStakeholdersSchema } from "../schemas/stakeholders.schema.js";
 import { getAthletes } from "./athlete.controller.js";
 import { getBrands } from "./brand.controller.js";
@@ -27,9 +26,7 @@ const getFilteredAthletes = async (
         linkedin,
         nccsIds,
         primaryMarketIds,
-        primaryMarketingPlatformIds,
         secondaryMarketIds,
-        secondaryMarketingPlatformIds,
         strategyOverview,
         subPersonalityTraitIds,
         tertiaryIds,
@@ -88,30 +85,6 @@ const getFilteredAthletes = async (
                   some: {
                       dashapp_states: {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_socialmedia_platform_primary: primaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_socialmedia_platform: {
-                          id: {
-                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_socialmedia_platform_secondary: secondaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_socialmedia_platform: {
-                          id: {
-                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
                       },
                   },
               }
@@ -233,8 +206,6 @@ const getFilteredLeagues = async (
         ageIds,
         genderIds,
         nccsIds,
-        primaryMarketingPlatformIds,
-        secondaryMarketingPlatformIds,
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
@@ -311,30 +282,6 @@ const getFilteredLeagues = async (
                   some: {
                       dashapp_states: {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_marketing_platforms_primary: primaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
                       },
                   },
               }
@@ -443,8 +390,6 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
         ageIds,
         genderIds,
         nccsIds,
-        primaryMarketingPlatformIds,
-        secondaryMarketingPlatformIds,
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
@@ -489,30 +434,6 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
                   some: {
                       dashapp_nccs: {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_marketing_platforms_primary: primaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
                       },
                   },
               }
@@ -653,8 +574,6 @@ const getFilteredBrands = async (filterData: TFilteredStakeholdersSchema, { take
         ageIds,
         genderIds,
         nccsIds,
-        primaryMarketingPlatformIds,
-        secondaryMarketingPlatformIds,
         primaryMarketIds,
         secondaryMarketIds,
         tertiaryIds,
@@ -699,30 +618,6 @@ const getFilteredBrands = async (filterData: TFilteredStakeholdersSchema, { take
                   some: {
                       dashapp_nccs: {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_companydata_marketing_platforms_primary: primaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_companydata_marketing_platforms_secondary: secondaryMarketingPlatformIds?.length
-            ? {
-                  some: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
                       },
                   },
               }
@@ -868,11 +763,10 @@ export const getFilteredStakeholders = asyncHandler(async (req, res) => {
         getFilteredBrands(req.validatedData, { take, skip }),
     ]);
 
-    const filteredStakeholders = [...filteredAthletes, ...filteredLeagues, ...filteredTeams, ...filteredBrands];
-
-    if (filteredStakeholders.length < 1) {
-        throw new NotFoundError("No stakeholder matches the filters");
-    }
-
-    res.status(STATUS_CODE.OK).json(filteredStakeholders);
+    res.status(STATUS_CODE.OK).json({
+        filteredAthletes,
+        filteredLeagues,
+        filteredTeams,
+        filteredBrands,
+    });
 });
