@@ -65,11 +65,11 @@ export const getCostQuery = (costOfAssociation: z.infer<typeof filteredAthleteSc
             };
         }
     } else if (costOfAssociation?.cost?.length === 1) {
-        if (costOfAssociation.operationType === "gt") {
+        if (costOfAssociation.operationType === "gte") {
             query = {
                 gte: new Prisma.Decimal(costOfAssociation.cost[0]),
             };
-        } else if (costOfAssociation.operationType === "lt") {
+        } else if (costOfAssociation.operationType === "lte") {
             query = {
                 lte: new Prisma.Decimal(costOfAssociation.cost[0]),
             };
@@ -109,10 +109,10 @@ export const getMetricsQuery = (
             reachMetrics?.partnerType === partnerType && reachMetrics?.reach?.length
                 ? reachMetrics?.reach?.length === 1
                     ? {
-                          ...(reachMetrics.operationType === "lt" && {
+                          ...(reachMetrics.operationType === "lte" && {
                               lte: reachMetrics.reach[0],
                           }),
-                          ...(reachMetrics.operationType === "gt" && {
+                          ...(reachMetrics.operationType === "gte" && {
                               gte: reachMetrics.reach[0],
                           }),
                           ...(reachMetrics.operationType === "equals" && {
@@ -132,10 +132,10 @@ export const getMetricsQuery = (
             viewershipMetrics?.partnerType === partnerType && viewershipMetrics?.viewership?.length
                 ? viewershipMetrics?.viewership?.length === 1
                     ? {
-                          ...(viewershipMetrics.operationType === "lt" && {
+                          ...(viewershipMetrics.operationType === "lte" && {
                               lte: viewershipMetrics.viewership[0],
                           }),
-                          ...(viewershipMetrics.operationType === "gt" && {
+                          ...(viewershipMetrics.operationType === "gte" && {
                               gte: viewershipMetrics.viewership[0],
                           }),
                           ...(viewershipMetrics.operationType === "equals" && {
@@ -153,10 +153,10 @@ export const getMetricsQuery = (
             yearMetrics?.partnerType === partnerType && yearMetrics?.year?.length
                 ? yearMetrics?.year?.length === 1
                     ? {
-                          ...(yearMetrics.operationType === "lt" && {
+                          ...(yearMetrics.operationType === "lte" && {
                               lte: yearMetrics.year[0],
                           }),
-                          ...(yearMetrics.operationType === "gt" && {
+                          ...(yearMetrics.operationType === "gte" && {
                               gte: yearMetrics.year[0],
                           }),
                           ...(yearMetrics.operationType === "equals" && {

@@ -11,7 +11,7 @@ export const cookieOptions = {
     sameSite: "lax",
 } satisfies CookieOptions;
 
-export const operationsTypeEnum = ["gt", "lt", "equals", "in"] as const;
+export const operationsTypeEnum = ["gte", "lte", "equals", "in"] as const;
 
 export const partnerTypeEnum = ["ott", "broadcast"] as const;
 
