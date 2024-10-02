@@ -79,6 +79,10 @@ export const getCostQuery = (costOfAssociation: z.infer<typeof filteredAthleteSc
             query = {
                 lte: new Prisma.Decimal(costOfAssociation.cost[0]),
             };
+        } else if (costOfAssociation.operationType === "equals") {
+            query = {
+                equals: new Prisma.Decimal(costOfAssociation.cost[0]),
+            };
         }
     }
     return query;

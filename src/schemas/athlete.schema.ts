@@ -80,7 +80,7 @@ export const filteredAthleteSchema = z.object({
                 .max(2, "Cost array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
         })
         .optional()
@@ -106,6 +106,18 @@ export const filteredAthleteSchema = z.object({
             {
                 message: "cost is required when operationType is provided",
                 path: ["cost"],
+            },
+        )
+        .refine(
+            (data) => {
+                if (data?.cost?.length === 2 && data.operationType !== "in") {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "operationType must be 'in' if cost array length is 2",
+                path: ["operationType"],
             },
         ),
     strategyOverview: z.string().optional(),
@@ -135,7 +147,7 @@ export const filteredAthleteSchema = z.object({
         .object({
             age: z.number().array().max(2, "Age array can have maximum of 2 elements").optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
         })
         .optional()
@@ -161,6 +173,18 @@ export const filteredAthleteSchema = z.object({
             {
                 message: "age is required when operationType is provided",
                 path: ["age"],
+            },
+        )
+        .refine(
+            (data) => {
+                if (data?.age?.length === 2 && data.operationType !== "in") {
+                    return false;
+                }
+                return true;
+            },
+            {
+                message: "operationType must be 'in' if age array length is 2",
+                path: ["operationType"],
             },
         ),
     contactName: z.string().optional(),

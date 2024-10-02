@@ -773,7 +773,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                                     },
                                 ],
                             }
-                          : undefined;
+                          : athleteAge.operationType === "equals"
+                            ? {
+                                  age: {
+                                      equals: formatDob(lowerBoundDate),
+                                  },
+                              }
+                            : undefined;
 
                 return operationConditions || undefined;
             }

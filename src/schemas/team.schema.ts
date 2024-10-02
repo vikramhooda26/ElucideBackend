@@ -144,7 +144,7 @@ export const filteredTeamSchema = z.object({
                 .max(2, "Cost array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
         })
         .optional()
@@ -180,7 +180,7 @@ export const filteredTeamSchema = z.object({
                 .max(2, "Reach array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
@@ -231,7 +231,7 @@ export const filteredTeamSchema = z.object({
                 .max(2, "Viewership array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
@@ -282,7 +282,7 @@ export const filteredTeamSchema = z.object({
                 .max(2, "Year array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             operationType: z
-                .enum(operationsTypeEnum, { message: "operationType can only be either gt, lt, equals or in" })
+                .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
                 .optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
