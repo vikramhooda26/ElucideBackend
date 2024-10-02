@@ -10,7 +10,7 @@ import { brandSelect } from "../types/brand.type.js";
 import { getEndorsementQuery, getGenderQuery } from "./constants/index.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
 
-const getBrands = async ({
+export const getBrands = async ({
     query,
     take,
     skip,

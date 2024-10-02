@@ -43,11 +43,7 @@ const formatDob = (date: Date) => {
     return format(date, "yyyy-MM-dd").toString();
 };
 
-const getAthleteCount = async () => {
-    return await prisma.dashapp_athlete.count();
-};
-
-const getAthletes = async ({
+export const getAthletes = async ({
     query,
     take,
     skip,
@@ -87,7 +83,7 @@ const getAthletes = async ({
 export const getAllAthletes = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const [athletes, count] = await Promise.all([getAthletes({ take, skip }), getAthleteCount()]);
+    const [athletes, count] = await Promise.all([getAthletes({ take, skip }), getAthletesCount()]);
 
     if (athletes.length < 1) {
         throw new NotFoundError("Athlete data does not exists");
@@ -991,7 +987,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
     const [athletes, count] = await Promise.all([
         getAthletes({ query: combinedFilterConditions, take, skip }),
-        getAthleteCount(),
+        getAthletesCount(),
     ]);
 
     if (athletes.length < 1) {

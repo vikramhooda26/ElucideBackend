@@ -10,7 +10,7 @@ import { leagueSelect } from "../types/league.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
-const getLeagues = async ({
+export const getLeagues = async ({
     query,
     take,
     skip,

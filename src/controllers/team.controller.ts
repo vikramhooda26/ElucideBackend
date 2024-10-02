@@ -10,7 +10,15 @@ import { teamSelect } from "../types/team.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getTeamsCount } from "./dashboard/helpers.js";
 
-const getTeams = async ({ query, take, skip }: { query?: Prisma.dashapp_teamWhereInput; take?: any; skip?: any }) => {
+export const getTeams = async ({
+    query,
+    take,
+    skip,
+}: {
+    query?: Prisma.dashapp_teamWhereInput;
+    take?: any;
+    skip?: any;
+}) => {
     return await prisma.dashapp_team.findMany({
         where: query || undefined,
         select: {
