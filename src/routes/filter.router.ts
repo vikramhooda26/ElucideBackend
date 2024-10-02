@@ -6,15 +6,19 @@ import { getFilteredStakeholders } from "../controllers/stakeholders.controller.
 import { getFilteredTeam } from "../controllers/team.controller.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
 import { filteredAthleteSchema } from "../schemas/athlete.schema.js";
+import { filteredBrandSchema } from "../schemas/brand.schema.js";
+import { filteredLeagueSchema } from "../schemas/league.schema.js";
+import { filteredStakeholdersSchema } from "../schemas/stakeholders.schema.js";
+import { filteredTeamSchema } from "../schemas/team.schema.js";
 
 export const filterRouter = Router();
 
 filterRouter.post("/athlete", validateSchema(filteredAthleteSchema), getFilteredAthletes);
 
-filterRouter.post("/team", getFilteredTeam);
+filterRouter.post("/team", validateSchema(filteredTeamSchema), getFilteredTeam);
 
-filterRouter.post("/brand", getFilteredBrand);
+filterRouter.post("/brand", validateSchema(filteredBrandSchema), getFilteredBrand);
 
-filterRouter.post("/league", getFilteredLeague);
+filterRouter.post("/league", validateSchema(filteredLeagueSchema), getFilteredLeague);
 
-filterRouter.post("/multiple", getFilteredStakeholders);
+filterRouter.post("/multiple", validateSchema(filteredStakeholdersSchema), getFilteredStakeholders);
