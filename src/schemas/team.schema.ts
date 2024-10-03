@@ -330,7 +330,6 @@ export const filteredTeamSchema = z.object({
             partnerIds: z
                 .string()
                 .array()
-                .max(2, "PartnerIds array can have maximum of 2 elements i.e the min and max range")
                 .optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
