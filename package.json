@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npm run format:fix && tsc",
+        "build": "npm run format:fix && node --max-old-space-size=4096 node_modules/.bin/tsc",
         "start": "npm run format:fix && node dist/index.js",
         "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
         "format:fix": "prettier --write \"**/*.{ts,tsx,json}\"",
