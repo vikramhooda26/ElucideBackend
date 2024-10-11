@@ -21,8 +21,10 @@ jobs:
                   key: ${{ secrets.EC2_SECRET }}
                   script: |
                       cd elucide-sports-backend/
-                      git pull origin main
+                      git restore .
+                      git pull origin main --force
                       npm install
+                      rm -rf dist/
                       npm run build
                       pm2 restart Elucide --update-env
                       pm2 save
