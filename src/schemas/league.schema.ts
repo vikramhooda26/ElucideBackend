@@ -290,10 +290,7 @@ export const filteredLeagueSchema = z.object({
         ),
     partnerIdMetrics: z
         .object({
-            partnerIds: z
-                .string()
-                .array()
-                .optional(),
+            partnerIds: z.string().array().optional(),
             partnerType: z
                 .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
                 .optional(),
