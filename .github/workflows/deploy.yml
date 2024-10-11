@@ -21,8 +21,8 @@ jobs:
                   key: ${{ secrets.EC2_SECRET }}
                   script: |
                       cd elucide-sports-backend/
-                      git restore .
-                      git pull origin main --force
+                      git fetch origin main
+                      git reset --hard origin/main
                       npm install
                       rm -rf dist/
                       npm run build
