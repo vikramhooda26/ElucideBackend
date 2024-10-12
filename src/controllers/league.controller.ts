@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { LeagueResponseDTO } from "../dto/league.dto.js";
-import { STATUS_CODE } from "../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect } from "../types/league.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
@@ -414,6 +415,8 @@ export const createLeague = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.LEAGUE, true);
+
     if (contactPerson?.length) {
         await prisma.dashapp_leaguecontact.createMany({
             data: contactPerson.map((details) => ({
@@ -757,7 +760,10 @@ export const editLeague = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.LEAGUE, true);
+
     await prisma.dashapp_leaguecontact.deleteMany();
+
     if (contactPerson?.length) {
         const contactData = contactPerson.map((details) => ({
             contact_name: details.contactName,
@@ -793,7 +799,9 @@ export const deleteLeague = asyncHandler(async (req, res) => {
         throw new NotFoundError("This league does not exists");
     }
 
-    await prisma.dashapp_leagueinfo.delete({ where: { id: BigInt(leagueId) } });
+    await prisma.dashapp_leagueinfo.delete({ where: { id: BigInt(leagueId) }, select: { id: true } });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.LEAGUE, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "League deleted",

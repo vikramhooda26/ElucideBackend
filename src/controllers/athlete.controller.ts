@@ -3,10 +3,11 @@ import { differenceInYears, format, parseISO } from "date-fns";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { AthleteResponseDTO } from "../dto/athlete.dto.js";
-import { STATUS_CODE } from "../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { printLogs } from "../lib/log.js";
+import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect } from "../types/athlete.type.js";
 import { getCostQuery, getGenderQuery } from "./constants/index.js";
@@ -344,6 +345,8 @@ export const createAthlete = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ATHLETE, true);
+
     if (contactPerson?.length) {
         await prisma.dashapp_athletecontact.createMany({
             data: contactPerson.map((details) => ({
@@ -584,6 +587,8 @@ export const editAthlete = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.ATHLETE, true);
+
     await prisma.dashapp_athletecontact.deleteMany();
 
     if (contactPerson?.length) {
@@ -623,7 +628,10 @@ export const removeAthlete = asyncHandler(async (req, res) => {
 
     await prisma.dashapp_athlete.delete({
         where: { id: BigInt(athleteId) },
+        select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.ATHLETE, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Athlete deleted",

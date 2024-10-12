@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { BrandResponseDTO } from "../dto/brand.dto.js";
-import { STATUS_CODE } from "../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect } from "../types/brand.type.js";
 import { getEndorsementQuery, getGenderQuery } from "./constants/index.js";
@@ -391,6 +392,8 @@ export const createBrand = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.BRAND, true);
+
     if (contactPerson?.length) {
         await prisma.dashapp_brandcontact.createMany({
             data: contactPerson.map((details) => ({
@@ -649,6 +652,8 @@ export const editBrand = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.BRAND, true);
+
     await prisma.dashapp_brandcontact.deleteMany();
 
     if (contactPerson?.length) {
@@ -690,6 +695,8 @@ export const deleteBrand = asyncHandler(async (req, res) => {
         where: { id: BigInt(brandId) },
         select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.BRAND, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Brand deleted",

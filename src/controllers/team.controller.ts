@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import { prisma } from "../db/index.js";
 import { TeamResponseDTO } from "../dto/team.dto.js";
-import { STATUS_CODE } from "../lib/constants.js";
+import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateTeamSchema, TEditTeamSchema, TFilteredTeamSchema } from "../schemas/team.schema.js";
 import { teamSelect } from "../types/team.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
@@ -424,6 +425,8 @@ export const createTeam = asyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.TEAM, true);
+
     if (contactPerson?.length) {
         await prisma.dashapp_teamcontact.createMany({
             data: contactPerson.map((details) => ({
@@ -770,7 +773,10 @@ export const editTeam = asyncHandler(async (req, res) => {
         select: { id: true },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.TEAM, true);
+
     await prisma.dashapp_teamcontact.deleteMany();
+
     if (contactPerson?.length) {
         const contactData = contactPerson.map((details) => ({
             contact_name: details.contactName,
@@ -798,14 +804,21 @@ export const deleteTeam = asyncHandler(async (req, res) => {
         throw new BadRequestError("Team ID not found");
     }
 
-    const deletedTeam = await prisma.dashapp_team.delete({
+    const teamExists = await prisma.dashapp_team.findUnique({
         where: { id: BigInt(teamId) },
         select: { id: true },
     });
 
-    if (!deletedTeam?.id) {
+    if (!teamExists?.id) {
         throw new NotFoundError("This team does not exists");
     }
+
+    await prisma.dashapp_team.delete({
+        where: { id: BigInt(teamId) },
+        select: { id: true },
+    });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.TEAM, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Team deleted",
