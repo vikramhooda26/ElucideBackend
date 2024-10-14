@@ -15,32 +15,16 @@ export const getBrands = async ({
     query,
     take,
     skip,
+    select,
 }: {
     query?: Prisma.dashapp_companydataWhereInput;
     take?: any;
     skip?: any;
+    select: Prisma.dashapp_companydataSelect;
 }) => {
     return await prisma.dashapp_companydata.findMany({
         where: query || undefined,
-        select: {
-            id: true,
-            company_name: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            dashapp_companydata_gender: true,
-            created_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_date: true,
-        },
+        select: select,
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
@@ -50,7 +34,27 @@ export const getBrands = async ({
 export const getAllBrands = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const brands = await getBrands({ take, skip });
+    const selectBrand = {
+        id: true,
+        company_name: true,
+        created_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        dashapp_companydata_gender: true,
+        created_date: true,
+        modified_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_date: true,
+    };
+
+    const brands = await getBrands({ take, skip, select: selectBrand });
 
     if (brands.length < 1) {
         throw new NotFoundError("Brands data does not exists");
@@ -972,7 +976,7 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
           };
 
     const [brands, count] = await Promise.all([
-        getBrands({ query: combinedFilterConditions, take, skip }),
+        getBrands({ query: combinedFilterConditions, take, skip, select: brandSelect }),
         getBrandsCount(),
     ]);
 
@@ -983,21 +987,100 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     const modifiedBrands =
         genderIds?.length === 2 ? brands.filter((brand) => brand.dashapp_companydata_gender.length === 2) : brands;
 
-    res.status(STATUS_CODE.OK).json(
-        modifiedBrands.map((brand) => ({
-            id: brand.id,
-            name: brand.company_name,
-            createdDate: brand.created_date,
-            modifiedDate: brand.modified_date,
-            createdBy: {
-                userId: brand.created_by?.id,
-                email: brand.created_by?.email,
+    const mainCategories = await prisma.dashapp_category.findMany({
+        where: {
+            dashapp_subcategory: {
+                some: {
+                    dashapp_companydata_subcategory: {
+                        some: { companydata_id: { in: modifiedBrands.map((brand) => brand.id) } },
+                    },
+                },
             },
-            modifiedBy: {
-                userId: brand.modified_by?.id,
-                email: brand.modified_by?.email,
+        },
+        select: {
+            id: true,
+            category: true,
+            dashapp_subcategory: {
+                select: {
+                    id: true,
+                    subcategory: true,
+                    dashapp_companydata_subcategory: {
+                        select: {
+                            companydata_id: true,
+                        },
+                    },
+                },
             },
-            count,
-        })),
+        },
+    });
+
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_companydata_personality_traits: {
+                        some: { companydata_id: { in: modifiedBrands.map((brand) => brand.id) } },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_companydata_personality_traits: {
+                        select: {
+                            companydata_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const brandIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id),
+        );
+        brandIds.forEach((brandId) => {
+            const brandIdStr = brandId.toString();
+            if (!personalitiesByBrandId[brandIdStr]) {
+                personalitiesByBrandId[brandIdStr] = [];
+            }
+            personalitiesByBrandId[brandIdStr].push(personality);
+        });
+    });
+
+    const categoriesByBrandId: Record<string, typeof mainCategories> = {};
+
+    mainCategories.forEach((category) => {
+        const brandIds = category.dashapp_subcategory.flatMap((sub) =>
+            sub.dashapp_companydata_subcategory.map((trait) => trait.companydata_id),
+        );
+        brandIds.forEach((brandId) => {
+            const brandIdStr = brandId?.toString() || "";
+            if (!categoriesByBrandId[brandIdStr]) {
+                categoriesByBrandId[brandIdStr] = [];
+            }
+            categoriesByBrandId[brandIdStr].push(category);
+        });
+    });
+
+    const updatedBrands = modifiedBrands.map((brand) => ({
+        ...modifiedBrands,
+        mainPersonalities: personalitiesByBrandId[brand.id.toString()] || [],
+        mainCategories: categoriesByBrandId[brand.id.toString()] || [],
+    }));
+
+    const brandResponse: BrandResponseDTO[] = updatedBrands.map((brand) =>
+        //@ts-ignore
+        BrandResponseDTO.toResponse(brand),
     );
+
+    res.status(STATUS_CODE.OK).json(brandResponse);
 });

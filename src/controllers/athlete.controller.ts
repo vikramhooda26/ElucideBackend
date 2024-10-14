@@ -1085,7 +1085,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     printLogs("personalitiesByAthleteId:", personalitiesByAthleteId);
 
     const updatedAthletes = modifiedAthletes.map((athlete) => ({
-        ...athlete,
+        ...modifiedAthletes,
         mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
     }));
 
