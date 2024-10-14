@@ -49,33 +49,16 @@ export const getAthletes = async ({
     query,
     take,
     skip,
+    select,
 }: {
+    take: any;
+    skip: any;
+    select: Prisma.dashapp_athleteSelect;
     query?: Prisma.dashapp_athleteWhereInput;
-    take?: any;
-    skip?: any;
 }) => {
     return await prisma.dashapp_athlete.findMany({
         where: query,
-        select: {
-            id: true,
-            athlete_name: true,
-            nationality: { select: { name: true } },
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            dashapp_athlete_target_gender: true,
-            created_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_date: true,
-        },
+        select: select,
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
@@ -85,7 +68,31 @@ export const getAthletes = async ({
 export const getAllAthletes = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const [athletes, count] = await Promise.all([getAthletes({ take, skip }), getAthletesCount()]);
+    const selectFilteredAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
+        id: true,
+        athlete_name: true,
+        nationality: { select: { name: true } },
+        created_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        dashapp_athlete_target_gender: true,
+        created_date: true,
+        modified_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_date: true,
+    });
+
+    const [athletes, count] = await Promise.all([
+        getAthletes({ take, skip, select: selectFilteredAthletes }),
+        getAthletesCount(),
+    ]);
 
     if (athletes.length < 1) {
         throw new NotFoundError("Athlete data does not exists");
@@ -1013,14 +1020,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
-    printLogs("combinedFilterConditions for athletes", combinedFilterConditions);
-
     const [athletes, count] = await Promise.all([
-        getAthletes({ query: combinedFilterConditions, take, skip }),
+        getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect }),
         getAthletesCount(),
     ]);
-
-    printLogs("athletes output", athletes);
 
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");
@@ -1031,22 +1034,70 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
             ? athletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
             : athletes;
 
-    res.status(STATUS_CODE.OK).json(
-        modifiedAthletes.map((athlete) => ({
-            id: athlete.id,
-            name: athlete.athlete_name,
-            nationality: athlete.nationality?.name,
-            createdDate: athlete.created_date,
-            modifiedDate: athlete.modified_date,
-            createdBy: {
-                userId: athlete.created_by?.id,
-                email: athlete.created_by?.email,
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: { athlete_id: { in: modifiedAthletes.map((athlete) => athlete.id) } },
+                    },
+                },
             },
-            modifiedBy: {
-                userId: athlete.modified_by?.id,
-                email: athlete.modified_by?.email,
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: { in: modifiedAthletes.map((athlete) => athlete.id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_athlete_personality_traits: {
+                        select: {
+                            athlete_id: true,
+                        },
+                    },
+                },
             },
-            count,
-        })),
+        },
+    });
+
+    printLogs("mainPersonalities", mainPersonalities);
+
+    const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id),
+        );
+        athleteIds.forEach((athleteId) => {
+            const athleteIdStr = athleteId.toString();
+            if (!personalitiesByAthleteId[athleteIdStr]) {
+                personalitiesByAthleteId[athleteIdStr] = [];
+            }
+            personalitiesByAthleteId[athleteIdStr].push(personality);
+        });
+    });
+
+    printLogs("personalitiesByAthleteId:", personalitiesByAthleteId);
+
+    const updatedAthletes = modifiedAthletes.map((athlete) => ({
+        ...athlete,
+        mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
+    }));
+
+    printLogs("updatedAthletes", updatedAthletes);
+
+    const athleteResponse: AthleteResponseDTO[] = updatedAthletes.map((athlete) =>
+        //@ts-ignore
+        AthleteResponseDTO.toResponse(athlete),
     );
+
+    res.status(STATUS_CODE.OK).json(athleteResponse);
 });
