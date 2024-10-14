@@ -68,7 +68,7 @@ export const getAthletes = async ({
 export const getAllAthletes = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const selectFilteredAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
+    const selectAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
         id: true,
         athlete_name: true,
         nationality: { select: { name: true } },
@@ -90,7 +90,7 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
     });
 
     const [athletes, count] = await Promise.all([
-        getAthletes({ take, skip, select: selectFilteredAthletes }),
+        getAthletes({ take, skip, select: selectAthletes }),
         getAthletesCount(),
     ]);
 
@@ -1020,10 +1020,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
-    const [athletes, count] = await Promise.all([
-        getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect }),
-        getAthletesCount(),
-    ]);
+    const athletes = await getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect });
 
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");

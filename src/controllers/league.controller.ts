@@ -15,32 +15,16 @@ export const getLeagues = async ({
     query,
     take,
     skip,
+    select,
 }: {
     query?: Prisma.dashapp_leagueinfoWhereInput;
     take?: any;
     skip?: any;
+    select: Prisma.dashapp_leagueinfoSelect;
 }) => {
     return await prisma.dashapp_leagueinfo.findMany({
         where: query || undefined,
-        select: {
-            id: true,
-            property_name: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            dashapp_leagueinfo_gender: true,
-            created_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_date: true,
-        },
+        select: select,
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
@@ -101,7 +85,27 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 export const getAllLeagues = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const leagues = await getLeagues({ skip, take });
+    const selectLeague = {
+        id: true,
+        property_name: true,
+        created_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        dashapp_leagueinfo_gender: true,
+        created_date: true,
+        modified_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_date: true,
+    };
+
+    const leagues = await getLeagues({ skip, take, select: selectLeague });
 
     if (leagues.length < 1) {
         throw new NotFoundError("League data does not exists");
@@ -1128,7 +1132,7 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
           };
 
     const [leagues, count] = await Promise.all([
-        getLeagues({ query: combinedFilterConditions, take, skip }),
+        getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect }),
         getLeaguesCount(),
     ]);
 
@@ -1139,21 +1143,62 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     const modifiedLeagues =
         genderIds?.length === 2 ? leagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2) : leagues;
 
-    res.status(STATUS_CODE.OK).json(
-        modifiedLeagues.map((league) => ({
-            id: league.id,
-            name: league.property_name,
-            createdDate: league.created_date,
-            modifiedDate: league.modified_date,
-            createdBy: {
-                userId: league.created_by?.id,
-                email: league.created_by?.email,
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_leagueinfo_personality_traits: {
+                        some: { leagueinfo_id: { in: modifiedLeagues.map((league) => league.id) } },
+                    },
+                },
             },
-            modifiedBy: {
-                userId: league.modified_by?.id,
-                email: league.modified_by?.email,
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_leagueinfo_personality_traits: {
+                        some: {
+                            leagueinfo_id: { in: modifiedLeagues.map((league) => league.id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_leagueinfo_personality_traits: {
+                        select: {
+                            leagueinfo_id: true,
+                        },
+                    },
+                },
             },
-            count,
-        })),
-    );
+        },
+    });
+
+    const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
+        );
+        leagueIds.forEach((leagueId) => {
+            const leagueIdStr = leagueId.toString();
+            if (!personalitiesByleagueId[leagueIdStr]) {
+                personalitiesByleagueId[leagueIdStr] = [];
+            }
+            personalitiesByleagueId[leagueIdStr].push(personality);
+        });
+    });
+
+    const updatedLeagues = modifiedLeagues.map((league) => ({
+        ...league,
+        mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+    }));
+
+    //@ts-ignore
+    const leagueResponse: LeagueResponseDTO[] = updatedLeagues.map((league) => LeagueResponseDTO.toResponse(league));
+
+    res.status(STATUS_CODE.OK).json(leagueResponse);
 });
