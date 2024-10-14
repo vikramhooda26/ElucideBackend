@@ -53,8 +53,8 @@ export const getAthletes = async ({
 }: {
     take: any;
     skip: any;
-    select: Prisma.dashapp_athleteSelect;
     query?: Prisma.dashapp_athleteWhereInput;
+    select: Prisma.dashapp_athleteSelect;
 }) => {
     return await prisma.dashapp_athlete.findMany({
         where: query,

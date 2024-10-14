@@ -15,32 +15,16 @@ export const getTeams = async ({
     query,
     take,
     skip,
+    select,
 }: {
     query?: Prisma.dashapp_teamWhereInput;
     take?: any;
     skip?: any;
+    select: Prisma.dashapp_teamSelect;
 }) => {
     return await prisma.dashapp_team.findMany({
         where: query || undefined,
-        select: {
-            id: true,
-            team_name: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            dashapp_team_gender: true,
-            created_date: true,
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_date: true,
-        },
+        select: select,
         orderBy: { modified_date: "desc" },
         take: Number.isNaN(Number(take)) ? undefined : Number(take),
         skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
@@ -50,7 +34,27 @@ export const getTeams = async ({
 export const getAllTeams = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
 
-    const teams = await getTeams({ skip, take });
+    const selectTeam = {
+        id: true,
+        team_name: true,
+        created_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        dashapp_team_gender: true,
+        created_date: true,
+        modified_by: {
+            select: {
+                id: true,
+                email: true,
+            },
+        },
+        modified_date: true,
+    };
+
+    const teams = await getTeams({ skip, take, select: selectTeam });
 
     if (teams.length < 1) {
         throw new NotFoundError("Team data does not exists");
@@ -1147,7 +1151,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
           };
 
     const [teams, count] = await Promise.all([
-        getTeams({ query: combinedFilterConditions, take, skip }),
+        getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect }),
         getTeamsCount(),
     ]);
 
@@ -1158,21 +1162,64 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     const modifiedTeams =
         genderIds?.length === 2 ? teams.filter((team) => team.dashapp_team_gender.length === 2) : teams;
 
-    res.status(STATUS_CODE.OK).json(
-        modifiedTeams.map((team) => ({
-            id: team.id,
-            name: team.team_name,
-            createdDate: team.created_date,
-            modifiedDate: team.modified_date,
-            createdBy: {
-                userId: team.created_by?.id,
-                email: team.created_by?.email,
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_team_personality_traits: {
+                        some: { team_id: { in: modifiedTeams.map((team) => team.id) } },
+                    },
+                },
             },
-            modifiedBy: {
-                userId: team.modified_by?.id,
-                email: team.modified_by?.email,
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_team_personality_traits: {
+                        some: {
+                            team_id: { in: modifiedTeams.map((team) => team.id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_team_personality_traits: {
+                        select: {
+                            team_id: true,
+                        },
+                    },
+                },
             },
-            count,
-        })),
+        },
+    });
+
+    const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const teamIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_team_personality_traits.map((trait) => trait.team_id),
+        );
+        teamIds.forEach((teamId) => {
+            const teamIdStr = teamId.toString();
+            if (!personalitiesByTeamId[teamIdStr]) {
+                personalitiesByTeamId[teamIdStr] = [];
+            }
+            personalitiesByTeamId[teamIdStr].push(personality);
+        });
+    });
+
+    const updatedTeams = modifiedTeams.map((team) => ({
+        ...team,
+        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
+    }));
+
+    const teamResponse: TeamResponseDTO[] = updatedTeams.map((team) =>
+        //@ts-ignore
+        TeamResponseDTO.toResponse(team),
     );
+
+    res.status(STATUS_CODE.OK).json(teamResponse);
 });
