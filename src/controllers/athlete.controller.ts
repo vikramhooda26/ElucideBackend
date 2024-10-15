@@ -6,10 +6,9 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import { printLogs } from "../lib/log.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
-import { athleteSelect } from "../types/athlete.type.js";
+import { athleteSelect, TAthleteDetails } from "../types/athlete.type.js";
 import { getCostQuery, getGenderQuery } from "./constants/index.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
 
@@ -150,10 +149,12 @@ export const getAthleteById = asyncHandler(async (req, res) => {
             dashapp_subpersonality: {
                 where: {
                     dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: BigInt(athleteId),
-                        },
+                        some: { athlete_id: BigInt(athleteId) },
                     },
+                },
+                select: {
+                    id: true,
+                    name: true,
                 },
             },
         },
@@ -1047,9 +1048,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
             dashapp_subpersonality: {
                 where: {
                     dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: { in: modifiedAthletes.map((athlete) => athlete.id) },
-                        },
+                        some: { athlete_id: { in: modifiedAthletes.map((athlete) => athlete.id) } },
                     },
                 },
                 select: {
@@ -1065,35 +1064,33 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         },
     });
 
-    printLogs("mainPersonalities", mainPersonalities);
-
     const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
         const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id),
+            sub.dashapp_athlete_personality_traits.map((trait) => trait?.athlete_id).filter(Boolean),
         );
         athleteIds.forEach((athleteId) => {
             const athleteIdStr = athleteId.toString();
             if (!personalitiesByAthleteId[athleteIdStr]) {
                 personalitiesByAthleteId[athleteIdStr] = [];
             }
-            personalitiesByAthleteId[athleteIdStr].push(personality);
+
+            const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByAthleteId[athleteIdStr].push(personality);
+            }
         });
     });
 
-    printLogs("personalitiesByAthleteId:", personalitiesByAthleteId);
-
     const updatedAthletes = modifiedAthletes.map((athlete) => ({
-        ...modifiedAthletes,
+        ...athlete,
         mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
     }));
 
-    printLogs("updatedAthletes", updatedAthletes);
-
     const athleteResponse: AthleteResponseDTO[] = updatedAthletes.map((athlete) =>
-        //@ts-ignore
-        AthleteResponseDTO.toResponse(athlete),
+        AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
     );
 
     res.status(STATUS_CODE.OK).json(athleteResponse);

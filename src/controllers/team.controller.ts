@@ -7,7 +7,7 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateTeamSchema, TEditTeamSchema, TFilteredTeamSchema } from "../schemas/team.schema.js";
-import { teamSelect } from "../types/team.type.js";
+import { teamSelect, TTeamDetails } from "../types/team.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getTeamsCount } from "./dashboard/helpers.js";
 
@@ -1207,7 +1207,12 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
             if (!personalitiesByTeamId[teamIdStr]) {
                 personalitiesByTeamId[teamIdStr] = [];
             }
-            personalitiesByTeamId[teamIdStr].push(personality);
+
+            const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByTeamId[teamIdStr].push(personality);
+            }
         });
     });
 
@@ -1217,8 +1222,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     }));
 
     const teamResponse: TeamResponseDTO[] = updatedTeams.map((team) =>
-        //@ts-ignore
-        TeamResponseDTO.toResponse(team),
+        TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
     );
 
     res.status(STATUS_CODE.OK).json(teamResponse);

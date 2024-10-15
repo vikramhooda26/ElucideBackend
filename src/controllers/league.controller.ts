@@ -7,7 +7,7 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
-import { leagueSelect } from "../types/league.type.js";
+import { leagueSelect, TLeagueDetails } from "../types/league.type.js";
 import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
@@ -1188,7 +1188,12 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
             if (!personalitiesByleagueId[leagueIdStr]) {
                 personalitiesByleagueId[leagueIdStr] = [];
             }
-            personalitiesByleagueId[leagueIdStr].push(personality);
+
+            const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByleagueId[leagueIdStr].push(personality);
+            }
         });
     });
 
@@ -1197,8 +1202,9 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
     }));
 
-    //@ts-ignore
-    const leagueResponse: LeagueResponseDTO[] = updatedLeagues.map((league) => LeagueResponseDTO.toResponse(league));
+    const leagueResponse: LeagueResponseDTO[] = updatedLeagues.map((league) =>
+        LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
+    );
 
     res.status(STATUS_CODE.OK).json(leagueResponse);
 });

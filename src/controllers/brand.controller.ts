@@ -7,7 +7,7 @@ import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
-import { brandSelect } from "../types/brand.type.js";
+import { brandSelect, TBrandDetails } from "../types/brand.type.js";
 import { getEndorsementQuery, getGenderQuery } from "./constants/index.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
 
@@ -1052,7 +1052,12 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
             if (!personalitiesByBrandId[brandIdStr]) {
                 personalitiesByBrandId[brandIdStr] = [];
             }
-            personalitiesByBrandId[brandIdStr].push(personality);
+
+            const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByBrandId[brandIdStr].push(personality);
+            }
         });
     });
 
@@ -1067,7 +1072,12 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
             if (!categoriesByBrandId[brandIdStr]) {
                 categoriesByBrandId[brandIdStr] = [];
             }
-            categoriesByBrandId[brandIdStr].push(category);
+
+            const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
+
+            if (!alreadyAdded) {
+                categoriesByBrandId[brandIdStr].push(category);
+            }
         });
     });
 
@@ -1078,8 +1088,7 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     }));
 
     const brandResponse: BrandResponseDTO[] = updatedBrands.map((brand) =>
-        //@ts-ignore
-        BrandResponseDTO.toResponse(brand),
+        BrandResponseDTO.toResponse(brand as unknown as TBrandDetails),
     );
 
     res.status(STATUS_CODE.OK).json(brandResponse);
