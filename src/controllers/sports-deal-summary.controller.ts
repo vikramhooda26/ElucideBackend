@@ -214,45 +214,46 @@ export const editSportsDealSummary = asyncHandler(async (req, res) => {
         territoryId,
         totalValue,
         type,
-        userId,
     } = req.validatedData as TEditSportsDealSummarySchema;
+
+    const userId = req.user.userId;
 
     await prisma.dashapp_sportsdealsummary.update({
         where: { id: BigInt(sportsDealSummaryId) },
         data: {
             modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
-            dashapp_sportsdeal_assets: assetIds
-                ? {
-                      deleteMany: {},
-                      create: assetIds?.map((assetId) => ({
-                          dashapp_assets: {
-                              connect: { id: BigInt(assetId) },
-                          },
-                      })),
-                  }
-                : undefined,
+            dashapp_sportsdeal_assets: {
+                deleteMany: {},
+                ...(assetIds && {
+                    create: assetIds?.map((assetId) => ({
+                        dashapp_assets: {
+                            connect: { id: BigInt(assetId) },
+                        },
+                    })),
+                }),
+            },
             dashapp_territory: territoryId
                 ? {
                       connect: { id: BigInt(territoryId) },
                   }
-                : undefined,
+                : { disconnect: true },
             dashapp_level: levelId
                 ? {
                       connect: { id: BigInt(levelId) },
                   }
-                : undefined,
+                : { disconnect: true },
             dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
             dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
             dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
             dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
-            annual_value: annualValue || undefined,
-            total_value: totalValue || undefined,
-            commencement_date: commencementYear || undefined,
-            expiration_date: expirationDate || undefined,
-            type: type || undefined,
-            status: status || undefined,
-            duration: duration || undefined,
-            media_link: mediaLink || undefined,
+            annual_value: annualValue || null,
+            total_value: totalValue || null,
+            commencement_date: commencementYear || null,
+            expiration_date: expirationDate || null,
+            type: type,
+            status: status || null,
+            duration: duration || null,
+            media_link: mediaLink || null,
         },
     });
 
