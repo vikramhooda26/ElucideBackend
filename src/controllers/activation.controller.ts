@@ -158,51 +158,53 @@ export const editActivation = asyncHandler(async (req, res) => {
         throw new NotFoundError("This activation summary does not exists");
     }
 
-    const { name, assetIds, athleteId, brandId, leagueId, marketIds, teamId, typeIds, userId, year } =
+    const { name, assetIds, athleteId, brandId, leagueId, marketIds, teamId, typeIds, year } =
         req.validatedData as TEditActivationSchema;
 
     if ((leagueId && teamId) || (leagueId && athleteId) || (athleteId && teamId)) {
         throw new BadRequestError("Activation summary cannot have multiple stakeholders");
     }
 
+    const userId = req.user.userId;
+
     await prisma.dashapp_activation.update({
         where: { id: BigInt(activationId) },
         data: {
-            name: name || undefined,
+            name: name || null,
             modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
-            dashapp_activation_assets: assetIds
-                ? {
-                      deleteMany: {},
-                      create: assetIds?.map((assetId) => ({
-                          dashapp_assets: {
-                              connect: { id: BigInt(assetId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_activation_market: marketIds
-                ? {
-                      deleteMany: {},
-                      create: marketIds.map((marketId) => ({
-                          dashapp_states: { connect: { id: BigInt(marketId) } },
-                      })),
-                  }
-                : undefined,
-            dashapp_activation_type: typeIds
-                ? {
-                      deleteMany: {},
-                      create: typeIds.map((typeId) => ({
-                          dashapp_marketingplatform: {
-                              connect: { id: BigInt(typeId) },
-                          },
-                      })),
-                  }
-                : undefined,
+            dashapp_activation_assets: {
+                deleteMany: {},
+                ...(assetIds?.length && {
+                    create: assetIds?.map((assetId) => ({
+                        dashapp_assets: {
+                            connect: { id: BigInt(assetId) },
+                        },
+                    })),
+                }),
+            },
+            dashapp_activation_market: {
+                deleteMany: {},
+                ...(marketIds?.length && {
+                    create: marketIds.map((marketId) => ({
+                        dashapp_states: { connect: { id: BigInt(marketId) } },
+                    })),
+                }),
+            },
+            dashapp_activation_type: {
+                deleteMany: {},
+                ...(typeIds?.length && {
+                    create: typeIds.map((typeId) => ({
+                        dashapp_marketingplatform: {
+                            connect: { id: BigInt(typeId) },
+                        },
+                    })),
+                }),
+            },
             dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
             dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
             dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
             dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
-            Year: year || undefined,
+            Year: year || null,
         },
     });
 
