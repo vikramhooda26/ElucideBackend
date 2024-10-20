@@ -37,13 +37,19 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
             try {
                 const decodedRefreshToken = verifyRefreshToken(refreshToken) as JwtPayload;
 
-                const { count } = await prisma.refresh_token.deleteMany({
+                const refreshTokenExists = await prisma.refresh_token.findUnique({
                     where: { token: refreshToken },
+                    select: { id: true },
                 });
 
-                if (count < 1) {
+                if (!refreshTokenExists?.id) {
+                    clearAuthCookies(res);
                     throw new ForbiddenError("Refresh token not found or already deleted");
                 }
+
+                await prisma.refresh_token.delete({
+                    where: { token: refreshToken },
+                });
 
                 const newTokenPayload = {
                     userId: decodedRefreshToken.userId,
@@ -61,12 +67,12 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
 
                 next();
             } catch (error) {
-                console.error(error);
+                console.error("Auth Middleware ERROR:", error);
                 clearAuthCookies(res);
                 throw new ForbiddenError();
             }
         } else {
-            console.error(error);
+            console.error("Access token not expired, auth middleware ERROR:", error);
             clearAuthCookies(res);
             throw new ForbiddenError();
         }
