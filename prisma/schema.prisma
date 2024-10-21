@@ -10,7 +10,7 @@ datasource db {
 model dashapp_team_association {
     id                        BigInt                      @id @default(autoincrement())
     cost                      Decimal?                    @db.Decimal()
-    association_level_id      BigInt?                     @unique
+    association_level_id      BigInt?
     created_date              DateTime?                   @default(now())
     modified_date             DateTime                    @updatedAt
     created_by_id             BigInt?
@@ -22,6 +22,7 @@ model dashapp_team_association {
     dashapp_team              dashapp_team?               @relation(fields: [team_id], references: [id], onDelete: Cascade)
     dashapp_brand_association dashapp_brand_association[]
 
+    @@unique([team_id, association_level_id])
     @@index([association_level_id])
     @@index([team_id])
 }
@@ -29,7 +30,7 @@ model dashapp_team_association {
 model dashapp_leagueinfo_association {
     id                   BigInt              @id @default(autoincrement())
     cost                 Decimal?            @db.Decimal()
-    association_level_id BigInt?             @unique
+    association_level_id BigInt?
     created_date         DateTime?           @default(now())
     modified_date        DateTime            @updatedAt
     created_by_id        BigInt?
@@ -40,6 +41,7 @@ model dashapp_leagueinfo_association {
     modified_by          auth_user?          @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_leagueinfo   dashapp_leagueinfo? @relation(fields: [leagueInfo_id], references: [id], onDelete: Cascade)
 
+    @@unique([leagueInfo_id, association_level_id])
     @@index([association_level_id])
     @@index([leagueInfo_id])
 }
@@ -47,7 +49,7 @@ model dashapp_leagueinfo_association {
 model dashapp_athlete_association {
     id                   BigInt             @id @default(autoincrement())
     cost                 Decimal?           @db.Decimal()
-    association_level_id BigInt?            @unique
+    association_level_id BigInt?
     created_date         DateTime?          @default(now())
     modified_date        DateTime           @updatedAt
     created_by_id        BigInt?
@@ -58,22 +60,23 @@ model dashapp_athlete_association {
     modified_by          auth_user?         @relation("modified_by", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     dashapp_athlete      dashapp_athlete?   @relation(fields: [athlete_id], references: [id], onDelete: Cascade)
 
+    @@unique([athlete_id, association_level_id])
     @@index([association_level_id])
     @@index([athlete_id])
 }
 
 model association_level {
-    id                             BigInt                          @id @default(autoincrement())
-    name                           String?                         @unique @db.VarChar(512)
-    created_date                   DateTime?                       @default(now())
-    modified_date                  DateTime                        @updatedAt
+    id                             BigInt                           @id @default(autoincrement())
+    name                           String?                          @unique @db.VarChar(512)
+    created_date                   DateTime?                        @default(now())
+    modified_date                  DateTime                         @updatedAt
     created_by_id                  BigInt?
     modified_by_id                 BigInt?
-    created_by                     auth_user?                      @relation("association_level_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    modified_by                    auth_user?                      @relation("association_level_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    dashapp_team_association       dashapp_team_association?
-    dashapp_leagueinfo_association dashapp_leagueinfo_association?
-    dashapp_athlete_association    dashapp_athlete_association?
+    created_by                     auth_user?                       @relation("association_level_created_by_idToauth_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    modified_by                    auth_user?                       @relation("association_level_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    dashapp_team_association       dashapp_team_association[]
+    dashapp_leagueinfo_association dashapp_leagueinfo_association[]
+    dashapp_athlete_association    dashapp_athlete_association[]
 }
 
 model dashapp_brand_association {

@@ -975,10 +975,7 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
-    const [brands, count] = await Promise.all([
-        getBrands({ query: combinedFilterConditions, take, skip, select: brandSelect }),
-        getBrandsCount(),
-    ]);
+    const brands = await getBrands({ query: combinedFilterConditions, take, skip, select: brandSelect });
 
     if (brands.length < 1) {
         throw new NotFoundError("No brands found for the given filters");
@@ -1044,9 +1041,9 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const brandIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id),
-        );
+        const brandIds = personality.dashapp_subpersonality
+            .flatMap((sub) => sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id))
+            .filter(Boolean);
         brandIds.forEach((brandId) => {
             const brandIdStr = brandId.toString();
             if (!personalitiesByBrandId[brandIdStr]) {
@@ -1065,7 +1062,7 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
 
     mainCategories.forEach((category) => {
         const brandIds = category.dashapp_subcategory.flatMap((sub) =>
-            sub.dashapp_companydata_subcategory.map((trait) => trait.companydata_id),
+            sub.dashapp_companydata_subcategory.map((trait) => trait?.companydata_id).filter(Boolean),
         );
         brandIds.forEach((brandId) => {
             const brandIdStr = brandId?.toString() || "";
@@ -1082,9 +1079,9 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     });
 
     const updatedBrands = modifiedBrands.map((brand) => ({
-        ...modifiedBrands,
-        mainPersonalities: personalitiesByBrandId[brand.id.toString()] || [],
-        mainCategories: categoriesByBrandId[brand.id.toString()] || [],
+        ...brand,
+        mainPersonalities: personalitiesByBrandId[brand?.id?.toString()] || [],
+        mainCategories: categoriesByBrandId[brand?.id?.toString()] || [],
     }));
 
     const brandResponse: BrandResponseDTO[] = updatedBrands.map((brand) =>
