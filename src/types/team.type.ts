@@ -291,6 +291,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
                 },
             },
         },
+        orderBy: { year: "desc" },
     },
     dashapp_broadcast_partner_metrics: {
         select: {
@@ -305,6 +306,7 @@ export const teamSelect = Prisma.validator<Prisma.dashapp_teamSelect>()({
                 },
             },
         },
+        orderBy: { year: "desc" },
     },
 });
 

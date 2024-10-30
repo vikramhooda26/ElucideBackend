@@ -292,6 +292,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             reach: true,
             year: true,
         },
+        orderBy: { year: "desc" },
     },
     dashapp_ott_partner_metrics: {
         select: {
@@ -301,6 +302,7 @@ export const leagueSelect = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()(
             reach: true,
             year: true,
         },
+        orderBy: { year: "desc" },
     },
     dashapp_leagueinfo_gender: {
         select: {
