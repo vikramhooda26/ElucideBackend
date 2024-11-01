@@ -1,18 +1,40 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import pkg from "jsonwebtoken";
 import { prisma } from "../db/index.js";
 import { tokenManager } from "../managers/TokenManager.js";
 import { COOKIE_NAME } from "./constants.js";
+import { ForbiddenError } from "./errors.js";
+import { printLogs } from "./log.js";
 import { TUser } from "./types.js";
+
+const { JsonWebTokenError } = pkg;
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSecret";
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
 
-export const generateAccessToken = (user: TUser) => {
+export const generateAccessToken = async (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
         expiresIn: "30m",
     });
+
+    const hasToken = tokenManager.hasToken(user.userId);
+
+    if (hasToken) {
+        printLogs("Has token | user ID:", user.userId);
+        tokenManager.removeToken(user.userId);
+
+        const deleteRefreshToken = await prisma.auth_user.update({
+            where: { id: BigInt(user.userId), isDeleted: false },
+            data: { refresh_token: { deleteMany: {} } },
+            select: { id: true },
+        });
+
+        if (!deleteRefreshToken) {
+            throw new ForbiddenError("Could not remove tokens");
+        }
+    }
 
     tokenManager.setToken(user.userId, accessToken);
 
@@ -22,15 +44,16 @@ export const generateAccessToken = (user: TUser) => {
 export const generateRefreshToken = async (user: TUser) => {
     const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-    await prisma.refresh_token.create({
+    await prisma.auth_user.update({
+        where: { id: BigInt(user.userId) },
         data: {
-            token: refreshToken,
-            auth_user: {
-                connect: {
-                    id: BigInt(user.userId),
+            refresh_token: {
+                create: {
+                    token: refreshToken,
                 },
             },
         },
+        select: { id: true },
     });
 
     return refreshToken;
@@ -68,7 +91,14 @@ export const checkUserExistence = async (username: string) => {
 };
 
 export const verifyAccessToken = (token: string) => {
-    return jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const decodedAcessToken = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
+    const activeToken = tokenManager.getToken(decodedAcessToken.userId);
+
+    if (activeToken !== token) {
+        throw new JsonWebTokenError("Token overridden");
+    }
+
+    return decodedAcessToken;
 };
 
 export const verifyRefreshToken = (token: string) => {

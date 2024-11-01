@@ -20,20 +20,21 @@ export const loginHandler = asyncHandler(async (req, res) => {
     const user = await checkUserExistence(username);
 
     if (!user) {
-        throw new ForbiddenError();
+        throw new ForbiddenError("This user does not exist");
     }
 
     const isPasswordValid = await verifyPassword(password, user.password);
 
     if (!isPasswordValid) {
-        throw new ForbiddenError();
+        throw new ForbiddenError("Invalid credentials");
     }
 
-    const csrf = generateAccessToken({
+    const csrf = await generateAccessToken({
         userId: user.id.toString(),
         username: user.username,
         role: user.role,
     });
+
     const refreshToken = await generateRefreshToken({
         userId: user.id.toString(),
         username: user.username,
