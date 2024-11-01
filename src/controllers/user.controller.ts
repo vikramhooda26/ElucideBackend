@@ -113,8 +113,8 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
 export const createUser = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, username, password, role } = req.validatedData as TUserRegistration;
 
-    const userExists = await prisma.auth_user.findUnique({
-        where: { username },
+    const userExists = await prisma.auth_user.findFirst({
+        where: { username, isDeleted: false },
         select: { id: true },
     });
 
@@ -150,7 +150,7 @@ export const deleteUserById = asyncHandler(async (req, res) => {
     }
 
     const userExists = await prisma.auth_user.findUnique({
-        where: { id: BigInt(userId) },
+        where: { id: BigInt(userId), isDeleted: false },
         select: { id: true },
     });
 
@@ -176,7 +176,7 @@ export const editUserById = asyncHandler(async (req, res) => {
     }
 
     const userExists = await prisma.auth_user.findUnique({
-        where: { id: BigInt(userId) },
+        where: { id: BigInt(userId), isDeleted: false },
         select: { id: true, username: true },
     });
 
@@ -187,7 +187,7 @@ export const editUserById = asyncHandler(async (req, res) => {
     const { email, firstName, lastName, password, role, username } = req.validatedData as TUserEdit;
 
     if (userExists.username !== username) {
-        const usernameExists = await prisma.auth_user.findUnique({
+        const usernameExists = await prisma.auth_user.findFirst({
             where: { username },
             select: { id: true },
         });
