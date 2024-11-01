@@ -106,7 +106,7 @@ model auth_user {
     id                                                                              BigInt                              @id @default(autoincrement())
     password                                                                        String                              @db.VarChar(128)
     last_login                                                                      DateTime?                           @db.Timestamp(6)
-    username                                                                        String                              @unique(map: "sqlite_autoindex_auth_user_1") @db.VarChar(150)
+    username                                                                        String                              @db.VarChar(150)
     last_name                                                                       String                              @db.VarChar(150)
     email                                                                           String                              @db.VarChar(254)
     date_joined                                                                     DateTime                            @db.Timestamp(6)
