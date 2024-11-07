@@ -1435,13 +1435,14 @@ model dashapp_subcategory {
     modified_date                   DateTime                          @updatedAt
     created_by_id                   BigInt?
     modified_by_id                  BigInt?
-    subcategory                     String                            @unique
+    subcategory                     String
     category_id                     BigInt
     dashapp_companydata_subcategory dashapp_companydata_subcategory[]
     dashapp_category                dashapp_category                  @relation(fields: [category_id], references: [id], onDelete: Cascade)
     created_by                      auth_user?                        @relation("dashapp_subcategory_created_by_idToauth_user", fields: [created_by_id], references: [id], onUpdate: NoAction)
     modified_by                     auth_user?                        @relation("dashapp_subcategory_modified_by_idToauth_user", fields: [modified_by_id], references: [id], onUpdate: NoAction)
 
+    @@unique([category_id, subcategory])
     @@index([created_by_id, modified_by_id])
 }
 
