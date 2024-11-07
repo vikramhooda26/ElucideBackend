@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import { BadRequestError, NotFoundError } from "../../lib/errors.js";
+import { BadRequestError, ConflictError, NotFoundError } from "../../lib/errors.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
 import { TCreateSubcategorySchema, TEditSubcategorySchema } from "../../schemas/metadata/subcategory.schema.js";
 
@@ -100,6 +100,15 @@ export const getsubcategoryById = asyncHandler(async (req, res) => {
 
 export const createSubcategory = asyncHandler(async (req, res) => {
     const { subcategoryName, categoryId, userId } = req.validatedData as TCreateSubcategorySchema;
+
+    const subcategoryExists = await prisma.dashapp_subcategory.findFirst({
+        where: { subcategory: subcategoryName, dashapp_category: { id: BigInt(categoryId) } },
+        select: { id: true },
+    });
+
+    if (subcategoryExists) {
+        throw new ConflictError("This subcategory for this category already exists");
+    }
 
     await prisma.dashapp_subcategory.create({
         data: {

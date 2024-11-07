@@ -1,9 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
-import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import { TCreateCategorySchema, TEditCategorySchema } from "../../schemas/metadata/category.schema.js";
+import { BadRequestError, ConflictError, NotFoundError } from "../../lib/errors.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
+import { TCreateCategorySchema, TEditCategorySchema } from "../../schemas/metadata/category.schema.js";
 
 export const getAllCategories = expressAsyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -94,6 +94,15 @@ export const getCategoryById = expressAsyncHandler(async (req, res) => {
 export const createCategory = expressAsyncHandler(async (req, res) => {
     const { categoryName, userId } = req.validatedData as TCreateCategorySchema;
 
+    const categoryExists = await prisma.dashapp_category.findUnique({
+        where: { category: categoryName },
+        select: { id: true },
+    });
+
+    if (categoryExists) {
+        throw new ConflictError("This main category already exists");
+    }
+
     await prisma.dashapp_category.create({
         data: {
             category: categoryName,
@@ -102,6 +111,8 @@ export const createCategory = expressAsyncHandler(async (req, res) => {
         },
         select: { id: true },
     });
+
+    metadataStore.setHasUpdated(METADATA_KEYS.MAIN_CATEGORY, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Category created",
@@ -137,6 +148,8 @@ export const editCategory = expressAsyncHandler(async (req, res) => {
         },
     });
 
+    metadataStore.setHasUpdated(METADATA_KEYS.MAIN_CATEGORY, true);
+
     res.status(STATUS_CODE.OK).json({
         message: "Category updated",
     });
@@ -163,7 +176,7 @@ export const deleteCategory = expressAsyncHandler(async (req, res) => {
         select: { id: true },
     });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.CATEGORY, true);
+    metadataStore.setHasUpdated(METADATA_KEYS.MAIN_CATEGORY, true);
 
     res.status(STATUS_CODE.OK).json({
         message: "Category deleted",
