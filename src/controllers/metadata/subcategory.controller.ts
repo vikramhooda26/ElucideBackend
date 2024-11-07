@@ -1,9 +1,9 @@
 import asyncHandler from "express-async-handler";
 import { prisma } from "../../db/index.js";
-import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { METADATA_KEYS, STATUS_CODE } from "../../lib/constants.js";
-import { TCreateSubcategorySchema, TEditSubcategorySchema } from "../../schemas/metadata/subcategory.schema.js";
+import { BadRequestError, NotFoundError } from "../../lib/errors.js";
 import { metadataStore } from "../../managers/MetadataManager.js";
+import { TCreateSubcategorySchema, TEditSubcategorySchema } from "../../schemas/metadata/subcategory.schema.js";
 
 export const getAllSubcategories = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
@@ -12,6 +12,12 @@ export const getAllSubcategories = asyncHandler(async (req, res) => {
         select: {
             id: true,
             subcategory: true,
+            dashapp_category: {
+                select: {
+                    id: true,
+                    category: true,
+                },
+            },
             created_date: true,
             modified_date: true,
             created_by: {
@@ -41,6 +47,10 @@ export const getAllSubcategories = asyncHandler(async (req, res) => {
         subcategories.map((subcategory) => ({
             id: subcategory.id,
             subcategoryName: subcategory.subcategory,
+            category: {
+                id: subcategory.dashapp_category.id,
+                name: subcategory.dashapp_category.category,
+            },
             createdDate: subcategory.created_date,
             modifiedDate: subcategory.modified_date,
             createdBy: {
