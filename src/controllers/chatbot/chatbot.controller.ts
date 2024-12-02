@@ -17,6 +17,7 @@ const getDatabase = asyncHandler(async (req, res) => {
     const activationSummary = await prisma.dashapp_activation.findMany({});
 
     res.status(STATUS_CODE.OK).json({
+        status: 200,
         data: {
             athletes,
             team,
