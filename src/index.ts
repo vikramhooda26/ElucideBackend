@@ -1,4 +1,4 @@
-import { express, dotenv, cors, cookieParser } from "./imports/core.imports.js";
+import { cookieParser, cors, dotenv, express } from "./imports/core.imports.js";
 import { authMiddleware, globalErrorHandler } from "./imports/middleware.imports.js";
 import * as Routers from "./imports/router.imports.js";
 
@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/admin/chatbot", Routers.chatbotRouter);
 app.use("/api/auth", Routers.authRouter);
 app.use(authMiddleware);
 app.use("/api/admin/user", Routers.userRouter);

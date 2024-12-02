@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "node --max-old-space-size=1024 ./node_modules/.bin/tsc --diagnostics",
+        "build": "tsc -b",
         "start": "node dist/index.js",
         "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
         "format:fix": "prettier --write \"**/*.{ts,tsx,json}\"",
@@ -22,6 +22,7 @@
     ],
     "dependencies": {
         "@prisma/client": "^5.15.1",
+        "axios": "^1.7.7",
         "bcrypt": "^5.1.1",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",

@@ -47,6 +47,9 @@ import { tierRouter } from "../routes/metadata/tier.router.js";
 // Dashboard Routers
 import { dashboardRouter } from "../routes/dashboard.router.js";
 
+// Chatbot Router
+import { chatbotRouter } from "../routes/chatbot/chatbot.router.js";
+
 export {
     activationRouter,
     activeCampaignRouter,
@@ -87,4 +90,5 @@ export {
     territoryRouter,
     tierRouter,
     userRouter,
+    chatbotRouter,
 };
