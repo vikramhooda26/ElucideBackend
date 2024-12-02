@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc -b",
+        "build": "node --max-old-space-size=1024 ./node_modules/.bin/tsc --diagnostics",
         "start": "node dist/index.js",
         "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
         "format:fix": "prettier --write \"**/*.{ts,tsx,json}\"",
