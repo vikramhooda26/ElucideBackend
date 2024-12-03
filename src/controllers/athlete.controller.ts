@@ -50,8 +50,8 @@ export const getAthletes = async ({
     skip,
     select,
 }: {
-    take: any;
-    skip: any;
+    take?: any;
+    skip?: any;
     query?: Prisma.dashapp_athleteWhereInput;
     select: Prisma.dashapp_athleteSelect;
 }) => {

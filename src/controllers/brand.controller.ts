@@ -162,7 +162,7 @@ export const getBrandById = asyncHandler(async (req, res) => {
     res.status(STATUS_CODE.OK).json(brandResponse);
 });
 
-export const getTotalBrands = asyncHandler(async (req, res) => {
+export const getTotalBrands = asyncHandler(async (_req, res) => {
     const count = getBrandsCount();
 
     res.status(STATUS_CODE.OK).json({ count });
