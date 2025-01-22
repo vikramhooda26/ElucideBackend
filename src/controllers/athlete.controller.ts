@@ -6,6 +6,7 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect, TAthleteDetails } from "../types/athlete.type.js";
@@ -682,7 +683,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         nationalityIds,
         primarySocialMediaPlatformIds,
         secondarySocialMediaPlatformIds,
-        statusIds,
+        athleteStatusIds,
         athleteAge,
         contactName,
         contactDesignation,
@@ -956,9 +957,9 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        dashapp_athlete_status: statusIds?.length
+        dashapp_athlete_status: athleteStatusIds?.length
             ? {
-                  id: { in: statusIds.map((id) => BigInt(id)) },
+                  id: { in: athleteStatusIds.map((id) => BigInt(id)) },
               }
             : undefined,
 
@@ -1024,13 +1025,17 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                 : undefined,
     };
 
-    const combinedFilterConditions = isMandatory
-        ? filterConditions
-        : {
-              OR: Object.entries(filterConditions)
-                  .filter(([_, condition]) => condition)
-                  .map(([key, condition]) => ({ [key]: condition })),
-          };
+    const combinedFilterConditions =
+        isMandatory === true
+            ? filterConditions
+            : {
+                  OR: Object.entries(filterConditions)
+                      .filter(([_, condition]) => condition)
+                      .map(([key, condition]) => ({ [key]: condition })),
+              };
+
+    printLogs("isMandatory", isMandatory);
+    printLogs("combinedFilterConditions", JSON.stringify(combinedFilterConditions, null, 2));
 
     const athletes = await getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect });
 

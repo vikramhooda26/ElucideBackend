@@ -140,7 +140,7 @@ export const filteredAthleteSchema = z.object({
     stateIds: z.string().array().optional(),
     nationalityIds: z.string().array().optional(),
     tierIds: z.string().array().optional(),
-    statusIds: z.string().array().optional(),
+    athleteStatusIds: z.string().array().optional(),
     primarySocialMediaPlatformIds: z.string().array().optional(),
     secondarySocialMediaPlatformIds: z.string().array().optional(),
     athleteAge: z
