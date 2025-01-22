@@ -804,6 +804,17 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         }
     };
 
+    const allItemsExistInDatabase = async (model: Prisma.ModelName, ids: bigint[]): Promise<boolean> => {
+        if (!ids.length) return false;
+
+        //@ts-ignore
+        const matchingItems = await prisma[model].findMany({
+            where: { id: { in: ids } },
+        });
+
+        return matchingItems.length === ids.length;
+    };
+
     const filterConditions: Prisma.dashapp_athleteWhereInput = {
         id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
 
@@ -812,7 +823,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         dashapp_athlete_association:
             associationLevelIds?.length || costOfAssociation?.cost?.length
                 ? {
-                      some: {
+                      every: {
                           association_level_id: associationLevelIds?.length
                               ? {
                                     in: associationLevelIds.map((id) => BigInt(id)),
@@ -844,7 +855,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_target_age: ageIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_age: {
                           id: { in: ageIds.map((id) => BigInt(id)) },
                       },
@@ -861,7 +872,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_subpersonality: {
                           id: {
                               in: subPersonalityTraitIds.map((id) => BigInt(id)),
@@ -883,7 +894,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_target_income: nccsIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_nccs: {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
                       },
@@ -893,7 +904,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_primary: primaryMarketIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_keymarket: {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
                       },
@@ -903,7 +914,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_keymarket: {
                           id: {
                               in: secondaryMarketIds.map((id) => BigInt(id)),
@@ -915,7 +926,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_states: {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
                       },
@@ -937,7 +948,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_tier: tierIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_tier: {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
@@ -953,7 +964,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_socialmedia_platform_primary: primarySocialMediaPlatformIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_socialmedia_platform: {
                           id: {
                               in: primarySocialMediaPlatformIds.map((id) => BigInt(id)),
@@ -965,7 +976,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_socialmedia_platform_secondary: secondarySocialMediaPlatformIds?.length
             ? {
-                  some: {
+                  every: {
                       dashapp_socialmedia_platform: {
                           id: {
                               in: secondarySocialMediaPlatformIds.map((id) => BigInt(id)),
@@ -978,7 +989,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         dashapp_athletecontact:
             contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
                 ? {
-                      some: {
+                      every: {
                           contact_name: contactName
                               ? {
                                     contains: contactName,
@@ -1035,7 +1046,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
         where: {
             dashapp_subpersonality: {
-                some: {
+                every: {
                     dashapp_athlete_personality_traits: {
                         some: { athlete_id: { in: modifiedAthletes.map((athlete) => athlete.id) } },
                     },

@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import pkg from "jsonwebtoken";
+import { default as jwt, JwtPayload, default as pkg } from "jsonwebtoken";
 import { prisma } from "../db/index.js";
 import { tokenManager } from "../managers/TokenManager.js";
 import { COOKIE_NAME } from "./constants.js";
@@ -16,7 +15,7 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "myRefreshToken
 
 export const generateAccessToken = async (user: TUser) => {
     const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
-        expiresIn: "30m",
+        expiresIn: "7d",
     });
 
     const hasToken = tokenManager.hasToken(user.userId);
