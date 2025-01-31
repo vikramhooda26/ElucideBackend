@@ -943,6 +943,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: ageIds.map((id) => BigInt(id)) },
                       },
                   },
+                  none: {
+                      dashapp_age: {
+                          id: { notIn: ageIds.map((id) => BigInt(id)) },
+                      },
+                  },
               }
             : undefined,
 
@@ -959,6 +964,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                       dashapp_subpersonality: {
                           id: {
                               in: subPersonalityTraitIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+                  none: {
+                      dashapp_subpersonality: {
+                          id: {
+                              notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
                           },
                       },
                   },
@@ -980,6 +992,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
                       },
                   },
+                  none: {
+                      dashapp_nccs: {
+                          id: { notIn: nccsIds.map((id) => BigInt(id)) },
+                      },
+                  },
               }
             : undefined,
 
@@ -996,6 +1013,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: ownerIds.map((id) => BigInt(id)) },
                       },
                   },
+                  none: {
+                      dashapp_leagueowner: {
+                          id: { notIn: ownerIds.map((id) => BigInt(id)) },
+                      },
+                  },
               }
             : undefined,
 
@@ -1006,6 +1028,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: taglineIds.map((id) => BigInt(id)) },
                       },
                   },
+                  none: {
+                      dashapp_taglines: {
+                          id: { notIn: taglineIds.map((id) => BigInt(id)) },
+                      },
+                  },
               }
             : undefined,
 
@@ -1014,6 +1041,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                   some: {
                       dashapp_keymarket: {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+                      },
+                  },
+                  none: {
+                      dashapp_keymarket: {
+                          id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
                       },
                   },
               }
@@ -1028,6 +1060,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
+                  none: {
+                      dashapp_keymarket: {
+                          id: {
+                              notIn: secondaryMarketIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
               }
             : undefined,
 
@@ -1036,6 +1075,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                   some: {
                       dashapp_states: {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
+                      },
+                  },
+                  none: {
+                      dashapp_states: {
+                          id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
                       },
                   },
               }
@@ -1048,6 +1092,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
                   },
+                  none: {
+                      dashapp_tier: {
+                          id: { notIn: tierIds.map((id) => BigInt(id)) },
+                      },
+                  },
               }
             : undefined,
 
@@ -1056,6 +1105,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                   some: {
                       dashapp_activecampaigns: {
                           id: { in: activeCampaignIds.map((id) => BigInt(id)) },
+                      },
+                  },
+                  none: {
+                      dashapp_activecampaigns: {
+                          id: { notIn: activeCampaignIds.map((id) => BigInt(id)) },
                       },
                   },
               }
@@ -1070,6 +1124,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
+                  none: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
               }
             : undefined,
 
@@ -1079,6 +1140,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                       dashapp_marketingplatform: {
                           id: {
                               in: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                          },
+                      },
+                  },
+                  none: {
+                      dashapp_marketingplatform: {
+                          id: {
+                              notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
                           },
                       },
                   },
