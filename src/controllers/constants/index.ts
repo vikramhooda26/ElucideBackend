@@ -5,6 +5,7 @@ import { NotFoundError } from "../../lib/errors.js";
 import { filteredAthleteSchema } from "../../schemas/athlete.schema.js";
 import { filteredLeagueSchema } from "../../schemas/league.schema.js";
 import { printLogs } from "../../lib/log.js";
+import { athleteSelect } from "../../types/athlete.type.js";
 
 export const getGenderQuery = async (genderIds: string[]) => {
     const length = genderIds.length;
