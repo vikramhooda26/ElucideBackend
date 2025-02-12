@@ -1338,6 +1338,18 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
               }
             : undefined,
 
+        dashapp_athlete_status: athleteStatusIds?.length
+            ? {
+                  id: { in: athleteStatusIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
+        nationality: nationalityIds?.length
+            ? {
+                  id: { in: nationalityIds.map((id) => BigInt(id)) },
+              }
+            : undefined,
+
         dashapp_athlete_tier: tierIds?.length
             ? {
                   some: {
