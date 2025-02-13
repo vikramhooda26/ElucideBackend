@@ -1626,17 +1626,15 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         });
     }
 
-    // 3. Exact filtering for dashapp_athlete_target_gender
-    // if (genderIds?.length) {
-    //     const requiredGenderIds = genderIds.map((id) => id.toString());
-    //     filteredAthletes = filteredAthletes.filter((athlete) => {
-    //         // Assuming athlete.dashapp_athlete_target_gender is an array with dashapp_gender objects.
-    //         const athleteGenderIds = athlete.dashapp_athlete_target_gender.map((entry: any) =>
-    //             entry.dashapp_gender.id.toString(),
-    //         );
-    //         return exactSetMatch(athleteGenderIds, requiredGenderIds);
-    //     });
-    // }
+    // 3. Exact filtering for dashapp_athlete_tier
+    if (tierIds?.length) {
+        const requiredGenderIds = tierIds.map((id) => id.toString());
+        filteredAthletes = filteredAthletes.filter((athlete) => {
+            // Assuming athlete.dashapp_athlete_tier is an array with dashapp_gender objects.
+            const athleteGenderIds = athlete.dashapp_athlete_tier.map((entry: any) => entry.dashapp_tier.id.toString());
+            return exactSetMatch(athleteGenderIds, requiredGenderIds);
+        });
+    }
 
     // 4. Exact filtering for dashapp_athlete_target_income
     if (nccsIds?.length) {
