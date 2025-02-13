@@ -8,7 +8,13 @@ import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateLeagueSchema, TEditLeagueSchema, TFilteredLeagueSchema } from "../schemas/league.schema.js";
 import { leagueSelect, TLeagueDetails } from "../types/league.type.js";
-import { getCostQuery, getEndorsementQuery, getGenderQuery, getMetricsQuery } from "./constants/index.js";
+import {
+    exactSetMatch,
+    getCostQuery,
+    getEndorsementQuery,
+    getGenderQuery,
+    getMetricsQuery,
+} from "./constants/index.js";
 import { getLeaguesCount } from "./dashboard/helpers.js";
 
 export const getLeagues = async ({
@@ -943,11 +949,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: ageIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_age: {
-                          id: { notIn: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_age: {
+                  //           id: { notIn: ageIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -967,13 +973,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_subpersonality: {
-                          id: {
-                              notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_subpersonality: {
+                  //           id: {
+                  //               notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -992,11 +998,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_nccs: {
-                          id: { notIn: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_nccs: {
+                  //           id: { notIn: nccsIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1013,11 +1019,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: ownerIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_leagueowner: {
-                          id: { notIn: ownerIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_leagueowner: {
+                  //           id: { notIn: ownerIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1028,11 +1034,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: taglineIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_taglines: {
-                          id: { notIn: taglineIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_taglines: {
+                  //           id: { notIn: taglineIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1043,11 +1049,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_keymarket: {
-                          id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1060,13 +1066,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_keymarket: {
-                          id: {
-                              notIn: secondaryMarketIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: {
+                  //               notIn: secondaryMarketIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1077,11 +1083,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_states: {
-                          id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_states: {
+                  //           id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1092,11 +1098,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_tier: {
-                          id: { notIn: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_tier: {
+                  //           id: { notIn: tierIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1124,13 +1130,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_marketingplatform: {
+                  //           id: {
+                  //               notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1143,13 +1149,13 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_marketingplatform: {
+                  //           id: {
+                  //               notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1199,17 +1205,161 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
-    const [leagues, count] = await Promise.all([
-        getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect }),
-        getLeaguesCount(),
-    ]);
+    const leagues = await getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect });
 
     if (leagues.length < 1) {
         throw new NotFoundError("No leagues found for the given filters");
     }
 
+    let filteredLeagues = leagues;
+
+    // 1. Exact filtering for dashapp_leagueinfo_age
+    if (ageIds?.length) {
+        const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueAgeIds = league.dashapp_leagueinfo_age.map((entry: any) => {
+                return entry.dashapp_age.id.toString();
+            });
+            return exactSetMatch(leagueAgeIds, requiredAgeIds);
+        });
+    }
+
+    // 2. Exact filtering for dashapp_leagueinfo_personality_traits
+    if (subPersonalityTraitIds?.length) {
+        const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueSubPersonalityTraitIds = league.dashapp_leagueinfo_personality_traits.map((entry: any) => {
+                return entry.dashapp_subpersonality.id.toString();
+            });
+            return exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
+        });
+    }
+
+    // 3. Exact filtering for dashapp_leagueinfo_income
+    if (nccsIds?.length) {
+        const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueNccsIds = league.dashapp_leagueinfo_income.map((entry: any) => {
+                return entry.dashapp_nccs.id.toString();
+            });
+            return exactSetMatch(leagueNccsIds, requiredNccsIds);
+        });
+    }
+
+    // 4. Exact filtering for dashapp_leagueinfo_owner
+    if (ownerIds?.length) {
+        const requiredOwnerIds = ownerIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueOwnerIds = league.dashapp_leagueinfo_owner.map((entry: any) => {
+                return entry.dashapp_leagueowner.id.toString();
+            });
+            return exactSetMatch(leagueOwnerIds, requiredOwnerIds);
+        });
+    }
+
+    // 5. Exact filtering for dashapp_leagueinfo_taglines
+    if (taglineIds?.length) {
+        const requiredTaglineIds = taglineIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueTaglineIds = league.dashapp_leagueinfo_taglines.map((entry: any) => {
+                return entry.dashapp_taglines.id.toString();
+            });
+            return exactSetMatch(leagueTaglineIds, requiredTaglineIds);
+        });
+    }
+
+    // 6. Exact filtering for dashapp_leagueinfo_key_markets_primary
+    if (primaryMarketIds?.length) {
+        const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leaguePrimaryIds = league.dashapp_leagueinfo_key_markets_primary.map((entry: any) => {
+                return entry.dashapp_keymarket.id.toString();
+            });
+            return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
+        });
+    }
+
+    // 7. Exact filtering for dashapp_leagueinfo_key_markets_secondary
+    if (secondaryMarketIds?.length) {
+        const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueSecondaryIds = league.dashapp_leagueinfo_key_markets_secondary.map((entry: any) => {
+                return entry.dashapp_keymarket.id.toString();
+            });
+            return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
+        });
+    }
+
+    // 8. Exact filtering for dashapp_leagueinfo_key_markets_tertiary
+    if (tertiaryIds?.length) {
+        const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueTertiaryIds = league.dashapp_leagueinfo_key_markets_tertiary.map((entry: any) => {
+                return entry.dashapp_states.id.toString();
+            });
+            return exactSetMatch(leagueTertiaryIds, requiredTertiaryIds);
+        });
+    }
+
+    // 9. Exact filtering for dashapp_leagueinfo_tier
+    if (tierIds?.length) {
+        const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueTierIds = league.dashapp_leagueinfo_tier.map((entry: any) => {
+                return entry.dashapp_tier.id.toString();
+            });
+            return exactSetMatch(leagueTierIds, requiredTierIds);
+        });
+    }
+
+    // 10. Exact filtering for dashapp_leagueinfo_marketing_platforms_primary
+    if (primaryMarketingPlatformIds?.length) {
+        const requiredPrimaryIds = primaryMarketingPlatformIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leaguePrimaryIds = league.dashapp_leagueinfo_marketing_platforms_primary.map((entry: any) => {
+                return entry.dashapp_marketingplatform.id.toString();
+            });
+            return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
+        });
+    }
+
+    // 11. Exact filtering for dashapp_leagueinfo_marketing_platforms_secondary
+    if (secondaryMarketingPlatformIds?.length) {
+        const requiredSecondaryIds = secondaryMarketingPlatformIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueSecondaryIds = league.dashapp_leagueinfo_marketing_platforms_secondary.map((entry: any) => {
+                return entry.dashapp_marketingplatform.id.toString();
+            });
+            return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
+        });
+    }
+
+    // 12. Exact filtering for dashapp_broadcast_partner_metrics
+    if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "broadcast") {
+        const requiredBroadcastPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueBroadcastPartnerIds = league?.dashapp_broadcast_partner_metrics?.map((entry: any) => {
+                return entry?.dashapp_broadcastpartner?.id?.toString();
+            });
+            return exactSetMatch(leagueBroadcastPartnerIds, requiredBroadcastPartnerIds);
+        });
+    }
+
+    // 13. Exact filtering for dashapp_ott_partner_metrics
+    if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "ott") {
+        const requiredOttPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
+        filteredLeagues = filteredLeagues.filter((league) => {
+            const leagueOttPartnerIds = league?.dashapp_ott_partner_metrics?.map((entry: any) => {
+                return entry?.dashapp_ottpartner?.id?.toString();
+            });
+            return exactSetMatch(leagueOttPartnerIds, requiredOttPartnerIds);
+        });
+    }
+
     const modifiedLeagues =
-        genderIds?.length === 2 ? leagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2) : leagues;
+        genderIds?.length === 2
+            ? filteredLeagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2)
+            : filteredLeagues;
 
     const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
         where: {
