@@ -9,7 +9,7 @@ import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateAthleteSchema, TEditAthleteSchema, TFilteredAthleteSchema } from "../schemas/athlete.schema.js";
 import { athleteSelect, TAthleteDetails } from "../types/athlete.type.js";
-import { getCostQuery, getGenderQuery } from "./constants/index.js";
+import { exactSetMatch, getCostQuery, getGenderQuery } from "./constants/index.js";
 import { getAthletesCount } from "./dashboard/helpers.js";
 
 const findAgeRange = async (dob: string): Promise<string | undefined> => {
@@ -1585,19 +1585,6 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     if (athletes.length < 1) {
         throw new NotFoundError("No athletes found for the given filters");
     }
-
-    const exactSetMatch = (athleteIds: string[], requiredIds: (string | number | bigint)[]) => {
-        const requiredSet = new Set(requiredIds.map((id) => id.toString()));
-        const athleteSet = new Set(athleteIds.map((id) => id.toString()));
-        // if (athleteSet.size !== requiredSet.size) return false;
-        for (const id of requiredSet) {
-            if (!athleteSet.has(id)) {
-                console.log("false cases IDs:", id);
-                return false;
-            }
-        }
-        return true;
-    };
 
     let filteredAthletes = athletes;
 

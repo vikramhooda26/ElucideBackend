@@ -2,10 +2,9 @@ import { Prisma } from "@prisma/client";
 import z from "zod";
 import { prisma } from "../../db/index.js";
 import { NotFoundError } from "../../lib/errors.js";
+import { printLogs } from "../../lib/log.js";
 import { filteredAthleteSchema } from "../../schemas/athlete.schema.js";
 import { filteredLeagueSchema } from "../../schemas/league.schema.js";
-import { printLogs } from "../../lib/log.js";
-import { athleteSelect } from "../../types/athlete.type.js";
 
 export const getGenderQuery = async (genderIds: string[]) => {
     const length = genderIds.length;
@@ -200,4 +199,16 @@ export const getMetricsQuery = (
               }),
     };
     return query;
+};
+
+export const exactSetMatch = (stakeholderIds: string[], requiredIds: (string | number | bigint)[]) => {
+    const requiredSet = new Set(requiredIds.map((id) => id.toString()));
+    const stakeholderSet = new Set(stakeholderIds.map((id) => id.toString()));
+    // if (stakeholderSet.size !== requiredSet.size) return false;
+    for (const id of requiredSet) {
+        if (!stakeholderSet.has(id)) {
+            return false;
+        }
+    }
+    return true;
 };

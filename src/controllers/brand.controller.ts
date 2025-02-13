@@ -8,7 +8,7 @@ import { areElementsDistinct } from "../lib/helpers.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect, TBrandDetails } from "../types/brand.type.js";
-import { getEndorsementQuery, getGenderQuery } from "./constants/index.js";
+import { exactSetMatch, getEndorsementQuery, getGenderQuery } from "./constants/index.js";
 import { getBrandsCount } from "./dashboard/helpers.js";
 
 export const getBrands = async ({
@@ -769,11 +769,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: ageIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_age: {
-                          id: { notIn: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_age: {
+                  //           id: { notIn: ageIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -793,13 +793,13 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_subpersonality: {
-                          id: {
-                              notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_subpersonality: {
+                  //           id: {
+                  //               notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -818,11 +818,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_nccs: {
-                          id: { notIn: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_nccs: {
+                  //           id: { notIn: nccsIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -833,11 +833,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: taglineIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_taglines: {
-                          id: { notIn: taglineIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_taglines: {
+                  //           id: { notIn: taglineIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -848,11 +848,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_keymarket: {
-                          id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -865,13 +865,13 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_keymarket: {
-                          id: {
-                              notIn: secondaryMarketIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: {
+                  //               notIn: secondaryMarketIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -882,11 +882,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_states: {
-                          id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_states: {
+                  //           id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -897,11 +897,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_tier: {
-                          id: { notIn: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_tier: {
+                  //           id: { notIn: tierIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -912,11 +912,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: activeCampaignIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_activecampaigns: {
-                          id: { notIn: activeCampaignIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_activecampaigns: {
+                  //           id: { notIn: activeCampaignIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -929,13 +929,13 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_marketingplatform: {
+                  //           id: {
+                  //               notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -948,13 +948,13 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  none: {
-                      dashapp_marketingplatform: {
-                          id: {
-                              notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_marketingplatform: {
+                  //           id: {
+                  //               notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -965,11 +965,11 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
                           id: { in: subCategoryIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_subcategory: {
-                          id: { notIn: subCategoryIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_subcategory: {
+                  //           id: { notIn: subCategoryIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1049,8 +1049,144 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
         throw new NotFoundError("No brands found for the given filters");
     }
 
+    let filteredBrands = brands;
+
+    // 1. Exact filtering for dashapp_companydata_age
+    if (ageIds?.length) {
+        const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandAgeIds = brand.dashapp_companydata_age.map((entry: any) => {
+                return entry.dashapp_age.id.toString();
+            });
+            return exactSetMatch(brandAgeIds, requiredAgeIds);
+        });
+    }
+
+    // 2. Exact filtering for dashapp_companydata_personality_traits
+    if (subPersonalityTraitIds?.length) {
+        const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandSubPersonalityTraitIds = brand.dashapp_companydata_personality_traits.map((entry: any) => {
+                return entry.dashapp_subpersonality.id.toString();
+            });
+            return exactSetMatch(brandSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
+        });
+    }
+
+    // 3. Exact filtering for dashapp_companydata_income
+    if (nccsIds?.length) {
+        const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandNccsIds = brand.dashapp_companydata_income.map((entry: any) => {
+                return entry.dashapp_nccs.id.toString();
+            });
+            return exactSetMatch(brandNccsIds, requiredNccsIds);
+        });
+    }
+
+    // 4. Exact filtering for dashapp_companydata_taglines
+    if (taglineIds?.length) {
+        const requiredTaglineIds = taglineIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandTaglineIds = brand.dashapp_companydata_taglines.map((entry: any) => {
+                return entry.dashapp_taglines.id.toString();
+            });
+            return exactSetMatch(brandTaglineIds, requiredTaglineIds);
+        });
+    }
+
+    // 5. Exact filtering for dashapp_companydata_key_markets_primary
+    if (primaryMarketIds?.length) {
+        const requiredKeyPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandKeyPrimaryIds = brand.dashapp_companydata_key_markets_primary.map((entry: any) => {
+                return entry.dashapp_keymarket.id.toString();
+            });
+            return exactSetMatch(brandKeyPrimaryIds, requiredKeyPrimaryIds);
+        });
+    }
+
+    // 6. Exact filtering for dashapp_companydata_key_markets_secondary
+    if (secondaryMarketIds?.length) {
+        const requiredKeySecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandKeySecondaryIds = brand.dashapp_companydata_key_markets_secondary.map((entry: any) => {
+                return entry.dashapp_keymarket.id.toString();
+            });
+            return exactSetMatch(brandKeySecondaryIds, requiredKeySecondaryIds);
+        });
+    }
+
+    // 7. Exact filtering for dashapp_companydata_key_markets_tertiary
+    if (tertiaryIds?.length) {
+        const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandTertiaryIds = brand.dashapp_companydata_key_markets_tertiary.map((entry: any) => {
+                return entry.dashapp_states.id.toString();
+            });
+            return exactSetMatch(brandTertiaryIds, requiredTertiaryIds);
+        });
+    }
+
+    // 8. Exact filtering for dashapp_companydata_tier
+    if (tierIds?.length) {
+        const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandTierIds = brand.dashapp_companydata_tier.map((entry: any) => {
+                return entry.dashapp_tier.id.toString();
+            });
+            return exactSetMatch(brandTierIds, requiredTierIds);
+        });
+    }
+
+    // 9. Exact filtering for dashapp_companydata_active_campaigns
+    if (activeCampaignIds?.length) {
+        const requiredActiveCampaignIds = activeCampaignIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandActiveCampaignIds = brand.dashapp_companydata_active_campaigns.map((entry: any) => {
+                return entry.dashapp_activecampaigns.id.toString();
+            });
+            return exactSetMatch(brandActiveCampaignIds, requiredActiveCampaignIds);
+        });
+    }
+
+    // 10. Exact filtering for dashapp_companydata_marketing_platforms_primary
+    if (primaryMarketingPlatformIds?.length) {
+        const requiredPrimaryIds = primaryMarketingPlatformIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandPrimaryIds = brand.dashapp_companydata_marketing_platforms_primary.map((entry: any) => {
+                return entry.dashapp_marketingplatform.id.toString();
+            });
+            return exactSetMatch(brandPrimaryIds, requiredPrimaryIds);
+        });
+    }
+
+    // 11. Exact filtering for dashapp_companydata_marketing_platforms_secondary
+    if (secondaryMarketingPlatformIds?.length) {
+        const requiredSecondaryIds = secondaryMarketingPlatformIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandSecondaryIds = brand.dashapp_companydata_marketing_platforms_secondary.map((entry: any) => {
+                return entry.dashapp_marketingplatform.id.toString();
+            });
+            return exactSetMatch(brandSecondaryIds, requiredSecondaryIds);
+        });
+    }
+
+    // 12. Exact filtering for dashapp_companydata_subcategory
+    if (subCategoryIds?.length) {
+        const requiredSubcategoryIds = subCategoryIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandSubcategoryIds = brand.dashapp_companydata_subcategory.map((entry: any) => {
+                return entry.dashapp_subcategory.id.toString();
+            });
+            return exactSetMatch(brandSubcategoryIds, requiredSubcategoryIds);
+        });
+    }
+
     const modifiedBrands =
-        genderIds?.length === 2 ? brands.filter((brand) => brand.dashapp_companydata_gender.length === 2) : brands;
+        genderIds?.length === 2
+            ? filteredBrands.filter((brand) => brand.dashapp_companydata_gender.length === 2)
+            : filteredBrands;
 
     const mainCategories = await prisma.dashapp_category.findMany({
         where: {
