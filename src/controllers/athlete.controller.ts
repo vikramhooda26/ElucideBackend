@@ -1357,11 +1357,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
                   },
-                  none: {
-                      dashapp_tier: {
-                          id: { notIn: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_tier: {
+                  //           id: { notIn: tierIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
               }
             : undefined,
 
@@ -1373,11 +1373,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_target_age: ageIds?.length
             ? {
-                  none: {
-                      dashapp_age: {
-                          id: { notIn: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_age: {
+                  //           id: { notIn: ageIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
                   some: {
                       dashapp_age: {
                           id: { in: ageIds.map((id) => BigInt(id)) },
@@ -1388,13 +1388,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
             ? {
-                  none: {
-                      dashapp_subpersonality: {
-                          id: {
-                              notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_subpersonality: {
+                  //           id: {
+                  //               notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
                   some: {
                       dashapp_subpersonality: {
                           id: {
@@ -1409,14 +1409,14 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_target_gender: genderIds?.length
             ? {
-                  none:
-                      isMandatory === true
-                          ? {
-                                dashapp_gender: {
-                                    NOT: await getGenderQuery(genderIds),
-                                },
-                            }
-                          : undefined,
+                  //   none:
+                  //       isMandatory === true
+                  //           ? {
+                  //                 dashapp_gender: {
+                  //                     NOT: await getGenderQuery(genderIds),
+                  //                 },
+                  //             }
+                  //           : undefined,
                   some: {
                       dashapp_gender: await getGenderQuery(genderIds),
                   },
@@ -1425,11 +1425,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_target_income: nccsIds?.length
             ? {
-                  none: {
-                      dashapp_nccs: {
-                          id: { notIn: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_nccs: {
+                  //           id: { notIn: nccsIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
                   some: {
                       dashapp_nccs: {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
@@ -1440,11 +1440,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_primary: primaryMarketIds?.length
             ? {
-                  none: {
-                      dashapp_keymarket: {
-                          id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
                   some: {
                       dashapp_keymarket: {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
@@ -1455,11 +1455,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
             ? {
-                  none: {
-                      dashapp_keymarket: {
-                          id: { notIn: secondaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_keymarket: {
+                  //           id: { notIn: secondaryMarketIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
                   some: {
                       dashapp_keymarket: {
                           id: { in: secondaryMarketIds.map((id) => BigInt(id)) },
@@ -1470,11 +1470,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
             ? {
-                  none: {
-                      dashapp_states: {
-                          id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_states: {
+                  //           id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
+                  //       },
+                  //   },
                   some: {
                       dashapp_states: {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
@@ -1485,13 +1485,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_socialmedia_platform_primary: primarySocialMediaPlatformIds?.length
             ? {
-                  none: {
-                      dashapp_socialmedia_platform: {
-                          id: {
-                              notIn: primarySocialMediaPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_socialmedia_platform: {
+                  //           id: {
+                  //               notIn: primarySocialMediaPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
                   some: {
                       dashapp_socialmedia_platform: {
                           id: {
@@ -1504,13 +1504,13 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
 
         dashapp_athlete_socialmedia_platform_secondary: secondarySocialMediaPlatformIds?.length
             ? {
-                  none: {
-                      dashapp_socialmedia_platform: {
-                          id: {
-                              notIn: secondarySocialMediaPlatformIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
+                  //   none: {
+                  //       dashapp_socialmedia_platform: {
+                  //           id: {
+                  //               notIn: secondarySocialMediaPlatformIds.map((id) => BigInt(id)),
+                  //           },
+                  //       },
+                  //   },
                   some: {
                       dashapp_socialmedia_platform: {
                           id: {
@@ -1589,9 +1589,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     const exactSetMatch = (athleteIds: string[], requiredIds: (string | number | bigint)[]) => {
         const requiredSet = new Set(requiredIds.map((id) => id.toString()));
         const athleteSet = new Set(athleteIds.map((id) => id.toString()));
-        if (athleteSet.size !== requiredSet.size) return false;
+        // if (athleteSet.size !== requiredSet.size) return false;
         for (const id of requiredSet) {
             if (!athleteSet.has(id)) {
+                console.log("false cases IDs:", id);
                 return false;
             }
         }
@@ -1604,9 +1605,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     if (ageIds?.length) {
         const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
         filteredAthletes = filteredAthletes.filter((athlete) => {
-            const athleteAgeIds = athlete.dashapp_athlete_target_age.map((entry: any) =>
-                entry.dashapp_age.id.toString(),
-            );
+            console.log("names:", athlete.athlete_name);
+            const athleteAgeIds = athlete.dashapp_athlete_target_age.map((entry: any) => {
+                return entry.dashapp_age.id.toString();
+            });
             return exactSetMatch(athleteAgeIds, requiredAgeIds);
         });
     }
