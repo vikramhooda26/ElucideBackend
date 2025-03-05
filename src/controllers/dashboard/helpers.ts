@@ -15,6 +15,16 @@ export const getBrandsPerCategory = async () => {
                 select: {
                     id: true,
                     subcategory: true,
+                    dashapp_companydata_subcategory: {
+                        select: {
+                            dashapp_companydata: {
+                                select: {
+                                    id: true,
+                                    company_name: true,
+                                },
+                            },
+                        },
+                    },
                     _count: {
                         select: {
                             dashapp_companydata_subcategory: true,

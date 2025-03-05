@@ -1,25 +1,26 @@
 import asyncHandler from "express-async-handler";
+import { STATUS_CODE } from "../../lib/constants.js";
+import { printLogs } from "../../lib/log.js";
 import {
     getAthletesCount,
     getBrandsCount,
+    getBrandsPerCategory,
+    getCategoriesCount,
     getLeaguesCount,
     getNumberOfAthletesPerSport,
     getNumberOfLeaguesPerSport,
-    getNumberOfTeamsPerState,
     getNumberOfTeamsPerSport,
+    getNumberOfTeamsPerState,
     getRecentlyAddedAthletes,
-    getRecentlyAddedLeagues,
-    getRecentlyModifiedAthletes,
-    getRecentlyModifiedLeagues,
-    getTeamsCount,
-    getRecentlyAddedTeams,
-    getRecentlyModifiedTeams,
-    getBrandsPerCategory,
     getRecentlyAddedBrands,
+    getRecentlyAddedLeagues,
+    getRecentlyAddedTeams,
+    getRecentlyModifiedAthletes,
     getRecentlyModifiedBrands,
-    getCategoriesCount,
+    getRecentlyModifiedLeagues,
+    getRecentlyModifiedTeams,
+    getTeamsCount,
 } from "./helpers.js";
-import { STATUS_CODE } from "../../lib/constants.js";
 /**
  *
  * @todo
@@ -167,14 +168,21 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
             getRecentlyModifiedBrands(convertedTake, convertedSkip),
         ]);
 
-    const modifiedCategoryCount = brandsPerCategory.map((category) => ({
-        id: category.id,
-        name: category.category,
-        brandCount: category.dashapp_subcategory.reduce(
-            (count, subcategory) => count + subcategory._count.dashapp_companydata_subcategory,
-            0,
-        ),
-    }));
+    printLogs("brandsPerCategory:", JSON.stringify(brandsPerCategory.slice(0, 5), null, 2));
+
+    const modifiedCategoryCount = brandsPerCategory.map((category) => {
+        const brandIds = new Set();
+        category.dashapp_subcategory.map((subcategory) => {
+            subcategory.dashapp_companydata_subcategory.map((brand) => {
+                brandIds.add(brand.dashapp_companydata?.id.toString());
+            });
+        });
+        return {
+            id: category.id,
+            name: category.category,
+            brandCount: brandIds.size,
+        };
+    });
 
     res.status(STATUS_CODE.OK).json({
         brandsCount,
