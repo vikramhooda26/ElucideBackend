@@ -1276,9 +1276,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     if (ageIds?.length) {
         const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
         filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueAgeIds = league.dashapp_leagueinfo_age.map((entry: any) => {
-                return entry.dashapp_age.id.toString();
-            });
+            const leagueAgeIds = league.dashapp_leagueinfo_age
+                .map((entry: any) => {
+                    return entry.dashapp_age?.id?.toString();
+                })
+                .filter(Boolean);
             return exactSetMatch(leagueAgeIds, requiredAgeIds);
         });
     }
@@ -1366,9 +1368,11 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     if (tierIds?.length) {
         const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
         filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueTierIds = league.dashapp_leagueinfo_tier.map((entry: any) => {
-                return entry.dashapp_tier.id.toString();
-            });
+            const leagueTierIds = league.dashapp_leagueinfo_tier
+                .map((entry: any) => {
+                    return entry.dashapp_tier?.id?.toString();
+                })
+                .filter(Boolean);
             return exactSetMatch(leagueTierIds, requiredTierIds);
         });
     }

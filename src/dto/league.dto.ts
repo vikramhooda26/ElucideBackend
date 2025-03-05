@@ -313,7 +313,7 @@ export class LeagueResponseDTO {
             active: endorse.active,
         }));
         leagueDTO.age = leagueDetails.dashapp_leagueinfo_age.map((age) => ({
-            id: age.dashapp_age?.id.toString(),
+            id: age.dashapp_age?.id?.toString(),
             name: age.dashapp_age?.age_range,
         }));
         leagueDTO.nccs = leagueDetails.dashapp_leagueinfo_income.map((nccs) => ({
