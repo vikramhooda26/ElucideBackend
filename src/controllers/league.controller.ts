@@ -1211,7 +1211,66 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         throw new NotFoundError("No leagues found for the given filters");
     }
 
-    let filteredLeagues = leagues;
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_leagueinfo_personality_traits: {
+                        some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_leagueinfo_personality_traits: {
+                        some: {
+                            leagueinfo_id: { in: leagues.map((league) => league.id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_leagueinfo_personality_traits: {
+                        select: {
+                            leagueinfo_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
+        );
+        leagueIds.forEach((leagueId) => {
+            const leagueIdStr = leagueId.toString();
+            if (!personalitiesByleagueId[leagueIdStr]) {
+                personalitiesByleagueId[leagueIdStr] = [];
+            }
+
+            const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByleagueId[leagueIdStr].push(personality);
+            }
+        });
+    });
+
+    const updatedLeagues = leagues.map((league) => ({
+        ...league,
+        mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+    }));
+
+    let filteredLeagues = updatedLeagues;
 
     // 1. Exact filtering for dashapp_leagueinfo_age
     if (ageIds?.length) {
@@ -1228,8 +1287,10 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     if (subPersonalityTraitIds?.length) {
         const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
         filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueSubPersonalityTraitIds = league.dashapp_leagueinfo_personality_traits.map((entry: any) => {
-                return entry.dashapp_subpersonality.id.toString();
+            const leagueSubPersonalityTraitIds = league.mainPersonalities.flatMap((entry: any) => {
+                return entry.dashapp_subpersonality?.map((sub: any) => {
+                    return sub.id.toString();
+                });
             });
             return exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
         });
@@ -1361,66 +1422,7 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
             ? filteredLeagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2)
             : filteredLeagues;
 
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_leagueinfo_personality_traits: {
-                        some: { leagueinfo_id: { in: modifiedLeagues.map((league) => league.id) } },
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_leagueinfo_personality_traits: {
-                        some: {
-                            leagueinfo_id: { in: modifiedLeagues.map((league) => league.id) },
-                        },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_leagueinfo_personality_traits: {
-                        select: {
-                            leagueinfo_id: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
-
-    mainPersonalities.forEach((personality) => {
-        const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
-        );
-        leagueIds.forEach((leagueId) => {
-            const leagueIdStr = leagueId.toString();
-            if (!personalitiesByleagueId[leagueIdStr]) {
-                personalitiesByleagueId[leagueIdStr] = [];
-            }
-
-            const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
-
-            if (!alreadyAdded) {
-                personalitiesByleagueId[leagueIdStr].push(personality);
-            }
-        });
-    });
-
-    const updatedLeagues = modifiedLeagues.map((league) => ({
-        ...league,
-        mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
-    }));
-
-    const leagueResponse: LeagueResponseDTO[] = updatedLeagues.map((league) =>
+    const leagueResponse: LeagueResponseDTO[] = modifiedLeagues.map((league) =>
         LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
     );
 
