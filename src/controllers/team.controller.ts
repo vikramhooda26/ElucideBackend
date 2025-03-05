@@ -1224,16 +1224,72 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                   .map(([key, condition]) => ({ [key]: condition })),
           };
 
-    const [teams, count] = await Promise.all([
-        getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect }),
-        getTeamsCount(),
-    ]);
+    const teams = await getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect });
 
     if (teams.length < 1) {
         throw new NotFoundError("No teams found for the given filters");
     }
 
-    let filteredTeams = teams;
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_team_personality_traits: {
+                        some: { team_id: { in: teams.map((team) => team.id) } },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_team_personality_traits: {
+                        some: {
+                            team_id: { in: teams.map((team) => team.id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_team_personality_traits: {
+                        select: {
+                            team_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const teamIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_team_personality_traits.map((trait) => trait.team_id),
+        );
+        teamIds.forEach((teamId) => {
+            const teamIdStr = teamId.toString();
+            if (!personalitiesByTeamId[teamIdStr]) {
+                personalitiesByTeamId[teamIdStr] = [];
+            }
+
+            const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByTeamId[teamIdStr].push(personality);
+            }
+        });
+    });
+
+    const updatedTeams = teams.map((team) => ({
+        ...team,
+        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
+    }));
+
+    let filteredTeams = updatedTeams;
 
     // 1. Exact filtering for dashapp_team_age
     if (ageIds?.length) {
@@ -1250,8 +1306,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (subPersonalityTraitIds?.length) {
         const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamSubPersonalityTraitIds = team.dashapp_team_personality_traits.map((entry: any) => {
-                return entry.dashapp_subpersonality.id.toString();
+            const teamSubPersonalityTraitIds = team.mainPersonalities.flatMap((entry: any) => {
+                return entry.dashapp_subpersonality.map((sub: any) => {
+                    return sub.id.toString();
+                });
             });
             return exactSetMatch(teamSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
         });
@@ -1392,66 +1450,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     const modifiedTeams =
         genderIds?.length === 2 ? filteredTeams.filter((team) => team.dashapp_team_gender.length === 2) : filteredTeams;
 
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_team_personality_traits: {
-                        some: { team_id: { in: modifiedTeams.map((team) => team.id) } },
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_team_personality_traits: {
-                        some: {
-                            team_id: { in: modifiedTeams.map((team) => team.id) },
-                        },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_team_personality_traits: {
-                        select: {
-                            team_id: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
-
-    mainPersonalities.forEach((personality) => {
-        const teamIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_team_personality_traits.map((trait) => trait.team_id),
-        );
-        teamIds.forEach((teamId) => {
-            const teamIdStr = teamId.toString();
-            if (!personalitiesByTeamId[teamIdStr]) {
-                personalitiesByTeamId[teamIdStr] = [];
-            }
-
-            const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
-
-            if (!alreadyAdded) {
-                personalitiesByTeamId[teamIdStr].push(personality);
-            }
-        });
-    });
-
-    const updatedTeams = modifiedTeams.map((team) => ({
-        ...team,
-        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
-    }));
-
-    const teamResponse: TeamResponseDTO[] = updatedTeams.map((team) =>
+    const teamResponse: TeamResponseDTO[] = modifiedTeams.map((team) =>
         TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
     );
 

@@ -1586,7 +1586,71 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         throw new NotFoundError("No athletes found for the given filters");
     }
 
-    let filteredAthletes = athletes;
+    // Resolve main personalities as before.
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: {
+                                in: athletes.map((athlete) => athlete.id),
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                where: {
+                    dashapp_athlete_personality_traits: {
+                        some: {
+                            athlete_id: {
+                                in: athletes.map((athlete) => athlete.id),
+                            },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_athlete_personality_traits: {
+                        select: {
+                            athlete_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
+            sub.dashapp_athlete_personality_traits.map((trait) => trait?.athlete_id).filter(Boolean),
+        );
+        athleteIds.forEach((athleteId) => {
+            const athleteIdStr = athleteId.toString();
+            if (!personalitiesByAthleteId[athleteIdStr]) {
+                personalitiesByAthleteId[athleteIdStr] = [];
+            }
+            const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+            if (!alreadyAdded) {
+                personalitiesByAthleteId[athleteIdStr].push(personality);
+            }
+        });
+    });
+
+    const updatedAthletes = athletes.map((athlete) => ({
+        ...athlete,
+        mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
+    }));
+
+    let filteredAthletes = updatedAthletes;
 
     // 1. Exact filtering for dashapp_athlete_target_age
     if (ageIds?.length) {
@@ -1604,10 +1668,8 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     if (subPersonalityTraitIds?.length) {
         const requiredTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
         filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming that athlete.dashapp_athlete_personality_traits is an array of objects
-            // where each object has a dashapp_subpersonality property with an id.
-            const athleteTraitIds = athlete.dashapp_athlete_personality_traits.map((entry: any) =>
-                entry.dashapp_subpersonality.id.toString(),
+            const athleteTraitIds = athlete.mainPersonalities.flatMap((entry: any) =>
+                entry.dashapp_subpersonality.map((sub: any) => sub.id.toString()),
             );
             return exactSetMatch(athleteTraitIds, requiredTraitIds);
         });
@@ -1695,79 +1757,12 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         });
     }
 
-    // Optional: Additional filtering based on other criteria can be added here.
-
-    // For illustration we also filter on target gender count if exactly two genders are expected.
     const modifiedAthletes =
         genderIds?.length === 2
             ? filteredAthletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
             : filteredAthletes;
 
-    // Resolve main personalities as before.
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: {
-                                in: modifiedAthletes.map((athlete) => athlete.id),
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: {
-                                in: modifiedAthletes.map((athlete) => athlete.id),
-                            },
-                        },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_athlete_personality_traits: {
-                        select: {
-                            athlete_id: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
-
-    mainPersonalities.forEach((personality) => {
-        const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_athlete_personality_traits.map((trait) => trait?.athlete_id).filter(Boolean),
-        );
-        athleteIds.forEach((athleteId) => {
-            const athleteIdStr = athleteId.toString();
-            if (!personalitiesByAthleteId[athleteIdStr]) {
-                personalitiesByAthleteId[athleteIdStr] = [];
-            }
-            const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
-            if (!alreadyAdded) {
-                personalitiesByAthleteId[athleteIdStr].push(personality);
-            }
-        });
-    });
-
-    const updatedAthletes = modifiedAthletes.map((athlete) => ({
-        ...athlete,
-        mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
-    }));
-
-    const athleteResponse: AthleteResponseDTO[] = updatedAthletes.map((athlete) =>
+    const athleteResponse: AthleteResponseDTO[] = modifiedAthletes.map((athlete) =>
         AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
     );
 
