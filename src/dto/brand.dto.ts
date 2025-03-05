@@ -18,14 +18,6 @@ export class BrandResponseDTO {
     };
     createdDate?: Date | null;
     modifiedDate?: Date | null;
-    subcategory?: {
-        id?: string;
-        name?: string;
-    }[];
-    maincategory?: {
-        id?: string;
-        name?: string;
-    }[];
     city?: {
         id?: string;
         name?: string;

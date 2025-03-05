@@ -5,6 +5,7 @@ import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
+import { printLogs } from "../lib/log.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect, TBrandDetails } from "../types/brand.type.js";
@@ -736,6 +737,8 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
         stateIds,
         strategyOverview,
         subCategoryIds,
+        maincategoryIds,
+        mainpersonalityIds,
         subPersonalityTraitIds,
         taglineIds,
         tertiaryIds,
@@ -784,24 +787,66 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
         youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
         website: website ? { contains: website, mode: "insensitive" } : undefined,
 
-        dashapp_companydata_personality_traits: subPersonalityTraitIds?.length
-            ? {
-                  some: {
-                      dashapp_subpersonality: {
-                          id: {
-                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
+        dashapp_companydata_subcategory:
+            subCategoryIds?.length || maincategoryIds?.length
+                ? {
+                      some: {
+                          dashapp_subcategory: {
+                              OR: [
+                                  {
+                                      ...(subCategoryIds?.length
+                                          ? { id: { in: subCategoryIds.map((id) => BigInt(id)) } }
+                                          : {}),
+                                  },
+                                  {
+                                      ...(maincategoryIds?.length
+                                          ? {
+                                                dashapp_category: {
+                                                    id: { in: maincategoryIds.map((id) => BigInt(id)) },
+                                                },
+                                            }
+                                          : {}),
+                                  },
+                              ],
                           },
                       },
-                  },
-                  //   none: {
-                  //       dashapp_subpersonality: {
-                  //           id: {
-                  //               notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
-                  //           },
-                  //       },
-                  //   },
-              }
-            : undefined,
+                      //   none: {
+                      //       dashapp_subcategory: {
+                      //           id: { notIn: subCategoryIds.map((id) => BigInt(id)) },
+                      //       },
+                      //   },
+                  }
+                : undefined,
+
+        dashapp_companydata_personality_traits:
+            subPersonalityTraitIds?.length || mainpersonalityIds?.length
+                ? {
+                      some: {
+                          dashapp_subpersonality: {
+                              OR: [
+                                  {
+                                      ...(subPersonalityTraitIds?.length
+                                          ? {
+                                                id: {
+                                                    in: subPersonalityTraitIds.map((id) => BigInt(id)),
+                                                },
+                                            }
+                                          : {}),
+                                  },
+                                  {
+                                      ...(mainpersonalityIds?.length
+                                          ? {
+                                                dashapp_mainpersonality: {
+                                                    id: { in: mainpersonalityIds.map((id) => BigInt(id)) },
+                                                },
+                                            }
+                                          : {}),
+                                  },
+                              ],
+                          },
+                      },
+                  }
+                : undefined,
 
         dashapp_companydata_gender: genderIds?.length
             ? {
@@ -958,21 +1003,6 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
               }
             : undefined,
 
-        dashapp_companydata_subcategory: subCategoryIds?.length
-            ? {
-                  some: {
-                      dashapp_subcategory: {
-                          id: { in: subCategoryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-                  //   none: {
-                  //       dashapp_subcategory: {
-                  //           id: { notIn: subCategoryIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
-              }
-            : undefined,
-
         dashapp_states: stateIds?.length
             ? {
                   id: { in: stateIds.map((id) => BigInt(id)) },
@@ -1049,7 +1079,107 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
         throw new NotFoundError("No brands found for the given filters");
     }
 
-    let filteredBrands = brands;
+    const mainCategories = await prisma.dashapp_category.findMany({
+        where: {
+            dashapp_subcategory: {
+                some: {
+                    dashapp_companydata_subcategory: {
+                        some: { companydata_id: { in: brands.map((brand) => brand.id) } },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            category: true,
+            dashapp_subcategory: {
+                select: {
+                    id: true,
+                    subcategory: true,
+                    dashapp_companydata_subcategory: {
+                        select: {
+                            companydata_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+        where: {
+            dashapp_subpersonality: {
+                some: {
+                    dashapp_companydata_personality_traits: {
+                        some: { companydata_id: { in: brands.map((brand) => brand.id) } },
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            name: true,
+            dashapp_subpersonality: {
+                select: {
+                    id: true,
+                    name: true,
+                    dashapp_companydata_personality_traits: {
+                        select: {
+                            companydata_id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
+
+    mainPersonalities.forEach((personality) => {
+        const brandIds = personality.dashapp_subpersonality
+            .flatMap((sub) => sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id))
+            .filter(Boolean);
+        brandIds.forEach((brandId) => {
+            const brandIdStr = brandId.toString();
+            if (!personalitiesByBrandId[brandIdStr]) {
+                personalitiesByBrandId[brandIdStr] = [];
+            }
+
+            const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
+
+            if (!alreadyAdded) {
+                personalitiesByBrandId[brandIdStr].push(personality);
+            }
+        });
+    });
+
+    const categoriesByBrandId: Record<string, typeof mainCategories> = {};
+
+    mainCategories.forEach((category) => {
+        const brandIds = category.dashapp_subcategory.flatMap((sub) =>
+            sub.dashapp_companydata_subcategory.map((trait) => trait?.companydata_id).filter(Boolean),
+        );
+        brandIds.forEach((brandId) => {
+            const brandIdStr = brandId?.toString() || "";
+            if (!categoriesByBrandId[brandIdStr]) {
+                categoriesByBrandId[brandIdStr] = [];
+            }
+
+            const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
+
+            if (!alreadyAdded) {
+                categoriesByBrandId[brandIdStr].push(category);
+            }
+        });
+    });
+
+    const updatedBrands = brands.map((brand) => ({
+        ...brand,
+        mainPersonalities: personalitiesByBrandId[brand?.id?.toString()] || [],
+        mainCategories: categoriesByBrandId[brand?.id?.toString()] || [],
+    }));
+
+    let filteredBrands = updatedBrands;
 
     // 1. Exact filtering for dashapp_companydata_age
     if (ageIds?.length) {
@@ -1066,8 +1196,10 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     if (subPersonalityTraitIds?.length) {
         const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
         filteredBrands = filteredBrands.filter((brand) => {
-            const brandSubPersonalityTraitIds = brand.dashapp_companydata_personality_traits.map((entry: any) => {
-                return entry.dashapp_subpersonality.id.toString();
+            const brandSubPersonalityTraitIds = brand.mainPersonalities.flatMap((entry: any) => {
+                return entry.dashapp_subpersonality.map((sub: any) => {
+                    return sub.id.toString();
+                });
             });
             return exactSetMatch(brandSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
         });
@@ -1176,10 +1308,34 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     if (subCategoryIds?.length) {
         const requiredSubcategoryIds = subCategoryIds.map((id) => BigInt(id).toString());
         filteredBrands = filteredBrands.filter((brand) => {
-            const brandSubcategoryIds = brand.dashapp_companydata_subcategory.map((entry: any) => {
-                return entry.dashapp_subcategory.id.toString();
+            printLogs("Brand structure:", JSON.stringify(brand.mainCategories, null, 2));
+            const brandSubcategoryIds = brand.mainCategories.flatMap((entry: any) => {
+                return entry.dashapp_subcategory?.map((sub: any) => sub.id.toString()) || [];
             });
+            printLogs("Brand Subcategory IDs:", brandSubcategoryIds);
             return exactSetMatch(brandSubcategoryIds, requiredSubcategoryIds);
+        });
+    }
+
+    // 13. Exact filtering for dashapp_companydata_subcategory.dashapp_category
+    if (maincategoryIds?.length) {
+        const requiredMaincategoryIds = maincategoryIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandMaincategoryIds = brand.mainCategories.map((entry: any) => {
+                return entry.id.toString();
+            });
+            return exactSetMatch(brandMaincategoryIds, requiredMaincategoryIds);
+        });
+    }
+
+    // 14. Exact filtering for dashapp_companydata_personality_traits
+    if (mainpersonalityIds?.length) {
+        const requiredMainPersonalityTraitIds = mainpersonalityIds.map((id) => BigInt(id).toString());
+        filteredBrands = filteredBrands.filter((brand) => {
+            const brandMainPersonalityTraitIds = brand.mainPersonalities.map((entry: any) => {
+                return entry.id.toString();
+            });
+            return exactSetMatch(brandMainPersonalityTraitIds, requiredMainPersonalityTraitIds);
         });
     }
 
@@ -1188,107 +1344,7 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
             ? filteredBrands.filter((brand) => brand.dashapp_companydata_gender.length === 2)
             : filteredBrands;
 
-    const mainCategories = await prisma.dashapp_category.findMany({
-        where: {
-            dashapp_subcategory: {
-                some: {
-                    dashapp_companydata_subcategory: {
-                        some: { companydata_id: { in: modifiedBrands.map((brand) => brand.id) } },
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            category: true,
-            dashapp_subcategory: {
-                select: {
-                    id: true,
-                    subcategory: true,
-                    dashapp_companydata_subcategory: {
-                        select: {
-                            companydata_id: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_companydata_personality_traits: {
-                        some: { companydata_id: { in: modifiedBrands.map((brand) => brand.id) } },
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_companydata_personality_traits: {
-                        select: {
-                            companydata_id: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
-
-    mainPersonalities.forEach((personality) => {
-        const brandIds = personality.dashapp_subpersonality
-            .flatMap((sub) => sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id))
-            .filter(Boolean);
-        brandIds.forEach((brandId) => {
-            const brandIdStr = brandId.toString();
-            if (!personalitiesByBrandId[brandIdStr]) {
-                personalitiesByBrandId[brandIdStr] = [];
-            }
-
-            const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
-
-            if (!alreadyAdded) {
-                personalitiesByBrandId[brandIdStr].push(personality);
-            }
-        });
-    });
-
-    const categoriesByBrandId: Record<string, typeof mainCategories> = {};
-
-    mainCategories.forEach((category) => {
-        const brandIds = category.dashapp_subcategory.flatMap((sub) =>
-            sub.dashapp_companydata_subcategory.map((trait) => trait?.companydata_id).filter(Boolean),
-        );
-        brandIds.forEach((brandId) => {
-            const brandIdStr = brandId?.toString() || "";
-            if (!categoriesByBrandId[brandIdStr]) {
-                categoriesByBrandId[brandIdStr] = [];
-            }
-
-            const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
-
-            if (!alreadyAdded) {
-                categoriesByBrandId[brandIdStr].push(category);
-            }
-        });
-    });
-
-    const updatedBrands = modifiedBrands.map((brand) => ({
-        ...brand,
-        mainPersonalities: personalitiesByBrandId[brand?.id?.toString()] || [],
-        mainCategories: categoriesByBrandId[brand?.id?.toString()] || [],
-    }));
-
-    const brandResponse: BrandResponseDTO[] = updatedBrands.map((brand) =>
+    const brandResponse: BrandResponseDTO[] = modifiedBrands.map((brand) =>
         BrandResponseDTO.toResponse(brand as unknown as TBrandDetails),
     );
 
