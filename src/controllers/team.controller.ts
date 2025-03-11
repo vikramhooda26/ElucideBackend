@@ -955,11 +955,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: ageIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_age: {
-                  //           id: { notIn: ageIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -998,13 +993,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  //   none: {
-                  //       dashapp_subpersonality: {
-                  //           id: {
-                  //               notIn: subPersonalityTraitIds.map((id) => BigInt(id)),
-                  //           },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1023,11 +1011,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: nccsIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_nccs: {
-                  //           id: { notIn: nccsIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1038,11 +1021,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: ownerIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_teamowner: {
-                  //           id: { notIn: ownerIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1053,11 +1031,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: taglineIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_taglines: {
-                  //           id: { notIn: taglineIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1068,11 +1041,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: primaryMarketIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_keymarket: {
-                  //           id: { notIn: primaryMarketIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1085,13 +1053,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  //   none: {
-                  //       dashapp_keymarket: {
-                  //           id: {
-                  //               notIn: secondaryMarketIds.map((id) => BigInt(id)),
-                  //           },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1102,11 +1063,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: tertiaryIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_states: {
-                  //           id: { notIn: tertiaryIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1117,11 +1073,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: tierIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_tier: {
-                  //           id: { notIn: tierIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1132,11 +1083,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           id: { in: activeCampaignIds.map((id) => BigInt(id)) },
                       },
                   },
-                  //   none: {
-                  //       dashapp_activecampaigns: {
-                  //           id: { notIn: activeCampaignIds.map((id) => BigInt(id)) },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1149,13 +1095,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  //   none: {
-                  //       dashapp_marketingplatform: {
-                  //           id: {
-                  //               notIn: primaryMarketingPlatformIds.map((id) => BigInt(id)),
-                  //           },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1168,13 +1107,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
                           },
                       },
                   },
-                  //   none: {
-                  //       dashapp_marketingplatform: {
-                  //           id: {
-                  //               notIn: secondaryMarketingPlatformIds.map((id) => BigInt(id)),
-                  //           },
-                  //       },
-                  //   },
               }
             : undefined,
 
@@ -1266,27 +1198,33 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
 
     const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
 
-    mainPersonalities.forEach((personality) => {
-        const teamIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_team_personality_traits.map((trait) => trait.team_id),
-        );
-        teamIds.forEach((teamId) => {
-            const teamIdStr = teamId.toString();
-            if (!personalitiesByTeamId[teamIdStr]) {
-                personalitiesByTeamId[teamIdStr] = [];
-            }
+    if (mainPersonalities.length > 0) {
+        mainPersonalities.forEach((personality) => {
+            if (personality.dashapp_subpersonality && Array.isArray(personality.dashapp_subpersonality)) {
+                const teamIds = personality.dashapp_subpersonality
+                    .flatMap((sub) => sub.dashapp_team_personality_traits.map((trait) => trait.team_id).filter(Boolean))
+                    .filter(Boolean);
+                if (teamIds.length > 0) {
+                    teamIds.forEach((teamId) => {
+                        const teamIdStr = teamId.toString();
+                        if (!personalitiesByTeamId[teamIdStr]) {
+                            personalitiesByTeamId[teamIdStr] = [];
+                        }
 
-            const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+                        const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p?.id === personality?.id);
 
-            if (!alreadyAdded) {
-                personalitiesByTeamId[teamIdStr].push(personality);
+                        if (!alreadyAdded) {
+                            personalitiesByTeamId[teamIdStr].push(personality);
+                        }
+                    });
+                }
             }
         });
-    });
+    }
 
     const updatedTeams = teams.map((team) => ({
         ...team,
-        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
+        mainPersonalities: personalitiesByTeamId[team?.id?.toString()] || [],
     }));
 
     let filteredTeams = updatedTeams;
@@ -1295,9 +1233,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (ageIds?.length) {
         const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamAgeIds = team.dashapp_team_age.map((entry: any) => {
-                return entry.dashapp_age.id.toString();
-            });
+            if (!team.dashapp_team_age || !Array.isArray(team.dashapp_team_age)) return false;
+            const teamAgeIds = team.dashapp_team_age
+                .map((entry: any) => entry?.dashapp_age?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamAgeIds, requiredAgeIds);
         });
     }
@@ -1306,11 +1245,17 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (subPersonalityTraitIds?.length) {
         const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamSubPersonalityTraitIds = team.mainPersonalities.flatMap((entry: any) => {
-                return entry.dashapp_subpersonality.map((sub: any) => {
-                    return sub.id.toString();
-                });
-            });
+            if (!team.mainPersonalities || !Array.isArray(team.mainPersonalities)) return false;
+            const teamSubPersonalityTraitIds = team.mainPersonalities
+                .flatMap((entry: any) => {
+                    if (!entry.dashapp_subpersonality || !Array.isArray(entry.dashapp_subpersonality)) return [];
+                    return entry.dashapp_subpersonality
+                        .map((sub: any) => {
+                            return sub?.id?.toString();
+                        })
+                        .filter(Boolean);
+                })
+                .filter(Boolean);
             return exactSetMatch(teamSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
         });
     }
@@ -1319,9 +1264,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (nccsIds?.length) {
         const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamNccsIds = team.dashapp_team_income.map((entry: any) => {
-                return entry.dashapp_nccs.id.toString();
-            });
+            if (!team.dashapp_team_income || !Array.isArray(team.dashapp_team_income)) return false;
+            const teamNccsIds = team.dashapp_team_income
+                .map((entry: any) => entry?.dashapp_nccs?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamNccsIds, requiredNccsIds);
         });
     }
@@ -1330,9 +1276,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (ownerIds?.length) {
         const requiredOwnerIds = ownerIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamOwnerIds = team.dashapp_team_owner.map((entry: any) => {
-                return entry.dashapp_teamowner.id.toString();
-            });
+            if (!team.dashapp_team_owner || !Array.isArray(team.dashapp_team_owner)) return false;
+            const teamOwnerIds = team.dashapp_team_owner
+                .map((entry: any) => entry?.dashapp_teamowner?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamOwnerIds, requiredOwnerIds);
         });
     }
@@ -1341,9 +1288,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (taglineIds?.length) {
         const requiredTaglineIds = taglineIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamTaglineIds = team.dashapp_team_taglines.map((entry: any) => {
-                return entry.dashapp_taglines.id.toString();
-            });
+            if (!team.dashapp_team_taglines || !Array.isArray(team.dashapp_team_taglines)) return false;
+            const teamTaglineIds = team.dashapp_team_taglines
+                .map((entry: any) => entry?.dashapp_taglines?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamTaglineIds, requiredTaglineIds);
         });
     }
@@ -1352,9 +1300,11 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (primaryMarketIds?.length) {
         const requiredKeyPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamKeyPrimaryIds = team.dashapp_team_key_markets_primary.map((entry: any) => {
-                return entry.dashapp_keymarket.id.toString();
-            });
+            if (!team.dashapp_team_key_markets_primary || !Array.isArray(team.dashapp_team_key_markets_primary))
+                return false;
+            const teamKeyPrimaryIds = team.dashapp_team_key_markets_primary
+                .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamKeyPrimaryIds, requiredKeyPrimaryIds);
         });
     }
@@ -1363,9 +1313,11 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (secondaryMarketIds?.length) {
         const requiredKeySecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamKeySecondaryIds = team.dashapp_team_key_markets_secondary.map((entry: any) => {
-                return entry.dashapp_keymarket.id.toString();
-            });
+            if (!team.dashapp_team_key_markets_secondary || !Array.isArray(team.dashapp_team_key_markets_secondary))
+                return false;
+            const teamKeySecondaryIds = team.dashapp_team_key_markets_secondary
+                .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamKeySecondaryIds, requiredKeySecondaryIds);
         });
     }
@@ -1374,9 +1326,11 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (tertiaryIds?.length) {
         const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamTertiaryIds = team.dashapp_team_key_markets_tertiary.map((entry: any) => {
-                return entry.dashapp_states.id.toString();
-            });
+            if (!team.dashapp_team_key_markets_tertiary || !Array.isArray(team.dashapp_team_key_markets_tertiary))
+                return false;
+            const teamTertiaryIds = team.dashapp_team_key_markets_tertiary
+                .map((entry: any) => entry?.dashapp_states?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamTertiaryIds, requiredTertiaryIds);
         });
     }
@@ -1385,9 +1339,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (tierIds?.length) {
         const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamTierIds = team.dashapp_team_tier.map((entry: any) => {
-                return entry.dashapp_tier.id.toString();
-            });
+            if (!team.dashapp_team_tier || !Array.isArray(team.dashapp_team_tier)) return false;
+            const teamTierIds = team.dashapp_team_tier
+                .map((entry: any) => entry?.dashapp_tier?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamTierIds, requiredTierIds);
         });
     }
@@ -1396,9 +1351,10 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (activeCampaignIds?.length) {
         const requiredActiveCampaignIds = activeCampaignIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamActiveCampaignIds = team.dashapp_team_active_campaigns.map((entry: any) => {
-                return entry.dashapp_activecampaigns.id.toString();
-            });
+            if (!team.dashapp_team_active_campaigns || !Array.isArray(team.dashapp_team_active_campaigns)) return false;
+            const teamActiveCampaignIds = team.dashapp_team_active_campaigns
+                .map((entry: any) => entry?.dashapp_activecampaigns?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamActiveCampaignIds, requiredActiveCampaignIds);
         });
     }
@@ -1407,9 +1363,14 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (primaryMarketingPlatformIds?.length) {
         const requiredPrimaryIds = primaryMarketingPlatformIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamPrimaryIds = team.dashapp_team_marketing_platforms_primary.map((entry: any) => {
-                return entry.dashapp_marketingplatform.id.toString();
-            });
+            if (
+                !team.dashapp_team_marketing_platforms_primary ||
+                !Array.isArray(team.dashapp_team_marketing_platforms_primary)
+            )
+                return false;
+            const teamPrimaryIds = team.dashapp_team_marketing_platforms_primary
+                .map((entry: any) => entry?.dashapp_marketingplatform?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamPrimaryIds, requiredPrimaryIds);
         });
     }
@@ -1418,9 +1379,14 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (secondaryMarketingPlatformIds?.length) {
         const requiredSecondaryIds = secondaryMarketingPlatformIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamSecondaryIds = team.dashapp_team_marketing_platforms_secondary.map((entry: any) => {
-                return entry.dashapp_marketingplatform.id.toString();
-            });
+            if (
+                !team.dashapp_team_marketing_platforms_secondary ||
+                !Array.isArray(team.dashapp_team_marketing_platforms_secondary)
+            )
+                return false;
+            const teamSecondaryIds = team.dashapp_team_marketing_platforms_secondary
+                .map((entry: any) => entry?.dashapp_marketingplatform?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamSecondaryIds, requiredSecondaryIds);
         });
     }
@@ -1429,9 +1395,11 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "broadcast") {
         const requiredBroadcastPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamBroadcastPartnerIds = team?.dashapp_broadcast_partner_metrics?.map((entry: any) => {
-                return entry?.dashapp_broadcastpartner?.id?.toString();
-            });
+            if (!team?.dashapp_broadcast_partner_metrics || !Array.isArray(team?.dashapp_broadcast_partner_metrics))
+                return false;
+            const teamBroadcastPartnerIds = team.dashapp_broadcast_partner_metrics
+                .map((entry: any) => entry?.dashapp_broadcastpartner?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamBroadcastPartnerIds, requiredBroadcastPartnerIds);
         });
     }
@@ -1440,15 +1408,18 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "ott") {
         const requiredOttPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
         filteredTeams = filteredTeams.filter((team) => {
-            const teamOttPartnerIds = team?.dashapp_ott_partner_metrics?.map((entry: any) => {
-                return entry?.dashapp_ottpartner?.id?.toString();
-            });
+            if (!team?.dashapp_ott_partner_metrics || !Array.isArray(team?.dashapp_ott_partner_metrics)) return false;
+            const teamOttPartnerIds = team.dashapp_ott_partner_metrics
+                .map((entry: any) => entry?.dashapp_ottpartner?.id?.toString())
+                .filter(Boolean);
             return exactSetMatch(teamOttPartnerIds, requiredOttPartnerIds);
         });
     }
 
     const modifiedTeams =
-        genderIds?.length === 2 ? filteredTeams.filter((team) => team.dashapp_team_gender.length === 2) : filteredTeams;
+        genderIds?.length === 2
+            ? filteredTeams.filter((team) => team?.dashapp_team_gender?.length === 2)
+            : filteredTeams;
 
     const teamResponse: TeamResponseDTO[] = modifiedTeams.map((team) =>
         TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
