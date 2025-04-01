@@ -1,6 +1,7 @@
 import { cookieParser, cors, dotenv, express } from "./imports/core.imports.js";
 import { authMiddleware, globalErrorHandler } from "./imports/middleware.imports.js";
 import * as Routers from "./imports/router.imports.js";
+import { printLogs } from "./lib/log.js";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -67,4 +68,4 @@ app.use("/api/admin/dashboard", Routers.dashboardRouter);
 
 app.use(globalErrorHandler);
 
-app.listen(port, () => console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`));
+app.listen(port, () => printLogs(`${new Date().toLocaleTimeString()} Listening on port ${port}`));
