@@ -168,8 +168,6 @@ export const fetchBrandsMetrics = asyncHandler(async (req, res) => {
             getRecentlyModifiedBrands(convertedTake, convertedSkip),
         ]);
 
-    printLogs("brandsPerCategory:", JSON.stringify(brandsPerCategory.slice(0, 5), null, 2));
-
     const modifiedCategoryCount = brandsPerCategory.map((category) => {
         const brandIds = new Set();
         category.dashapp_subcategory.map((subcategory) => {

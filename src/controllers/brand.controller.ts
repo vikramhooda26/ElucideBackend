@@ -1308,11 +1308,9 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     if (subCategoryIds?.length) {
         const requiredSubcategoryIds = subCategoryIds.map((id) => BigInt(id).toString());
         filteredBrands = filteredBrands.filter((brand) => {
-            printLogs("Brand structure:", JSON.stringify(brand.mainCategories, null, 2));
             const brandSubcategoryIds = brand.mainCategories.flatMap((entry: any) => {
                 return entry.dashapp_subcategory?.map((sub: any) => sub.id.toString()) || [];
             });
-            printLogs("Brand Subcategory IDs:", brandSubcategoryIds);
             return exactSetMatch(brandSubcategoryIds, requiredSubcategoryIds);
         });
     }

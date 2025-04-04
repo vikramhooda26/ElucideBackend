@@ -31,9 +31,6 @@ export const getGenderQuery = async (genderIds: string[]) => {
 
         const notIn = genders.filter((gender) => gender.id !== genderInDatabase.id).map((gender) => gender.id);
 
-        printLogs("notIn", notIn);
-        printLogs("genderInDatabase", genderInDatabase?.id);
-
         if (genderInDatabase?.id) {
             query = {
                 AND: [
@@ -55,8 +52,6 @@ export const getGenderQuery = async (genderIds: string[]) => {
             })),
         };
     }
-
-    printLogs("Gender query", query);
 
     return query;
 };

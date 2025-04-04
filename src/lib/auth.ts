@@ -21,7 +21,6 @@ export const generateAccessToken = async (user: TUser) => {
     const hasToken = tokenManager.hasToken(user.userId);
 
     if (hasToken) {
-        printLogs("Has token | user ID:", user.userId);
         tokenManager.removeToken(user.userId);
 
         const deleteRefreshToken = await prisma.auth_user.update({

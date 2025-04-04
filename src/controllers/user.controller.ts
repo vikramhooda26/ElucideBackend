@@ -86,8 +86,6 @@ export const fetchUserById = asyncHandler(async (req, res) => {
 export const fetchAllUsers = asyncHandler(async (req, res) => {
     const { userId } = req.user;
 
-    printLogs("userId", userId);
-
     const users = await prisma.auth_user.findMany({
         where: {
             isDeleted: false,
