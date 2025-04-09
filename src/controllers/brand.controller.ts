@@ -5,7 +5,6 @@ import { BrandResponseDTO } from "../dto/brand.dto.js";
 import { METADATA_KEYS, STATUS_CODE } from "../lib/constants.js";
 import { BadRequestError, NotFoundError } from "../lib/errors.js";
 import { areElementsDistinct } from "../lib/helpers.js";
-import { printLogs } from "../lib/log.js";
 import { metadataStore } from "../managers/MetadataManager.js";
 import { TCreateBrandSchema, TEditBrandSchema, TFilteredBrandSchema } from "../schemas/brand.schema.js";
 import { brandSelect, TBrandDetails } from "../types/brand.type.js";
@@ -1120,6 +1119,13 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
             id: true,
             name: true,
             dashapp_subpersonality: {
+                where: {
+                    dashapp_companydata_personality_traits: {
+                        some: {
+                            companydata_id: { in: brands.map((brand) => brand.id) },
+                        },
+                    },
+                },
                 select: {
                     id: true,
                     name: true,
@@ -1136,40 +1142,62 @@ export const getFilteredBrand = asyncHandler(async (req, res) => {
     const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const brandIds = personality.dashapp_subpersonality
-            .flatMap((sub) => sub.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id))
-            .filter(Boolean);
-        brandIds.forEach((brandId) => {
-            const brandIdStr = brandId.toString();
-            if (!personalitiesByBrandId[brandIdStr]) {
-                personalitiesByBrandId[brandIdStr] = [];
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const brandIds = subPersonality.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id);
 
-            const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
+            brandIds.forEach((leagueId) => {
+                const brandIdStr = leagueId.toString();
 
-            if (!alreadyAdded) {
-                personalitiesByBrandId[brandIdStr].push(personality);
-            }
+                if (!personalitiesByBrandId[brandIdStr]) {
+                    personalitiesByBrandId[brandIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_companydata_personality_traits.some(
+                                (trait) => trait.companydata_id.toString() === brandIdStr,
+                            ),
+                        ),
+                    };
+
+                    personalitiesByBrandId[brandIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 
     const categoriesByBrandId: Record<string, typeof mainCategories> = {};
 
     mainCategories.forEach((category) => {
-        const brandIds = category.dashapp_subcategory.flatMap((sub) =>
-            sub.dashapp_companydata_subcategory.map((trait) => trait?.companydata_id).filter(Boolean),
-        );
-        brandIds.forEach((brandId) => {
-            const brandIdStr = brandId?.toString() || "";
-            if (!categoriesByBrandId[brandIdStr]) {
-                categoriesByBrandId[brandIdStr] = [];
-            }
+        category.dashapp_subcategory.forEach((subCategory) => {
+            const brandIds = subCategory.dashapp_companydata_subcategory.map((trait) => trait.companydata_id);
 
-            const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
+            brandIds.forEach((brandId) => {
+                const brandIdStr = brandId ? brandId.toString() : "";
 
-            if (!alreadyAdded) {
-                categoriesByBrandId[brandIdStr].push(category);
-            }
+                if (!categoriesByBrandId[brandIdStr]) {
+                    categoriesByBrandId[brandIdStr] = [];
+                }
+
+                const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
+
+                if (!alreadyAdded) {
+                    const filteredCategory = {
+                        ...category,
+                        dashapp_subpersonality: category.dashapp_subcategory.filter((sub) =>
+                            sub.dashapp_companydata_subcategory.some(
+                                (x) => x.companydata_id?.toString() === brandIdStr,
+                            ),
+                        ),
+                    };
+
+                    categoriesByBrandId[brandIdStr].push(filteredCategory);
+                }
+            });
         });
     });
 

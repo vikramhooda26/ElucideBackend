@@ -1089,17 +1089,12 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         throw new NotFoundError("No athletes found for the given filters");
     }
 
-    // Resolve main personalities as before.
     const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
         where: {
             dashapp_subpersonality: {
                 some: {
                     dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: {
-                                in: athletes.map((athlete) => athlete.id),
-                            },
-                        },
+                        some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
                     },
                 },
             },
@@ -1110,11 +1105,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
             dashapp_subpersonality: {
                 where: {
                     dashapp_athlete_personality_traits: {
-                        some: {
-                            athlete_id: {
-                                in: athletes.map((athlete) => athlete.id),
-                            },
-                        },
+                        some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
                     },
                 },
                 select: {
@@ -1133,18 +1124,31 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_athlete_personality_traits.map((trait) => trait?.athlete_id).filter(Boolean),
-        );
-        athleteIds.forEach((athleteId) => {
-            const athleteIdStr = athleteId.toString();
-            if (!personalitiesByAthleteId[athleteIdStr]) {
-                personalitiesByAthleteId[athleteIdStr] = [];
-            }
-            const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
-            if (!alreadyAdded) {
-                personalitiesByAthleteId[athleteIdStr].push(personality);
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const athleteIds = subPersonality.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id);
+
+            athleteIds.forEach((athleteId) => {
+                const athleteIdStr = athleteId.toString();
+
+                if (!personalitiesByAthleteId[athleteIdStr]) {
+                    personalitiesByAthleteId[athleteIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_athlete_personality_traits.some(
+                                (trait) => trait.athlete_id.toString() === athleteIdStr,
+                            ),
+                        ),
+                    };
+
+                    personalitiesByAthleteId[athleteIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 

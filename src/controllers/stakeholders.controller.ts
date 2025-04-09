@@ -5,6 +5,7 @@ import { AthleteResponseDTO } from "../dto/athlete.dto.js";
 import { LeagueResponseDTO } from "../dto/league.dto.js";
 import { TeamResponseDTO } from "../dto/team.dto.js";
 import { STATUS_CODE } from "../lib/constants.js";
+import { printLogs } from "../lib/log.js";
 import { TFilteredStakeholdersSchema } from "../schemas/stakeholders.schema.js";
 import { athleteSelect, TAthleteDetails } from "../types/athlete.type.js";
 import { leagueSelect, TLeagueDetails } from "../types/league.type.js";
@@ -249,20 +250,31 @@ const getFilteredAthletes = async (
     const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const athleteIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_athlete_personality_traits.map((trait) => trait?.athlete_id).filter(Boolean),
-        );
-        athleteIds.forEach((athleteId) => {
-            const athleteIdStr = athleteId.toString();
-            if (!personalitiesByAthleteId[athleteIdStr]) {
-                personalitiesByAthleteId[athleteIdStr] = [];
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const athleteIds = subPersonality.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id);
 
-            const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+            athleteIds.forEach((athleteId) => {
+                const athleteIdStr = athleteId.toString();
 
-            if (!alreadyAdded) {
-                personalitiesByAthleteId[athleteIdStr].push(personality);
-            }
+                if (!personalitiesByAthleteId[athleteIdStr]) {
+                    personalitiesByAthleteId[athleteIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_athlete_personality_traits.some(
+                                (trait) => trait.athlete_id.toString() === athleteIdStr,
+                            ),
+                        ),
+                    };
+
+                    personalitiesByAthleteId[athleteIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 
@@ -600,30 +612,100 @@ const getFilteredLeagues = async (
         },
     });
 
-    const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
+    const personalitiesByLeagueId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
-        );
-        leagueIds.forEach((leagueId) => {
-            const leagueIdStr = leagueId.toString();
-            if (!personalitiesByleagueId[leagueIdStr]) {
-                personalitiesByleagueId[leagueIdStr] = [];
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const leagueIds = subPersonality.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id);
 
-            const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
+            leagueIds.forEach((leagueId) => {
+                const leagueIdStr = leagueId.toString();
 
-            if (!alreadyAdded) {
-                personalitiesByleagueId[leagueIdStr].push(personality);
-            }
+                if (!personalitiesByLeagueId[leagueIdStr]) {
+                    personalitiesByLeagueId[leagueIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByLeagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_leagueinfo_personality_traits.some(
+                                (trait) => trait.leagueinfo_id.toString() === leagueIdStr,
+                            ),
+                        ),
+                    };
+
+                    personalitiesByLeagueId[leagueIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 
     const updatedLeagues = leagues.map((league) => ({
         ...league,
-        mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+        mainPersonalities: personalitiesByLeagueId[league.id.toString()] || [],
     }));
+
+    // const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    //     where: {
+    //         dashapp_subpersonality: {
+    //             some: {
+    //                 dashapp_leagueinfo_personality_traits: {
+    //                     some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
+    //                 },
+    //             },
+    //         },
+    //     },
+    //     select: {
+    //         id: true,
+    //         name: true,
+    //         dashapp_subpersonality: {
+    //             where: {
+    //                 dashapp_leagueinfo_personality_traits: {
+    //                     some: {
+    //                         leagueinfo_id: { in: leagues.map((league) => league.id) },
+    //                     },
+    //                 },
+    //             },
+    //             select: {
+    //                 id: true,
+    //                 name: true,
+    //                 dashapp_leagueinfo_personality_traits: {
+    //                     select: {
+    //                         leagueinfo_id: true,
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //     },
+    // });
+
+    // const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
+
+    // mainPersonalities.forEach((personality) => {
+    //     const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
+    //         sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
+    //     );
+    //     leagueIds.forEach((leagueId) => {
+    //         const leagueIdStr = leagueId.toString();
+    //         if (!personalitiesByleagueId[leagueIdStr]) {
+    //             personalitiesByleagueId[leagueIdStr] = [];
+    //         }
+
+    //         const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+    //         if (!alreadyAdded) {
+    //             personalitiesByleagueId[leagueIdStr].push(personality);
+    //         }
+    //     });
+    // });
+
+    // const updatedLeagues = leagues.map((league) => ({
+    //     ...league,
+    //     mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+    // }));
 
     let filteredLeagues = updatedLeagues;
 
@@ -649,7 +731,15 @@ const getFilteredLeagues = async (
                     return sub.id.toString();
                 });
             });
-            return exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
+
+            if (exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds) === true) {
+                printLogs("league name", league.property_name);
+                console.log("league id", league.id);
+                console.log("leagueSubPersonalityTraitIds", leagueSubPersonalityTraitIds);
+                console.log("requiredSubPersonalityTraitIds", requiredSubPersonalityTraitIds);
+                return true;
+            }
+            return false;
         });
     }
 
@@ -956,20 +1046,29 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
     const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const teamIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_team_personality_traits.map((trait) => trait.team_id),
-        );
-        teamIds.forEach((teamId) => {
-            const teamIdStr = teamId.toString();
-            if (!personalitiesByTeamId[teamIdStr]) {
-                personalitiesByTeamId[teamIdStr] = [];
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const teamIds = subPersonality.dashapp_team_personality_traits.map((trait) => trait.team_id);
 
-            const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+            teamIds.forEach((teamId) => {
+                const teamIdStr = teamId.toString();
 
-            if (!alreadyAdded) {
-                personalitiesByTeamId[teamIdStr].push(personality);
-            }
+                if (!personalitiesByTeamId[teamIdStr]) {
+                    personalitiesByTeamId[teamIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_team_personality_traits.some((trait) => trait.team_id.toString() === teamIdStr),
+                        ),
+                    };
+
+                    personalitiesByTeamId[teamIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 
@@ -1285,11 +1384,12 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
 
 export const getFilteredStakeholders = asyncHandler(async (req, res) => {
     const { take, skip } = req.query;
+    const filterData = req.validatedData;
 
     const [filteredAthletes, filteredLeagues, filteredTeams] = await Promise.all([
-        getFilteredAthletes(req.validatedData, { take, skip }),
-        getFilteredLeagues(req.validatedData, { take, skip }),
-        getFilteredTeams(req.validatedData, { take, skip }),
+        getFilteredAthletes(filterData, { take, skip }),
+        getFilteredLeagues(filterData, { take, skip }),
+        getFilteredTeams(filterData, { take, skip }),
     ]);
 
     res.status(STATUS_CODE.OK).json({

@@ -68,4 +68,4 @@ app.use("/api/admin/dashboard", Routers.dashboardRouter);
 
 app.use(globalErrorHandler);
 
-app.listen(port, () => printLogs(`${new Date().toLocaleTimeString()} Listening on port ${port}`));
+app.listen(port, () => console.log(`${new Date().toLocaleTimeString()} Listening on port ${port}`));

@@ -1198,33 +1198,36 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
 
     const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
 
-    if (mainPersonalities.length > 0) {
-        mainPersonalities.forEach((personality) => {
-            if (personality.dashapp_subpersonality && Array.isArray(personality.dashapp_subpersonality)) {
-                const teamIds = personality.dashapp_subpersonality
-                    .flatMap((sub) => sub.dashapp_team_personality_traits.map((trait) => trait.team_id).filter(Boolean))
-                    .filter(Boolean);
-                if (teamIds.length > 0) {
-                    teamIds.forEach((teamId) => {
-                        const teamIdStr = teamId.toString();
-                        if (!personalitiesByTeamId[teamIdStr]) {
-                            personalitiesByTeamId[teamIdStr] = [];
-                        }
+    mainPersonalities.forEach((personality) => {
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const teamIds = subPersonality.dashapp_team_personality_traits.map((trait) => trait.team_id);
 
-                        const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p?.id === personality?.id);
+            teamIds.forEach((teamId) => {
+                const teamIdStr = teamId.toString();
 
-                        if (!alreadyAdded) {
-                            personalitiesByTeamId[teamIdStr].push(personality);
-                        }
-                    });
+                if (!personalitiesByTeamId[teamIdStr]) {
+                    personalitiesByTeamId[teamIdStr] = [];
                 }
-            }
+
+                const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_team_personality_traits.some((trait) => trait.team_id.toString() === teamIdStr),
+                        ),
+                    };
+
+                    personalitiesByTeamId[teamIdStr].push(filteredPersonality);
+                }
+            });
         });
-    }
+    });
 
     const updatedTeams = teams.map((team) => ({
         ...team,
-        mainPersonalities: personalitiesByTeamId[team?.id?.toString()] || [],
+        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
     }));
 
     let filteredTeams = updatedTeams;

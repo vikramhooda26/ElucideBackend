@@ -1245,29 +1245,40 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         },
     });
 
-    const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
+    const personalitiesByLeagueId: Record<string, typeof mainPersonalities> = {};
 
     mainPersonalities.forEach((personality) => {
-        const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
-            sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
-        );
-        leagueIds.forEach((leagueId) => {
-            const leagueIdStr = leagueId.toString();
-            if (!personalitiesByleagueId[leagueIdStr]) {
-                personalitiesByleagueId[leagueIdStr] = [];
-            }
+        personality.dashapp_subpersonality.forEach((subPersonality) => {
+            const leagueIds = subPersonality.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id);
 
-            const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
+            leagueIds.forEach((leagueId) => {
+                const leagueIdStr = leagueId.toString();
 
-            if (!alreadyAdded) {
-                personalitiesByleagueId[leagueIdStr].push(personality);
-            }
+                if (!personalitiesByLeagueId[leagueIdStr]) {
+                    personalitiesByLeagueId[leagueIdStr] = [];
+                }
+
+                const alreadyAdded = personalitiesByLeagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+                if (!alreadyAdded) {
+                    const filteredPersonality = {
+                        ...personality,
+                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+                            sub.dashapp_leagueinfo_personality_traits.some(
+                                (trait) => trait.leagueinfo_id.toString() === leagueIdStr,
+                            ),
+                        ),
+                    };
+
+                    personalitiesByLeagueId[leagueIdStr].push(filteredPersonality);
+                }
+            });
         });
     });
 
     const updatedLeagues = leagues.map((league) => ({
         ...league,
-        mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+        mainPersonalities: personalitiesByLeagueId[league.id.toString()] || [],
     }));
 
     let filteredLeagues = updatedLeagues;
