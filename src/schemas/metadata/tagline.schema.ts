@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createTaglineSchema = z.object({
-    userId: z.string(),
-    taglineName: z.string(),
+  userId: z.string(),
+  taglineName: z.string(),
 });
 
 export const editTaglineSchema = createTaglineSchema;

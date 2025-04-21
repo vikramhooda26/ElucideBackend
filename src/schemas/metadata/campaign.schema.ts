@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createActiveCampaignSchema = z.object({
-    activeCampaignName: z.string(),
-    userId: z.string(),
+  activeCampaignName: z.string(),
+  userId: z.string(),
 });
 
 export const editActiveCampaignSchema = createActiveCampaignSchema;

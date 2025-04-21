@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createNccsSchema = z.object({
-    userId: z.string(),
-    nccsClass: z.string(),
+  userId: z.string(),
+  nccsClass: z.string(),
 });
 
 export const editNccsSchema = createNccsSchema;

@@ -1,10 +1,10 @@
 import { Router } from "express";
 import {
-    fetchAllMetrics,
-    fetchAthletesMetrics,
-    fetchBrandsMetrics,
-    fetchLeaguesMetrics,
-    fetchTeamsMetrics,
+  fetchAllMetrics,
+  fetchAthletesMetrics,
+  fetchBrandsMetrics,
+  fetchLeaguesMetrics,
+  fetchTeamsMetrics,
 } from "../controllers/dashboard/dashboard.controller.js";
 
 export const dashboardRouter = Router();

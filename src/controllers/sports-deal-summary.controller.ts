@@ -7,283 +7,283 @@ import { TCreateSportsDealSummarySchema, TEditSportsDealSummarySchema } from "..
 import { sportsDealSummarySelect } from "../types/sports-deal-summary.type.js";
 
 export const getAllSportsDealSummaries = asyncHandler(async (req, res) => {
-    const { take, skip, searchString, stakeholder } = req.query;
+  const { take, skip, searchString, stakeholder } = req.query;
 
-    const searchQuery: any = {
-        OR: [],
-    };
+  const searchQuery: any = {
+    OR: [],
+  };
 
-    if (stakeholder === "BRAND") {
-        searchQuery.OR.push({
-            dashapp_companydata: {
-                company_name: { contains: searchString, mode: "insensitive" },
-            },
-        });
-    } else if (stakeholder === "ATHLETE") {
-        searchQuery.OR.push({
-            dashapp_athlete: {
-                athlete_name: { contains: searchString, mode: "insensitive" },
-            },
-        });
-    } else if (stakeholder === "TEAM") {
-        searchQuery.OR.push({
-            dashapp_team: {
-                team_name: { contains: searchString, mode: "insensitive" },
-            },
-        });
-    } else if (stakeholder === "LEAGUE") {
-        searchQuery.OR.push({
-            dashapp_leagueinfo: {
-                property_name: { contains: searchString, mode: "insensitive" },
-            },
-        });
-    }
-
-    const sportsDealSummaries = await prisma.dashapp_sportsdealsummary.findMany({
-        where: searchQuery.OR.length ? searchQuery : undefined,
-        select: {
-            id: true,
-            dashapp_companydata: { select: { company_name: true } },
-            dashapp_athlete: { select: { athlete_name: true } },
-            dashapp_team: { select: { team_name: true } },
-            dashapp_leagueinfo: { select: { property_name: true } },
-            status: true,
-            created_date: true,
-            modified_date: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            _count: true,
-        },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+  if (stakeholder === "BRAND") {
+    searchQuery.OR.push({
+      dashapp_companydata: {
+        company_name: { contains: searchString, mode: "insensitive" },
+      },
     });
+  } else if (stakeholder === "ATHLETE") {
+    searchQuery.OR.push({
+      dashapp_athlete: {
+        athlete_name: { contains: searchString, mode: "insensitive" },
+      },
+    });
+  } else if (stakeholder === "TEAM") {
+    searchQuery.OR.push({
+      dashapp_team: {
+        team_name: { contains: searchString, mode: "insensitive" },
+      },
+    });
+  } else if (stakeholder === "LEAGUE") {
+    searchQuery.OR.push({
+      dashapp_leagueinfo: {
+        property_name: { contains: searchString, mode: "insensitive" },
+      },
+    });
+  }
 
-    if (sportsDealSummaries.length < 1) {
-        throw new NotFoundError("Sports deal summaries data does not exists");
-    }
+  const sportsDealSummaries = await prisma.dashapp_sportsdealsummary.findMany({
+    where: searchQuery.OR.length ? searchQuery : undefined,
+    select: {
+      id: true,
+      dashapp_companydata: { select: { company_name: true } },
+      dashapp_athlete: { select: { athlete_name: true } },
+      dashapp_team: { select: { team_name: true } },
+      dashapp_leagueinfo: { select: { property_name: true } },
+      status: true,
+      created_date: true,
+      modified_date: true,
+      created_by: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      modified_by: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      _count: true,
+    },
+    orderBy: { modified_date: "desc" },
+    take: Number.isNaN(Number(take)) ? undefined : Number(take),
+    skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+  });
 
-    res.status(STATUS_CODE.OK).json(
-        sportsDealSummaries.map((sportsDealSummary) => ({
-            id: sportsDealSummary.id,
-            status: sportsDealSummary.status,
-            brand: sportsDealSummary.dashapp_companydata?.company_name,
-            partner:
-                sportsDealSummary.dashapp_team?.team_name ||
-                sportsDealSummary.dashapp_leagueinfo?.property_name ||
-                sportsDealSummary.dashapp_athlete?.athlete_name,
-            createdDate: sportsDealSummary.created_date,
-            modifiedDate: sportsDealSummary.modified_date,
-            createdBy: {
-                userId: sportsDealSummary.created_by?.id,
-                email: sportsDealSummary.created_by?.email,
-            },
-            modifiedBy: {
-                userId: sportsDealSummary.modified_by?.id,
-                email: sportsDealSummary.modified_by?.email,
-            },
-            count: sportsDealSummary._count,
-        })),
-    );
+  if (sportsDealSummaries.length < 1) {
+    throw new NotFoundError("Sports deal summaries data does not exists");
+  }
+
+  res.status(STATUS_CODE.OK).json(
+    sportsDealSummaries.map((sportsDealSummary) => ({
+      id: sportsDealSummary.id,
+      status: sportsDealSummary.status,
+      brand: sportsDealSummary.dashapp_companydata?.company_name,
+      partner:
+        sportsDealSummary.dashapp_team?.team_name ||
+        sportsDealSummary.dashapp_leagueinfo?.property_name ||
+        sportsDealSummary.dashapp_athlete?.athlete_name,
+      createdDate: sportsDealSummary.created_date,
+      modifiedDate: sportsDealSummary.modified_date,
+      createdBy: {
+        userId: sportsDealSummary.created_by?.id,
+        email: sportsDealSummary.created_by?.email,
+      },
+      modifiedBy: {
+        userId: sportsDealSummary.modified_by?.id,
+        email: sportsDealSummary.modified_by?.email,
+      },
+      count: sportsDealSummary._count,
+    })),
+  );
 });
 
 export const getSportsDealSummaryById = asyncHandler(async (req, res) => {
-    const sportsDealSummaryId = req.params.id;
+  const sportsDealSummaryId = req.params.id;
 
-    if (!sportsDealSummaryId) {
-        throw new BadRequestError("Sport deal summary ID not found");
-    }
+  if (!sportsDealSummaryId) {
+    throw new BadRequestError("Sport deal summary ID not found");
+  }
 
-    const sportsDealSummary = await prisma.dashapp_sportsdealsummary.findUnique({
-        where: { id: BigInt(sportsDealSummaryId) },
-        select: sportsDealSummarySelect,
-    });
+  const sportsDealSummary = await prisma.dashapp_sportsdealsummary.findUnique({
+    where: { id: BigInt(sportsDealSummaryId) },
+    select: sportsDealSummarySelect,
+  });
 
-    if (!sportsDealSummary?.id) {
-        throw new NotFoundError("This sports deal summary does not exists");
-    }
+  if (!sportsDealSummary?.id) {
+    throw new NotFoundError("This sports deal summary does not exists");
+  }
 
-    const sportsDealSummaryResponseDTO: SportsDealSummaryResponseDTO =
-        SportsDealSummaryResponseDTO.toResponse(sportsDealSummary);
+  const sportsDealSummaryResponseDTO: SportsDealSummaryResponseDTO =
+    SportsDealSummaryResponseDTO.toResponse(sportsDealSummary);
 
-    res.status(STATUS_CODE.OK).json(sportsDealSummaryResponseDTO);
+  res.status(STATUS_CODE.OK).json(sportsDealSummaryResponseDTO);
 });
 
 export const createSportsDealSummary = asyncHandler(async (req, res) => {
-    const {
-        annualValue,
-        assetIds,
-        commencementYear,
-        duration,
-        expirationDate,
-        levelId,
-        mediaLink,
-        status,
-        territoryId,
-        totalValue,
-        type,
-        brandId,
-        athleteId,
-        leagueId,
-        teamId,
-        userId,
-    } = req.validatedData as TCreateSportsDealSummarySchema;
+  const {
+    annualValue,
+    assetIds,
+    commencementYear,
+    duration,
+    expirationDate,
+    levelId,
+    mediaLink,
+    status,
+    territoryId,
+    totalValue,
+    type,
+    brandId,
+    athleteId,
+    leagueId,
+    teamId,
+    userId,
+  } = req.validatedData as TCreateSportsDealSummarySchema;
 
-    await prisma.dashapp_sportsdealsummary.create({
-        data: {
-            created_by: { connect: { id: BigInt(userId) } },
-            modified_by: { connect: { id: BigInt(userId) } },
-            dashapp_sportsdeal_assets: assetIds
-                ? {
-                      create: assetIds?.map((assetId) => ({
-                          dashapp_assets: {
-                              connect: { id: BigInt(assetId) },
-                          },
-                      })),
-                  }
-                : undefined,
-            dashapp_territory: territoryId
-                ? {
-                      connect: { id: BigInt(territoryId) },
-                  }
-                : undefined,
-            dashapp_level: levelId
-                ? {
-                      connect: { id: BigInt(levelId) },
-                  }
-                : undefined,
-            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : undefined,
-            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : undefined,
-            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : undefined,
-            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : undefined,
-            annual_value: annualValue || undefined,
-            total_value: totalValue || undefined,
-            commencement_date: commencementYear || undefined,
-            expiration_date: expirationDate || undefined,
-            type: type,
-            status: status || undefined,
-            duration: duration || undefined,
-            media_link: mediaLink || undefined,
-        },
-    });
+  await prisma.dashapp_sportsdealsummary.create({
+    data: {
+      created_by: { connect: { id: BigInt(userId) } },
+      modified_by: { connect: { id: BigInt(userId) } },
+      dashapp_sportsdeal_assets: assetIds
+        ? {
+            create: assetIds?.map((assetId) => ({
+              dashapp_assets: {
+                connect: { id: BigInt(assetId) },
+              },
+            })),
+          }
+        : undefined,
+      dashapp_territory: territoryId
+        ? {
+            connect: { id: BigInt(territoryId) },
+          }
+        : undefined,
+      dashapp_level: levelId
+        ? {
+            connect: { id: BigInt(levelId) },
+          }
+        : undefined,
+      dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : undefined,
+      dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : undefined,
+      dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : undefined,
+      dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : undefined,
+      annual_value: annualValue || undefined,
+      total_value: totalValue || undefined,
+      commencement_date: commencementYear || undefined,
+      expiration_date: expirationDate || undefined,
+      type: type,
+      status: status || undefined,
+      duration: duration || undefined,
+      media_link: mediaLink || undefined,
+    },
+  });
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Sports deal summary created",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Sports deal summary created",
+  });
 });
 
 export const editSportsDealSummary = asyncHandler(async (req, res) => {
-    const sportsDealSummaryId = req.params.id;
+  const sportsDealSummaryId = req.params.id;
 
-    if (!sportsDealSummaryId) {
-        throw new BadRequestError("Sports deal summary ID not found");
-    }
+  if (!sportsDealSummaryId) {
+    throw new BadRequestError("Sports deal summary ID not found");
+  }
 
-    const sportsDealSummaryExits = await prisma.dashapp_sportsdealsummary.findUnique({
-        where: { id: BigInt(sportsDealSummaryId) },
-        select: { id: true },
-    });
+  const sportsDealSummaryExits = await prisma.dashapp_sportsdealsummary.findUnique({
+    where: { id: BigInt(sportsDealSummaryId) },
+    select: { id: true },
+  });
 
-    if (!sportsDealSummaryExits?.id) {
-        throw new NotFoundError("This sports deal summary does not exists");
-    }
+  if (!sportsDealSummaryExits?.id) {
+    throw new NotFoundError("This sports deal summary does not exists");
+  }
 
-    const {
-        annualValue,
-        assetIds,
-        athleteId,
-        brandId,
-        commencementYear,
-        duration,
-        expirationDate,
-        leagueId,
-        levelId,
-        mediaLink,
-        status,
-        teamId,
-        territoryId,
-        totalValue,
-        type,
-    } = req.validatedData as TEditSportsDealSummarySchema;
+  const {
+    annualValue,
+    assetIds,
+    athleteId,
+    brandId,
+    commencementYear,
+    duration,
+    expirationDate,
+    leagueId,
+    levelId,
+    mediaLink,
+    status,
+    teamId,
+    territoryId,
+    totalValue,
+    type,
+  } = req.validatedData as TEditSportsDealSummarySchema;
 
-    const userId = req.user.userId;
+  const userId = req.user.userId;
 
-    await prisma.dashapp_sportsdealsummary.update({
-        where: { id: BigInt(sportsDealSummaryId) },
-        data: {
-            modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
-            dashapp_sportsdeal_assets: {
-                deleteMany: {},
-                ...(assetIds && {
-                    create: assetIds?.map((assetId) => ({
-                        dashapp_assets: {
-                            connect: { id: BigInt(assetId) },
-                        },
-                    })),
-                }),
+  await prisma.dashapp_sportsdealsummary.update({
+    where: { id: BigInt(sportsDealSummaryId) },
+    data: {
+      modified_by: userId ? { connect: { id: BigInt(userId) } } : undefined,
+      dashapp_sportsdeal_assets: {
+        deleteMany: {},
+        ...(assetIds && {
+          create: assetIds?.map((assetId) => ({
+            dashapp_assets: {
+              connect: { id: BigInt(assetId) },
             },
-            dashapp_territory: territoryId
-                ? {
-                      connect: { id: BigInt(territoryId) },
-                  }
-                : { disconnect: true },
-            dashapp_level: levelId
-                ? {
-                      connect: { id: BigInt(levelId) },
-                  }
-                : { disconnect: true },
-            dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
-            dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
-            dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
-            dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
-            annual_value: annualValue || null,
-            total_value: totalValue || null,
-            commencement_date: commencementYear || null,
-            expiration_date: expirationDate || null,
-            type: type,
-            status: status || null,
-            duration: duration || null,
-            media_link: mediaLink || null,
-        },
-    });
+          })),
+        }),
+      },
+      dashapp_territory: territoryId
+        ? {
+            connect: { id: BigInt(territoryId) },
+          }
+        : { disconnect: true },
+      dashapp_level: levelId
+        ? {
+            connect: { id: BigInt(levelId) },
+          }
+        : { disconnect: true },
+      dashapp_companydata: brandId ? { connect: { id: BigInt(brandId) } } : { disconnect: true },
+      dashapp_leagueinfo: leagueId ? { connect: { id: BigInt(leagueId) } } : { disconnect: true },
+      dashapp_team: teamId ? { connect: { id: BigInt(teamId) } } : { disconnect: true },
+      dashapp_athlete: athleteId ? { connect: { id: BigInt(athleteId) } } : { disconnect: true },
+      annual_value: annualValue || null,
+      total_value: totalValue || null,
+      commencement_date: commencementYear || null,
+      expiration_date: expirationDate || null,
+      type: type,
+      status: status || null,
+      duration: duration || null,
+      media_link: mediaLink || null,
+    },
+  });
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Sports deal summary updated",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Sports deal summary updated",
+  });
 });
 
 export const deleteSportsDealSummary = asyncHandler(async (req, res) => {
-    const sportsDealSummaryId = req.params.id;
+  const sportsDealSummaryId = req.params.id;
 
-    if (!sportsDealSummaryId) {
-        throw new BadRequestError("Sports deal summary ID not found");
-    }
+  if (!sportsDealSummaryId) {
+    throw new BadRequestError("Sports deal summary ID not found");
+  }
 
-    const sportsDealSummaryExists = await prisma.dashapp_sportsdealsummary.findUnique({
-        where: { id: BigInt(sportsDealSummaryId) },
-        select: { id: true },
-    });
+  const sportsDealSummaryExists = await prisma.dashapp_sportsdealsummary.findUnique({
+    where: { id: BigInt(sportsDealSummaryId) },
+    select: { id: true },
+  });
 
-    if (!sportsDealSummaryExists?.id) {
-        throw new NotFoundError("This sports deal summary does not exists");
-    }
+  if (!sportsDealSummaryExists?.id) {
+    throw new NotFoundError("This sports deal summary does not exists");
+  }
 
-    await prisma.dashapp_sportsdealsummary.delete({
-        where: { id: BigInt(sportsDealSummaryId) },
-        select: { id: true },
-    });
+  await prisma.dashapp_sportsdealsummary.delete({
+    where: { id: BigInt(sportsDealSummaryId) },
+    select: { id: true },
+  });
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Sports deal summary deleted",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Sports deal summary deleted",
+  });
 });

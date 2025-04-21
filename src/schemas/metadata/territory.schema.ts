@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createTerritorySchema = z.object({
-    userId: z.string(),
-    territoryName: z.string(),
+  userId: z.string(),
+  territoryName: z.string(),
 });
 
 export const editTerritorySchema = createTerritorySchema;

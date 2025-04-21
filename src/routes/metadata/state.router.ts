@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createState,
-    deleteState,
-    editState,
-    getAllStates,
-    getStateById,
+  createState,
+  deleteState,
+  editState,
+  getAllStates,
+  getStateById,
 } from "../../controllers/metadata/state.controller.js";
 import { createStateSchema, editStateSchema } from "../../schemas/metadata/state.schema.js";
 

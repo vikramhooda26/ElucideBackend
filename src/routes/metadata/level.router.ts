@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createLevel,
-    deleteLevel,
-    editLevel,
-    getAllLevels,
-    getLevelById,
+  createLevel,
+  deleteLevel,
+  editLevel,
+  getAllLevels,
+  getLevelById,
 } from "../../controllers/metadata/level.controller.js";
 import { createLevelSchema, editLevelSchema } from "../../schemas/metadata/level.schema.js";
 

@@ -14,96 +14,96 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "myAccessTokenSec
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "myRefreshTokenSecret";
 
 export const generateAccessToken = async (user: TUser) => {
-    const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
-        expiresIn: "7d",
+  const accessToken = jwt.sign(user, ACCESS_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
+
+  const hasToken = tokenManager.hasToken(user.userId);
+
+  if (hasToken) {
+    tokenManager.removeToken(user.userId);
+
+    const deleteRefreshToken = await prisma.auth_user.update({
+      where: { id: BigInt(user.userId), isDeleted: false },
+      data: { refresh_token: { deleteMany: {} } },
+      select: { id: true },
     });
 
-    const hasToken = tokenManager.hasToken(user.userId);
-
-    if (hasToken) {
-        tokenManager.removeToken(user.userId);
-
-        const deleteRefreshToken = await prisma.auth_user.update({
-            where: { id: BigInt(user.userId), isDeleted: false },
-            data: { refresh_token: { deleteMany: {} } },
-            select: { id: true },
-        });
-
-        if (!deleteRefreshToken) {
-            throw new ForbiddenError("Could not remove tokens");
-        }
+    if (!deleteRefreshToken) {
+      throw new ForbiddenError("Could not remove tokens");
     }
+  }
 
-    tokenManager.setToken(user.userId, accessToken);
+  tokenManager.setToken(user.userId, accessToken);
 
-    return accessToken;
+  return accessToken;
 };
 
 export const generateRefreshToken = async (user: TUser) => {
-    const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET);
+  const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-    await prisma.auth_user.update({
-        where: { id: BigInt(user.userId) },
-        data: {
-            refresh_token: {
-                create: {
-                    token: refreshToken,
-                },
-            },
+  await prisma.auth_user.update({
+    where: { id: BigInt(user.userId) },
+    data: {
+      refresh_token: {
+        create: {
+          token: refreshToken,
         },
-        select: { id: true },
-    });
+      },
+    },
+    select: { id: true },
+  });
 
-    return refreshToken;
+  return refreshToken;
 };
 
 export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-    return await bcrypt.compare(password, hashedPassword);
+  return await bcrypt.compare(password, hashedPassword);
 };
 
 export const checkUserExistence = async (username: string) => {
-    const user = await prisma.auth_user.findFirst({
-        where: { username, isDeleted: false },
-        select: {
-            id: true,
-            first_name: true,
-            email: true,
-            last_name: true,
-            username: true,
-            role: true,
-            password: true,
-        },
-    });
+  const user = await prisma.auth_user.findFirst({
+    where: { username, isDeleted: false },
+    select: {
+      id: true,
+      first_name: true,
+      email: true,
+      last_name: true,
+      username: true,
+      role: true,
+      password: true,
+    },
+  });
 
-    return user
-        ? {
-              id: user.id,
-              username: user.username,
-              password: user.password,
-              role: user.role,
-              firstName: user.first_name,
-              lastName: user.last_name,
-              email: user.email,
-          }
-        : null;
+  return user
+    ? {
+        id: user.id,
+        username: user.username,
+        password: user.password,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+      }
+    : null;
 };
 
 export const verifyAccessToken = (token: string) => {
-    const decodedAcessToken = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
-    const activeToken = tokenManager.getToken(decodedAcessToken.userId);
+  const decodedAcessToken = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
+  const activeToken = tokenManager.getToken(decodedAcessToken.userId);
 
-    if (activeToken !== token) {
-        throw new JsonWebTokenError("Token overridden");
-    }
+  if (activeToken !== token) {
+    throw new JsonWebTokenError("Token overridden");
+  }
 
-    return decodedAcessToken;
+  return decodedAcessToken;
 };
 
 export const verifyRefreshToken = (token: string) => {
-    return jwt.verify(token, REFRESH_TOKEN_SECRET);
+  return jwt.verify(token, REFRESH_TOKEN_SECRET);
 };
 
 export const clearAuthCookies = (res: Response) => {
-    res.clearCookie(COOKIE_NAME.CSRF);
-    res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
+  res.clearCookie(COOKIE_NAME.CSRF);
+  res.clearCookie(COOKIE_NAME.REFRESH_TOKEN);
 };

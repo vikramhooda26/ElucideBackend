@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createTierSchema = z.object({
-    userId: z.string(),
-    tierName: z.string(),
+  userId: z.string(),
+  tierName: z.string(),
 });
 
 export const editTierSchema = createTierSchema;

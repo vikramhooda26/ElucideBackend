@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createGenderSchema = z.object({
-    userId: z.string(),
-    gender: z.string(),
+  userId: z.string(),
+  gender: z.string(),
 });
 
 export const editGenderSchema = createGenderSchema;

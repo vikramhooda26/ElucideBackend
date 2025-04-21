@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createBroadcastPartnerSchema = z.object({
-    broadcastPartnerName: z.string(),
-    userId: z.string(),
+  broadcastPartnerName: z.string(),
+  userId: z.string(),
 });
 
 export const editBroadcastPartnerSchema = createBroadcastPartnerSchema;

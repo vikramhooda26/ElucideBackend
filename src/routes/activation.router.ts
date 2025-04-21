@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
 import {
-    createActivation,
-    deleteActivation,
-    editActivation,
-    getActivationById,
-    getAllActivations,
+  createActivation,
+  deleteActivation,
+  editActivation,
+  getActivationById,
+  getAllActivations,
 } from "../controllers/activation.controller.js";
 import { createActivationSchema, editActivationSchema } from "../schemas/activation.schema.js";
 
@@ -17,17 +17,17 @@ activationRouter.get("/get-all", getAllActivations);
 activationRouter.get("/:id", getActivationById);
 
 activationRouter.post(
-    "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
-    validateSchema(createActivationSchema),
-    createActivation,
+  "/create",
+  roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+  validateSchema(createActivationSchema),
+  createActivation,
 );
 
 activationRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editActivationSchema),
-    editActivation,
+  "/edit/:id",
+  roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+  validateSchema(editActivationSchema),
+  editActivation,
 );
 
 activationRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteActivation);

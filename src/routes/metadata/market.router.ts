@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createKeyMarket,
-    deleteKeyMarket,
-    editKeyMarket,
-    getAllkeyMarket,
-    getKeyMarketById,
+  createKeyMarket,
+  deleteKeyMarket,
+  editKeyMarket,
+  getAllkeyMarket,
+  getKeyMarketById,
 } from "../../controllers/metadata/market.controller.js";
 import { createkeyMarketchema, editKeyMarketSchema } from "../../schemas/metadata/market.schema.js";
 

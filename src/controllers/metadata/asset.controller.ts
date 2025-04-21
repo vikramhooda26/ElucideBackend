@@ -6,160 +6,160 @@ import { TCreateAssetSchema, TEditAssetSchema } from "../../schemas/metadata/ass
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllAssets = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
+  const { take, skip } = req.query;
 
-    const assets = await prisma.dashapp_assets.findMany({
+  const assets = await prisma.dashapp_assets.findMany({
+    select: {
+      id: true,
+      asset: true,
+      created_date: true,
+      modified_date: true,
+      created_by: {
         select: {
-            id: true,
-            asset: true,
-            created_date: true,
-            modified_date: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            _count: true,
+          id: true,
+          email: true,
         },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
-    });
+      },
+      modified_by: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      _count: true,
+    },
+    orderBy: { modified_date: "desc" },
+    take: Number.isNaN(Number(take)) ? undefined : Number(take),
+    skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+  });
 
-    if (assets.length < 1) {
-        throw new NotFoundError("Assets data does not exists");
-    }
+  if (assets.length < 1) {
+    throw new NotFoundError("Assets data does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json(
-        assets.map((asset) => ({
-            id: asset.id,
-            assetName: asset.asset,
-            createdDate: asset.created_date,
-            modifiedDate: asset.modified_date,
-            createdBy: {
-                userId: asset.created_by?.id,
-                email: asset.created_by?.email,
-            },
-            modifiedBy: {
-                userId: asset.modified_by?.id,
-                email: asset.modified_by?.email,
-            },
-            count: asset._count,
-        })),
-    );
+  res.status(STATUS_CODE.OK).json(
+    assets.map((asset) => ({
+      id: asset.id,
+      assetName: asset.asset,
+      createdDate: asset.created_date,
+      modifiedDate: asset.modified_date,
+      createdBy: {
+        userId: asset.created_by?.id,
+        email: asset.created_by?.email,
+      },
+      modifiedBy: {
+        userId: asset.modified_by?.id,
+        email: asset.modified_by?.email,
+      },
+      count: asset._count,
+    })),
+  );
 });
 
 export const getAssetById = asyncHandler(async (req, res) => {
-    const assetId = req.params.id;
+  const assetId = req.params.id;
 
-    if (!assetId) {
-        throw new BadRequestError("Asset ID not found");
-    }
+  if (!assetId) {
+    throw new BadRequestError("Asset ID not found");
+  }
 
-    const asset = await prisma.dashapp_assets.findUnique({
-        where: { id: BigInt(assetId) },
-        select: {
-            id: true,
-            asset: true,
-        },
-    });
+  const asset = await prisma.dashapp_assets.findUnique({
+    where: { id: BigInt(assetId) },
+    select: {
+      id: true,
+      asset: true,
+    },
+  });
 
-    if (!asset?.id) {
-        throw new NotFoundError("This asset does not exists");
-    }
+  if (!asset?.id) {
+    throw new NotFoundError("This asset does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json({
-        id: asset.id,
-        assetName: asset.asset,
-    });
+  res.status(STATUS_CODE.OK).json({
+    id: asset.id,
+    assetName: asset.asset,
+  });
 });
 
 export const createAsset = asyncHandler(async (req, res) => {
-    const { assetName, userId } = req.validatedData as TCreateAssetSchema;
+  const { assetName, userId } = req.validatedData as TCreateAssetSchema;
 
-    await prisma.dashapp_assets.create({
-        data: {
-            asset: assetName,
-            created_by: { connect: { id: BigInt(userId) } },
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: { id: true },
-    });
+  await prisma.dashapp_assets.create({
+    data: {
+      asset: assetName,
+      created_by: { connect: { id: BigInt(userId) } },
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Asset created",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Asset created",
+  });
 });
 
 export const editAsset = asyncHandler(async (req, res) => {
-    const assetId = req.params.id;
+  const assetId = req.params.id;
 
-    if (!assetId) {
-        throw new BadRequestError("Asset ID not found");
-    }
+  if (!assetId) {
+    throw new BadRequestError("Asset ID not found");
+  }
 
-    const assetExits = await prisma.dashapp_assets.findUnique({
-        where: { id: BigInt(assetId) },
-        select: { id: true },
-    });
+  const assetExits = await prisma.dashapp_assets.findUnique({
+    where: { id: BigInt(assetId) },
+    select: { id: true },
+  });
 
-    if (!assetExits?.id) {
-        throw new NotFoundError("This asset does not exists");
-    }
+  if (!assetExits?.id) {
+    throw new NotFoundError("This asset does not exists");
+  }
 
-    const { assetName, userId } = req.validatedData as TEditAssetSchema;
+  const { assetName, userId } = req.validatedData as TEditAssetSchema;
 
-    await prisma.dashapp_assets.update({
-        where: { id: BigInt(assetId) },
-        data: {
-            asset: assetName,
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: {
-            id: true,
-        },
-    });
+  await prisma.dashapp_assets.update({
+    where: { id: BigInt(assetId) },
+    data: {
+      asset: assetName,
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: {
+      id: true,
+    },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Asset updated",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Asset updated",
+  });
 });
 
 export const deleteAsset = asyncHandler(async (req, res) => {
-    const assetId = req.params.id;
+  const assetId = req.params.id;
 
-    if (!assetId) {
-        throw new BadRequestError("Asset ID not found");
-    }
+  if (!assetId) {
+    throw new BadRequestError("Asset ID not found");
+  }
 
-    const assetExists = await prisma.dashapp_assets.findUnique({
-        where: { id: BigInt(assetId) },
-        select: { id: true },
-    });
+  const assetExists = await prisma.dashapp_assets.findUnique({
+    where: { id: BigInt(assetId) },
+    select: { id: true },
+  });
 
-    if (!assetExists?.id) {
-        throw new NotFoundError("This asset does not exists");
-    }
+  if (!assetExists?.id) {
+    throw new NotFoundError("This asset does not exists");
+  }
 
-    await prisma.dashapp_assets.delete({
-        where: { id: BigInt(assetId) },
-        select: { id: true },
-    });
+  await prisma.dashapp_assets.delete({
+    where: { id: BigInt(assetId) },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.ASSET, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Asset deleted",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Asset deleted",
+  });
 });

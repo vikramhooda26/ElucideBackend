@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createStateSchema = z.object({
-    userId: z.string(),
-    stateName: z.string(),
+  userId: z.string(),
+  stateName: z.string(),
 });
 
 export const editStateSchema = createStateSchema;

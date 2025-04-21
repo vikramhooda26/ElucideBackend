@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createAgeRangeSchema = z.object({
-    ageRange: z.string(),
-    userId: z.string(),
+  ageRange: z.string(),
+  userId: z.string(),
 });
 
 export const editAgeRangeSchema = createAgeRangeSchema;

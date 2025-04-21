@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-    createUser,
-    deleteUserById,
-    editUserById,
-    fetchAllUsers,
-    fetchUserById,
-    fetchUserDetails,
+  createUser,
+  deleteUserById,
+  editUserById,
+  fetchAllUsers,
+  fetchUserById,
+  fetchUserDetails,
 } from "../controllers/user.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";

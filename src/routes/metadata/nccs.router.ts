@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createNccs,
-    deleteNccs,
-    editNccs,
-    getAllNccs,
-    getNccsById,
+  createNccs,
+  deleteNccs,
+  editNccs,
+  getAllNccs,
+  getNccsById,
 } from "../../controllers/metadata/nccs.controller.js";
 import { createNccsSchema, editNccsSchema } from "../../schemas/metadata/nccs.schema.js";
 

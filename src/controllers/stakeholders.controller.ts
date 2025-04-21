@@ -16,1173 +16,1164 @@ import { getLeagues } from "./league.controller.js";
 import { getTeams } from "./team.controller.js";
 
 const getFilteredAthletes = async (
-    filterData: TFilteredStakeholdersSchema,
-    { take, skip }: { take: any; skip: any },
+  filterData: TFilteredStakeholdersSchema,
+  { take, skip }: { take: any; skip: any },
 ) => {
-    const {
-        costOfAssociation,
-        associationLevelIds,
-        sportIds,
-        ageIds,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
-        facebook,
-        genderIds,
-        instagram,
-        linkedin,
-        nccsIds,
-        primaryMarketIds,
-        secondaryMarketIds,
-        strategyOverview,
-        subPersonalityTraitIds,
-        tertiaryIds,
-        tierIds,
-        twitter,
-        website,
-        youtube,
-        isMandatory,
-    } = filterData;
+  const {
+    costOfAssociation,
+    associationLevelIds,
+    sportIds,
+    ageIds,
+    contactDesignation,
+    contactEmail,
+    contactLinkedin,
+    contactName,
+    contactNumber,
+    facebook,
+    genderIds,
+    instagram,
+    linkedin,
+    nccsIds,
+    primaryMarketIds,
+    secondaryMarketIds,
+    strategyOverview,
+    subPersonalityTraitIds,
+    tertiaryIds,
+    tierIds,
+    twitter,
+    website,
+    youtube,
+    isMandatory,
+  } = filterData;
 
-    const AthleteFilterConditions: Prisma.dashapp_athleteWhereInput = {
-        dashapp_athlete_target_age: ageIds?.length
-            ? {
-                  some: {
-                      dashapp_age: {
-                          id: { in: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_target_income: nccsIds?.length
-            ? {
-                  some: {
-                      dashapp_nccs: {
-                          id: { in: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_key_markets_primary: primaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: {
-                              in: secondaryMarketIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_association:
-            associationLevelIds?.length || costOfAssociation?.cost?.length
-                ? {
-                      some: {
-                          association_level_id: associationLevelIds?.length
-                              ? {
-                                    in: associationLevelIds.map((id) => BigInt(id)),
-                                }
-                              : undefined,
-                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
-                      },
-                  }
-                : undefined,
-
-        dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
-            ? {
-                  some: {
-                      dashapp_states: {
-                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_sport: sportIds?.length
-            ? {
-                  id: { in: sportIds.map((id) => BigInt(id)) },
-              }
-            : undefined,
-
-        dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
-            ? {
-                  some: {
-                      dashapp_subpersonality: {
-                          id: {
-                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        strategy_overview: strategyOverview
-            ? {
-                  contains: strategyOverview,
-                  mode: "insensitive",
-              }
-            : undefined,
-
-        dashapp_athlete_target_gender: genderIds?.length
-            ? {
-                  every: {
-                      dashapp_gender: await getGenderQuery(genderIds),
-                  },
-              }
-            : undefined,
-
-        dashapp_athlete_tier: tierIds?.length
-            ? {
-                  some: {
-                      dashapp_tier: {
-                          id: { in: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
-        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
-        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
-        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
-        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
-        website: website ? { contains: website, mode: "insensitive" } : undefined,
-
-        dashapp_athletecontact:
-            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
-                ? {
-                      some: {
-                          contact_name: contactName
-                              ? {
-                                    contains: contactName,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_designation: contactDesignation
-                              ? {
-                                    contains: contactDesignation,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_email: contactEmail
-                              ? {
-                                    contains: contactEmail,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_no: contactNumber
-                              ? {
-                                    contains: contactNumber,
-                                }
-                              : undefined,
-                          contact_linkedin: contactLinkedin
-                              ? {
-                                    contains: contactLinkedin,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                      },
-                  }
-                : undefined,
-    };
-
-    const combinedFilterConditions = isMandatory
-        ? AthleteFilterConditions
-        : {
-              OR: Object.entries(AthleteFilterConditions)
-                  .filter(([_, condition]) => condition)
-                  .map(([key, condition]) => ({ [key]: condition })),
-          };
-
-    const athletes = await getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect });
-
-    if (athletes.length < 1) {
-        return [];
-    }
-
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_athlete_personality_traits: {
-                        some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
-                    },
-                },
+  const AthleteFilterConditions: Prisma.dashapp_athleteWhereInput = {
+    dashapp_athlete_target_age: ageIds?.length
+      ? {
+          some: {
+            dashapp_age: {
+              id: { in: ageIds.map((id) => BigInt(id)) },
             },
+          },
+        }
+      : undefined,
+
+    dashapp_athlete_target_income: nccsIds?.length
+      ? {
+          some: {
+            dashapp_nccs: {
+              id: { in: nccsIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_athlete_key_markets_primary: primaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_athlete_key_markets_secondary: secondaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: {
+                in: secondaryMarketIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_athlete_association:
+      associationLevelIds?.length || costOfAssociation?.cost?.length
+        ? {
+            some: {
+              association_level_id: associationLevelIds?.length
+                ? {
+                    in: associationLevelIds.map((id) => BigInt(id)),
+                  }
+                : undefined,
+              cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
+            },
+          }
+        : undefined,
+
+    dashapp_athlete_key_markets_tertiary: tertiaryIds?.length
+      ? {
+          some: {
+            dashapp_states: {
+              id: { in: tertiaryIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_sport: sportIds?.length
+      ? {
+          id: { in: sportIds.map((id) => BigInt(id)) },
+        }
+      : undefined,
+
+    dashapp_athlete_personality_traits: subPersonalityTraitIds?.length
+      ? {
+          some: {
+            dashapp_subpersonality: {
+              id: {
+                in: subPersonalityTraitIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    strategy_overview: strategyOverview
+      ? {
+          contains: strategyOverview,
+          mode: "insensitive",
+        }
+      : undefined,
+
+    dashapp_athlete_target_gender: genderIds?.length
+      ? {
+          every: {
+            dashapp_gender: await getGenderQuery(genderIds),
+          },
+        }
+      : undefined,
+
+    dashapp_athlete_tier: tierIds?.length
+      ? {
+          some: {
+            dashapp_tier: {
+              id: { in: tierIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+    instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+    twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+    linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+    youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+    website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+    dashapp_athletecontact:
+      contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+        ? {
+            some: {
+              contact_name: contactName
+                ? {
+                    contains: contactName,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_designation: contactDesignation
+                ? {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_email: contactEmail
+                ? {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_no: contactNumber
+                ? {
+                    contains: contactNumber,
+                  }
+                : undefined,
+              contact_linkedin: contactLinkedin
+                ? {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                  }
+                : undefined,
+            },
+          }
+        : undefined,
+  };
+
+  const combinedFilterConditions = isMandatory
+    ? AthleteFilterConditions
+    : {
+        OR: Object.entries(AthleteFilterConditions)
+          .filter(([_, condition]) => condition)
+          .map(([key, condition]) => ({ [key]: condition })),
+      };
+
+  const athletes = await getAthletes({ query: combinedFilterConditions, take, skip, select: athleteSelect });
+
+  if (athletes.length < 1) {
+    return [];
+  }
+
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_athlete_personality_traits: {
+            some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_athlete_personality_traits: {
+            some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
+          },
         },
         select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_athlete_personality_traits: {
-                        some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_athlete_personality_traits: {
-                        select: {
-                            athlete_id: true,
-                        },
-                    },
-                },
+          id: true,
+          name: true,
+          dashapp_athlete_personality_traits: {
+            select: {
+              athlete_id: true,
             },
+          },
         },
+      },
+    },
+  });
+
+  const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const athleteIds = subPersonality.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id);
+
+      athleteIds.forEach((athleteId) => {
+        const athleteIdStr = athleteId.toString();
+
+        if (!personalitiesByAthleteId[athleteIdStr]) {
+          personalitiesByAthleteId[athleteIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_athlete_personality_traits.some((trait) => trait.athlete_id.toString() === athleteIdStr),
+            ),
+          };
+
+          personalitiesByAthleteId[athleteIdStr].push(filteredPersonality);
+        }
+      });
     });
+  });
 
-    const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
+  const updatedAthletes = athletes.map((athlete) => ({
+    ...athlete,
+    mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
+  }));
 
-    mainPersonalities.forEach((personality) => {
-        personality.dashapp_subpersonality.forEach((subPersonality) => {
-            const athleteIds = subPersonality.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id);
+  let filteredAthletes = updatedAthletes;
 
-            athleteIds.forEach((athleteId) => {
-                const athleteIdStr = athleteId.toString();
-
-                if (!personalitiesByAthleteId[athleteIdStr]) {
-                    personalitiesByAthleteId[athleteIdStr] = [];
-                }
-
-                const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
-
-                if (!alreadyAdded) {
-                    const filteredPersonality = {
-                        ...personality,
-                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
-                            sub.dashapp_athlete_personality_traits.some(
-                                (trait) => trait.athlete_id.toString() === athleteIdStr,
-                            ),
-                        ),
-                    };
-
-                    personalitiesByAthleteId[athleteIdStr].push(filteredPersonality);
-                }
-            });
-        });
+  // 1. Exact filtering for dashapp_athlete_target_age
+  if (ageIds?.length) {
+    const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      console.log("names:", athlete.athlete_name);
+      const athleteAgeIds = athlete.dashapp_athlete_target_age.map((entry: any) => {
+        return entry.dashapp_age.id.toString();
+      });
+      return exactSetMatch(athleteAgeIds, requiredAgeIds);
     });
+  }
 
-    const updatedAthletes = athletes.map((athlete) => ({
-        ...athlete,
-        mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
-    }));
+  // 2. Exact filtering for dashapp_athlete_personality_traits
+  if (subPersonalityTraitIds?.length) {
+    const requiredTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      const athleteTraitIds = athlete.mainPersonalities.flatMap((entry: any) =>
+        entry.dashapp_subpersonality.map((sub: any) => sub.id.toString()),
+      );
+      return exactSetMatch(athleteTraitIds, requiredTraitIds);
+    });
+  }
 
-    let filteredAthletes = updatedAthletes;
+  // 3. Exact filtering for dashapp_athlete_tier
+  if (tierIds?.length) {
+    const requiredGenderIds = tierIds.map((id) => id.toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      // Assuming athlete.dashapp_athlete_tier is an array with dashapp_gender objects.
+      const athleteGenderIds = athlete.dashapp_athlete_tier.map((entry: any) => entry.dashapp_tier.id.toString());
+      return exactSetMatch(athleteGenderIds, requiredGenderIds);
+    });
+  }
 
-    // 1. Exact filtering for dashapp_athlete_target_age
-    if (ageIds?.length) {
-        const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            console.log("names:", athlete.athlete_name);
-            const athleteAgeIds = athlete.dashapp_athlete_target_age.map((entry: any) => {
-                return entry.dashapp_age.id.toString();
-            });
-            return exactSetMatch(athleteAgeIds, requiredAgeIds);
-        });
-    }
+  // 4. Exact filtering for dashapp_athlete_target_income
+  if (nccsIds?.length) {
+    const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      // Assuming athlete.dashapp_athlete_target_income is an array of objects with dashapp_nccs id.
+      const athleteNccsIds = athlete.dashapp_athlete_target_income.map((entry: any) =>
+        entry.dashapp_nccs.id.toString(),
+      );
+      return exactSetMatch(athleteNccsIds, requiredNccsIds);
+    });
+  }
 
-    // 2. Exact filtering for dashapp_athlete_personality_traits
-    if (subPersonalityTraitIds?.length) {
-        const requiredTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            const athleteTraitIds = athlete.mainPersonalities.flatMap((entry: any) =>
-                entry.dashapp_subpersonality.map((sub: any) => sub.id.toString()),
-            );
-            return exactSetMatch(athleteTraitIds, requiredTraitIds);
-        });
-    }
+  // 5. Exact filtering for dashapp_athlete_key_markets_primary
+  if (primaryMarketIds?.length) {
+    const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      // Assuming athlete.dashapp_athlete_key_markets_primary is an array of objects with dashapp_keymarket.
+      const athletePrimaryIds = athlete.dashapp_athlete_key_markets_primary.map((entry: any) =>
+        entry.dashapp_keymarket.id.toString(),
+      );
+      return exactSetMatch(athletePrimaryIds, requiredPrimaryIds);
+    });
+  }
 
-    // 3. Exact filtering for dashapp_athlete_tier
-    if (tierIds?.length) {
-        const requiredGenderIds = tierIds.map((id) => id.toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming athlete.dashapp_athlete_tier is an array with dashapp_gender objects.
-            const athleteGenderIds = athlete.dashapp_athlete_tier.map((entry: any) => entry.dashapp_tier.id.toString());
-            return exactSetMatch(athleteGenderIds, requiredGenderIds);
-        });
-    }
+  // 6. Exact filtering for dashapp_athlete_key_markets_secondary
+  if (secondaryMarketIds?.length) {
+    const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      // Assuming relation field is an array of objects with dashapp_keymarket.
+      const athleteSecondaryIds = athlete.dashapp_athlete_key_markets_secondary.map((entry: any) =>
+        entry.dashapp_keymarket.id.toString(),
+      );
+      return exactSetMatch(athleteSecondaryIds, requiredSecondaryIds);
+    });
+  }
 
-    // 4. Exact filtering for dashapp_athlete_target_income
-    if (nccsIds?.length) {
-        const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming athlete.dashapp_athlete_target_income is an array of objects with dashapp_nccs id.
-            const athleteNccsIds = athlete.dashapp_athlete_target_income.map((entry: any) =>
-                entry.dashapp_nccs.id.toString(),
-            );
-            return exactSetMatch(athleteNccsIds, requiredNccsIds);
-        });
-    }
+  // 7. Exact filtering for dashapp_athlete_key_markets_tertiary
+  if (tertiaryIds?.length) {
+    const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      // Assuming athlete.dashapp_athlete_key_markets_tertiary is an array of objects with dashapp_states.
+      const athleteTertiaryIds = athlete.dashapp_athlete_key_markets_tertiary.map((entry: any) =>
+        entry.dashapp_states.id.toString(),
+      );
+      return exactSetMatch(athleteTertiaryIds, requiredTertiaryIds);
+    });
+  }
 
-    // 5. Exact filtering for dashapp_athlete_key_markets_primary
-    if (primaryMarketIds?.length) {
-        const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming athlete.dashapp_athlete_key_markets_primary is an array of objects with dashapp_keymarket.
-            const athletePrimaryIds = athlete.dashapp_athlete_key_markets_primary.map((entry: any) =>
-                entry.dashapp_keymarket.id.toString(),
-            );
-            return exactSetMatch(athletePrimaryIds, requiredPrimaryIds);
-        });
-    }
+  const modifiedAthletes =
+    genderIds?.length === 2
+      ? filteredAthletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
+      : filteredAthletes;
 
-    // 6. Exact filtering for dashapp_athlete_key_markets_secondary
-    if (secondaryMarketIds?.length) {
-        const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming relation field is an array of objects with dashapp_keymarket.
-            const athleteSecondaryIds = athlete.dashapp_athlete_key_markets_secondary.map((entry: any) =>
-                entry.dashapp_keymarket.id.toString(),
-            );
-            return exactSetMatch(athleteSecondaryIds, requiredSecondaryIds);
-        });
-    }
+  const athleteResponse: AthleteResponseDTO[] = modifiedAthletes.map((athlete) =>
+    AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
+  );
 
-    // 7. Exact filtering for dashapp_athlete_key_markets_tertiary
-    if (tertiaryIds?.length) {
-        const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
-        filteredAthletes = filteredAthletes.filter((athlete) => {
-            // Assuming athlete.dashapp_athlete_key_markets_tertiary is an array of objects with dashapp_states.
-            const athleteTertiaryIds = athlete.dashapp_athlete_key_markets_tertiary.map((entry: any) =>
-                entry.dashapp_states.id.toString(),
-            );
-            return exactSetMatch(athleteTertiaryIds, requiredTertiaryIds);
-        });
-    }
-
-    const modifiedAthletes =
-        genderIds?.length === 2
-            ? filteredAthletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
-            : filteredAthletes;
-
-    const athleteResponse: AthleteResponseDTO[] = modifiedAthletes.map((athlete) =>
-        AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
-    );
-
-    return athleteResponse;
+  return athleteResponse;
 };
 
 const getFilteredLeagues = async (
-    filterData: TFilteredStakeholdersSchema,
-    { take, skip }: { take: any; skip: any },
+  filterData: TFilteredStakeholdersSchema,
+  { take, skip }: { take: any; skip: any },
 ) => {
-    const {
-        associationLevelIds,
-        costOfAssociation,
-        sportIds,
-        ageIds,
-        genderIds,
-        nccsIds,
-        primaryMarketIds,
-        secondaryMarketIds,
-        tertiaryIds,
-        subPersonalityTraitIds,
-        tierIds,
-        strategyOverview,
-        instagram,
-        facebook,
-        linkedin,
-        twitter,
-        website,
-        youtube,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
-        isMandatory,
-    } = filterData;
+  const {
+    associationLevelIds,
+    costOfAssociation,
+    sportIds,
+    ageIds,
+    genderIds,
+    nccsIds,
+    primaryMarketIds,
+    secondaryMarketIds,
+    tertiaryIds,
+    subPersonalityTraitIds,
+    tierIds,
+    strategyOverview,
+    instagram,
+    facebook,
+    linkedin,
+    twitter,
+    website,
+    youtube,
+    contactDesignation,
+    contactEmail,
+    contactLinkedin,
+    contactName,
+    contactNumber,
+    isMandatory,
+  } = filterData;
 
-    const LeagueFilterConditions: Prisma.dashapp_leagueinfoWhereInput = {
-        dashapp_leagueinfo_age: ageIds?.length
-            ? {
-                  some: {
-                      dashapp_age: {
-                          id: { in: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_association:
-            associationLevelIds?.length || costOfAssociation?.cost?.length
-                ? {
-                      some: {
-                          association_level_id: associationLevelIds?.length
-                              ? {
-                                    in: associationLevelIds.map((id) => BigInt(id)),
-                                }
-                              : undefined,
-                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
-                      },
-                  }
-                : undefined,
-
-        dashapp_leagueinfo_gender: genderIds?.length
-            ? {
-                  every: {
-                      dashapp_gender: await getGenderQuery(genderIds),
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_income: nccsIds?.length
-            ? {
-                  some: {
-                      dashapp_nccs: {
-                          id: { in: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_key_markets_primary: primaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_key_markets_secondary: secondaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: {
-                              in: secondaryMarketIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_key_markets_tertiary: tertiaryIds?.length
-            ? {
-                  some: {
-                      dashapp_states: {
-                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_personality_traits: subPersonalityTraitIds?.length
-            ? {
-                  some: {
-                      dashapp_subpersonality: {
-                          id: {
-                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_sport: sportIds?.length
-            ? {
-                  id: { in: sportIds.map((id) => BigInt(id)) },
-              }
-            : undefined,
-
-        dashapp_leagueinfo_tier: tierIds?.length
-            ? {
-                  some: {
-                      dashapp_tier: {
-                          id: { in: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        strategy_overview: strategyOverview
-            ? {
-                  contains: strategyOverview,
-                  mode: "insensitive",
-              }
-            : undefined,
-
-        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
-        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
-        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
-        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
-        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
-        website: website ? { contains: website, mode: "insensitive" } : undefined,
-
-        dashapp_leaguecontact:
-            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
-                ? {
-                      some: {
-                          contact_name: contactName
-                              ? {
-                                    contains: contactName,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_designation: contactDesignation
-                              ? {
-                                    contains: contactDesignation,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_email: contactEmail
-                              ? {
-                                    contains: contactEmail,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_no: contactNumber
-                              ? {
-                                    contains: contactNumber,
-                                }
-                              : undefined,
-                          contact_linkedin: contactLinkedin
-                              ? {
-                                    contains: contactLinkedin,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                      },
-                  }
-                : undefined,
-    };
-
-    const combinedFilterConditions = isMandatory
-        ? LeagueFilterConditions
-        : {
-              OR: Object.entries(LeagueFilterConditions)
-                  .filter(([_, condition]) => condition)
-                  .map(([key, condition]) => ({ [key]: condition })),
-          };
-
-    const leagues = await getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect });
-
-    if (leagues.length < 1) {
-        return [];
-    }
-
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_leagueinfo_personality_traits: {
-                        some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
-                    },
-                },
+  const LeagueFilterConditions: Prisma.dashapp_leagueinfoWhereInput = {
+    dashapp_leagueinfo_age: ageIds?.length
+      ? {
+          some: {
+            dashapp_age: {
+              id: { in: ageIds.map((id) => BigInt(id)) },
             },
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_association:
+      associationLevelIds?.length || costOfAssociation?.cost?.length
+        ? {
+            some: {
+              association_level_id: associationLevelIds?.length
+                ? {
+                    in: associationLevelIds.map((id) => BigInt(id)),
+                  }
+                : undefined,
+              cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
+            },
+          }
+        : undefined,
+
+    dashapp_leagueinfo_gender: genderIds?.length
+      ? {
+          every: {
+            dashapp_gender: await getGenderQuery(genderIds),
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_income: nccsIds?.length
+      ? {
+          some: {
+            dashapp_nccs: {
+              id: { in: nccsIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_key_markets_primary: primaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_key_markets_secondary: secondaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: {
+                in: secondaryMarketIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_key_markets_tertiary: tertiaryIds?.length
+      ? {
+          some: {
+            dashapp_states: {
+              id: { in: tertiaryIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_personality_traits: subPersonalityTraitIds?.length
+      ? {
+          some: {
+            dashapp_subpersonality: {
+              id: {
+                in: subPersonalityTraitIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_sport: sportIds?.length
+      ? {
+          id: { in: sportIds.map((id) => BigInt(id)) },
+        }
+      : undefined,
+
+    dashapp_leagueinfo_tier: tierIds?.length
+      ? {
+          some: {
+            dashapp_tier: {
+              id: { in: tierIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    strategy_overview: strategyOverview
+      ? {
+          contains: strategyOverview,
+          mode: "insensitive",
+        }
+      : undefined,
+
+    facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+    instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+    twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+    linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+    youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+    website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+    dashapp_leaguecontact:
+      contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+        ? {
+            some: {
+              contact_name: contactName
+                ? {
+                    contains: contactName,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_designation: contactDesignation
+                ? {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_email: contactEmail
+                ? {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_no: contactNumber
+                ? {
+                    contains: contactNumber,
+                  }
+                : undefined,
+              contact_linkedin: contactLinkedin
+                ? {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                  }
+                : undefined,
+            },
+          }
+        : undefined,
+  };
+
+  const combinedFilterConditions = isMandatory
+    ? LeagueFilterConditions
+    : {
+        OR: Object.entries(LeagueFilterConditions)
+          .filter(([_, condition]) => condition)
+          .map(([key, condition]) => ({ [key]: condition })),
+      };
+
+  const leagues = await getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect });
+
+  if (leagues.length < 1) {
+    return [];
+  }
+
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_leagueinfo_personality_traits: {
+            some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_leagueinfo_personality_traits: {
+            some: {
+              leagueinfo_id: { in: leagues.map((league) => league.id) },
+            },
+          },
         },
         select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_leagueinfo_personality_traits: {
-                        some: {
-                            leagueinfo_id: { in: leagues.map((league) => league.id) },
-                        },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_leagueinfo_personality_traits: {
-                        select: {
-                            leagueinfo_id: true,
-                        },
-                    },
-                },
+          id: true,
+          name: true,
+          dashapp_leagueinfo_personality_traits: {
+            select: {
+              leagueinfo_id: true,
             },
+          },
         },
+      },
+    },
+  });
+
+  const personalitiesByLeagueId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const leagueIds = subPersonality.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id);
+
+      leagueIds.forEach((leagueId) => {
+        const leagueIdStr = leagueId.toString();
+
+        if (!personalitiesByLeagueId[leagueIdStr]) {
+          personalitiesByLeagueId[leagueIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByLeagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_leagueinfo_personality_traits.some((trait) => trait.leagueinfo_id.toString() === leagueIdStr),
+            ),
+          };
+
+          personalitiesByLeagueId[leagueIdStr].push(filteredPersonality);
+        }
+      });
     });
+  });
 
-    const personalitiesByLeagueId: Record<string, typeof mainPersonalities> = {};
+  const updatedLeagues = leagues.map((league) => ({
+    ...league,
+    mainPersonalities: personalitiesByLeagueId[league.id.toString()] || [],
+  }));
 
-    mainPersonalities.forEach((personality) => {
-        personality.dashapp_subpersonality.forEach((subPersonality) => {
-            const leagueIds = subPersonality.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id);
+  // const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+  //     where: {
+  //         dashapp_subpersonality: {
+  //             some: {
+  //                 dashapp_leagueinfo_personality_traits: {
+  //                     some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
+  //                 },
+  //             },
+  //         },
+  //     },
+  //     select: {
+  //         id: true,
+  //         name: true,
+  //         dashapp_subpersonality: {
+  //             where: {
+  //                 dashapp_leagueinfo_personality_traits: {
+  //                     some: {
+  //                         leagueinfo_id: { in: leagues.map((league) => league.id) },
+  //                     },
+  //                 },
+  //             },
+  //             select: {
+  //                 id: true,
+  //                 name: true,
+  //                 dashapp_leagueinfo_personality_traits: {
+  //                     select: {
+  //                         leagueinfo_id: true,
+  //                     },
+  //                 },
+  //             },
+  //         },
+  //     },
+  // });
 
-            leagueIds.forEach((leagueId) => {
-                const leagueIdStr = leagueId.toString();
+  // const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
 
-                if (!personalitiesByLeagueId[leagueIdStr]) {
-                    personalitiesByLeagueId[leagueIdStr] = [];
-                }
+  // mainPersonalities.forEach((personality) => {
+  //     const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
+  //         sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
+  //     );
+  //     leagueIds.forEach((leagueId) => {
+  //         const leagueIdStr = leagueId.toString();
+  //         if (!personalitiesByleagueId[leagueIdStr]) {
+  //             personalitiesByleagueId[leagueIdStr] = [];
+  //         }
 
-                const alreadyAdded = personalitiesByLeagueId[leagueIdStr].some((p) => p.id === personality.id);
+  //         const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
 
-                if (!alreadyAdded) {
-                    const filteredPersonality = {
-                        ...personality,
-                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
-                            sub.dashapp_leagueinfo_personality_traits.some(
-                                (trait) => trait.leagueinfo_id.toString() === leagueIdStr,
-                            ),
-                        ),
-                    };
+  //         if (!alreadyAdded) {
+  //             personalitiesByleagueId[leagueIdStr].push(personality);
+  //         }
+  //     });
+  // });
 
-                    personalitiesByLeagueId[leagueIdStr].push(filteredPersonality);
-                }
-            });
-        });
+  // const updatedLeagues = leagues.map((league) => ({
+  //     ...league,
+  //     mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
+  // }));
+
+  let filteredLeagues = updatedLeagues;
+
+  // 1. Exact filtering for dashapp_leagueinfo_age
+  if (ageIds?.length) {
+    const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueAgeIds = league.dashapp_leagueinfo_age
+        .map((entry: any) => {
+          return entry.dashapp_age?.id?.toString();
+        })
+        .filter(Boolean);
+      return exactSetMatch(leagueAgeIds, requiredAgeIds);
     });
+  }
 
-    const updatedLeagues = leagues.map((league) => ({
-        ...league,
-        mainPersonalities: personalitiesByLeagueId[league.id.toString()] || [],
-    }));
-
-    // const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-    //     where: {
-    //         dashapp_subpersonality: {
-    //             some: {
-    //                 dashapp_leagueinfo_personality_traits: {
-    //                     some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     select: {
-    //         id: true,
-    //         name: true,
-    //         dashapp_subpersonality: {
-    //             where: {
-    //                 dashapp_leagueinfo_personality_traits: {
-    //                     some: {
-    //                         leagueinfo_id: { in: leagues.map((league) => league.id) },
-    //                     },
-    //                 },
-    //             },
-    //             select: {
-    //                 id: true,
-    //                 name: true,
-    //                 dashapp_leagueinfo_personality_traits: {
-    //                     select: {
-    //                         leagueinfo_id: true,
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    // });
-
-    // const personalitiesByleagueId: Record<string, typeof mainPersonalities> = {};
-
-    // mainPersonalities.forEach((personality) => {
-    //     const leagueIds = personality.dashapp_subpersonality.flatMap((sub) =>
-    //         sub.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id),
-    //     );
-    //     leagueIds.forEach((leagueId) => {
-    //         const leagueIdStr = leagueId.toString();
-    //         if (!personalitiesByleagueId[leagueIdStr]) {
-    //             personalitiesByleagueId[leagueIdStr] = [];
-    //         }
-
-    //         const alreadyAdded = personalitiesByleagueId[leagueIdStr].some((p) => p.id === personality.id);
-
-    //         if (!alreadyAdded) {
-    //             personalitiesByleagueId[leagueIdStr].push(personality);
-    //         }
-    //     });
-    // });
-
-    // const updatedLeagues = leagues.map((league) => ({
-    //     ...league,
-    //     mainPersonalities: personalitiesByleagueId[league.id.toString()] || [],
-    // }));
-
-    let filteredLeagues = updatedLeagues;
-
-    // 1. Exact filtering for dashapp_leagueinfo_age
-    if (ageIds?.length) {
-        const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueAgeIds = league.dashapp_leagueinfo_age
-                .map((entry: any) => {
-                    return entry.dashapp_age?.id?.toString();
-                })
-                .filter(Boolean);
-            return exactSetMatch(leagueAgeIds, requiredAgeIds);
+  // 2. Exact filtering for dashapp_leagueinfo_personality_traits
+  if (subPersonalityTraitIds?.length) {
+    const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueSubPersonalityTraitIds = league.mainPersonalities.flatMap((entry: any) => {
+        return entry.dashapp_subpersonality?.map((sub: any) => {
+          return sub.id.toString();
         });
-    }
+      });
 
-    // 2. Exact filtering for dashapp_leagueinfo_personality_traits
-    if (subPersonalityTraitIds?.length) {
-        const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueSubPersonalityTraitIds = league.mainPersonalities.flatMap((entry: any) => {
-                return entry.dashapp_subpersonality?.map((sub: any) => {
-                    return sub.id.toString();
-                });
-            });
+      if (exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds) === true) {
+        printLogs("league name", league.property_name);
+        console.log("league id", league.id);
+        console.log("leagueSubPersonalityTraitIds", leagueSubPersonalityTraitIds);
+        console.log("requiredSubPersonalityTraitIds", requiredSubPersonalityTraitIds);
+        return true;
+      }
+      return false;
+    });
+  }
 
-            if (exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds) === true) {
-                printLogs("league name", league.property_name);
-                console.log("league id", league.id);
-                console.log("leagueSubPersonalityTraitIds", leagueSubPersonalityTraitIds);
-                console.log("requiredSubPersonalityTraitIds", requiredSubPersonalityTraitIds);
-                return true;
-            }
-            return false;
-        });
-    }
+  // 3. Exact filtering for dashapp_leagueinfo_income
+  if (nccsIds?.length) {
+    const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueNccsIds = league.dashapp_leagueinfo_income.map((entry: any) => {
+        return entry.dashapp_nccs.id.toString();
+      });
+      return exactSetMatch(leagueNccsIds, requiredNccsIds);
+    });
+  }
 
-    // 3. Exact filtering for dashapp_leagueinfo_income
-    if (nccsIds?.length) {
-        const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueNccsIds = league.dashapp_leagueinfo_income.map((entry: any) => {
-                return entry.dashapp_nccs.id.toString();
-            });
-            return exactSetMatch(leagueNccsIds, requiredNccsIds);
-        });
-    }
+  // 4. Exact filtering for dashapp_leagueinfo_key_markets_primary
+  if (primaryMarketIds?.length) {
+    const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leaguePrimaryIds = league.dashapp_leagueinfo_key_markets_primary.map((entry: any) => {
+        return entry.dashapp_keymarket.id.toString();
+      });
+      return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
+    });
+  }
 
-    // 4. Exact filtering for dashapp_leagueinfo_key_markets_primary
-    if (primaryMarketIds?.length) {
-        const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leaguePrimaryIds = league.dashapp_leagueinfo_key_markets_primary.map((entry: any) => {
-                return entry.dashapp_keymarket.id.toString();
-            });
-            return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
-        });
-    }
+  // 5. Exact filtering for dashapp_leagueinfo_key_markets_secondary
+  if (secondaryMarketIds?.length) {
+    const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueSecondaryIds = league.dashapp_leagueinfo_key_markets_secondary.map((entry: any) => {
+        return entry.dashapp_keymarket.id.toString();
+      });
+      return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
+    });
+  }
 
-    // 5. Exact filtering for dashapp_leagueinfo_key_markets_secondary
-    if (secondaryMarketIds?.length) {
-        const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueSecondaryIds = league.dashapp_leagueinfo_key_markets_secondary.map((entry: any) => {
-                return entry.dashapp_keymarket.id.toString();
-            });
-            return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
-        });
-    }
+  // 6. Exact filtering for dashapp_leagueinfo_key_markets_tertiary
+  if (tertiaryIds?.length) {
+    const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueTertiaryIds = league.dashapp_leagueinfo_key_markets_tertiary.map((entry: any) => {
+        return entry.dashapp_states.id.toString();
+      });
+      return exactSetMatch(leagueTertiaryIds, requiredTertiaryIds);
+    });
+  }
 
-    // 6. Exact filtering for dashapp_leagueinfo_key_markets_tertiary
-    if (tertiaryIds?.length) {
-        const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueTertiaryIds = league.dashapp_leagueinfo_key_markets_tertiary.map((entry: any) => {
-                return entry.dashapp_states.id.toString();
-            });
-            return exactSetMatch(leagueTertiaryIds, requiredTertiaryIds);
-        });
-    }
+  // 7. Exact filtering for dashapp_leagueinfo_tier
+  if (tierIds?.length) {
+    const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueTierIds = league.dashapp_leagueinfo_tier
+        .map((entry: any) => {
+          return entry.dashapp_tier?.id?.toString();
+        })
+        .filter(Boolean);
+      return exactSetMatch(leagueTierIds, requiredTierIds);
+    });
+  }
 
-    // 7. Exact filtering for dashapp_leagueinfo_tier
-    if (tierIds?.length) {
-        const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
-        filteredLeagues = filteredLeagues.filter((league) => {
-            const leagueTierIds = league.dashapp_leagueinfo_tier
-                .map((entry: any) => {
-                    return entry.dashapp_tier?.id?.toString();
-                })
-                .filter(Boolean);
-            return exactSetMatch(leagueTierIds, requiredTierIds);
-        });
-    }
+  const modifiedLeagues =
+    genderIds?.length === 2
+      ? filteredLeagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2)
+      : filteredLeagues;
 
-    const modifiedLeagues =
-        genderIds?.length === 2
-            ? filteredLeagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2)
-            : filteredLeagues;
+  const leagueResponse: LeagueResponseDTO[] = modifiedLeagues.map((league) =>
+    LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
+  );
 
-    const leagueResponse: LeagueResponseDTO[] = modifiedLeagues.map((league) =>
-        LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
-    );
-
-    return leagueResponse;
+  return leagueResponse;
 };
 
 const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take, skip }: { take: any; skip: any }) => {
-    const {
-        associationLevelIds,
-        costOfAssociation,
-        sportIds,
-        ageIds,
-        genderIds,
-        nccsIds,
-        primaryMarketIds,
-        secondaryMarketIds,
-        tertiaryIds,
-        subPersonalityTraitIds,
-        tierIds,
-        strategyOverview,
-        instagram,
-        facebook,
-        linkedin,
-        twitter,
-        website,
-        youtube,
-        contactDesignation,
-        contactEmail,
-        contactLinkedin,
-        contactName,
-        contactNumber,
-        isMandatory,
-    } = filterData;
+  const {
+    associationLevelIds,
+    costOfAssociation,
+    sportIds,
+    ageIds,
+    genderIds,
+    nccsIds,
+    primaryMarketIds,
+    secondaryMarketIds,
+    tertiaryIds,
+    subPersonalityTraitIds,
+    tierIds,
+    strategyOverview,
+    instagram,
+    facebook,
+    linkedin,
+    twitter,
+    website,
+    youtube,
+    contactDesignation,
+    contactEmail,
+    contactLinkedin,
+    contactName,
+    contactNumber,
+    isMandatory,
+  } = filterData;
 
-    const teamFilterConditions: Prisma.dashapp_teamWhereInput = {
-        dashapp_team_age: ageIds?.length
-            ? {
-                  some: {
-                      dashapp_age: {
-                          id: { in: ageIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_gender: genderIds?.length
-            ? {
-                  every: {
-                      dashapp_gender: await getGenderQuery(genderIds),
-                  },
-              }
-            : undefined,
-
-        dashapp_team_income: nccsIds?.length
-            ? {
-                  some: {
-                      dashapp_nccs: {
-                          id: { in: nccsIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_association:
-            associationLevelIds?.length || costOfAssociation?.cost?.length
-                ? {
-                      some: {
-                          association_level_id: associationLevelIds?.length
-                              ? {
-                                    in: associationLevelIds.map((id) => BigInt(id)),
-                                }
-                              : undefined,
-                          cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
-                      },
-                  }
-                : undefined,
-
-        dashapp_sport: sportIds?.length
-            ? {
-                  id: { in: sportIds.map((id) => BigInt(id)) },
-              }
-            : undefined,
-
-        dashapp_team_key_markets_primary: primaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: { in: primaryMarketIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_key_markets_secondary: secondaryMarketIds?.length
-            ? {
-                  some: {
-                      dashapp_keymarket: {
-                          id: {
-                              in: secondaryMarketIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_key_markets_tertiary: tertiaryIds?.length
-            ? {
-                  some: {
-                      dashapp_states: {
-                          id: { in: tertiaryIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_tier: tierIds?.length
-            ? {
-                  some: {
-                      dashapp_tier: {
-                          id: { in: tierIds.map((id) => BigInt(id)) },
-                      },
-                  },
-              }
-            : undefined,
-
-        dashapp_team_personality_traits: subPersonalityTraitIds?.length
-            ? {
-                  some: {
-                      dashapp_subpersonality: {
-                          id: {
-                              in: subPersonalityTraitIds.map((id) => BigInt(id)),
-                          },
-                      },
-                  },
-              }
-            : undefined,
-
-        facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
-        instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
-        twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
-        linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
-        youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
-        website: website ? { contains: website, mode: "insensitive" } : undefined,
-
-        strategy_overview: strategyOverview
-            ? {
-                  contains: strategyOverview,
-                  mode: "insensitive",
-              }
-            : undefined,
-
-        dashapp_teamcontact:
-            contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
-                ? {
-                      some: {
-                          contact_name: contactName
-                              ? {
-                                    contains: contactName,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_designation: contactDesignation
-                              ? {
-                                    contains: contactDesignation,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_email: contactEmail
-                              ? {
-                                    contains: contactEmail,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                          contact_no: contactNumber
-                              ? {
-                                    contains: contactNumber,
-                                }
-                              : undefined,
-                          contact_linkedin: contactLinkedin
-                              ? {
-                                    contains: contactLinkedin,
-                                    mode: "insensitive",
-                                }
-                              : undefined,
-                      },
-                  }
-                : undefined,
-    };
-
-    const combinedFilterConditions = isMandatory
-        ? teamFilterConditions
-        : {
-              OR: Object.entries(teamFilterConditions)
-                  .filter(([_, condition]) => condition)
-                  .map(([key, condition]) => ({ [key]: condition })),
-          };
-
-    const teams = await getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect });
-
-    if (teams.length < 1) {
-        return [];
-    }
-
-    const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-        where: {
-            dashapp_subpersonality: {
-                some: {
-                    dashapp_team_personality_traits: {
-                        some: { team_id: { in: teams.map((team) => team.id) } },
-                    },
-                },
+  const teamFilterConditions: Prisma.dashapp_teamWhereInput = {
+    dashapp_team_age: ageIds?.length
+      ? {
+          some: {
+            dashapp_age: {
+              id: { in: ageIds.map((id) => BigInt(id)) },
             },
+          },
+        }
+      : undefined,
+
+    dashapp_team_gender: genderIds?.length
+      ? {
+          every: {
+            dashapp_gender: await getGenderQuery(genderIds),
+          },
+        }
+      : undefined,
+
+    dashapp_team_income: nccsIds?.length
+      ? {
+          some: {
+            dashapp_nccs: {
+              id: { in: nccsIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_team_association:
+      associationLevelIds?.length || costOfAssociation?.cost?.length
+        ? {
+            some: {
+              association_level_id: associationLevelIds?.length
+                ? {
+                    in: associationLevelIds.map((id) => BigInt(id)),
+                  }
+                : undefined,
+              cost: costOfAssociation?.cost?.length ? getCostQuery(costOfAssociation) : undefined,
+            },
+          }
+        : undefined,
+
+    dashapp_sport: sportIds?.length
+      ? {
+          id: { in: sportIds.map((id) => BigInt(id)) },
+        }
+      : undefined,
+
+    dashapp_team_key_markets_primary: primaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: { in: primaryMarketIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_team_key_markets_secondary: secondaryMarketIds?.length
+      ? {
+          some: {
+            dashapp_keymarket: {
+              id: {
+                in: secondaryMarketIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_team_key_markets_tertiary: tertiaryIds?.length
+      ? {
+          some: {
+            dashapp_states: {
+              id: { in: tertiaryIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_team_tier: tierIds?.length
+      ? {
+          some: {
+            dashapp_tier: {
+              id: { in: tierIds.map((id) => BigInt(id)) },
+            },
+          },
+        }
+      : undefined,
+
+    dashapp_team_personality_traits: subPersonalityTraitIds?.length
+      ? {
+          some: {
+            dashapp_subpersonality: {
+              id: {
+                in: subPersonalityTraitIds.map((id) => BigInt(id)),
+              },
+            },
+          },
+        }
+      : undefined,
+
+    facebook: facebook ? { contains: facebook, mode: "insensitive" } : undefined,
+    instagram: instagram ? { contains: instagram, mode: "insensitive" } : undefined,
+    twitter: twitter ? { contains: twitter, mode: "insensitive" } : undefined,
+    linkedin: linkedin ? { contains: linkedin, mode: "insensitive" } : undefined,
+    youtube: youtube ? { contains: youtube, mode: "insensitive" } : undefined,
+    website: website ? { contains: website, mode: "insensitive" } : undefined,
+
+    strategy_overview: strategyOverview
+      ? {
+          contains: strategyOverview,
+          mode: "insensitive",
+        }
+      : undefined,
+
+    dashapp_teamcontact:
+      contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
+        ? {
+            some: {
+              contact_name: contactName
+                ? {
+                    contains: contactName,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_designation: contactDesignation
+                ? {
+                    contains: contactDesignation,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_email: contactEmail
+                ? {
+                    contains: contactEmail,
+                    mode: "insensitive",
+                  }
+                : undefined,
+              contact_no: contactNumber
+                ? {
+                    contains: contactNumber,
+                  }
+                : undefined,
+              contact_linkedin: contactLinkedin
+                ? {
+                    contains: contactLinkedin,
+                    mode: "insensitive",
+                  }
+                : undefined,
+            },
+          }
+        : undefined,
+  };
+
+  const combinedFilterConditions = isMandatory
+    ? teamFilterConditions
+    : {
+        OR: Object.entries(teamFilterConditions)
+          .filter(([_, condition]) => condition)
+          .map(([key, condition]) => ({ [key]: condition })),
+      };
+
+  const teams = await getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect });
+
+  if (teams.length < 1) {
+    return [];
+  }
+
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_team_personality_traits: {
+            some: { team_id: { in: teams.map((team) => team.id) } },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_team_personality_traits: {
+            some: {
+              team_id: { in: teams.map((team) => team.id) },
+            },
+          },
         },
         select: {
-            id: true,
-            name: true,
-            dashapp_subpersonality: {
-                where: {
-                    dashapp_team_personality_traits: {
-                        some: {
-                            team_id: { in: teams.map((team) => team.id) },
-                        },
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    dashapp_team_personality_traits: {
-                        select: {
-                            team_id: true,
-                        },
-                    },
-                },
+          id: true,
+          name: true,
+          dashapp_team_personality_traits: {
+            select: {
+              team_id: true,
             },
+          },
         },
+      },
+    },
+  });
+
+  const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const teamIds = subPersonality.dashapp_team_personality_traits.map((trait) => trait.team_id);
+
+      teamIds.forEach((teamId) => {
+        const teamIdStr = teamId.toString();
+
+        if (!personalitiesByTeamId[teamIdStr]) {
+          personalitiesByTeamId[teamIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_team_personality_traits.some((trait) => trait.team_id.toString() === teamIdStr),
+            ),
+          };
+
+          personalitiesByTeamId[teamIdStr].push(filteredPersonality);
+        }
+      });
     });
+  });
 
-    const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
+  const updatedTeams = teams.map((team) => ({
+    ...team,
+    mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
+  }));
 
-    mainPersonalities.forEach((personality) => {
-        personality.dashapp_subpersonality.forEach((subPersonality) => {
-            const teamIds = subPersonality.dashapp_team_personality_traits.map((trait) => trait.team_id);
+  let filteredTeams = updatedTeams;
 
-            teamIds.forEach((teamId) => {
-                const teamIdStr = teamId.toString();
-
-                if (!personalitiesByTeamId[teamIdStr]) {
-                    personalitiesByTeamId[teamIdStr] = [];
-                }
-
-                const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
-
-                if (!alreadyAdded) {
-                    const filteredPersonality = {
-                        ...personality,
-                        dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
-                            sub.dashapp_team_personality_traits.some((trait) => trait.team_id.toString() === teamIdStr),
-                        ),
-                    };
-
-                    personalitiesByTeamId[teamIdStr].push(filteredPersonality);
-                }
-            });
-        });
+  // 1. Exact filtering for dashapp_team_age
+  if (ageIds?.length) {
+    const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_age || !Array.isArray(team.dashapp_team_age)) return false;
+      const teamAgeIds = team.dashapp_team_age.map((entry: any) => entry?.dashapp_age?.id?.toString()).filter(Boolean);
+      return exactSetMatch(teamAgeIds, requiredAgeIds);
     });
+  }
 
-    const updatedTeams = teams.map((team) => ({
-        ...team,
-        mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
-    }));
+  // 2. Exact filtering for dashapp_team_personality_traits
+  if (subPersonalityTraitIds?.length) {
+    const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.mainPersonalities || !Array.isArray(team.mainPersonalities)) return false;
+      const teamSubPersonalityTraitIds = team.mainPersonalities
+        .flatMap((entry: any) => {
+          if (!entry.dashapp_subpersonality || !Array.isArray(entry.dashapp_subpersonality)) return [];
+          return entry.dashapp_subpersonality
+            .map((sub: any) => {
+              return sub?.id?.toString();
+            })
+            .filter(Boolean);
+        })
+        .filter(Boolean);
+      return exactSetMatch(teamSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
+    });
+  }
 
-    let filteredTeams = updatedTeams;
+  // 3. Exact filtering for dashapp_team_income
+  if (nccsIds?.length) {
+    const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_income || !Array.isArray(team.dashapp_team_income)) return false;
+      const teamNccsIds = team.dashapp_team_income
+        .map((entry: any) => entry?.dashapp_nccs?.id?.toString())
+        .filter(Boolean);
+      return exactSetMatch(teamNccsIds, requiredNccsIds);
+    });
+  }
 
-    // 1. Exact filtering for dashapp_team_age
-    if (ageIds?.length) {
-        const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_age || !Array.isArray(team.dashapp_team_age)) return false;
-            const teamAgeIds = team.dashapp_team_age
-                .map((entry: any) => entry?.dashapp_age?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamAgeIds, requiredAgeIds);
-        });
-    }
+  // 4. Exact filtering for dashapp_team_key_markets_primary
+  if (primaryMarketIds?.length) {
+    const requiredKeyPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_key_markets_primary || !Array.isArray(team.dashapp_team_key_markets_primary)) return false;
+      const teamKeyPrimaryIds = team.dashapp_team_key_markets_primary
+        .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
+        .filter(Boolean);
+      return exactSetMatch(teamKeyPrimaryIds, requiredKeyPrimaryIds);
+    });
+  }
 
-    // 2. Exact filtering for dashapp_team_personality_traits
-    if (subPersonalityTraitIds?.length) {
-        const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.mainPersonalities || !Array.isArray(team.mainPersonalities)) return false;
-            const teamSubPersonalityTraitIds = team.mainPersonalities
-                .flatMap((entry: any) => {
-                    if (!entry.dashapp_subpersonality || !Array.isArray(entry.dashapp_subpersonality)) return [];
-                    return entry.dashapp_subpersonality
-                        .map((sub: any) => {
-                            return sub?.id?.toString();
-                        })
-                        .filter(Boolean);
-                })
-                .filter(Boolean);
-            return exactSetMatch(teamSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
-        });
-    }
+  // 5. Exact filtering for dashapp_team_key_markets_secondary
+  if (secondaryMarketIds?.length) {
+    const requiredKeySecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_key_markets_secondary || !Array.isArray(team.dashapp_team_key_markets_secondary))
+        return false;
+      const teamKeySecondaryIds = team.dashapp_team_key_markets_secondary
+        .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
+        .filter(Boolean);
+      return exactSetMatch(teamKeySecondaryIds, requiredKeySecondaryIds);
+    });
+  }
 
-    // 3. Exact filtering for dashapp_team_income
-    if (nccsIds?.length) {
-        const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_income || !Array.isArray(team.dashapp_team_income)) return false;
-            const teamNccsIds = team.dashapp_team_income
-                .map((entry: any) => entry?.dashapp_nccs?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamNccsIds, requiredNccsIds);
-        });
-    }
+  // 6. Exact filtering for dashapp_team_key_markets_tertiary
+  if (tertiaryIds?.length) {
+    const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_key_markets_tertiary || !Array.isArray(team.dashapp_team_key_markets_tertiary))
+        return false;
+      const teamTertiaryIds = team.dashapp_team_key_markets_tertiary
+        .map((entry: any) => entry?.dashapp_states?.id?.toString())
+        .filter(Boolean);
+      return exactSetMatch(teamTertiaryIds, requiredTertiaryIds);
+    });
+  }
 
-    // 4. Exact filtering for dashapp_team_key_markets_primary
-    if (primaryMarketIds?.length) {
-        const requiredKeyPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_key_markets_primary || !Array.isArray(team.dashapp_team_key_markets_primary))
-                return false;
-            const teamKeyPrimaryIds = team.dashapp_team_key_markets_primary
-                .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamKeyPrimaryIds, requiredKeyPrimaryIds);
-        });
-    }
+  // 7. Exact filtering for dashapp_team_tier
+  if (tierIds?.length) {
+    const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
+    filteredTeams = filteredTeams.filter((team) => {
+      if (!team.dashapp_team_tier || !Array.isArray(team.dashapp_team_tier)) return false;
+      const teamTierIds = team.dashapp_team_tier
+        .map((entry: any) => entry?.dashapp_tier?.id?.toString())
+        .filter(Boolean);
+      return exactSetMatch(teamTierIds, requiredTierIds);
+    });
+  }
 
-    // 5. Exact filtering for dashapp_team_key_markets_secondary
-    if (secondaryMarketIds?.length) {
-        const requiredKeySecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_key_markets_secondary || !Array.isArray(team.dashapp_team_key_markets_secondary))
-                return false;
-            const teamKeySecondaryIds = team.dashapp_team_key_markets_secondary
-                .map((entry: any) => entry?.dashapp_keymarket?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamKeySecondaryIds, requiredKeySecondaryIds);
-        });
-    }
+  const modifiedTeams =
+    genderIds?.length === 2 ? filteredTeams.filter((team) => team?.dashapp_team_gender?.length === 2) : filteredTeams;
 
-    // 6. Exact filtering for dashapp_team_key_markets_tertiary
-    if (tertiaryIds?.length) {
-        const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_key_markets_tertiary || !Array.isArray(team.dashapp_team_key_markets_tertiary))
-                return false;
-            const teamTertiaryIds = team.dashapp_team_key_markets_tertiary
-                .map((entry: any) => entry?.dashapp_states?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamTertiaryIds, requiredTertiaryIds);
-        });
-    }
+  const teamResponse: TeamResponseDTO[] = modifiedTeams.map((team) =>
+    TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
+  );
 
-    // 7. Exact filtering for dashapp_team_tier
-    if (tierIds?.length) {
-        const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
-        filteredTeams = filteredTeams.filter((team) => {
-            if (!team.dashapp_team_tier || !Array.isArray(team.dashapp_team_tier)) return false;
-            const teamTierIds = team.dashapp_team_tier
-                .map((entry: any) => entry?.dashapp_tier?.id?.toString())
-                .filter(Boolean);
-            return exactSetMatch(teamTierIds, requiredTierIds);
-        });
-    }
-
-    const modifiedTeams =
-        genderIds?.length === 2
-            ? filteredTeams.filter((team) => team?.dashapp_team_gender?.length === 2)
-            : filteredTeams;
-
-    const teamResponse: TeamResponseDTO[] = modifiedTeams.map((team) =>
-        TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
-    );
-
-    return teamResponse;
+  return teamResponse;
 };
 
 // const getFilteredBrands = async (filterData: TFilteredStakeholdersSchema, { take, skip }: { take: any; skip: any }) => {
@@ -1383,18 +1374,18 @@ const getFilteredTeams = async (filterData: TFilteredStakeholdersSchema, { take,
 // };
 
 export const getFilteredStakeholders = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
-    const filterData = req.validatedData;
+  const { take, skip } = req.query;
+  const filterData = req.validatedData;
 
-    const [filteredAthletes, filteredLeagues, filteredTeams] = await Promise.all([
-        getFilteredAthletes(filterData, { take, skip }),
-        getFilteredLeagues(filterData, { take, skip }),
-        getFilteredTeams(filterData, { take, skip }),
-    ]);
+  const [filteredAthletes, filteredLeagues, filteredTeams] = await Promise.all([
+    getFilteredAthletes(filterData, { take, skip }),
+    getFilteredLeagues(filterData, { take, skip }),
+    getFilteredTeams(filterData, { take, skip }),
+  ]);
 
-    res.status(STATUS_CODE.OK).json({
-        filteredAthletes,
-        filteredLeagues,
-        filteredTeams,
-    });
+  res.status(STATUS_CODE.OK).json({
+    filteredAthletes,
+    filteredLeagues,
+    filteredTeams,
+  });
 });

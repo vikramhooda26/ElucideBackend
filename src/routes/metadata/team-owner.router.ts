@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createTeamOwner,
-    deleteTeamOwner,
-    editTeamOwner,
-    getAllTeamOwners,
-    getTeamOwnerById,
+  createTeamOwner,
+  deleteTeamOwner,
+  editTeamOwner,
+  getAllTeamOwners,
+  getTeamOwnerById,
 } from "../../controllers/metadata/team-owner.controller.js";
 import { createTeamOwnerSchema, editTeamOwnerSchema } from "../../schemas/metadata/team-owner.schema.js";
 
@@ -17,17 +17,17 @@ teamOwnerRouter.get("/get-all", getAllTeamOwners);
 teamOwnerRouter.get("/:id", getTeamOwnerById);
 
 teamOwnerRouter.post(
-    "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
-    validateSchema(createTeamOwnerSchema),
-    createTeamOwner,
+  "/create",
+  roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+  validateSchema(createTeamOwnerSchema),
+  createTeamOwner,
 );
 
 teamOwnerRouter.put(
-    "/edit/:id",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
-    validateSchema(editTeamOwnerSchema),
-    editTeamOwner,
+  "/edit/:id",
+  roleMiddleware(["SUPER_ADMIN", "ADMIN"]),
+  validateSchema(editTeamOwnerSchema),
+  editTeamOwner,
 );
 
 teamOwnerRouter.delete("/delete/:id", roleMiddleware(["SUPER_ADMIN"]), deleteTeamOwner);

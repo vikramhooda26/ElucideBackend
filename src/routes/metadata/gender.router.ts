@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createGender,
-    deleteGender,
-    editGender,
-    getAllGenders,
-    getGenderById,
+  createGender,
+  deleteGender,
+  editGender,
+  getAllGenders,
+  getGenderById,
 } from "../../controllers/metadata/gender.controller.js";
 import { createGenderSchema, editGenderSchema } from "../../schemas/metadata/gender.schema.js";
 

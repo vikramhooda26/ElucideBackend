@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-    getAllBrands,
-    getAllLeagues,
-    getAllTeams,
-    getAllAthletes,
-    getAllSportsDealSummaries,
-    getAllActivationSummaries,
+  getAllBrands,
+  getAllLeagues,
+  getAllTeams,
+  getAllAthletes,
+  getAllSportsDealSummaries,
+  getAllActivationSummaries,
 } from "../../controllers/chatbot/chatbot.controller.js";
 
 const chatbotRouter = Router();

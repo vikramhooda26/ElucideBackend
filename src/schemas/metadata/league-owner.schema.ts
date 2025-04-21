@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createLeagueOwnerSchema = z.object({
-    userId: z.string(),
-    leagueOwnerName: z.string(),
+  userId: z.string(),
+  leagueOwnerName: z.string(),
 });
 
 export const editLeagueOwnerSchema = createLeagueOwnerSchema;

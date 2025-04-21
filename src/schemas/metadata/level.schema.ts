@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createLevelSchema = z.object({
-    userId: z.string(),
-    levelName: z.string(),
+  userId: z.string(),
+  levelName: z.string(),
 });
 
 export const editLevelSchema = createLevelSchema;

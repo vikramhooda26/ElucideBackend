@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createAssetSchema = z.object({
-    assetName: z.string(),
-    userId: z.string(),
+  assetName: z.string(),
+  userId: z.string(),
 });
 
 export const editAssetSchema = createAssetSchema;

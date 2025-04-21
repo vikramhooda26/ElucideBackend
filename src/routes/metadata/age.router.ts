@@ -2,11 +2,11 @@ import { Router } from "express";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import {
-    createAgeRange,
-    deleteAgeRange,
-    editAgeRange,
-    getAgeRangeById,
-    getAllAgeRanges,
+  createAgeRange,
+  deleteAgeRange,
+  editAgeRange,
+  getAgeRangeById,
+  getAllAgeRanges,
 } from "../../controllers/metadata/age.controller.js";
 import { createAgeRangeSchema, editAgeRangeSchema } from "../../schemas/metadata/age.schema.js";
 

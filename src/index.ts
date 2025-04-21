@@ -1,10 +1,9 @@
 import { cookieParser, cors, dotenv, express } from "./imports/core.imports.js";
 import { authMiddleware, globalErrorHandler } from "./imports/middleware.imports.js";
 import * as Routers from "./imports/router.imports.js";
-import { printLogs } from "./lib/log.js";
 
 (BigInt.prototype as any).toJSON = function () {
-    return this.toString();
+  return this.toString();
 };
 
 dotenv.config();
@@ -14,10 +13,10 @@ const port = parseInt(process.env.PORT || "3000");
 const authorizedHosts = process.env.AUTHORIZED_HOSTS ? process.env.AUTHORIZED_HOSTS.split(",") : [];
 
 app.use(
-    cors({
-        credentials: true,
-        origin: authorizedHosts,
-    }),
+  cors({
+    credentials: true,
+    origin: authorizedHosts,
+  }),
 );
 
 app.use(cookieParser());

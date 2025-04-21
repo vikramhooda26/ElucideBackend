@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createParentOrgSchema = z.object({
-    userId: z.string(),
-    parentOrgName: z.string(),
+  userId: z.string(),
+  parentOrgName: z.string(),
 });
 
 export const editParentOrgSchema = createParentOrgSchema;

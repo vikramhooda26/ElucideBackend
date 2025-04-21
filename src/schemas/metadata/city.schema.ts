@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createCitySchema = z.object({
-    userId: z.string(),
-    cityName: z.string(),
+  userId: z.string(),
+  cityName: z.string(),
 });
 
 export const editCitySchema = createCitySchema;

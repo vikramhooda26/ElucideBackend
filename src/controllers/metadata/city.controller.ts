@@ -6,160 +6,160 @@ import { TCreateCitySchema, TEditCitySchema } from "../../schemas/metadata/city.
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllCities = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
+  const { take, skip } = req.query;
 
-    const cities = await prisma.dashapp_hqcity.findMany({
+  const cities = await prisma.dashapp_hqcity.findMany({
+    select: {
+      id: true,
+      name: true,
+      created_date: true,
+      modified_date: true,
+      created_by: {
         select: {
-            id: true,
-            name: true,
-            created_date: true,
-            modified_date: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            _count: true,
+          id: true,
+          email: true,
         },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
-    });
+      },
+      modified_by: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      _count: true,
+    },
+    orderBy: { modified_date: "desc" },
+    take: Number.isNaN(Number(take)) ? undefined : Number(take),
+    skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+  });
 
-    if (cities.length < 1) {
-        throw new NotFoundError("Cities data does not exists");
-    }
+  if (cities.length < 1) {
+    throw new NotFoundError("Cities data does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json(
-        cities.map((city) => ({
-            id: city.id,
-            cityName: city.name,
-            createdDate: city.created_date,
-            modifiedDate: city.modified_date,
-            createdBy: {
-                userId: city.created_by?.id,
-                email: city.created_by?.email,
-            },
-            modifiedBy: {
-                userId: city.modified_by?.id,
-                email: city.modified_by?.email,
-            },
-            count: city._count,
-        })),
-    );
+  res.status(STATUS_CODE.OK).json(
+    cities.map((city) => ({
+      id: city.id,
+      cityName: city.name,
+      createdDate: city.created_date,
+      modifiedDate: city.modified_date,
+      createdBy: {
+        userId: city.created_by?.id,
+        email: city.created_by?.email,
+      },
+      modifiedBy: {
+        userId: city.modified_by?.id,
+        email: city.modified_by?.email,
+      },
+      count: city._count,
+    })),
+  );
 });
 
 export const getCityById = asyncHandler(async (req, res) => {
-    const cityId = req.params.id;
+  const cityId = req.params.id;
 
-    if (!cityId) {
-        throw new BadRequestError("City ID not found");
-    }
+  if (!cityId) {
+    throw new BadRequestError("City ID not found");
+  }
 
-    const city = await prisma.dashapp_hqcity.findUnique({
-        where: { id: BigInt(cityId) },
-        select: {
-            id: true,
-            name: true,
-        },
-    });
+  const city = await prisma.dashapp_hqcity.findUnique({
+    where: { id: BigInt(cityId) },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
 
-    if (!city?.id) {
-        throw new NotFoundError("This city does not exists");
-    }
+  if (!city?.id) {
+    throw new NotFoundError("This city does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json({
-        id: city.id,
-        cityName: city.name,
-    });
+  res.status(STATUS_CODE.OK).json({
+    id: city.id,
+    cityName: city.name,
+  });
 });
 
 export const createCity = asyncHandler(async (req, res) => {
-    const { cityName, userId } = req.validatedData as TCreateCitySchema;
+  const { cityName, userId } = req.validatedData as TCreateCitySchema;
 
-    await prisma.dashapp_hqcity.create({
-        data: {
-            name: cityName,
-            created_by: { connect: { id: BigInt(userId) } },
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: { id: true },
-    });
+  await prisma.dashapp_hqcity.create({
+    data: {
+      name: cityName,
+      created_by: { connect: { id: BigInt(userId) } },
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "City created",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "City created",
+  });
 });
 
 export const editCity = asyncHandler(async (req, res) => {
-    const cityId = req.params.id;
+  const cityId = req.params.id;
 
-    if (!cityId) {
-        throw new BadRequestError("City ID not found");
-    }
+  if (!cityId) {
+    throw new BadRequestError("City ID not found");
+  }
 
-    const cityExists = await prisma.dashapp_hqcity.findUnique({
-        where: { id: BigInt(cityId) },
-        select: { id: true },
-    });
+  const cityExists = await prisma.dashapp_hqcity.findUnique({
+    where: { id: BigInt(cityId) },
+    select: { id: true },
+  });
 
-    if (!cityExists?.id) {
-        throw new NotFoundError("This city does not exists");
-    }
+  if (!cityExists?.id) {
+    throw new NotFoundError("This city does not exists");
+  }
 
-    const { cityName, userId } = req.validatedData as TEditCitySchema;
+  const { cityName, userId } = req.validatedData as TEditCitySchema;
 
-    await prisma.dashapp_hqcity.update({
-        where: { id: BigInt(cityId) },
-        data: {
-            name: cityName,
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: {
-            id: true,
-        },
-    });
+  await prisma.dashapp_hqcity.update({
+    where: { id: BigInt(cityId) },
+    data: {
+      name: cityName,
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: {
+      id: true,
+    },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "City updated",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "City updated",
+  });
 });
 
 export const deleteCity = asyncHandler(async (req, res) => {
-    const cityId = req.params.id;
+  const cityId = req.params.id;
 
-    if (!cityId) {
-        throw new BadRequestError("City ID not found");
-    }
+  if (!cityId) {
+    throw new BadRequestError("City ID not found");
+  }
 
-    const cityExists = await prisma.dashapp_hqcity.findUnique({
-        where: { id: BigInt(cityId) },
-        select: { id: true },
-    });
+  const cityExists = await prisma.dashapp_hqcity.findUnique({
+    where: { id: BigInt(cityId) },
+    select: { id: true },
+  });
 
-    if (!cityExists?.id) {
-        throw new NotFoundError("This city does not exists");
-    }
+  if (!cityExists?.id) {
+    throw new NotFoundError("This city does not exists");
+  }
 
-    await prisma.dashapp_hqcity.delete({
-        where: { id: BigInt(cityId) },
-        select: { id: true },
-    });
+  await prisma.dashapp_hqcity.delete({
+    where: { id: BigInt(cityId) },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.CITY, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "City deleted",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "City deleted",
+  });
 });

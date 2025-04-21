@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createSocialMediaSchema = z.object({
-    userId: z.string(),
-    socialMedia: z.string(),
+  userId: z.string(),
+  socialMedia: z.string(),
 });
 
 export const editSocialMediaSchema = createSocialMediaSchema;

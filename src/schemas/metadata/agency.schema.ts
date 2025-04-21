@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createAgencySchema = z.object({
-    agencyName: z.string(),
-    userId: z.string(),
+  agencyName: z.string(),
+  userId: z.string(),
 });
 
 export const editAgencySchema = createAgencySchema;

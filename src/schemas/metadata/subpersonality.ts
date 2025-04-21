@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const createSubpersonalitySchema = z.object({
-    userId: z.string(),
-    subpersonalityName: z.string(),
-    mainPersonalityId: z.string(),
+  userId: z.string(),
+  subpersonalityName: z.string(),
+  mainPersonalityId: z.string(),
 });
 
 export const editSubpersonalitySchema = createSubpersonalitySchema;

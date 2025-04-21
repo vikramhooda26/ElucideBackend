@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-    createTeam,
-    editTeam,
-    getAllTeams,
-    getTeamById,
-    deleteTeam,
-    getTotalTeams,
+  createTeam,
+  editTeam,
+  getAllTeams,
+  getTeamById,
+  deleteTeam,
+  getTotalTeams,
 } from "../controllers/team.controller.js";
 import { roleMiddleware } from "../middleware/role.middleware.js";
 import { validateSchema } from "../middleware/validate.middleware.js";
@@ -20,10 +20,10 @@ teamRouter.get("/:id", getTeamById);
 teamRouter.get("/count", getTotalTeams);
 
 teamRouter.post(
-    "/create",
-    roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
-    validateSchema(createTeamSchema),
-    createTeam,
+  "/create",
+  roleMiddleware(["SUPER_ADMIN", "ADMIN", "STAFF"]),
+  validateSchema(createTeamSchema),
+  createTeam,
 );
 
 teamRouter.put("/edit/:id", roleMiddleware(["SUPER_ADMIN", "ADMIN"]), validateSchema(editTeamSchema), editTeam);

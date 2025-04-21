@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createPersonalitySchema = z.object({
-    userId: z.string(),
-    personalityName: z.string(),
+  userId: z.string(),
+  personalityName: z.string(),
 });
 
 export const editPersonalitySchema = createPersonalitySchema;

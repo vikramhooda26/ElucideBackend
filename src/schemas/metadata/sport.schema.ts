@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createSportSchema = z.object({
-    userId: z.string(),
-    sportName: z.string(),
+  userId: z.string(),
+  sportName: z.string(),
 });
 
 export const editSportSchema = createSportSchema;

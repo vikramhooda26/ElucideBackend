@@ -6,160 +6,160 @@ import { TCreateParentOrgSchema, TEditParentOrgSchema } from "../../schemas/meta
 import { metadataStore } from "../../managers/MetadataManager.js";
 
 export const getAllParentOrgs = asyncHandler(async (req, res) => {
-    const { take, skip } = req.query;
+  const { take, skip } = req.query;
 
-    const parentOrgs = await prisma.dashapp_parentorg.findMany({
+  const parentOrgs = await prisma.dashapp_parentorg.findMany({
+    select: {
+      id: true,
+      name: true,
+      created_date: true,
+      modified_date: true,
+      created_by: {
         select: {
-            id: true,
-            name: true,
-            created_date: true,
-            modified_date: true,
-            created_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            modified_by: {
-                select: {
-                    id: true,
-                    email: true,
-                },
-            },
-            _count: true,
+          id: true,
+          email: true,
         },
-        orderBy: { modified_date: "desc" },
-        take: Number.isNaN(Number(take)) ? undefined : Number(take),
-        skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
-    });
+      },
+      modified_by: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      _count: true,
+    },
+    orderBy: { modified_date: "desc" },
+    take: Number.isNaN(Number(take)) ? undefined : Number(take),
+    skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
+  });
 
-    if (parentOrgs.length < 1) {
-        throw new NotFoundError("Parent Organizations data does not exists");
-    }
+  if (parentOrgs.length < 1) {
+    throw new NotFoundError("Parent Organizations data does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json(
-        parentOrgs.map((parentOrg) => ({
-            id: parentOrg.id,
-            parentOrgName: parentOrg.name,
-            createdDate: parentOrg.created_date,
-            modifiedDate: parentOrg.modified_date,
-            createdBy: {
-                userId: parentOrg.created_by?.id,
-                email: parentOrg.created_by?.email,
-            },
-            modifiedBy: {
-                userId: parentOrg.modified_by?.id,
-                email: parentOrg.modified_by?.email,
-            },
-            count: parentOrg._count,
-        })),
-    );
+  res.status(STATUS_CODE.OK).json(
+    parentOrgs.map((parentOrg) => ({
+      id: parentOrg.id,
+      parentOrgName: parentOrg.name,
+      createdDate: parentOrg.created_date,
+      modifiedDate: parentOrg.modified_date,
+      createdBy: {
+        userId: parentOrg.created_by?.id,
+        email: parentOrg.created_by?.email,
+      },
+      modifiedBy: {
+        userId: parentOrg.modified_by?.id,
+        email: parentOrg.modified_by?.email,
+      },
+      count: parentOrg._count,
+    })),
+  );
 });
 
 export const getParentOrgById = asyncHandler(async (req, res) => {
-    const parentOrgId = req.params.id;
+  const parentOrgId = req.params.id;
 
-    if (!parentOrgId) {
-        throw new BadRequestError("Parent Organization ID not found");
-    }
+  if (!parentOrgId) {
+    throw new BadRequestError("Parent Organization ID not found");
+  }
 
-    const parentOrg = await prisma.dashapp_parentorg.findUnique({
-        where: { id: BigInt(parentOrgId) },
-        select: {
-            id: true,
-            name: true,
-        },
-    });
+  const parentOrg = await prisma.dashapp_parentorg.findUnique({
+    where: { id: BigInt(parentOrgId) },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
 
-    if (!parentOrg?.id) {
-        throw new NotFoundError("This parent Organization does not exists");
-    }
+  if (!parentOrg?.id) {
+    throw new NotFoundError("This parent Organization does not exists");
+  }
 
-    res.status(STATUS_CODE.OK).json({
-        id: parentOrg.id,
-        parentOrgName: parentOrg.name,
-    });
+  res.status(STATUS_CODE.OK).json({
+    id: parentOrg.id,
+    parentOrgName: parentOrg.name,
+  });
 });
 
 export const createParentOrg = asyncHandler(async (req, res) => {
-    const { parentOrgName, userId } = req.validatedData as TCreateParentOrgSchema;
+  const { parentOrgName, userId } = req.validatedData as TCreateParentOrgSchema;
 
-    await prisma.dashapp_parentorg.create({
-        data: {
-            name: parentOrgName,
-            created_by: { connect: { id: BigInt(userId) } },
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: { id: true },
-    });
+  await prisma.dashapp_parentorg.create({
+    data: {
+      name: parentOrgName,
+      created_by: { connect: { id: BigInt(userId) } },
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Parent organization created",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Parent organization created",
+  });
 });
 
 export const editParentOrg = asyncHandler(async (req, res) => {
-    const parentOrgId = req.params.id;
+  const parentOrgId = req.params.id;
 
-    if (!parentOrgId) {
-        throw new BadRequestError("Parent organization ID not found");
-    }
+  if (!parentOrgId) {
+    throw new BadRequestError("Parent organization ID not found");
+  }
 
-    const parentOrgExits = await prisma.dashapp_parentorg.findUnique({
-        where: { id: BigInt(parentOrgId) },
-        select: { id: true },
-    });
+  const parentOrgExits = await prisma.dashapp_parentorg.findUnique({
+    where: { id: BigInt(parentOrgId) },
+    select: { id: true },
+  });
 
-    if (!parentOrgExits?.id) {
-        throw new NotFoundError("This parent organization does not exists");
-    }
+  if (!parentOrgExits?.id) {
+    throw new NotFoundError("This parent organization does not exists");
+  }
 
-    const { parentOrgName, userId } = req.validatedData as TEditParentOrgSchema;
+  const { parentOrgName, userId } = req.validatedData as TEditParentOrgSchema;
 
-    await prisma.dashapp_parentorg.update({
-        where: { id: BigInt(parentOrgId) },
-        data: {
-            name: parentOrgName,
-            modified_by: { connect: { id: BigInt(userId) } },
-        },
-        select: {
-            id: true,
-        },
-    });
+  await prisma.dashapp_parentorg.update({
+    where: { id: BigInt(parentOrgId) },
+    data: {
+      name: parentOrgName,
+      modified_by: { connect: { id: BigInt(userId) } },
+    },
+    select: {
+      id: true,
+    },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Parent organization updated",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Parent organization updated",
+  });
 });
 
 export const deleteParentOrg = asyncHandler(async (req, res) => {
-    const parentOrgId = req.params.id;
+  const parentOrgId = req.params.id;
 
-    if (!parentOrgId) {
-        throw new BadRequestError("Parent organization ID not found");
-    }
+  if (!parentOrgId) {
+    throw new BadRequestError("Parent organization ID not found");
+  }
 
-    const parentOrgExists = await prisma.dashapp_parentorg.findUnique({
-        where: { id: BigInt(parentOrgId) },
-        select: { id: true },
-    });
+  const parentOrgExists = await prisma.dashapp_parentorg.findUnique({
+    where: { id: BigInt(parentOrgId) },
+    select: { id: true },
+  });
 
-    if (!parentOrgExists?.id) {
-        throw new NotFoundError("This parent organization does not exists");
-    }
+  if (!parentOrgExists?.id) {
+    throw new NotFoundError("This parent organization does not exists");
+  }
 
-    await prisma.dashapp_parentorg.delete({
-        where: { id: BigInt(parentOrgId) },
-        select: { id: true },
-    });
+  await prisma.dashapp_parentorg.delete({
+    where: { id: BigInt(parentOrgId) },
+    select: { id: true },
+  });
 
-    metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
+  metadataStore.setHasUpdated(METADATA_KEYS.PARENT_ORG, true);
 
-    res.status(STATUS_CODE.OK).json({
-        message: "Parent organization deleted",
-    });
+  res.status(STATUS_CODE.OK).json({
+    message: "Parent organization deleted",
+  });
 });

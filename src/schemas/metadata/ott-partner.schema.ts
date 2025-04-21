@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createOttPartnerSchema = z.object({
-    userId: z.string(),
-    ottPartnerName: z.string(),
+  userId: z.string(),
+  ottPartnerName: z.string(),
 });
 
 export const editOttPartnerSchema = createOttPartnerSchema;

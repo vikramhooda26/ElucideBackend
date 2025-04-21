@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createkeyMarketchema = z.object({
-    userId: z.string(),
-    keyMarketName: z.string(),
+  userId: z.string(),
+  keyMarketName: z.string(),
 });
 
 export const editKeyMarketSchema = createkeyMarketchema;

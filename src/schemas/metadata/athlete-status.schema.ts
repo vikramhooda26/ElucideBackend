@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createAthleteStatusSchema = z.object({
-    userId: z.string(),
-    status: z.string(),
+  userId: z.string(),
+  status: z.string(),
 });
 
 export const editAthleteStatusSchema = createAthleteStatusSchema;

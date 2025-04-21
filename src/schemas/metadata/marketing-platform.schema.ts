@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createMarkingPlatformSchema = z.object({
-    userId: z.string(),
-    marketingPlatformName: z.string(),
+  userId: z.string(),
+  marketingPlatformName: z.string(),
 });
 
 export const editMarkingPlatformSchema = createMarkingPlatformSchema;

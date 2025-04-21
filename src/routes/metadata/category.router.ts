@@ -2,11 +2,11 @@ import { Router } from "express";
 import { validateSchema } from "../../middleware/validate.middleware.js";
 import { roleMiddleware } from "../../middleware/role.middleware.js";
 import {
-    createCategory,
-    deleteCategory,
-    editCategory,
-    getAllCategories,
-    getCategoryById,
+  createCategory,
+  deleteCategory,
+  editCategory,
+  getAllCategories,
+  getCategoryById,
 } from "../../controllers/metadata/category.controller.js";
 import { createCategorySchema, editCategorySchema } from "../../schemas/metadata/category.schema.js";
 
