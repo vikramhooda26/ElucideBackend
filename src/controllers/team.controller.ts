@@ -22,23 +22,41 @@ export const getTeams = async ({
   take,
   skip,
   select,
+  orderBy = "modified_date",
+  orderDirection = "desc",
 }: {
   query?: Prisma.dashapp_teamWhereInput;
   take?: any;
   skip?: any;
   select: Prisma.dashapp_teamSelect;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
 }) => {
+  let orderByObject: any = {};
+
+  if (orderBy === "created_by" || orderBy === "modified_by") {
+    orderByObject = {
+      [orderBy]: {
+        email: orderDirection,
+      },
+    };
+  } else {
+    orderByObject = {
+      [orderBy]: orderDirection,
+    };
+  }
+
   return await prisma.dashapp_team.findMany({
     where: query || undefined,
     select: select,
-    orderBy: { modified_date: "desc" },
+    orderBy: orderByObject,
     take: Number.isNaN(Number(take)) ? undefined : Number(take),
     skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
   });
 };
 
 export const getAllTeams = asyncHandler(async (req, res) => {
-  const { take, skip } = req.query;
+  const { take, skip, orderBy, orderDirection } = req.query;
 
   const selectTeam = {
     id: true,
@@ -60,16 +78,34 @@ export const getAllTeams = asyncHandler(async (req, res) => {
     modified_date: true,
   };
 
-  const teams = await getTeams({ skip, take, select: selectTeam });
+  const fieldMapping: Record<string, string> = {
+    name: "team_name",
+    createdDate: "created_date",
+    modifiedDate: "modified_date",
+    createdBy: "created_by",
+    modifiedBy: "modified_by",
+  };
+
+  const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
+  const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
+
+  const [teams, totalCount] = await Promise.all([
+    getTeams({
+      skip,
+      take,
+      select: selectTeam,
+      orderBy: dbOrderByField,
+      orderDirection: dbOrderDirection,
+    }),
+    getTeamsCount(),
+  ]);
 
   if (teams.length < 1) {
     throw new NotFoundError("Team data does not exists");
   }
 
-  const count = await getTeamsCount();
-
-  res.status(STATUS_CODE.OK).json(
-    teams.map((team) => ({
+  res.status(STATUS_CODE.OK).json({
+    items: teams.map((team) => ({
       id: team.id,
       name: team.team_name,
       createdDate: team.created_date,
@@ -82,9 +118,9 @@ export const getAllTeams = asyncHandler(async (req, res) => {
         userId: team.modified_by?.id,
         email: team.modified_by?.email,
       },
-      count,
     })),
-  );
+    totalCount,
+  });
 });
 
 export const getTeamById = asyncHandler(async (req, res) => {

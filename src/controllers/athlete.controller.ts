@@ -49,23 +49,40 @@ export const getAthletes = async ({
   take,
   skip,
   select,
+  orderBy = "modified_date",
+  orderDirection = "desc",
 }: {
   take?: any;
   skip?: any;
   query?: Prisma.dashapp_athleteWhereInput;
   select: Prisma.dashapp_athleteSelect;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
 }) => {
+  let orderByObject: any = {};
+
+  if (orderBy === "created_by" || orderBy === "modified_by") {
+    orderByObject = {
+      [orderBy]: {
+        email: orderDirection,
+      },
+    };
+  } else {
+    orderByObject = {
+      [orderBy]: orderDirection,
+    };
+  }
   return await prisma.dashapp_athlete.findMany({
     where: query,
     select: select,
-    orderBy: { modified_date: "desc" },
+    orderBy: orderByObject,
     take: Number.isNaN(Number(take)) ? undefined : Number(take),
     skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
   });
 };
 
 export const getAllAthletes = asyncHandler(async (req, res) => {
-  const { take, skip } = req.query;
+  const { take, skip, orderBy, orderDirection } = req.query;
 
   const selectAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     id: true,
@@ -88,8 +105,19 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
     modified_date: true,
   });
 
+  const fieldMapping: Record<string, string> = {
+    name: "athlete_name",
+    createdDate: "created_date",
+    modifiedDate: "modified_date",
+    createdBy: "created_by",
+    modifiedBy: "modified_by",
+  };
+
+  const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
+  const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
+
   const [athletes, totalCount] = await Promise.all([
-    getAthletes({ take, skip, select: selectAthletes }),
+    getAthletes({ take, skip, select: selectAthletes, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
     getAthletesCount(),
   ]);
 
