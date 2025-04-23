@@ -22,16 +22,33 @@ export const getLeagues = async ({
   take,
   skip,
   select,
+  orderBy = "modified_date",
+  orderDirection = "desc",
 }: {
   query?: Prisma.dashapp_leagueinfoWhereInput;
   take?: any;
   skip?: any;
   select: Prisma.dashapp_leagueinfoSelect;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
 }) => {
+  let orderByObject: any = {};
+
+  if (orderBy === "created_by" || orderBy === "modified_by") {
+    orderByObject = {
+      [orderBy]: {
+        email: orderDirection,
+      },
+    };
+  } else {
+    orderByObject = {
+      [orderBy]: orderDirection,
+    };
+  }
   return await prisma.dashapp_leagueinfo.findMany({
     where: query || undefined,
     select: select,
-    orderBy: { modified_date: "desc" },
+    orderBy: orderByObject,
     take: Number.isNaN(Number(take)) ? undefined : Number(take),
     skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
   });
@@ -89,9 +106,9 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 });
 
 export const getAllLeagues = asyncHandler(async (req, res) => {
-  const { take, skip } = req.query;
+  const { take, skip, orderBy, orderDirection } = req.query;
 
-  const selectLeague = {
+  const selectLeague = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()({
     id: true,
     property_name: true,
     created_by: {
@@ -109,18 +126,36 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
       },
     },
     modified_date: true,
+  });
+
+  const fieldMapping: Record<string, string> = {
+    name: "property_name",
+    createdDate: "created_date",
+    modifiedDate: "modified_date",
+    createdBy: "created_by",
+    modifiedBy: "modified_by",
   };
 
-  const leagues = await getLeagues({ skip, take, select: selectLeague });
+  const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
+  const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
+
+  const [leagues, totalCount] = await Promise.all([
+    getLeagues({
+      take,
+      skip,
+      select: selectLeague,
+      orderBy: dbOrderByField,
+      orderDirection: dbOrderDirection,
+    }),
+    getLeaguesCount(),
+  ]);
 
   if (leagues.length < 1) {
     throw new NotFoundError("League data does not exists");
   }
 
-  const count = await getLeaguesCount();
-
-  res.status(STATUS_CODE.OK).json(
-    leagues.map((league) => ({
+  res.status(STATUS_CODE.OK).json({
+    items: leagues.map((league) => ({
       id: league.id,
       name: league.property_name,
       createdDate: league.created_date,
@@ -133,9 +168,9 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
         userId: league.modified_by?.id,
         email: league.modified_by?.email,
       },
-      count,
     })),
-  );
+    totalCount,
+  });
 });
 
 export const getTotalLeagues = asyncHandler(async (req, res) => {
