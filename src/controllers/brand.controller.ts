@@ -16,23 +16,40 @@ export const getBrands = async ({
   take,
   skip,
   select,
+  orderBy = "modified_date",
+  orderDirection = "desc",
 }: {
   query?: Prisma.dashapp_companydataWhereInput;
   take?: any;
   skip?: any;
   select: Prisma.dashapp_companydataSelect;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
 }) => {
+  let orderByObject: any = {};
+
+  if (orderBy === "created_by" || orderBy === "modified_by") {
+    orderByObject = {
+      [orderBy]: {
+        email: orderDirection,
+      },
+    };
+  } else {
+    orderByObject = {
+      [orderBy]: orderDirection,
+    };
+  }
   return await prisma.dashapp_companydata.findMany({
     where: query || undefined,
     select: select,
-    orderBy: { modified_date: "desc" },
+    orderBy: orderByObject,
     take: Number.isNaN(Number(take)) ? undefined : Number(take),
     skip: Number.isNaN(Number(skip)) ? undefined : Number(skip),
   });
 };
 
 export const getAllBrands = asyncHandler(async (req, res) => {
-  const { take, skip } = req.query;
+  const { take, skip, orderBy, orderDirection } = req.query;
 
   const selectBrand = {
     id: true,
@@ -54,16 +71,28 @@ export const getAllBrands = asyncHandler(async (req, res) => {
     modified_date: true,
   };
 
-  const brands = await getBrands({ take, skip, select: selectBrand });
+  const fieldMapping: Record<string, string> = {
+    name: "company_name",
+    createdDate: "created_date",
+    modifiedDate: "modified_date",
+    createdBy: "created_by",
+    modifiedBy: "modified_by",
+  };
+
+  const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
+  const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
+
+  const [brands, totalCount] = await Promise.all([
+    getBrands({ take, skip, select: selectBrand, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
+    getBrandsCount(),
+  ]);
 
   if (brands.length < 1) {
     throw new NotFoundError("Brands data does not exists");
   }
 
-  const count = await getBrandsCount();
-
-  res.status(STATUS_CODE.OK).json(
-    brands.map((brand) => ({
+  res.status(STATUS_CODE.OK).json({
+    items: brands.map((brand) => ({
       id: brand.id,
       name: brand.company_name,
       createdDate: brand.created_date,
@@ -76,9 +105,9 @@ export const getAllBrands = asyncHandler(async (req, res) => {
         userId: brand.modified_by?.id,
         email: brand.modified_by?.email,
       },
-      count,
     })),
-  );
+    totalCount,
+  });
 });
 
 export const getBrandById = asyncHandler(async (req, res) => {
