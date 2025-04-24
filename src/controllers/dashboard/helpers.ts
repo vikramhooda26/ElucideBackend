@@ -1,9 +1,12 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../db/index.js";
 
 /* ----- Brand Helper Functions ----- */
 
-export const getBrandsCount = async () => {
-  return await prisma.dashapp_companydata.count();
+export const getBrandsCount = async (query?: Prisma.dashapp_companydataWhereInput) => {
+  return await prisma.dashapp_companydata.count({
+    where: query || undefined,
+  });
 };
 
 export const getBrandsPerCategory = async () => {
@@ -74,8 +77,10 @@ export const getRecentlyModifiedBrands = async (take: number, skip: number) => {
 
 /* ----- Team Helper Functions ----- */
 
-export const getTeamsCount = async () => {
-  return await prisma.dashapp_team.count();
+export const getTeamsCount = async (query?: Prisma.dashapp_teamWhereInput) => {
+  return await prisma.dashapp_team.count({
+    where: query || undefined,
+  });
 };
 
 export const getNumberOfTeamsPerSport = async () => {
@@ -140,8 +145,10 @@ export const getRecentlyModifiedTeams = async (take: number, skip: number) => {
 
 /* ----- League Helper Functions ----- */
 
-export const getLeaguesCount = async () => {
-  return await prisma.dashapp_leagueinfo.count();
+export const getLeaguesCount = async (query?: Prisma.dashapp_leagueinfoWhereInput) => {
+  return await prisma.dashapp_leagueinfo.count({
+    where: query || undefined,
+  });
 };
 
 export const getNumberOfLeaguesPerSport = async () => {
@@ -192,8 +199,10 @@ export const getRecentlyModifiedLeagues = async (take: number, skip: number) => 
 
 /* ----- Athlete Helper Functions ----- */
 
-export const getAthletesCount = async () => {
-  return await prisma.dashapp_athlete.count();
+export const getAthletesCount = async (query?: Prisma.dashapp_athleteWhereInput) => {
+  return await prisma.dashapp_athlete.count({
+    where: query || undefined,
+  });
 };
 
 export const getNumberOfAthletesPerSport = async () => {

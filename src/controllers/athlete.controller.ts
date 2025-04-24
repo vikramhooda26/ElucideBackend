@@ -82,7 +82,7 @@ export const getAthletes = async ({
 };
 
 export const getAllAthletes = asyncHandler(async (req, res) => {
-  const { take, skip, orderBy, orderDirection } = req.query;
+  const { take, skip, orderBy, orderDirection, search } = req.query;
 
   const selectAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
     id: true,
@@ -116,14 +116,26 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
   const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
   const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
 
-  const [athletes, totalCount] = await Promise.all([
-    getAthletes({ take, skip, select: selectAthletes, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
-    getAthletesCount(),
-  ]);
+  const query: Prisma.dashapp_athleteWhereInput = {};
 
-  if (athletes.length < 1) {
-    throw new NotFoundError("Athlete data does not exists");
+  if (search && typeof search === "string" && search.trim() !== "") {
+    query.athlete_name = {
+      contains: search.trim(),
+      mode: "insensitive",
+    };
   }
+
+  const [athletes, totalCount] = await Promise.all([
+    getAthletes({
+      query,
+      take,
+      skip,
+      select: selectAthletes,
+      orderBy: dbOrderByField,
+      orderDirection: dbOrderDirection,
+    }),
+    getAthletesCount(search ? query : undefined),
+  ]);
 
   res.status(STATUS_CODE.OK).json({
     items: athletes.map((athlete) => ({

@@ -56,7 +56,7 @@ export const getTeams = async ({
 };
 
 export const getAllTeams = asyncHandler(async (req, res) => {
-  const { take, skip, orderBy, orderDirection } = req.query;
+  const { take, skip, orderBy, orderDirection, search } = req.query;
 
   const selectTeam = {
     id: true,
@@ -89,20 +89,26 @@ export const getAllTeams = asyncHandler(async (req, res) => {
   const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
   const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
 
+  const query: Prisma.dashapp_teamWhereInput = {};
+
+  if (search && typeof search === "string" && search.trim() !== "") {
+    query.team_name = {
+      contains: search.trim(),
+      mode: "insensitive",
+    };
+  }
+
   const [teams, totalCount] = await Promise.all([
     getTeams({
+      query,
       skip,
       take,
       select: selectTeam,
       orderBy: dbOrderByField,
       orderDirection: dbOrderDirection,
     }),
-    getTeamsCount(),
+    getTeamsCount(search ? query : undefined),
   ]);
-
-  if (teams.length < 1) {
-    throw new NotFoundError("Team data does not exists");
-  }
 
   res.status(STATUS_CODE.OK).json({
     items: teams.map((team) => ({

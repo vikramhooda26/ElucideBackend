@@ -40,7 +40,7 @@ export const getBrands = async ({
     };
   }
   return await prisma.dashapp_companydata.findMany({
-    where: query || undefined,
+    where: query,
     select: select,
     orderBy: orderByObject,
     take: Number.isNaN(Number(take)) ? undefined : Number(take),
@@ -49,7 +49,7 @@ export const getBrands = async ({
 };
 
 export const getAllBrands = asyncHandler(async (req, res) => {
-  const { take, skip, orderBy, orderDirection } = req.query;
+  const { take, skip, orderBy, orderDirection, search } = req.query;
 
   const selectBrand = {
     id: true,
@@ -82,14 +82,19 @@ export const getAllBrands = asyncHandler(async (req, res) => {
   const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
   const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
 
-  const [brands, totalCount] = await Promise.all([
-    getBrands({ take, skip, select: selectBrand, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
-    getBrandsCount(),
-  ]);
+  const query: Prisma.dashapp_companydataWhereInput = {};
 
-  if (brands.length < 1) {
-    throw new NotFoundError("Brands data does not exists");
+  if (search && typeof search === "string" && search.trim() !== "") {
+    query.company_name = {
+      contains: search.trim(),
+      mode: "insensitive",
+    };
   }
+
+  const [brands, totalCount] = await Promise.all([
+    getBrands({ query, take, skip, select: selectBrand, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
+    getBrandsCount(search ? query : undefined),
+  ]);
 
   res.status(STATUS_CODE.OK).json({
     items: brands.map((brand) => ({
@@ -119,69 +124,106 @@ export const getBrandById = asyncHandler(async (req, res) => {
 
   const brand = await prisma.dashapp_companydata.findUnique({
     where: { id: BigInt(brandId) },
-    select: brandSelect,
+    select: {
+      ...brandSelect,
+      dashapp_companydata_subcategory: {
+        select: {
+          dashapp_subcategory: {
+            select: {
+              id: true,
+              subcategory: true,
+              dashapp_category: {
+                select: {
+                  id: true,
+                  category: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      dashapp_companydata_personality_traits: {
+        select: {
+          dashapp_subpersonality: {
+            select: {
+              id: true,
+              name: true,
+              dashapp_mainpersonality: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!brand?.id) {
     throw new NotFoundError("This brand does not exists");
   }
 
-  const mainCategories = await prisma.dashapp_category.findMany({
-    where: {
-      dashapp_subcategory: {
-        some: {
-          dashapp_companydata_subcategory: {
-            some: { companydata_id: BigInt(brandId) },
-          },
-        },
-      },
-    },
-    select: {
-      id: true,
-      category: true,
-      dashapp_subcategory: {
-        where: {
-          dashapp_companydata_subcategory: {
-            some: {
-              companydata_id: BigInt(brandId),
-            },
-          },
-        },
-        select: {
-          id: true,
-          subcategory: true,
-        },
-      },
-    },
+  const mainCategories: {
+    id: bigint;
+    name: string;
+    subCategories: {
+      id: bigint;
+      name: string;
+    }[];
+  }[] = [];
+  const categoryMap = new Map();
+
+  brand.dashapp_companydata_subcategory.forEach(({ dashapp_subcategory }) => {
+    if (!dashapp_subcategory) return;
+    const category = dashapp_subcategory.dashapp_category;
+    if (!categoryMap.has(category.id.toString())) {
+      categoryMap.set(category.id.toString(), {
+        id: category.id,
+        category: category.category,
+        dashapp_subcategory: [],
+      });
+      mainCategories.push(categoryMap.get(category.id.toString()));
+    }
+
+    categoryMap.get(category.id.toString()).dashapp_subcategory.push({
+      id: dashapp_subcategory.id,
+      subcategory: dashapp_subcategory.subcategory,
+    });
   });
 
-  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
-    where: {
-      dashapp_subpersonality: {
-        some: {
-          dashapp_companydata_personality_traits: {
-            some: { companydata_id: BigInt(brandId) },
-          },
-        },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      dashapp_subpersonality: {
-        where: {
-          dashapp_companydata_personality_traits: {
-            some: {
-              companydata_id: BigInt(brandId),
-            },
-          },
-        },
-      },
-    },
+  const mainPersonalityMap = new Map();
+  const mainPersonalities: {
+    id: bigint;
+    name: string;
+    dashapp_subpersonality: {
+      id: bigint;
+      name: string;
+    }[];
+  }[] = [];
+
+  brand.dashapp_companydata_personality_traits.forEach(({ dashapp_subpersonality }) => {
+    const mainPersonality = dashapp_subpersonality.dashapp_mainpersonality;
+    if (!mainPersonalityMap.has(mainPersonality.id.toString())) {
+      mainPersonalityMap.set(mainPersonality.id.toString(), {
+        id: mainPersonality.id,
+        name: mainPersonality.name,
+        dashapp_subpersonality: [],
+      });
+      mainPersonalities.push(mainPersonalityMap.get(mainPersonality.id.toString()));
+    }
+
+    mainPersonalityMap.get(mainPersonality.id.toString()).dashapp_subpersonality.push({
+      id: dashapp_subpersonality.id,
+      name: dashapp_subpersonality.name,
+    });
   });
+
+  const { dashapp_companydata_subcategory, dashapp_companydata_personality_traits, ...brandData } = brand;
 
   const updatedBrand = {
-    ...brand,
+    ...brandData,
     mainPersonalities,
     mainCategories,
   };

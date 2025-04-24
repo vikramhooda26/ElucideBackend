@@ -106,7 +106,7 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 });
 
 export const getAllLeagues = asyncHandler(async (req, res) => {
-  const { take, skip, orderBy, orderDirection } = req.query;
+  const { take, skip, orderBy, orderDirection, search } = req.query;
 
   const selectLeague = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()({
     id: true,
@@ -136,23 +136,29 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
     modifiedBy: "modified_by",
   };
 
+  const query: Prisma.dashapp_leagueinfoWhereInput = {};
+
+  if (search && typeof search === "string" && search.trim() !== "") {
+    query.property_name = {
+      contains: search.trim(),
+      mode: "insensitive",
+    };
+  }
+
   const dbOrderByField = orderBy ? fieldMapping[orderBy as string] || "modified_date" : "modified_date";
   const dbOrderDirection = (orderDirection as "asc" | "desc") || "desc";
 
   const [leagues, totalCount] = await Promise.all([
     getLeagues({
+      query,
       take,
       skip,
       select: selectLeague,
       orderBy: dbOrderByField,
       orderDirection: dbOrderDirection,
     }),
-    getLeaguesCount(),
+    getLeaguesCount(search ? query : undefined),
   ]);
-
-  if (leagues.length < 1) {
-    throw new NotFoundError("League data does not exists");
-  }
 
   res.status(STATUS_CODE.OK).json({
     items: leagues.map((league) => ({
