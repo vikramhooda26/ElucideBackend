@@ -108,26 +108,6 @@ export const getLeagueById = asyncHandler(async (req, res) => {
 export const getAllLeagues = asyncHandler(async (req, res) => {
   const { take, skip, orderBy, orderDirection, search } = req.query;
 
-  const selectLeague = Prisma.validator<Prisma.dashapp_leagueinfoSelect>()({
-    id: true,
-    property_name: true,
-    created_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    dashapp_leagueinfo_gender: true,
-    created_date: true,
-    modified_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    modified_date: true,
-  });
-
   const fieldMapping: Record<string, string> = {
     name: "property_name",
     createdDate: "created_date",
@@ -153,30 +133,86 @@ export const getAllLeagues = asyncHandler(async (req, res) => {
       query,
       take,
       skip,
-      select: selectLeague,
+      select: leagueSelect,
       orderBy: dbOrderByField,
       orderDirection: dbOrderDirection,
     }),
     getLeaguesCount(search ? query : undefined),
   ]);
 
-  res.status(STATUS_CODE.OK).json({
-    items: leagues.map((league) => ({
-      id: league.id,
-      name: league.property_name,
-      createdDate: league.created_date,
-      modifiedDate: league.modified_date,
-      createdBy: {
-        userId: league.created_by?.id,
-        email: league.created_by?.email,
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_leagueinfo_personality_traits: {
+            some: { leagueinfo_id: { in: leagues.map((league) => league.id) } },
+          },
+        },
       },
-      modifiedBy: {
-        userId: league.modified_by?.id,
-        email: league.modified_by?.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_leagueinfo_personality_traits: {
+            some: {
+              leagueinfo_id: { in: leagues.map((league) => league.id) },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dashapp_leagueinfo_personality_traits: {
+            select: {
+              leagueinfo_id: true,
+            },
+          },
+        },
       },
-    })),
-    totalCount,
+    },
   });
+
+  const personalitiesByLeagueId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const leagueIds = subPersonality.dashapp_leagueinfo_personality_traits.map((trait) => trait.leagueinfo_id);
+
+      leagueIds.forEach((leagueId) => {
+        const leagueIdStr = leagueId.toString();
+
+        if (!personalitiesByLeagueId[leagueIdStr]) {
+          personalitiesByLeagueId[leagueIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByLeagueId[leagueIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_leagueinfo_personality_traits.some((trait) => trait.leagueinfo_id.toString() === leagueIdStr),
+            ),
+          };
+
+          personalitiesByLeagueId[leagueIdStr].push(filteredPersonality);
+        }
+      });
+    });
+  });
+
+  const updatedLeagues = leagues.map((league) => ({
+    ...league,
+    mainPersonalities: personalitiesByLeagueId[league.id.toString()] || [],
+  }));
+
+  const leagueResponse: LeagueResponseDTO[] = updatedLeagues.map((league) =>
+    LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
+  );
+
+  res.status(STATUS_CODE.OK).json({ items: leagueResponse, totalCount });
 });
 
 export const getTotalLeagues = asyncHandler(async (req, res) => {
