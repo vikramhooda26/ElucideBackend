@@ -51,26 +51,6 @@ export const getBrands = async ({
 export const getAllBrands = asyncHandler(async (req, res) => {
   const { take, skip, orderBy, orderDirection, search } = req.query;
 
-  const selectBrand = {
-    id: true,
-    company_name: true,
-    created_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    dashapp_companydata_gender: true,
-    created_date: true,
-    modified_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    modified_date: true,
-  };
-
   const fieldMapping: Record<string, string> = {
     name: "company_name",
     createdDate: "created_date",
@@ -92,27 +72,142 @@ export const getAllBrands = asyncHandler(async (req, res) => {
   }
 
   const [brands, totalCount] = await Promise.all([
-    getBrands({ query, take, skip, select: selectBrand, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
+    getBrands({ query, take, skip, select: brandSelect, orderBy: dbOrderByField, orderDirection: dbOrderDirection }),
     getBrandsCount(search ? query : undefined),
   ]);
 
-  res.status(STATUS_CODE.OK).json({
-    items: brands.map((brand) => ({
-      id: brand.id,
-      name: brand.company_name,
-      createdDate: brand.created_date,
-      modifiedDate: brand.modified_date,
-      createdBy: {
-        userId: brand.created_by?.id,
-        email: brand.created_by?.email,
+  const mainCategories = await prisma.dashapp_category.findMany({
+    where: {
+      dashapp_subcategory: {
+        some: {
+          dashapp_companydata_subcategory: {
+            some: { companydata_id: { in: brands.map((brand) => brand.id) } },
+          },
+        },
       },
-      modifiedBy: {
-        userId: brand.modified_by?.id,
-        email: brand.modified_by?.email,
+    },
+    select: {
+      id: true,
+      category: true,
+      dashapp_subcategory: {
+        select: {
+          id: true,
+          subcategory: true,
+          dashapp_companydata_subcategory: {
+            select: {
+              companydata_id: true,
+            },
+          },
+        },
       },
-    })),
-    totalCount,
+    },
   });
+
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_companydata_personality_traits: {
+            some: { companydata_id: { in: brands.map((brand) => brand.id) } },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_companydata_personality_traits: {
+            some: {
+              companydata_id: { in: brands.map((brand) => brand.id) },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dashapp_companydata_personality_traits: {
+            select: {
+              companydata_id: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const personalitiesByBrandId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const brandIds = subPersonality.dashapp_companydata_personality_traits.map((trait) => trait.companydata_id);
+
+      brandIds.forEach((leagueId) => {
+        const brandIdStr = leagueId.toString();
+
+        if (!personalitiesByBrandId[brandIdStr]) {
+          personalitiesByBrandId[brandIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByBrandId[brandIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_companydata_personality_traits.some(
+                (trait) => trait.companydata_id.toString() === brandIdStr,
+              ),
+            ),
+          };
+
+          personalitiesByBrandId[brandIdStr].push(filteredPersonality);
+        }
+      });
+    });
+  });
+
+  const categoriesByBrandId: Record<string, typeof mainCategories> = {};
+
+  mainCategories.forEach((category) => {
+    category.dashapp_subcategory.forEach((subCategory) => {
+      const brandIds = subCategory.dashapp_companydata_subcategory.map((trait) => trait.companydata_id);
+
+      brandIds.forEach((brandId) => {
+        const brandIdStr = brandId ? brandId.toString() : "";
+
+        if (!categoriesByBrandId[brandIdStr]) {
+          categoriesByBrandId[brandIdStr] = [];
+        }
+
+        const alreadyAdded = categoriesByBrandId[brandIdStr].some((p) => p.id === category.id);
+
+        if (!alreadyAdded) {
+          const filteredCategory = {
+            ...category,
+            dashapp_subpersonality: category.dashapp_subcategory.filter((sub) =>
+              sub.dashapp_companydata_subcategory.some((x) => x.companydata_id?.toString() === brandIdStr),
+            ),
+          };
+
+          categoriesByBrandId[brandIdStr].push(filteredCategory);
+        }
+      });
+    });
+  });
+
+  const updatedBrands = brands.map((brand) => ({
+    ...brand,
+    mainPersonalities: personalitiesByBrandId[brand?.id?.toString()] || [],
+    mainCategories: categoriesByBrandId[brand?.id?.toString()] || [],
+  }));
+
+  const brandResponse: BrandResponseDTO[] = updatedBrands.map((brand) =>
+    BrandResponseDTO.toResponse(brand as unknown as TBrandDetails),
+  );
+
+  res.status(STATUS_CODE.OK).json({ items: brandResponse, totalCount });
 });
 
 export const getBrandById = asyncHandler(async (req, res) => {

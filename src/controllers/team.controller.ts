@@ -58,26 +58,6 @@ export const getTeams = async ({
 export const getAllTeams = asyncHandler(async (req, res) => {
   const { take, skip, orderBy, orderDirection, search } = req.query;
 
-  const selectTeam = {
-    id: true,
-    team_name: true,
-    created_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    dashapp_team_gender: true,
-    created_date: true,
-    modified_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    modified_date: true,
-  };
-
   const fieldMapping: Record<string, string> = {
     name: "team_name",
     createdDate: "created_date",
@@ -103,30 +83,86 @@ export const getAllTeams = asyncHandler(async (req, res) => {
       query,
       skip,
       take,
-      select: selectTeam,
+      select: teamSelect,
       orderBy: dbOrderByField,
       orderDirection: dbOrderDirection,
     }),
     getTeamsCount(search ? query : undefined),
   ]);
 
-  res.status(STATUS_CODE.OK).json({
-    items: teams.map((team) => ({
-      id: team.id,
-      name: team.team_name,
-      createdDate: team.created_date,
-      modifiedDate: team.modified_date,
-      createdBy: {
-        userId: team.created_by?.id,
-        email: team.created_by?.email,
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_team_personality_traits: {
+            some: { team_id: { in: teams.map((team) => team.id) } },
+          },
+        },
       },
-      modifiedBy: {
-        userId: team.modified_by?.id,
-        email: team.modified_by?.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_team_personality_traits: {
+            some: {
+              team_id: { in: teams.map((team) => team.id) },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dashapp_team_personality_traits: {
+            select: {
+              team_id: true,
+            },
+          },
+        },
       },
-    })),
-    totalCount,
+    },
   });
+
+  const personalitiesByTeamId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const teamIds = subPersonality.dashapp_team_personality_traits.map((trait) => trait.team_id);
+
+      teamIds.forEach((teamId) => {
+        const teamIdStr = teamId.toString();
+
+        if (!personalitiesByTeamId[teamIdStr]) {
+          personalitiesByTeamId[teamIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByTeamId[teamIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_team_personality_traits.some((trait) => trait.team_id.toString() === teamIdStr),
+            ),
+          };
+
+          personalitiesByTeamId[teamIdStr].push(filteredPersonality);
+        }
+      });
+    });
+  });
+
+  const updatedTeams = teams.map((team) => ({
+    ...team,
+    mainPersonalities: personalitiesByTeamId[team.id.toString()] || [],
+  }));
+
+  const teamResponse: TeamResponseDTO[] = updatedTeams.map((team) =>
+    TeamResponseDTO.toResponse(team as unknown as TTeamDetails),
+  );
+
+  res.status(STATUS_CODE.OK).json({ items: teamResponse, totalCount });
 });
 
 export const getTeamById = asyncHandler(async (req, res) => {
