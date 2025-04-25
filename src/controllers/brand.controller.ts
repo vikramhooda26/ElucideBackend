@@ -824,7 +824,11 @@ export const editBrand = asyncHandler(async (req, res) => {
 
   metadataStore.setHasUpdated(METADATA_KEYS.BRAND, true);
 
-  await prisma.dashapp_brandcontact.deleteMany();
+  await prisma.dashapp_brandcontact.deleteMany({
+    where: {
+      brand_id: BigInt(brandId),
+    },
+  });
 
   if (contactPerson?.length) {
     const contactData = contactPerson.map((details) => ({

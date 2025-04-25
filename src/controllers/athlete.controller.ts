@@ -669,7 +669,11 @@ export const editAthlete = asyncHandler(async (req, res) => {
 
   metadataStore.setHasUpdated(METADATA_KEYS.ATHLETE, true);
 
-  await prisma.dashapp_athletecontact.deleteMany();
+  await prisma.dashapp_athletecontact.deleteMany({
+    where: {
+      athlete_id: BigInt(athleteId),
+    },
+  });
 
   if (contactPerson?.length) {
     const contactData = contactPerson.map((details) => ({
