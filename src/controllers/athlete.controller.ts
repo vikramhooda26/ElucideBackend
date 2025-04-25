@@ -84,27 +84,6 @@ export const getAthletes = async ({
 export const getAllAthletes = asyncHandler(async (req, res) => {
   const { take, skip, orderBy, orderDirection, search } = req.query;
 
-  const selectAthletes = Prisma.validator<Prisma.dashapp_athleteSelect>()({
-    id: true,
-    athlete_name: true,
-    nationality: { select: { name: true } },
-    created_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    dashapp_athlete_target_gender: true,
-    created_date: true,
-    modified_by: {
-      select: {
-        id: true,
-        email: true,
-      },
-    },
-    modified_date: true,
-  });
-
   const fieldMapping: Record<string, string> = {
     name: "athlete_name",
     createdDate: "created_date",
@@ -130,31 +109,84 @@ export const getAllAthletes = asyncHandler(async (req, res) => {
       query,
       take,
       skip,
-      select: selectAthletes,
+      select: athleteSelect,
       orderBy: dbOrderByField,
       orderDirection: dbOrderDirection,
     }),
     getAthletesCount(search ? query : undefined),
   ]);
 
-  res.status(STATUS_CODE.OK).json({
-    items: athletes.map((athlete) => ({
-      id: athlete.id,
-      name: athlete.athlete_name,
-      nationality: athlete.nationality?.name,
-      createdDate: athlete.created_date,
-      modifiedDate: athlete.modified_date,
-      createdBy: {
-        userId: athlete.created_by?.id,
-        email: athlete.created_by?.email,
+  const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
+    where: {
+      dashapp_subpersonality: {
+        some: {
+          dashapp_athlete_personality_traits: {
+            some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
+          },
+        },
       },
-      modifiedBy: {
-        userId: athlete.modified_by?.id,
-        email: athlete.modified_by?.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      dashapp_subpersonality: {
+        where: {
+          dashapp_athlete_personality_traits: {
+            some: { athlete_id: { in: athletes.map((athlete) => athlete.id) } },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dashapp_athlete_personality_traits: {
+            select: {
+              athlete_id: true,
+            },
+          },
+        },
       },
-    })),
-    totalCount,
+    },
   });
+
+  const personalitiesByAthleteId: Record<string, typeof mainPersonalities> = {};
+
+  mainPersonalities.forEach((personality) => {
+    personality.dashapp_subpersonality.forEach((subPersonality) => {
+      const athleteIds = subPersonality.dashapp_athlete_personality_traits.map((trait) => trait.athlete_id);
+
+      athleteIds.forEach((athleteId) => {
+        const athleteIdStr = athleteId.toString();
+
+        if (!personalitiesByAthleteId[athleteIdStr]) {
+          personalitiesByAthleteId[athleteIdStr] = [];
+        }
+
+        const alreadyAdded = personalitiesByAthleteId[athleteIdStr].some((p) => p.id === personality.id);
+
+        if (!alreadyAdded) {
+          const filteredPersonality = {
+            ...personality,
+            dashapp_subpersonality: personality.dashapp_subpersonality.filter((sub) =>
+              sub.dashapp_athlete_personality_traits.some((trait) => trait.athlete_id.toString() === athleteIdStr),
+            ),
+          };
+
+          personalitiesByAthleteId[athleteIdStr].push(filteredPersonality);
+        }
+      });
+    });
+  });
+
+  const updatedAthletes = athletes.map((athlete) => ({
+    ...athlete,
+    mainPersonalities: personalitiesByAthleteId[athlete.id.toString()] || [],
+  }));
+
+  const athleteResponse: AthleteResponseDTO[] = updatedAthletes.map((athlete) =>
+    AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
+  );
+
+  res.status(200).json({ items: athleteResponse, totalCount });
 });
 
 export const getAthleteById = asyncHandler(async (req, res) => {
