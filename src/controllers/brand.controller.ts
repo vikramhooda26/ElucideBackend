@@ -186,7 +186,7 @@ export const getAllBrands = asyncHandler(async (req, res) => {
         if (!alreadyAdded) {
           const filteredCategory = {
             ...category,
-            dashapp_subpersonality: category.dashapp_subcategory.filter((sub) =>
+            dashapp_subcategory: category.dashapp_subcategory.filter((sub) =>
               sub.dashapp_companydata_subcategory.some((x) => x.companydata_id?.toString() === brandIdStr),
             ),
           };
