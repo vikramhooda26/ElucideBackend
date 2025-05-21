@@ -268,10 +268,21 @@ export const createLeague = asyncHandler(async (req, res) => {
   }
 
   if (endorsements?.length) {
-    const isDistinct = areElementsDistinct(endorsements?.map((endorse) => endorse.name));
+    const isEndorsementsExists = await prisma.dashapp_leagueendorsements.findFirst({
+      where: {
+        name: { in: endorsements?.map((endorse) => endorse.name) },
+      },
+      select: {
+        name: true,
+      },
+    });
 
-    if (!isDistinct) {
-      throw new BadRequestError("Endorsements must be unique");
+    if (isEndorsementsExists?.name) {
+      res.status(STATUS_CODE.CONFLICT).json({
+        key: isEndorsementsExists.name,
+        message: "This endorsement already exists",
+      });
+      return;
     }
   }
 
