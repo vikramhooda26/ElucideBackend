@@ -21,13 +21,13 @@ export const createLeagueSchema = z.object({
   formatId: z.string().optional(),
   broadCastPartnerId: z.string().optional(),
   ottPartnerId: z.string().optional(),
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
-  linkedin: z.string().optional(),
-  twitter: z.string().optional(),
-  youtube: z.string().optional(),
-  website: z.string().optional(),
-  strategyOverview: z.string().optional(),
+  instagram: z.string().trim().optional(),
+  facebook: z.string().trim().optional(),
+  linkedin: z.string().trim().optional(),
+  twitter: z.string().trim().optional(),
+  youtube: z.string().trim().optional(),
+  website: z.string().trim().optional(),
+  strategyOverview: z.string().trim().optional(),
   endorsements: z
     .object({
       name: z.string(),
@@ -65,17 +65,17 @@ export const createLeagueSchema = z.object({
   contactPerson: z
     .object({
       contactName: z.string(),
-      contactDesignation: z.string().optional(),
-      contactEmail: z.string().optional(),
-      contactNumber: z.string().optional(),
-      contactLinkedin: z.string().optional(),
+      contactDesignation: z.string().trim().optional(),
+      contactEmail: z.string().trim().optional(),
+      contactNumber: z.string().trim().optional(),
+      contactLinkedin: z.string().trim().optional(),
     })
     .array()
     .optional(),
 });
 
 export const editLeagueSchema = createLeagueSchema.partial().extend({
-  name: z.string(),
+  name: z.string().trim(),
   association: z
     .object({
       associationLevelId: z.string(),
@@ -85,17 +85,17 @@ export const editLeagueSchema = createLeagueSchema.partial().extend({
     .optional(),
   contactPerson: z
     .object({
-      contactName: z.string(),
-      contactDesignation: z.string().optional(),
-      contactEmail: z.string().optional(),
-      contactNumber: z.string().optional(),
-      contactLinkedin: z.string().optional(),
+      contactName: z.string().trim(),
+      contactDesignation: z.string().trim().optional(),
+      contactEmail: z.string().trim().optional(),
+      contactNumber: z.string().trim().optional(),
+      contactLinkedin: z.string().trim().optional(),
     })
     .array()
     .optional(),
   endorsements: z
     .object({
-      name: z.string(),
+      name: z.string().trim(),
       active: z.boolean(),
     })
     .array()
@@ -122,16 +122,16 @@ export const filteredLeagueSchema = z.object({
   formatIds: z.string().array().optional(),
   broadCastPartnerIds: z.string().array().optional(),
   ottPartnerIds: z.string().array().optional(),
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
-  linkedin: z.string().optional(),
-  twitter: z.string().optional(),
-  youtube: z.string().optional(),
-  website: z.string().optional(),
-  strategyOverview: z.string().optional(),
+  instagram: z.string().trim().optional(),
+  facebook: z.string().trim().optional(),
+  linkedin: z.string().trim().optional(),
+  twitter: z.string().trim().optional(),
+  youtube: z.string().trim().optional(),
+  website: z.string().trim().optional(),
+  strategyOverview: z.string().trim().optional(),
   endorsement: z
     .object({
-      name: z.string().optional(),
+      name: z.string().trim().optional(),
       isActive: z.boolean().optional(),
     })
     .optional(),
@@ -349,11 +349,11 @@ export const filteredLeagueSchema = z.object({
         path: ["cost"],
       },
     ),
-  contactName: z.string().optional(),
-  contactDesignation: z.string().optional(),
-  contactEmail: z.string().optional(),
-  contactNumber: z.string().optional(),
-  contactLinkedin: z.string().optional(),
+  contactName: z.string().trim().optional(),
+  contactDesignation: z.string().trim().optional(),
+  contactEmail: z.string().trim().optional(),
+  contactNumber: z.string().trim().optional(),
+  contactLinkedin: z.string().trim().optional(),
   isMandatory: z.boolean({ message: "isMandatory is required" }),
 });
 
