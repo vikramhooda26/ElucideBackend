@@ -907,7 +907,7 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
     activeCampaignIds,
     ageIds,
     associationLevelIds,
-    broadCastPartnerIds,
+    broadcastPartnerIds,
     contactDesignation,
     contactEmail,
     contactLinkedin,
@@ -983,9 +983,9 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
           }
         : undefined,
 
-    dashapp_broadcastpartner: broadCastPartnerIds?.length
+    dashapp_broadcastpartner: broadcastPartnerIds?.length
       ? {
-          id: { in: broadCastPartnerIds.map((id) => BigInt(id)) },
+          id: { in: broadcastPartnerIds.map((id) => BigInt(id)) },
         }
       : undefined,
 

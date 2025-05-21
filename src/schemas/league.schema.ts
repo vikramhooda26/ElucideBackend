@@ -120,7 +120,7 @@ export const filteredLeagueSchema = z.object({
   nccsIds: z.string().array().optional(),
   yearOfInception: z.string().optional(),
   formatIds: z.string().array().optional(),
-  broadCastPartnerIds: z.string().array().optional(),
+  broadcastPartnerIds: z.string().array().optional(),
   ottPartnerIds: z.string().array().optional(),
   instagram: z.string().trim().optional(),
   facebook: z.string().trim().optional(),
