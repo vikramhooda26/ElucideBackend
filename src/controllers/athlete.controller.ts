@@ -1108,7 +1108,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     website: website ? { contains: website, mode: "insensitive" } : undefined,
 
     dashapp_athletecontact:
-      contactName || contactDesignation || contactEmail || contactNumber
+      contactName || contactDesignation || contactEmail || contactNumber || contactLinkedin
         ? {
             some: {
               contact_name: contactName
