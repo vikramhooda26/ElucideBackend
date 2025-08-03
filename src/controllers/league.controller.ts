@@ -902,47 +902,46 @@ export const deleteLeague = asyncHandler(async (req, res) => {
 export const getFilteredLeague = asyncHandler(async (req, res) => {
   const { take, skip } = req.query;
 
-  const {
-    isMandatory,
-    activeCampaignIds,
-    ageIds,
-    associationLevelIds,
-    broadcastPartnerIds,
-    contactDesignation,
-    contactEmail,
-    contactLinkedin,
-    contactName,
-    contactNumber,
-    costOfAssociation,
-    facebook,
-    formatIds,
-    genderIds,
-    ids,
-    instagram,
-    endorsement,
-    linkedin,
-    nccsIds,
-    ottPartnerIds,
-    ownerIds,
-    partnerIdMetrics,
-    primaryMarketIds,
-    primaryMarketingPlatformIds,
-    reachMetrics,
-    secondaryMarketIds,
-    secondaryMarketingPlatformIds,
-    sportIds,
-    strategyOverview,
-    subPersonalityTraitIds,
-    taglineIds,
-    tertiaryIds,
-    tierIds,
-    twitter,
-    viewershipMetrics,
-    website,
-    yearMetrics,
-    yearOfInception,
-    youtube,
-  } = req.validatedData as TFilteredLeagueSchema;
+  const validatedData = req.validatedData as TFilteredLeagueSchema;
+
+  const activeCampaignIds = validatedData.activeCampaignIds?.value;
+  const ageIds = validatedData.ageIds?.value;
+  const associationLevelIds = validatedData.associationLevelIds?.value;
+  const broadcastPartnerIds = validatedData.broadcastPartnerIds?.value;
+  const contactDesignation = validatedData.contactDesignation?.value;
+  const contactEmail = validatedData.contactEmail?.value;
+  const contactLinkedin = validatedData.contactLinkedin?.value;
+  const contactName = validatedData.contactName?.value;
+  const contactNumber = validatedData.contactNumber?.value;
+  const costOfAssociation = validatedData.costOfAssociation?.value;
+  const facebook = validatedData.facebook?.value;
+  const formatIds = validatedData.formatIds?.value;
+  const genderIds = validatedData.genderIds?.value;
+  const ids = validatedData.ids?.value;
+  const instagram = validatedData.instagram?.value;
+  const endorsement = validatedData.endorsement?.value;
+  const linkedin = validatedData.linkedin?.value;
+  const nccsIds = validatedData.nccsIds?.value;
+  const ottPartnerIds = validatedData.ottPartnerIds?.value;
+  const ownerIds = validatedData.ownerIds?.value;
+  const partnerIdMetrics = validatedData.partnerIdMetrics?.value;
+  const primaryMarketIds = validatedData.primaryMarketIds?.value;
+  const primaryMarketingPlatformIds = validatedData.primaryMarketingPlatformIds?.value;
+  const reachMetrics = validatedData.reachMetrics?.value;
+  const secondaryMarketIds = validatedData.secondaryMarketIds?.value;
+  const secondaryMarketingPlatformIds = validatedData.secondaryMarketingPlatformIds?.value;
+  const sportIds = validatedData.sportIds?.value;
+  const strategyOverview = validatedData.strategyOverview?.value;
+  const subPersonalityTraitIds = validatedData.subPersonalityTraitIds?.value;
+  const taglineIds = validatedData.taglineIds?.value;
+  const tertiaryIds = validatedData.tertiaryIds?.value;
+  const tierIds = validatedData.tierIds?.value;
+  const twitter = validatedData.twitter?.value;
+  const viewershipMetrics = validatedData.viewershipMetrics?.value;
+  const website = validatedData.website?.value;
+  const yearMetrics = validatedData.yearMetrics?.value;
+  const yearOfInception = validatedData.yearOfInception?.value;
+  const youtube = validatedData.youtube?.value;
 
   const filterConditions: Prisma.dashapp_leagueinfoWhereInput = {
     id: ids?.length ? { in: ids.map((id) => BigInt(id)) } : undefined,
@@ -1272,18 +1271,16 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
         : undefined,
   };
 
-  const combinedFilterConditions = isMandatory
-    ? filterConditions
-    : {
-        OR: Object.entries(filterConditions)
-          .filter(([_, condition]) => condition)
-          .map(([key, condition]) => ({ [key]: condition })),
-      };
+  const combinedFilterConditions = {
+    OR: Object.entries(filterConditions)
+      .filter(([_, condition]) => condition)
+      .map(([key, condition]) => ({ [key]: condition })),
+  };
 
   const leagues = await getLeagues({ query: combinedFilterConditions, take, skip, select: leagueSelect });
 
   if (leagues.length < 1) {
-    throw new NotFoundError("No leagues found for the given filters");
+    res.status(200).json([])
   }
 
   const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
@@ -1357,160 +1354,162 @@ export const getFilteredLeague = asyncHandler(async (req, res) => {
   let filteredLeagues = updatedLeagues;
 
   // 1. Exact filtering for dashapp_leagueinfo_age
-  if (ageIds?.length) {
+  if (ageIds?.length && validatedData.ageIds?.isMandatory) {
     const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
       const leagueAgeIds = league.dashapp_leagueinfo_age
-        .map((entry: any) => {
-          return entry.dashapp_age?.id?.toString();
-        })
+        .map((entry: any) => entry.dashapp_age?.id?.toString())
         .filter(Boolean);
       return exactSetMatch(leagueAgeIds, requiredAgeIds);
     });
   }
 
-  // 2. Exact filtering for dashapp_leagueinfo_personality_traits
-  if (subPersonalityTraitIds?.length) {
+// 2. Exact filtering for dashapp_leagueinfo_personality_traits
+  if (subPersonalityTraitIds?.length && validatedData.subPersonalityTraitIds?.isMandatory) {
     const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueSubPersonalityTraitIds = league.mainPersonalities.flatMap((entry: any) => {
-        return entry.dashapp_subpersonality?.map((sub: any) => {
-          return sub.id.toString();
-        });
-      });
+      const leagueSubPersonalityTraitIds = league.mainPersonalities.flatMap((entry: any) =>
+        entry.dashapp_subpersonality?.map((sub: any) => sub.id.toString())
+      );
       return exactSetMatch(leagueSubPersonalityTraitIds, requiredSubPersonalityTraitIds);
     });
   }
 
-  // 3. Exact filtering for dashapp_leagueinfo_income
-  if (nccsIds?.length) {
+// 3. Exact filtering for dashapp_leagueinfo_income
+  if (nccsIds?.length && validatedData.nccsIds?.isMandatory) {
     const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueNccsIds = league.dashapp_leagueinfo_income.map((entry: any) => {
-        return entry.dashapp_nccs.id.toString();
-      });
+      const leagueNccsIds = league.dashapp_leagueinfo_income.map((entry: any) =>
+        entry.dashapp_nccs.id.toString()
+      );
       return exactSetMatch(leagueNccsIds, requiredNccsIds);
     });
   }
 
-  // 4. Exact filtering for dashapp_leagueinfo_owner
-  if (ownerIds?.length) {
+// 4. Exact filtering for dashapp_leagueinfo_owner
+  if (ownerIds?.length && validatedData.ownerIds?.isMandatory) {
     const requiredOwnerIds = ownerIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueOwnerIds = league.dashapp_leagueinfo_owner.map((entry: any) => {
-        return entry.dashapp_leagueowner.id.toString();
-      });
+      const leagueOwnerIds = league.dashapp_leagueinfo_owner.map((entry: any) =>
+        entry.dashapp_leagueowner.id.toString()
+      );
       return exactSetMatch(leagueOwnerIds, requiredOwnerIds);
     });
   }
 
-  // 5. Exact filtering for dashapp_leagueinfo_taglines
-  if (taglineIds?.length) {
+// 5. Exact filtering for dashapp_leagueinfo_taglines
+  if (taglineIds?.length && validatedData.taglineIds?.isMandatory) {
     const requiredTaglineIds = taglineIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueTaglineIds = league.dashapp_leagueinfo_taglines.map((entry: any) => {
-        return entry.dashapp_taglines.id.toString();
-      });
+      const leagueTaglineIds = league.dashapp_leagueinfo_taglines.map((entry: any) =>
+        entry.dashapp_taglines.id.toString()
+      );
       return exactSetMatch(leagueTaglineIds, requiredTaglineIds);
     });
   }
 
-  // 6. Exact filtering for dashapp_leagueinfo_key_markets_primary
-  if (primaryMarketIds?.length) {
+// 6. Exact filtering for dashapp_leagueinfo_key_markets_primary
+  if (primaryMarketIds?.length && validatedData.primaryMarketIds?.isMandatory) {
     const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leaguePrimaryIds = league.dashapp_leagueinfo_key_markets_primary.map((entry: any) => {
-        return entry.dashapp_keymarket.id.toString();
-      });
+      const leaguePrimaryIds = league.dashapp_leagueinfo_key_markets_primary.map((entry: any) =>
+        entry.dashapp_keymarket.id.toString()
+      );
       return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
     });
   }
 
-  // 7. Exact filtering for dashapp_leagueinfo_key_markets_secondary
-  if (secondaryMarketIds?.length) {
+// 7. Exact filtering for dashapp_leagueinfo_key_markets_secondary
+  if (secondaryMarketIds?.length && validatedData.secondaryMarketIds?.isMandatory) {
     const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueSecondaryIds = league.dashapp_leagueinfo_key_markets_secondary.map((entry: any) => {
-        return entry.dashapp_keymarket.id.toString();
-      });
+      const leagueSecondaryIds = league.dashapp_leagueinfo_key_markets_secondary.map((entry: any) =>
+        entry.dashapp_keymarket.id.toString()
+      );
       return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
     });
   }
 
-  // 8. Exact filtering for dashapp_leagueinfo_key_markets_tertiary
-  if (tertiaryIds?.length) {
+// 8. Exact filtering for dashapp_leagueinfo_key_markets_tertiary
+  if (tertiaryIds?.length && validatedData.tertiaryIds?.isMandatory) {
     const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueTertiaryIds = league.dashapp_leagueinfo_key_markets_tertiary.map((entry: any) => {
-        return entry.dashapp_states.id.toString();
-      });
+      const leagueTertiaryIds = league.dashapp_leagueinfo_key_markets_tertiary.map((entry: any) =>
+        entry.dashapp_states.id.toString()
+      );
       return exactSetMatch(leagueTertiaryIds, requiredTertiaryIds);
     });
   }
 
-  // 9. Exact filtering for dashapp_leagueinfo_tier
-  if (tierIds?.length) {
+// 9. Exact filtering for dashapp_leagueinfo_tier
+  if (tierIds?.length && validatedData.tierIds?.isMandatory) {
     const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
       const leagueTierIds = league.dashapp_leagueinfo_tier
-        .map((entry: any) => {
-          return entry.dashapp_tier?.id?.toString();
-        })
+        .map((entry: any) => entry.dashapp_tier?.id?.toString())
         .filter(Boolean);
       return exactSetMatch(leagueTierIds, requiredTierIds);
     });
   }
 
-  // 10. Exact filtering for dashapp_leagueinfo_marketing_platforms_primary
-  if (primaryMarketingPlatformIds?.length) {
+// 10. Exact filtering for dashapp_leagueinfo_marketing_platforms_primary
+  if (primaryMarketingPlatformIds?.length && validatedData.primaryMarketingPlatformIds?.isMandatory) {
     const requiredPrimaryIds = primaryMarketingPlatformIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leaguePrimaryIds = league.dashapp_leagueinfo_marketing_platforms_primary.map((entry: any) => {
-        return entry.dashapp_marketingplatform.id.toString();
-      });
+      const leaguePrimaryIds = league.dashapp_leagueinfo_marketing_platforms_primary.map((entry: any) =>
+        entry.dashapp_marketingplatform.id.toString()
+      );
       return exactSetMatch(leaguePrimaryIds, requiredPrimaryIds);
     });
   }
 
-  // 11. Exact filtering for dashapp_leagueinfo_marketing_platforms_secondary
-  if (secondaryMarketingPlatformIds?.length) {
+// 11. Exact filtering for dashapp_leagueinfo_marketing_platforms_secondary
+  if (secondaryMarketingPlatformIds?.length && validatedData.secondaryMarketingPlatformIds?.isMandatory) {
     const requiredSecondaryIds = secondaryMarketingPlatformIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueSecondaryIds = league.dashapp_leagueinfo_marketing_platforms_secondary.map((entry: any) => {
-        return entry.dashapp_marketingplatform.id.toString();
-      });
+      const leagueSecondaryIds = league.dashapp_leagueinfo_marketing_platforms_secondary.map((entry: any) =>
+        entry.dashapp_marketingplatform.id.toString()
+      );
       return exactSetMatch(leagueSecondaryIds, requiredSecondaryIds);
     });
   }
 
-  // 12. Exact filtering for dashapp_broadcast_partner_metrics
-  if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "broadcast") {
+// 12. Exact filtering for dashapp_broadcast_partner_metrics
+  if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "broadcast" && validatedData.partnerIdMetrics?.isMandatory) {
     const requiredBroadcastPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueBroadcastPartnerIds = league?.dashapp_broadcast_partner_metrics?.map((entry: any) => {
-        return entry?.dashapp_broadcastpartner?.id?.toString();
-      });
+      const leagueBroadcastPartnerIds = league?.dashapp_broadcast_partner_metrics?.map((entry: any) =>
+        entry?.dashapp_broadcastpartner?.id?.toString()
+      );
       return exactSetMatch(leagueBroadcastPartnerIds, requiredBroadcastPartnerIds);
     });
   }
 
-  // 13. Exact filtering for dashapp_ott_partner_metrics
-  if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "ott") {
+// 13. Exact filtering for dashapp_ott_partner_metrics
+  if (partnerIdMetrics?.partnerIds?.length && partnerIdMetrics?.partnerType === "ott" && validatedData.partnerIdMetrics?.isMandatory) {
     const requiredOttPartnerIds = partnerIdMetrics?.partnerIds.map((id) => BigInt(id).toString());
     filteredLeagues = filteredLeagues.filter((league) => {
-      const leagueOttPartnerIds = league?.dashapp_ott_partner_metrics?.map((entry: any) => {
-        return entry?.dashapp_ottpartner?.id?.toString();
-      });
+      const leagueOttPartnerIds = league?.dashapp_ott_partner_metrics?.map((entry: any) =>
+        entry?.dashapp_ottpartner?.id?.toString()
+      );
       return exactSetMatch(leagueOttPartnerIds, requiredOttPartnerIds);
     });
   }
 
-  const modifiedLeagues =
-    genderIds?.length === 2
-      ? filteredLeagues.filter((league) => league.dashapp_leagueinfo_gender.length === 2)
-      : filteredLeagues;
+  if (genderIds?.length && validatedData.genderIds?.isMandatory) {
+    const requiredGenderIds = genderIds.map((id) => BigInt(id).toString());
+    filteredLeagues = filteredLeagues.filter((league) => {
+      const leagueGenderIds = league?.dashapp_leagueinfo_gender?.map((entry: any) => {
+          console.log("League Gender", JSON.stringify(league.dashapp_leagueinfo_gender))
+          return entry?.dashapp_gender?.id?.toString()
+        }
+      )
+      console.log("Matching Now", leagueGenderIds, requiredGenderIds)
+      return exactSetMatch(leagueGenderIds, requiredGenderIds);
+    });
+  }
 
-  const leagueResponse: LeagueResponseDTO[] = modifiedLeagues.map((league) =>
+  const leagueResponse: LeagueResponseDTO[] = filteredLeagues.map((league) =>
     LeagueResponseDTO.toResponse(league as unknown as TLeagueDetails),
   );
 

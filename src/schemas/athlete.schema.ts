@@ -70,125 +70,284 @@ export const editAthleteSchema = createAthleteSchema.partial().extend({
 });
 
 export const filteredAthleteSchema = z.object({
-  ids: z.string().array().optional(),
-  associationLevelIds: z.string().array().optional(),
+  ids: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  associationLevelIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
   costOfAssociation: z
     .object({
-      cost: z.number().array().max(2, "Cost array can have maximum of 2 elements i.e the min and max range").optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
+      value: z
+        .object({
+          cost: z.number().array().max(2, "Cost array can have maximum of 2 elements i.e the min and max range").optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.cost && data?.operationType === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType is required when cost is provided",
+            path: ["operationType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && data?.cost === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "cost is required when operationType is provided",
+            path: ["cost"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.cost?.length === 2 && data.operationType !== "in") {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType must be 'in' if cost array length is 2",
+            path: ["operationType"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.cost && data?.operationType === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType is required when cost is provided",
-        path: ["operationType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && data?.cost === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "cost is required when operationType is provided",
-        path: ["cost"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.cost?.length === 2 && data.operationType !== "in") {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType must be 'in' if cost array length is 2",
-        path: ["operationType"],
-      },
-    ),
-  strategyOverview: z.string().trim().optional(),
-  sportIds: z.string().array().optional(),
-  agencyIds: z.string().array().optional(),
-  ageIds: z.string().array().optional(),
-  facebook: z.string().trim().optional(),
-  instagram: z.string().trim().optional(),
-  twitter: z.string().trim().optional(),
-  linkedin: z.string().trim().optional(),
-  youtube: z.string().trim().optional(),
-  website: z.string().trim().optional(),
-  subPersonalityTraitIds: z.string().array().optional(),
-  genderIds: z.string().array().optional(),
-  athleteGenderIds: z.string().array().optional(),
-  nccsIds: z.string().array().optional(),
-  primaryMarketIds: z.string().array().optional(),
-  secondaryMarketIds: z.string().array().optional(),
-  tertiaryIds: z.string().array().optional(),
-  stateIds: z.string().array().optional(),
-  nationalityIds: z.string().array().optional(),
-  tierIds: z.string().array().optional(),
-  athleteStatusIds: z.string().array().optional(),
-  primarySocialMediaPlatformIds: z.string().array().optional(),
-  secondarySocialMediaPlatformIds: z.string().array().optional(),
+    .optional(),
+  strategyOverview: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  sportIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  agencyIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  ageIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  facebook: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  instagram: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  twitter: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  linkedin: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  youtube: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  website: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  subPersonalityTraitIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  genderIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  athleteGenderIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  nccsIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  primaryMarketIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  secondaryMarketIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  tertiaryIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  stateIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  nationalityIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  tierIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  athleteStatusIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  primarySocialMediaPlatformIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  secondarySocialMediaPlatformIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
   athleteAge: z
     .object({
-      age: z.number().array().max(2, "Age array can have maximum of 2 elements").optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
+      value: z
+        .object({
+          age: z.number().array().max(2, "Age array can have maximum of 2 elements").optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.age && data?.operationType === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType is required when age is provided",
+            path: ["operationType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && data?.age === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "age is required when operationType is provided",
+            path: ["age"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.age?.length === 2 && data.operationType !== "in") {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType must be 'in' if age array length is 2",
+            path: ["operationType"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.age && data?.operationType === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType is required when age is provided",
-        path: ["operationType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && data?.age === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "age is required when operationType is provided",
-        path: ["age"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.age?.length === 2 && data.operationType !== "in") {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType must be 'in' if age array length is 2",
-        path: ["operationType"],
-      },
-    ),
-  contactName: z.string().trim().optional(),
-  contactDesignation: z.string().trim().optional(),
-  contactEmail: z.string().trim().optional(),
-  contactNumber: z.string().trim().optional(),
-  contactLinkedin: z.string().trim().optional(),
-  isMandatory: z.boolean({ message: "isMandatory is required" }),
+    .optional(),
+  contactName: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactDesignation: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactEmail: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactNumber: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactLinkedin: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
 });
 
 export type TCreateAthleteSchema = z.infer<typeof createAthleteSchema>;

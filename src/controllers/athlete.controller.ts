@@ -731,41 +731,39 @@ export const getTotalAthletes = asyncHandler(async (_, res) => {
 
 export const getFilteredAthletes = asyncHandler(async (req, res) => {
   const { take, skip } = req.query;
-  const {
-    ids,
-    associationLevelIds,
-    costOfAssociation,
-    strategyOverview,
-    sportIds,
-    agencyIds,
-    ageIds,
-    facebook,
-    instagram,
-    twitter,
-    linkedin,
-    youtube,
-    website,
-    subPersonalityTraitIds,
-    genderIds,
-    athleteGenderIds,
-    nccsIds,
-    primaryMarketIds,
-    tierIds,
-    secondaryMarketIds,
-    tertiaryIds,
-    stateIds,
-    nationalityIds,
-    primarySocialMediaPlatformIds,
-    secondarySocialMediaPlatformIds,
-    athleteStatusIds,
-    athleteAge,
-    contactName,
-    contactDesignation,
-    contactEmail,
-    contactNumber,
-    contactLinkedin,
-    isMandatory,
-  } = req.validatedData as TFilteredAthleteSchema;
+  const validatedData = req.validatedData as TFilteredAthleteSchema
+  const ids = validatedData.ids?.value;
+  const associationLevelIds = validatedData.associationLevelIds?.value;
+  const costOfAssociation = validatedData.costOfAssociation?.value;
+  const strategyOverview = validatedData.strategyOverview?.value;
+  const sportIds = validatedData.sportIds?.value;
+  const agencyIds = validatedData.agencyIds?.value;
+  const ageIds = validatedData.ageIds?.value;
+  const facebook = validatedData.facebook?.value;
+  const instagram = validatedData.instagram?.value;
+  const twitter = validatedData.twitter?.value;
+  const linkedin = validatedData.linkedin?.value;
+  const youtube = validatedData.youtube?.value;
+  const website = validatedData.website?.value;
+  const subPersonalityTraitIds = validatedData.subPersonalityTraitIds?.value;
+  const genderIds = validatedData.genderIds?.value;
+  const athleteGenderIds = validatedData.athleteGenderIds?.value;
+  const nccsIds = validatedData.nccsIds?.value;
+  const primaryMarketIds = validatedData.primaryMarketIds?.value;
+  const tierIds = validatedData.tierIds?.value;
+  const secondaryMarketIds = validatedData.secondaryMarketIds?.value;
+  const tertiaryIds = validatedData.tertiaryIds?.value;
+  const stateIds = validatedData.stateIds?.value;
+  const nationalityIds = validatedData.nationalityIds?.value;
+  const primarySocialMediaPlatformIds = validatedData.primarySocialMediaPlatformIds?.value;
+  const secondarySocialMediaPlatformIds = validatedData.secondarySocialMediaPlatformIds?.value;
+  const athleteStatusIds = validatedData.athleteStatusIds?.value;
+  const athleteAge = validatedData.athleteAge?.value;
+  const contactName = validatedData.contactName?.value;
+  const contactDesignation = validatedData.contactDesignation?.value;
+  const contactEmail = validatedData.contactEmail?.value;
+  const contactNumber = validatedData.contactNumber?.value;
+  const contactLinkedin = validatedData.contactLinkedin?.value;
 
   const today = new Date();
 
@@ -1145,14 +1143,11 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
         : undefined,
   };
 
-  const combinedFilterConditions =
-    isMandatory === true
-      ? filterConditions
-      : {
-          OR: Object.entries(filterConditions)
-            .filter(([_, condition]) => condition)
-            .map(([key, condition]) => ({ [key]: condition })),
-        };
+  const combinedFilterConditions = {
+    OR: Object.entries(filterConditions)
+      .filter(([_, condition]) => condition)
+      .map(([key, condition]) => ({ [key]: condition })),
+  }
 
   const athletes = await getAthletes({
     query: combinedFilterConditions,
@@ -1162,7 +1157,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
   });
 
   if (athletes.length < 1) {
-    throw new NotFoundError("No athletes found for the given filters");
+    res.status(200).json([])
   }
 
   const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
@@ -1234,10 +1229,9 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
   let filteredAthletes = updatedAthletes;
 
   // 1. Exact filtering for dashapp_athlete_target_age
-  if (ageIds?.length) {
+  if (ageIds?.length && validatedData.ageIds?.isMandatory) {
     const requiredAgeIds = ageIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      console.log("names:", athlete.athlete_name);
       const athleteAgeIds = athlete.dashapp_athlete_target_age.map((entry: any) => {
         return entry.dashapp_age.id.toString();
       });
@@ -1245,8 +1239,8 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 2. Exact filtering for dashapp_athlete_personality_traits
-  if (subPersonalityTraitIds?.length) {
+// 2. Exact filtering for dashapp_athlete_personality_traits
+  if (subPersonalityTraitIds?.length && validatedData.subPersonalityTraitIds?.isMandatory) {
     const requiredTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
       const athleteTraitIds = athlete.mainPersonalities.flatMap((entry: any) =>
@@ -1256,21 +1250,19 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 3. Exact filtering for dashapp_athlete_tier
-  if (tierIds?.length) {
+// 3. Exact filtering for dashapp_athlete_tier
+  if (tierIds?.length && validatedData.tierIds?.isMandatory) {
     const requiredGenderIds = tierIds.map((id) => id.toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_tier is an array with dashapp_gender objects.
       const athleteGenderIds = athlete.dashapp_athlete_tier.map((entry: any) => entry.dashapp_tier.id.toString());
       return exactSetMatch(athleteGenderIds, requiredGenderIds);
     });
   }
 
-  // 4. Exact filtering for dashapp_athlete_target_income
-  if (nccsIds?.length) {
+// 4. Exact filtering for dashapp_athlete_target_income
+  if (nccsIds?.length && validatedData.nccsIds?.isMandatory) {
     const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_target_income is an array of objects with dashapp_nccs id.
       const athleteNccsIds = athlete.dashapp_athlete_target_income.map((entry: any) =>
         entry.dashapp_nccs.id.toString(),
       );
@@ -1278,11 +1270,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 5. Exact filtering for dashapp_athlete_key_markets_primary
-  if (primaryMarketIds?.length) {
+// 5. Exact filtering for dashapp_athlete_key_markets_primary
+  if (primaryMarketIds?.length && validatedData.primaryMarketIds?.isMandatory) {
     const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_key_markets_primary is an array of objects with dashapp_keymarket.
       const athletePrimaryIds = athlete.dashapp_athlete_key_markets_primary.map((entry: any) =>
         entry.dashapp_keymarket.id.toString(),
       );
@@ -1290,11 +1281,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 6. Exact filtering for dashapp_athlete_key_markets_secondary
-  if (secondaryMarketIds?.length) {
+// 6. Exact filtering for dashapp_athlete_key_markets_secondary
+  if (secondaryMarketIds?.length && validatedData.secondaryMarketIds?.isMandatory) {
     const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming relation field is an array of objects with dashapp_keymarket.
       const athleteSecondaryIds = athlete.dashapp_athlete_key_markets_secondary.map((entry: any) =>
         entry.dashapp_keymarket.id.toString(),
       );
@@ -1302,11 +1292,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 7. Exact filtering for dashapp_athlete_key_markets_tertiary
-  if (tertiaryIds?.length) {
+// 7. Exact filtering for dashapp_athlete_key_markets_tertiary
+  if (tertiaryIds?.length && validatedData.tertiaryIds?.isMandatory) {
     const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_key_markets_tertiary is an array of objects with dashapp_states.
       const athleteTertiaryIds = athlete.dashapp_athlete_key_markets_tertiary.map((entry: any) =>
         entry.dashapp_states.id.toString(),
       );
@@ -1314,11 +1303,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 8. Exact filtering for dashapp_athlete_socialmedia_platform_primary
-  if (primarySocialMediaPlatformIds?.length) {
+// 8. Exact filtering for dashapp_athlete_socialmedia_platform_primary
+  if (primarySocialMediaPlatformIds?.length && validatedData.primarySocialMediaPlatformIds?.isMandatory) {
     const requiredPrimarySocialIds = primarySocialMediaPlatformIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_socialmedia_platform_primary is an array with dashapp_socialmedia_platform.
       const athletePrimarySocialIds = athlete.dashapp_athlete_socialmedia_platform_primary.map((entry: any) =>
         entry.dashapp_socialmedia_platform.id.toString(),
       );
@@ -1326,11 +1314,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  // 9. Exact filtering for dashapp_athlete_socialmedia_platform_secondary
-  if (secondarySocialMediaPlatformIds?.length) {
+// 9. Exact filtering for dashapp_athlete_socialmedia_platform_secondary
+  if (secondarySocialMediaPlatformIds?.length && validatedData.secondarySocialMediaPlatformIds?.isMandatory) {
     const requiredSecondarySocialIds = secondarySocialMediaPlatformIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
-      // Assuming athlete.dashapp_athlete_socialmedia_platform_secondary is an array with dashapp_socialmedia_platform.
       const athleteSecondarySocialIds = athlete.dashapp_athlete_socialmedia_platform_secondary.map((entry: any) =>
         entry.dashapp_socialmedia_platform.id.toString(),
       );
@@ -1338,12 +1325,19 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-  const modifiedAthletes =
-    genderIds?.length === 2
-      ? filteredAthletes.filter((athlete) => athlete.dashapp_athlete_target_gender.length === 2)
-      : filteredAthletes;
+  if (genderIds?.length && validatedData.genderIds?.isMandatory) {
+    const requiredGenderIds = genderIds.map((id) => BigInt(id).toString());
+    filteredAthletes = filteredAthletes.filter((athlete) => {
+      const athleteGenderIds = athlete?.dashapp_athlete_target_gender?.map((entry: any) =>
+        entry?.dashapp_gender?.id?.toString()
+      )
+      console.log("Matching Now", athleteGenderIds, requiredGenderIds)
+      console.log(exactSetMatch(athleteGenderIds, requiredGenderIds))
+      return exactSetMatch(athleteGenderIds, requiredGenderIds);
+    });
+  }
 
-  const athleteResponse: AthleteResponseDTO[] = modifiedAthletes.map((athlete) =>
+  const athleteResponse: AthleteResponseDTO[] = filteredAthletes.map((athlete) =>
     AthleteResponseDTO.toResponse(athlete as unknown as TAthleteDetails),
   );
 
