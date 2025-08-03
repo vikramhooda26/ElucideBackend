@@ -103,258 +103,455 @@ export const editLeagueSchema = createLeagueSchema.partial().extend({
 });
 
 export const filteredLeagueSchema = z.object({
-  ids: z.string().array().optional(),
-  sportIds: z.string().array().optional(),
-  ownerIds: z.string().array().optional(),
-  subPersonalityTraitIds: z.string().array().optional(),
-  tierIds: z.string().array().optional(),
-  taglineIds: z.string().array().optional(),
-  activeCampaignIds: z.string().array().optional(),
-  primaryMarketingPlatformIds: z.string().array().optional(),
-  secondaryMarketingPlatformIds: z.string().array().optional(),
-  ageIds: z.string().array().optional(),
-  genderIds: z.string().array().optional(),
-  primaryMarketIds: z.string().array().optional(),
-  secondaryMarketIds: z.string().array().optional(),
-  tertiaryIds: z.string().array().optional(),
-  nccsIds: z.string().array().optional(),
-  yearOfInception: z.string().optional(),
-  formatIds: z.string().array().optional(),
-  broadcastPartnerIds: z.string().array().optional(),
-  ottPartnerIds: z.string().array().optional(),
-  instagram: z.string().trim().optional(),
-  facebook: z.string().trim().optional(),
-  linkedin: z.string().trim().optional(),
-  twitter: z.string().trim().optional(),
-  youtube: z.string().trim().optional(),
-  website: z.string().trim().optional(),
-  strategyOverview: z.string().trim().optional(),
+  ids: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  sportIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  ownerIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  subPersonalityTraitIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  tierIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  taglineIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  activeCampaignIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  primaryMarketingPlatformIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  secondaryMarketingPlatformIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  ageIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  genderIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  primaryMarketIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  secondaryMarketIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  tertiaryIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  nccsIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  yearOfInception: z
+    .object({
+      value: z.string().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  formatIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  broadcastPartnerIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  ottPartnerIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  instagram: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  facebook: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  linkedin: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  twitter: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  youtube: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  website: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  strategyOverview: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
   endorsement: z
     .object({
-      name: z.string().trim().optional(),
-      isActive: z.boolean().optional(),
+      value: z
+        .object({
+          name: z.string().trim().optional(),
+          isActive: z.boolean().optional(),
+        })
+        .optional(),
+      isMandatory: z.boolean(),
     })
     .optional(),
   reachMetrics: z
     .object({
-      reach: z
-        .string()
-        .array()
-        .max(2, "Reach array can have maximum of 2 elements i.e the min and max range")
-        .optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
-      partnerType: z
-        .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
-        .optional(),
+      value: z
+        .object({
+          reach: z
+            .string()
+            .array()
+            .max(2, "Reach array can have maximum of 2 elements i.e the min and max range")
+            .optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+          partnerType: z
+            .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.reach && (data?.operationType === undefined || data?.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType and partnerType are both required when reach is provided",
+            path: ["operationType", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && (data?.reach === undefined || data.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Reach and partnerType are both required when operationType is provided",
+            path: ["reach", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.partnerType && (data?.reach === undefined || data.operationType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Reach and operationType are both required when operationType is provided",
+            path: ["reach", "operationType"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.reach && (data?.operationType === undefined || data?.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType and partnerType are both required when reach is provided",
-        path: ["operationType", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && (data?.reach === undefined || data.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Reach and partnerType are both required when operationType is provided",
-        path: ["reach", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.partnerType && (data?.reach === undefined || data.operationType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Reach and operationType are both required when operationType is provided",
-        path: ["reach", "operationType"],
-      },
-    ),
+    .optional(),
   viewershipMetrics: z
     .object({
-      viewership: z
-        .string()
-        .array()
-        .max(2, "Viewership array can have maximum of 2 elements i.e the min and max range")
-        .optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
-      partnerType: z
-        .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
-        .optional(),
+      value: z
+        .object({
+          viewership: z
+            .string()
+            .array()
+            .max(2, "Viewership array can have maximum of 2 elements i.e the min and max range")
+            .optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+          partnerType: z
+            .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.viewership && (data?.operationType === undefined || data?.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType and partnerType are both required when viewership is provided",
+            path: ["operationType", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && (data?.viewership === undefined || data.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Viewership and partnerType are both required when operationType is provided",
+            path: ["viewership", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.partnerType && (data?.viewership === undefined || data.operationType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Viewership and operationType are both required when operationType is provided",
+            path: ["viewership", "operationType"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.viewership && (data?.operationType === undefined || data?.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType and partnerType are both required when viewership is provided",
-        path: ["operationType", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && (data?.viewership === undefined || data.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Viewership and partnerType are both required when operationType is provided",
-        path: ["viewership", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.partnerType && (data?.viewership === undefined || data.operationType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Viewership and operationType are both required when operationType is provided",
-        path: ["viewership", "operationType"],
-      },
-    ),
+    .optional(),
   yearMetrics: z
     .object({
-      year: z.string().array().max(2, "Year array can have maximum of 2 elements i.e the min and max range").optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
-      partnerType: z
-        .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
-        .optional(),
+      value: z
+        .object({
+          year: z
+            .string()
+            .array()
+            .max(2, "Year array can have maximum of 2 elements i.e the min and max range")
+            .optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+          partnerType: z
+            .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.year && (data?.operationType === undefined || data?.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType and partnerType are both required when year is provided",
+            path: ["operationType", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && (data?.year === undefined || data.partnerType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Year and partnerType are both required when operationType is provided",
+            path: ["year", "partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.partnerType && (data?.year === undefined || data.operationType === undefined)) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Year and operationType are both required when operationType is provided",
+            path: ["year", "operationType"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.year && (data?.operationType === undefined || data?.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType and partnerType are both required when year is provided",
-        path: ["operationType", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && (data?.year === undefined || data.partnerType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Year and partnerType are both required when operationType is provided",
-        path: ["year", "partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.partnerType && (data?.year === undefined || data.operationType === undefined)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Year and operationType are both required when operationType is provided",
-        path: ["year", "operationType"],
-      },
-    ),
+    .optional(),
   partnerIdMetrics: z
     .object({
-      partnerIds: z.string().array().optional(),
-      partnerType: z
-        .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
-        .optional(),
+      value: z
+        .object({
+          partnerIds: z.string().array().optional(),
+          partnerType: z
+            .enum(partnerTypeEnum, { message: "partnerTypeEnum can only be either ott or broadcast" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.partnerIds && data?.partnerType === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "partnerType is required when partner id is provided",
+            path: ["partnerType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.partnerType && data?.partnerIds === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "Partner ID is required when operationType is provided",
+            path: ["partnerIds"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.partnerIds && data?.partnerType === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "partnerType is required when partner id is provided",
-        path: ["partnerType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.partnerType && data?.partnerIds === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Partner ID is required when operationType is provided",
-        path: ["partnerIds"],
-      },
-    ),
-  associationLevelIds: z.string().array().optional(),
+    .optional(),
+  associationLevelIds: z
+    .object({
+      value: z.string().array().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
   costOfAssociation: z
     .object({
-      cost: z.number().array().max(2, "Cost array can have maximum of 2 elements i.e the min and max range").optional(),
-      operationType: z
-        .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
-        .optional(),
+      value: z
+        .object({
+          cost: z
+            .number()
+            .array()
+            .max(2, "Cost array can have maximum of 2 elements i.e the min and max range")
+            .optional(),
+          operationType: z
+            .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
+            .optional(),
+        })
+        .optional()
+        .refine(
+          (data) => {
+            if (data?.cost && data?.operationType === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "operationType is required when cost is provided",
+            path: ["operationType"],
+          },
+        )
+        .refine(
+          (data) => {
+            if (data?.operationType && data?.cost === undefined) {
+              return false;
+            }
+            return true;
+          },
+          {
+            message: "cost is required when operationType is provided",
+            path: ["cost"],
+          },
+        ),
+      isMandatory: z.boolean(),
     })
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.cost && data?.operationType === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "operationType is required when cost is provided",
-        path: ["operationType"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data?.operationType && data?.cost === undefined) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "cost is required when operationType is provided",
-        path: ["cost"],
-      },
-    ),
-  contactName: z.string().trim().optional(),
-  contactDesignation: z.string().trim().optional(),
-  contactEmail: z.string().trim().optional(),
-  contactNumber: z.string().trim().optional(),
-  contactLinkedin: z.string().trim().optional(),
-  isMandatory: z.boolean({ message: "isMandatory is required" }),
+    .optional(),
+  contactName: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactDesignation: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactEmail: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactNumber: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
+  contactLinkedin: z
+    .object({
+      value: z.string().trim().optional(),
+      isMandatory: z.boolean(),
+    })
+    .optional(),
 });
 
 export type TCreateLeagueSchema = z.infer<typeof createLeagueSchema>;

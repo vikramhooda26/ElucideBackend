@@ -56,7 +56,9 @@ export const getGenderQuery = async (genderIds: string[]) => {
   return query;
 };
 
-export const getCostQuery = (costOfAssociation: z.infer<typeof filteredAthleteSchema>["costOfAssociation"]) => {
+export const getCostQuery = (
+  costOfAssociation: NonNullable<z.infer<typeof filteredAthleteSchema>["costOfAssociation"]>["value"],
+) => {
   let query;
   if (costOfAssociation?.cost?.length === 2) {
     if (costOfAssociation.operationType === "in") {
@@ -83,7 +85,9 @@ export const getCostQuery = (costOfAssociation: z.infer<typeof filteredAthleteSc
   return query;
 };
 
-export const getEndorsementQuery = (endorsement: z.infer<typeof filteredLeagueSchema>["endorsement"]) => {
+export const getEndorsementQuery = (
+  endorsement: NonNullable<z.infer<typeof filteredLeagueSchema>["endorsement"]>["value"],
+) => {
   const query: any = {
     name: endorsement?.name ? { contains: endorsement.name, mode: "insensitive" } : undefined,
     active: endorsement?.isActive !== undefined ? endorsement.isActive : undefined,
@@ -92,13 +96,13 @@ export const getEndorsementQuery = (endorsement: z.infer<typeof filteredLeagueSc
   return query;
 };
 
-type TReachMetrics = z.infer<typeof filteredLeagueSchema>["reachMetrics"];
+type TReachMetrics = NonNullable<z.infer<typeof filteredLeagueSchema>["reachMetrics"]>["value"];
 
-type TViewershipMetrics = z.infer<typeof filteredLeagueSchema>["viewershipMetrics"];
+type TViewershipMetrics = NonNullable<z.infer<typeof filteredLeagueSchema>["viewershipMetrics"]>["value"];
 
-type TYearMetrics = z.infer<typeof filteredLeagueSchema>["yearMetrics"];
+type TYearMetrics = NonNullable<z.infer<typeof filteredLeagueSchema>["yearMetrics"]>["value"];
 
-type TPartnerIdMetrics = z.infer<typeof filteredLeagueSchema>["partnerIdMetrics"];
+type TPartnerIdMetrics = NonNullable<z.infer<typeof filteredLeagueSchema>["partnerIdMetrics"]>["value"];
 
 export const getMetricsQuery = (
   partnerType: "broadcast" | "ott",
