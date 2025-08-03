@@ -1501,7 +1501,6 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     const requiredGenderIds = genderIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
       const teamGenderIds = team?.dashapp_team_gender?.map((entry: any) => entry?.dashapp_gender?.id?.toString());
-      console.log("Matching Now", teamGenderIds, requiredGenderIds);
       return exactSetMatch(teamGenderIds, requiredGenderIds);
     });
   }

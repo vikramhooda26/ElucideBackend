@@ -1331,8 +1331,6 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
       const athleteGenderIds = athlete?.dashapp_athlete_target_gender?.map((entry: any) =>
         entry?.dashapp_gender?.id?.toString(),
       );
-      console.log("Matching Now", athleteGenderIds, requiredGenderIds);
-      console.log(exactSetMatch(athleteGenderIds, requiredGenderIds));
       return exactSetMatch(athleteGenderIds, requiredGenderIds);
     });
   }
