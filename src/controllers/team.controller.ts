@@ -1227,12 +1227,12 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     OR: Object.entries(filterConditions)
       .filter(([_, condition]) => condition)
       .map(([key, condition]) => ({ [key]: condition })),
-  }
+  };
 
   const teams = await getTeams({ query: combinedFilterConditions, take, skip, select: teamSelect });
 
   if (teams.length < 1) {
-    res.status(200).json([])
+    res.status(200).json([]);
   }
 
   const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
@@ -1315,7 +1315,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 2. Exact filtering for dashapp_team_personality_traits
+  // 2. Exact filtering for dashapp_team_personality_traits
   if (subPersonalityTraitIds?.length && validatedData.subPersonalityTraitIds?.isMandatory) {
     const requiredSubPersonalityTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1334,7 +1334,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 3. Exact filtering for dashapp_team_income
+  // 3. Exact filtering for dashapp_team_income
   if (nccsIds?.length && validatedData.nccsIds?.isMandatory) {
     const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1346,7 +1346,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 4. Exact filtering for dashapp_team_owner
+  // 4. Exact filtering for dashapp_team_owner
   if (ownerIds?.length && validatedData.ownerIds?.isMandatory) {
     const requiredOwnerIds = ownerIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1358,7 +1358,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 5. Exact filtering for dashapp_team_taglines
+  // 5. Exact filtering for dashapp_team_taglines
   if (taglineIds?.length && validatedData.taglineIds?.isMandatory) {
     const requiredTaglineIds = taglineIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1370,7 +1370,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 6. Exact filtering for dashapp_team_key_markets_primary
+  // 6. Exact filtering for dashapp_team_key_markets_primary
   if (primaryMarketIds?.length && validatedData.primaryMarketIds?.isMandatory) {
     const requiredKeyPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1382,7 +1382,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 7. Exact filtering for dashapp_team_key_markets_secondary
+  // 7. Exact filtering for dashapp_team_key_markets_secondary
   if (secondaryMarketIds?.length && validatedData.secondaryMarketIds?.isMandatory) {
     const requiredKeySecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1395,7 +1395,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 8. Exact filtering for dashapp_team_key_markets_tertiary
+  // 8. Exact filtering for dashapp_team_key_markets_tertiary
   if (tertiaryIds?.length && validatedData.tertiaryIds?.isMandatory) {
     const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1408,7 +1408,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 9. Exact filtering for dashapp_team_tier
+  // 9. Exact filtering for dashapp_team_tier
   if (tierIds?.length && validatedData.tierIds?.isMandatory) {
     const requiredTierIds = tierIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1420,7 +1420,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 10. Exact filtering for dashapp_team_active_campaigns
+  // 10. Exact filtering for dashapp_team_active_campaigns
   if (activeCampaignIds?.length && validatedData.activeCampaignIds?.isMandatory) {
     const requiredActiveCampaignIds = activeCampaignIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1432,7 +1432,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 11. Exact filtering for dashapp_team_marketing_platforms_primary
+  // 11. Exact filtering for dashapp_team_marketing_platforms_primary
   if (primaryMarketingPlatformIds?.length && validatedData.primaryMarketingPlatformIds?.isMandatory) {
     const requiredPrimaryIds = primaryMarketingPlatformIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1448,7 +1448,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 12. Exact filtering for dashapp_team_marketing_platforms_secondary
+  // 12. Exact filtering for dashapp_team_marketing_platforms_secondary
   if (secondaryMarketingPlatformIds?.length && validatedData.secondaryMarketingPlatformIds?.isMandatory) {
     const requiredSecondaryIds = secondaryMarketingPlatformIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
@@ -1464,7 +1464,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 13. Exact filtering for dashapp_broadcast_partner_metrics
+  // 13. Exact filtering for dashapp_broadcast_partner_metrics
   if (
     partnerIdMetrics?.partnerIds?.length &&
     partnerIdMetrics?.partnerType === "broadcast" &&
@@ -1481,7 +1481,7 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
     });
   }
 
-// 14. Exact filtering for dashapp_ott_partner_metrics
+  // 14. Exact filtering for dashapp_ott_partner_metrics
   if (
     partnerIdMetrics?.partnerIds?.length &&
     partnerIdMetrics?.partnerType === "ott" &&
@@ -1500,10 +1500,8 @@ export const getFilteredTeam = asyncHandler(async (req, res) => {
   if (genderIds?.length && validatedData.genderIds?.isMandatory) {
     const requiredGenderIds = genderIds.map((id) => BigInt(id).toString());
     filteredTeams = filteredTeams.filter((team) => {
-      const teamGenderIds = team?.dashapp_team_gender?.map((entry: any) =>
-        entry?.dashapp_gender?.id?.toString()
-      )
-      console.log("Matching Now", teamGenderIds, requiredGenderIds)
+      const teamGenderIds = team?.dashapp_team_gender?.map((entry: any) => entry?.dashapp_gender?.id?.toString());
+      console.log("Matching Now", teamGenderIds, requiredGenderIds);
       return exactSetMatch(teamGenderIds, requiredGenderIds);
     });
   }

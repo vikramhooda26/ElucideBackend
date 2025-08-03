@@ -280,7 +280,11 @@ export const filteredTeamSchema = z.object({
     .object({
       value: z
         .object({
-          cost: z.number().array().max(2, "Cost array can have maximum of 2 elements i.e the min and max range").optional(),
+          cost: z
+            .number()
+            .array()
+            .max(2, "Cost array can have maximum of 2 elements i.e the min and max range")
+            .optional(),
           operationType: z
             .enum(operationsTypeEnum, { message: "operationType can only be either gte, lte, equals or in" })
             .optional(),

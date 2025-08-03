@@ -56,7 +56,9 @@ export const getGenderQuery = async (genderIds: string[]) => {
   return query;
 };
 
-export const getCostQuery = (costOfAssociation: NonNullable<z.infer<typeof filteredAthleteSchema>["costOfAssociation"]>["value"]) => {
+export const getCostQuery = (
+  costOfAssociation: NonNullable<z.infer<typeof filteredAthleteSchema>["costOfAssociation"]>["value"],
+) => {
   let query;
   if (costOfAssociation?.cost?.length === 2) {
     if (costOfAssociation.operationType === "in") {
@@ -83,7 +85,9 @@ export const getCostQuery = (costOfAssociation: NonNullable<z.infer<typeof filte
   return query;
 };
 
-export const getEndorsementQuery = (endorsement: NonNullable<z.infer<typeof filteredLeagueSchema>["endorsement"]>["value"]) => {
+export const getEndorsementQuery = (
+  endorsement: NonNullable<z.infer<typeof filteredLeagueSchema>["endorsement"]>["value"],
+) => {
   const query: any = {
     name: endorsement?.name ? { contains: endorsement.name, mode: "insensitive" } : undefined,
     active: endorsement?.isActive !== undefined ? endorsement.isActive : undefined,

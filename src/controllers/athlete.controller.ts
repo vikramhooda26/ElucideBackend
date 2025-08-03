@@ -731,7 +731,7 @@ export const getTotalAthletes = asyncHandler(async (_, res) => {
 
 export const getFilteredAthletes = asyncHandler(async (req, res) => {
   const { take, skip } = req.query;
-  const validatedData = req.validatedData as TFilteredAthleteSchema
+  const validatedData = req.validatedData as TFilteredAthleteSchema;
   const ids = validatedData.ids?.value;
   const associationLevelIds = validatedData.associationLevelIds?.value;
   const costOfAssociation = validatedData.costOfAssociation?.value;
@@ -1147,7 +1147,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     OR: Object.entries(filterConditions)
       .filter(([_, condition]) => condition)
       .map(([key, condition]) => ({ [key]: condition })),
-  }
+  };
 
   const athletes = await getAthletes({
     query: combinedFilterConditions,
@@ -1157,7 +1157,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
   });
 
   if (athletes.length < 1) {
-    res.status(200).json([])
+    res.status(200).json([]);
   }
 
   const mainPersonalities = await prisma.dashapp_mainpersonality.findMany({
@@ -1239,7 +1239,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 2. Exact filtering for dashapp_athlete_personality_traits
+  // 2. Exact filtering for dashapp_athlete_personality_traits
   if (subPersonalityTraitIds?.length && validatedData.subPersonalityTraitIds?.isMandatory) {
     const requiredTraitIds = subPersonalityTraitIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1250,7 +1250,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 3. Exact filtering for dashapp_athlete_tier
+  // 3. Exact filtering for dashapp_athlete_tier
   if (tierIds?.length && validatedData.tierIds?.isMandatory) {
     const requiredGenderIds = tierIds.map((id) => id.toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1259,7 +1259,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 4. Exact filtering for dashapp_athlete_target_income
+  // 4. Exact filtering for dashapp_athlete_target_income
   if (nccsIds?.length && validatedData.nccsIds?.isMandatory) {
     const requiredNccsIds = nccsIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1270,7 +1270,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 5. Exact filtering for dashapp_athlete_key_markets_primary
+  // 5. Exact filtering for dashapp_athlete_key_markets_primary
   if (primaryMarketIds?.length && validatedData.primaryMarketIds?.isMandatory) {
     const requiredPrimaryIds = primaryMarketIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1281,7 +1281,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 6. Exact filtering for dashapp_athlete_key_markets_secondary
+  // 6. Exact filtering for dashapp_athlete_key_markets_secondary
   if (secondaryMarketIds?.length && validatedData.secondaryMarketIds?.isMandatory) {
     const requiredSecondaryIds = secondaryMarketIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1292,7 +1292,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 7. Exact filtering for dashapp_athlete_key_markets_tertiary
+  // 7. Exact filtering for dashapp_athlete_key_markets_tertiary
   if (tertiaryIds?.length && validatedData.tertiaryIds?.isMandatory) {
     const requiredTertiaryIds = tertiaryIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1303,7 +1303,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 8. Exact filtering for dashapp_athlete_socialmedia_platform_primary
+  // 8. Exact filtering for dashapp_athlete_socialmedia_platform_primary
   if (primarySocialMediaPlatformIds?.length && validatedData.primarySocialMediaPlatformIds?.isMandatory) {
     const requiredPrimarySocialIds = primarySocialMediaPlatformIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1314,7 +1314,7 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     });
   }
 
-// 9. Exact filtering for dashapp_athlete_socialmedia_platform_secondary
+  // 9. Exact filtering for dashapp_athlete_socialmedia_platform_secondary
   if (secondarySocialMediaPlatformIds?.length && validatedData.secondarySocialMediaPlatformIds?.isMandatory) {
     const requiredSecondarySocialIds = secondarySocialMediaPlatformIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
@@ -1329,10 +1329,10 @@ export const getFilteredAthletes = asyncHandler(async (req, res) => {
     const requiredGenderIds = genderIds.map((id) => BigInt(id).toString());
     filteredAthletes = filteredAthletes.filter((athlete) => {
       const athleteGenderIds = athlete?.dashapp_athlete_target_gender?.map((entry: any) =>
-        entry?.dashapp_gender?.id?.toString()
-      )
-      console.log("Matching Now", athleteGenderIds, requiredGenderIds)
-      console.log(exactSetMatch(athleteGenderIds, requiredGenderIds))
+        entry?.dashapp_gender?.id?.toString(),
+      );
+      console.log("Matching Now", athleteGenderIds, requiredGenderIds);
+      console.log(exactSetMatch(athleteGenderIds, requiredGenderIds));
       return exactSetMatch(athleteGenderIds, requiredGenderIds);
     });
   }
